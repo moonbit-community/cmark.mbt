@@ -1,0 +1,154 @@
+<h1>Basic tests</h1>
+<p>Basic tests for all CommonMark constructs.</p>
+<h2>Testing autolinks</h2>
+<p>This is an <a href="http://example.org">http://example.org</a> and another one <a href="mailto:you@example.org">you@example.org</a>.</p>
+<h2>Testing breaks</h2>
+<p>A line ending (not in a code span or HTML tag) that is preceded by two
+or more spaces and does not occur at the end of a block is parsed as a
+hard line break.</p>
+<p>So this means we had softbreaks so far and now we get  <br>
+a hard break<br>
+and another one.</p>
+<blockquote>
+<p>So this means we had softbreaks so far and now we get  <br>
+a hard break<br>
+and another one.
+This is very soooft.</p>
+</blockquote>
+<h2>Testing code spans</h2>
+<p>This is a multi-line code<code> code span `` it has backticks in there</code></p>
+<p>Sometimes code spans <code>`can have really ``` strange layout</code>. Do you fancy <code>`A_polymorphic_variant</code> ?</p>
+<h2>Testing emphasis</h2>
+<p>There is <em>more</em> than <em>one syntax</em> for <strong>emphasis</strong> and <strong>strong
+emphasis</strong>.  We should be careful about <strong>embedded * marker</strong>. This
+will be <strong>tricky * to handle</strong>. This <em>is not ** what</em> you want ?</p>
+<h2>Testing links, images and link reference definitions</h2>
+<p>This is an <img src="/heyho" alt="inline image" title="The
+multiline title" ></p>
+<p>That is totally <a href="/hohoho" title="And again these 
+multi
+line titles">colla    psed</a> and
+that is <a href="/veryshort" title="But very
+important"><code>short cuted</code></a></p>
+<p>Shortcuts can be better than <a href="/veryshort" title="But very
+important">full references</a> but not
+always and we'd like to trip their <a href="/veryshort" title="But very
+important">label</a>.</p>
+<blockquote>
+</blockquote>
+<h2>Testing raw HTML</h2>
+<p>Haha <a>a</a><b2
+data="foo" > hihi this is not the end yet.</p>
+<p>foo <a href="\*" />u</a></p>
+<blockquote>
+<p>Haha <a>a</a><b2
+data="foo" > hihi this is not the end yet.</p>
+</blockquote>
+<h2>Testing blank lines</h2>
+<p>Impressive isn't it ?</p>
+<h2>Testing block quotes</h2>
+<blockquote>
+<blockquote>
+<p>How is
+Nestyfing going on
+These irregularities <strong>will</strong> normalize
+We keep only the first block quote indent</p>
+</blockquote>
+</blockquote>
+<blockquote>
+<h2>Further tests</h2>
+</blockquote>
+<p>We need a little quote here</p>
+<blockquote>
+<p>It's warranted.</p>
+</blockquote>
+<h2>Testing code blocks</h2>
+<pre><code class="language-layout"></code></pre>
+<pre><code class="language-ocaml">
+type t = 
+| A of int
+| B of string
+
+let square x = x *. x
+</code></pre>
+<p>The indented code block:</p>
+<pre><code>a b c d 
+ a b c d
+ a b c d
+  
+
+a
+   a b c
+</code></pre>
+<blockquote>
+<pre><code class="language-ocaml">
+type t = 
+| A of int
+| B of string
+
+let square x = x *. x
+</code></pre>
+</blockquote>
+<h2>Testing headings</h2>
+<h1>aaa
+aaaa</h1>
+<blockquote>
+<h2>bbb <code>hey</code>
+bbbb</h2>
+</blockquote>
+<h1>That's one way</h1>
+<h3>It's a long way to the heading</h3>
+<h2>Testing HTML block</h2>
+<aside>
+<p>There is no aside</p>
+</aside>
+<ul>
+<li>
+<aside>
+<p>There is no aside</p>
+</aside>
+</li>
+</ul>
+<h2>Testing lists</h2>
+<p>The <code>square</code> function is the root. There are reasons for this:</p>
+<ol>
+<li>There is no reason. There should be a reason or an <a href="http://example.org">http://example.org</a></li>
+<li>Maybe that's the reason. But it may not be the reason.</li>
+<li>Is reason the only tool ?</li>
+</ol>
+<blockquote>
+<p>Quoted bullets</p>
+<ul>
+<li>Is this important ?</li>
+</ul>
+</blockquote>
+<ul>
+<li>
+<ul>
+<li>Well it's in the spec</li>
+</ul>
+</li>
+<li></li>
+</ul>
+<p>Empty list item above</p>
+<h2>Testing paragraphs</h2>
+<p>We really want your paragraph layout preserved.
+Really ?
+Really.
+Really.
+Really.</p>
+<blockquote>
+<p>We really want your paragraph layout preserved.
+Really ?
+Really.
+Really.
+Really.</p>
+</blockquote>
+<h2>Testing thematic breaks</h2>
+<hr>
+<hr>
+<hr>
+<hr>
+<blockquote>
+<hr>
+</blockquote>

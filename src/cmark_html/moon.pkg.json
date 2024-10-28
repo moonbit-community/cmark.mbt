@@ -1,0 +1,15 @@
+{
+  "import": [
+    "rami3l/cmark/char",
+    "rami3l/cmark/cmark_base",
+    "rami3l/cmark/cmark",
+    "rami3l/cmark/cmark_renderer"
+  ],
+  "pre-build": [
+    {
+      "input": "../data/test/basic.md",
+      "output": "test_data_wbtest.mbt",
+      "command": ":embed -i $input -o $output --name test_base_md_str"
+    }
+  ]
+}
