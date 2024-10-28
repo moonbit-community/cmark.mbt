@@ -1,0 +1,15 @@
+{
+  "import": [
+    "rami3l/marbit/char",
+    "rami3l/marbit/marbit_base",
+    "rami3l/marbit/marbit",
+    "rami3l/marbit/marbit_renderer"
+  ],
+  "pre-build": [
+    {
+      "input": "../data/test/basic.md",
+      "output": "test_data.mbt",
+      "command": ":embed -i $input -o $output --name test_base_md_str"
+    }
+  ]
+}
