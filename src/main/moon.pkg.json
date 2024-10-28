@@ -1,7 +1,0 @@
-{
-  "is-main": true,
-  "import": [
-    "rami3l/marbit/marbit",
-    "rami3l/marbit/marbit_base"
-  ]
-}
