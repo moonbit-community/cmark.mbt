@@ -245,10 +245,10 @@ fn comment_undefined_label(c : Context, l : @marbit.InlineLink) -> Unit {
   comment(c, "Undefined label \{def.key}")
 }
 
-fn comment_unknown_def_type(c : Context, l : @marbit.InlineLink) -> Unit {
-  guard let Some(def) = l.referenced_label() else { _ => return  }
-  comment(c, "Unknown label definition type for \{def.key}")
-}
+// fn comment_unknown_def_type(c : Context, l : @marbit.InlineLink) -> Unit {
+//   guard let Some(def) = l.referenced_label() else { _ => return  }
+//   comment(c, "Unknown label definition type for \{def.key}")
+// }
 
 fn comment_footnote_image(c : Context, l : @marbit.InlineLink) -> Unit {
   guard let Some(def) = l.referenced_label() else { _ => return  }

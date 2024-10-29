@@ -6,6 +6,4 @@ typealias Buffer = @buffer.Buffer
 
 typealias Doc = @marbit.Doc
 
-typealias Label = @marbit.Label
-
 typealias LabelMap[V] = @marbit.LabelMap[V]

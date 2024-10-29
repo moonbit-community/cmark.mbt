@@ -87,6 +87,7 @@ fn Parser::accept_list_marker_and_indent(
   ~marker_size : Int,
   ~last : Int
 ) -> Int {
+  let _ = last
   self.accept_cols(count=marker_size)
   let indent = self.curr_indent()
   let min_indent = if self.only_blanks() || indent > 4 {
@@ -219,6 +220,7 @@ fn Parser::thematic_break(
   ~indent : Indent,
   ~last : BytePos
 ) -> BlockStruct {
+  let _ = last
   let last = self.curr_line_last_char // Let's keep everything
   BlockStruct::ThematicBreak(
     indent,
@@ -504,6 +506,7 @@ fn Parser::close_indented_code_block(
   lines : List[IndentedCodeLine],
   bs : List[BlockStruct]
 ) -> List[BlockStruct] {
+  let _ = self
   loop List::Nil, lines, bs {
     blanks, lines, bs =>
       match lines {

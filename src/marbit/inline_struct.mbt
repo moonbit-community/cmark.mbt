@@ -482,6 +482,7 @@ fn Parser::raw_html_token(
   ~last_line : LineSpan,
   rev_spans : RevSpans
 ) -> Token {
+  let _ = first_line
   let raw = self.raw_tight_block_lines(~rev_spans)
   let text_loc = {
     let first = raw.head().unwrap().node.meta.loc
@@ -596,7 +597,8 @@ fn Parser::try_math_span(
   ~start : BytePos,
   ~count : Int
 ) -> (List[Token], LineSpan, Token)? {
-  ...
+  let _ = (self, toks, start_line, start, count)
+  abort("unimplemented")
 }
 
 fn Parser::try_autolink_or_html(
@@ -743,6 +745,7 @@ fn Parser::try_inline_link_remainder(
   ~image : Bool,
   ~start : BytePos
 ) -> (List[Token], LineSpan, ReferenceKind, BytePos)? {
+  let _ = image
   let st = start
   guard self.cidx.has_right_paren(after=st) else { return None }
   guard let Some((toks, line, before_dest, start)) = self.first_non_blank_over_nl(
@@ -821,6 +824,7 @@ fn Parser::find_link_text_tokens(
   start_line : LineSpan,
   ~start : BytePos
 ) -> (List[Token], LineSpan, List[Token], BytePos)? {
+  let _ = start
   loop toks, start_line, 0, List::Nil {
     Cons(RightBrack({ start: last, .. }), toks), line, 0, acc => {
       let acc = tokens_rev_and_shorten_last_line(to_last=last - 1, Nil, acc)
