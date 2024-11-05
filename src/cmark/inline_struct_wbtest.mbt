@@ -38,6 +38,37 @@ fn tokenize_only(
   tokenize(p.i, lines, exts=p.exts)
 }
 
+test "should parse entity and numeric char references" {
+  @json.inspect!(
+    parse_only(
+      #|&nbsp; &amp; &copy; &AElig; &Dcaron; &frac34; &HilbertSpace; &DifferentialD; &ClockwiseContourIntegral; &ngE; &#35; &#1234; &#992; &#0; &#X22; &#XD06; &#xcab;
+      ,
+    ),
+    content=[
+      [0, ""],
+      {
+        "$tag": "Text",
+        "0": ["  & © Æ Ď ¾ ℋ ⅆ ∲ ≧̸ # Ӓ Ϡ � \" ആ ಫ"],
+      },
+    ],
+  )
+  @json.inspect!(
+    parse_only(
+      #|&nbsp &x; &#; &#x; &#87654321; &#abcdef0; &ThisIsNotDefined; &hi?; &copy &MadeUpEntity;
+      ,
+    ),
+    content=[
+      [0, ""],
+      {
+        "$tag": "Text",
+        "0": [
+          "&nbsp &x; &#; &#x; &#87654321; &#abcdef0; &ThisIsNotDefined; &hi?; &copy &MadeUpEntity;",
+        ],
+      },
+    ],
+  )
+}
+
 test "should parse autolinks" {
   @json.inspect!(
     parse_only("<http://example.org>"),
