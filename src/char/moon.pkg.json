@@ -1,1 +1,9 @@
-{}
+{
+  "pre-build": [
+    {
+      "input": "entities.json",
+      "output": "entities.mbt",
+      "command": "python3 src/char/gen_entities.py -i $input -o $output"
+    }
+  ]
+}

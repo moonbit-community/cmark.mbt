@@ -263,7 +263,7 @@ fn _utf_16_clean_unesc_unref(
       c => {
         guard is_ascii_digit(c) else { return resolve(last, start, k) }
         let u = u * 10 + ascii_digit_to_int(c)
-        try_entity_hex(last, start, num_start, k + 1, u)
+        try_entity_dec(last, start, num_start, k + 1, u)
       }
     }
   }
