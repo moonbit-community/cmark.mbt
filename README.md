@@ -14,7 +14,8 @@ Supported CommonMark features include:
 - Common syntax extensions, including:
   - Strikethroughs;
   - Task lists;
-  - Footnotes.
+  - Footnotes;
+  - Tables.
 
 ## Building
 
