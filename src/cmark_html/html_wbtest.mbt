@@ -96,6 +96,81 @@ test "should render footnotes" (it : @test.T) {
   it.snapshot!(filename="footnote.html")
 }
 
+test "should render tables" (it : @test.T) {
+  let doc =
+    #|## Tables
+    #|
+    #|A sample table:
+    #|
+    #|| Id | Name  | Description            | Link                |
+    #||:--:|------:|:-----------------------|--------------------:|
+    #|| 1  | OCaml | The OCaml website      | <https://ocaml.org> |
+    #|| 2  | Haskell | The Haskell website | <https://haskell.org> |
+    #|| 3 | MDN Web docs | Web dev docs | <https://developer.mozilla.org/> |
+    #|| 4 | Wikipedia | The Free Encyclopedia | <https://wikipedia.org> |
+    #|
+    #|Testing these non separator pipes.
+    #|
+    #|| Fancy | maybe | hu\|glu |
+    #||-------|-------|-------|
+    #|| *a | b* | `code |` | [bl|a] |
+    // #|| not \| two cols | $\sqrt(x^2 - 1)$ |
+    #|| not \| two cols | **sorry, NO mAtH YeT** |
+    #|
+    #|[bl|a]: https://example.org
+    #|
+    #|
+    #|A table with changing labels and alignement:
+    #|
+    #| | h1  |  h2 |
+    #| |-----|:---:|
+    #| | 1   | 2   |
+    #| | h3  | h4  |
+    #| |:----|----:|
+    #| | 3   | 4   |
+    #|
+    #|A simple header less table with left and right aligned columns
+    #|
+    #| |:--|--:|
+    #| | 1 | 2 |
+    #|
+    #|The simplest table:
+    #|
+    #| | 1 | 2 |
+    #|
+    #|A header only table:
+    #|
+    #|| h1 | h2 |
+    #||:--:|:--:|
+    #|
+    #|Maximal number of columns all rows defines number of colums:
+    #|
+    #|   | h1 | h2 | h3 |
+    #|   |:---|:--:|---:|
+    #|  |left | center | right |
+    #|   | ha!  | four | columns | in fact |
+    #|   |||||
+    #|   ||||a|
+    #|
+    #|Header less table:
+    #|
+    #|  |header|less|
+    #|  |this | is |
+    #|
+    #|Another quoted header less table with aligement
+    #|
+    #|> |----:|----:|
+    #|> | header | less |
+    #|> | again | aligned |
+    #|
+    #|This is an empty table with three columns:
+    #|
+    #| | |||
+  let rendered = from_doc!(safe=false, Doc::from_string(strict=false, doc))
+  it.write(rendered)
+  it.snapshot!(filename="table.html")
+}
+
 test "basic" (it : @test.T) {
   let rendered = from_doc!(safe=false, Doc::from_string(test_base_md_str))
   it.write(rendered)
