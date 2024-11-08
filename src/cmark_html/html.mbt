@@ -630,7 +630,99 @@ fn thematic_break(c : Context) -> Unit {
 //   c.b.write_string("\\]\n")
 // }
 
-// fn table()
+fn table!(c : Context, t : @cmark.Table) -> Unit {
+  fn start(c : Context, align : @cmark.TableAlign?, tag) {
+    c.b.write_char('<')
+    c.b.write_string(tag)
+    match align {
+      None => c.b.write_char('>')
+      Some(Left) => c.b.write_string(" class=\"left\">")
+      Some(Center) => c.b.write_string(" class=\"center\">")
+      Some(Right) => c.b.write_string(" class=\"right\">")
+    }
+  }
+
+  fn close(c : Context, tag) {
+    c.b.write_string("</")
+    c.b.write_string(tag)
+    c.b.write_string(">\n")
+  }
+
+  fn cols!(
+    c : Context,
+    tag,
+    align : List[@cmark.Node[(_, _)]],
+    count,
+    cs : List[(_, _)]
+  ) {
+    match (align, cs) {
+      (Cons({ v, .. }, align), Cons((col, _), cs)) => {
+        start(c, v.0, tag)
+        c.inline!(col)
+        close(c, tag)
+        cols!(c, tag, align, count - 1, cs)
+      }
+      (Cons({ v, .. }, align), Nil) => {
+        start(c, v.0, tag)
+        close(c, tag)
+        cols!(c, tag, align, count - 1, Nil)
+      }
+      (Nil, Cons((col, _), cs)) => {
+        start(c, None, tag)
+        c.inline!(col)
+        close(c, tag)
+        cols!(c, tag, Nil, count - 1, cs)
+      }
+      (Nil, Nil) =>
+        for i in 0..<count {
+          start(c, None, tag)
+          close(c, tag)
+        }
+    }
+  }
+
+  fn row!(c : Context, tag, align : List[_], count, cs : List[_]) {
+    c.b.write_string("<tr>\n")
+    cols!(c, tag, align, count, cs)
+    c.b.write_string("</tr>\n")
+  }
+
+  fn header!(c : Context, count, align, cols) {
+    row!(c, "th", align, count, cols)
+  }
+
+  fn data!(c : Context, count, align, cols) {
+    row!(c, "td", align, count, cols)
+  }
+
+  fn rows!(
+    c : Context,
+    col_count,
+    align : List[_],
+    rs : List[(@cmark.Node[@cmark.TableRow], _)]
+  ) {
+    match rs {
+      Cons(({ v: Header(cols), .. }, _), rs) => {
+        let (align, rs) = match rs {
+          Cons(({ v: Sep(align), .. }, _), rs) => (align, rs)
+          _ => (align, rs)
+        }
+        header!(c, col_count, align, cols)
+        rows!(c, col_count, align, rs)
+      }
+      Cons(({ v: Data(cols), .. }, _), rs) => {
+        data!(c, col_count, align, cols)
+        rows!(c, col_count, align, rs)
+      }
+      Cons(({ v: Sep(align), .. }, _), rs) => rows!(c, col_count, align, rs)
+      Nil => ()
+    }
+  }
+
+  c.b.write_string("<div role=\"region\"><table>\n")
+  rows!(c, t.col_count, Nil, t.rows)
+  c.b.write_string("</table></div>")
+}
 
 fn block!(c : Context, b : @cmark.Block) -> Bool {
   match b {
@@ -646,7 +738,7 @@ fn block!(c : Context, b : @cmark.Block) -> Bool {
     Paragraph(p) => paragraph!(c, p.v)
     ThematicBreak(_) => thematic_break(c)
     // ExtMathBlock(cb) => math_block(c, cb.v)
-    // ExtTable(t) => table(c, t.v)
+    ExtTable(t) => table!(c, t.v)
     BlankLine(_) | LinkRefDefinition(_) | ExtFootnoteDefinition(_) => ()
   }
   true

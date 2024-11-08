@@ -723,12 +723,12 @@ fn Parser::match_line_type(
       }
       ParagraphLine
     }
-    // ('|', _, true) => {
-    //   guard let Nomatch = LineType::ext_table_row(self.i, ~last, ~start) else {
-    //     r => return r
-    //   }
-    //   ParagraphLine
-    // }
+    ('|', _, true) => {
+      guard let Nomatch = LineType::ext_table_row(self.i, ~last, ~start) else {
+        r => return r
+      }
+      ParagraphLine
+    }
     ('[', _, true) => {
       guard let Nomatch = LineType::ext_footnote_label(
         self.buf,
@@ -787,7 +787,7 @@ fn Parser::add_open_blocks_with_line_class(
       bs.add(self.fenced_code_block(~indent, ~fence_first, ~fence_last, ~info))
     HtmlBlockLine(end_cond) => bs.add(self.html_block(~end_cond, ~indent_start))
     ParagraphLine => bs.add(self.paragraph(start=indent_start))
-    // ExtTableRow(last) => bs.add(self.table(~indent, ~last))
+    ExtTableRow(last) => bs.add(self.table(~indent, ~last))
     ExtFootnoteLabel(rev_spans, last, key) =>
       bs.add(self.footnote(~indent, ~last, ~rev_spans, ~key))
     _ => abort("unimplemented")
@@ -1463,7 +1463,36 @@ fn Parser::block_struct_to_thematic_break(
   ThematicBreak({ v: { indent, layout }, meta })
 }
 
-// fn Parser::block_struct_to_table()
+fn Parser::block_struct_to_table(
+  self : Parser,
+  indent : Indent,
+  rows : List[(LineSpan, LineSpan)]
+) -> Block {
+  let last = rows.unsafe_head().0
+  let (first, col_count, rows) = loop 0, false, List::Nil, rows {
+    col_count, last_was_sep, acc, Cons((row, blanks), rs) => {
+      let meta = self.meta(self.text_loc_of_span(row))
+      let row1 = { ..row, first: row.first + 1, last: row.last }
+      let cols = self.parse_table_row(row1)
+      let col_count = @math.maximum(col_count, cols.length())
+      let (r, last_was_sep) = match Table::parse_sep_row(cols) {
+        Some(seps) => ({ v: Sep(seps), meta }, true)
+        None => {
+          let v = if last_was_sep { Header(cols) } else { Data(cols) }
+          ({ v, meta }, false)
+        }
+      }
+      let acc = acc.add((r, self.layout_clean_raw_span1(blanks)))
+      if rs.is_empty() {
+        break (row, col_count, acc)
+      }
+      continue col_count, last_was_sep, acc, rs
+    }
+    _, _, _, Nil => abort("unreachable")
+  }
+  let meta = self.meta_of_spans(~first, ~last)
+  ExtTable({ v: { indent, col_count, rows }, meta })
+}
 
 fn Parser::block_struct_to_block_quote(
   self : Parser,
@@ -1616,10 +1645,9 @@ fn Parser::block_struct_to_block(self : Parser, b : BlockStruct) -> Block {
     HtmlBlock(html) => self.block_struct_to_html_block(html)
     BlankLine(pad, span) => self.block_struct_to_blank_line(pad, span)
     LinkRefDef(r) => LinkRefDefinition(r)
-    // ExtTable(i, rows) => self.block_struct_to_table(i, rows)
+    ExtTable(i, rows) => self.block_struct_to_table(i, rows)
     ExtFootnote(i, (lb, dlb), bs) =>
       self.block_struct_to_footnote_definition(i, lb, dlb, bs)
-    _ => abort("unimplemented")
   }
 }
 

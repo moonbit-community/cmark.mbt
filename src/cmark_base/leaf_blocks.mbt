@@ -508,7 +508,19 @@ pub fn LineType::html_block_end(
   }
 }
 
-// fn LineType::ext_table_row()
+pub fn LineType::ext_table_row(
+  s : String,
+  ~last : BytePos,
+  ~start : BytePos
+) -> LineType {
+  guard start <= last && s[start] == '|' else { Nomatch }
+  let first = start + 1
+  let last_nb = last_non_blank(s, ~first, start=last)
+  let before = last_nb - 1
+  guard last_nb >= first && s[last_nb] == '|' else { Nomatch }
+  guard before < first || s[before] != '\\' else { Nomatch }
+  ExtTableRow(last_nb)
+}
 
 pub fn LineType::ext_footnote_label(
   buf : Buffer,

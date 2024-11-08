@@ -163,7 +163,28 @@ pub fn Mapper::map_block(self : Mapper, b : Block) -> FilterMap[Block] {
         .or_else(fn() { Blocks(Node::new(Nil)) }) // Can be empty
       Some(ExtFootnoteDefinition({ v: { ..v, block, }, meta }))
     }
-    // ExtTable({ v, meta }) => abort("unimplemented")
+    ExtTable({ v, meta }) => {
+      fn map_col(i, layout) {
+        self.map_inline(i).map(fn(i) { (i, layout) })
+      }
+
+      fn map_row(row) {
+        let ({ v, meta }, blanks) = row
+        match v {
+          Header(is) => {
+            let is = filter_map(is, fn(i) { map_col(i.0, i.1) })
+            ({ v: Header(is), meta }, blanks)
+          }
+          Sep(_) => row
+          Data(is) => {
+            let is = filter_map(is, fn(i) { map_col(i.0, i.1) })
+            ({ v: Data(is), meta }, blanks)
+          }
+        }
+      }
+
+      Some(ExtTable({ v: { ..v, rows: v.rows.map(map_row) }, meta }))
+    }
     // ext => (self.block_ext_default)(self, ext)
   }
 }

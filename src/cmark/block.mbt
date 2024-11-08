@@ -10,6 +10,8 @@ pub enum Block {
   List(Node[BlockList])
   Paragraph(Node[BlockParagraph])
   ThematicBreak(Node[BlockThematicBreak])
+  // ExtMathBlock
+  ExtTable(Node[Table])
   ExtFootnoteDefinition(Node[Footnote])
 } derive(Show, FromJson, ToJson)
 
@@ -30,6 +32,7 @@ pub fn Block::meta(self : Block) -> Meta {
     Paragraph(bl) => bl.meta
     ThematicBreak(bl) => bl.meta
     ExtFootnoteDefinition(bl) => bl.meta
+    ExtTable(bl) => bl.meta
   }
 }
 
@@ -367,4 +370,73 @@ fn Label::stub(label : Label, defined_label : Label?) -> LabelDef {
   FootnoteDef(
     Node::new({ indent: 0, label, defined_label, block: Block::empty() }),
   )
+}
+
+pub struct Table {
+  indent : Indent
+  col_count : Count
+  rows : List[(Node[TableRow], Blanks)]
+} derive(Show, FromJson, ToJson)
+
+pub enum TableAlign {
+  Left
+  Center
+  Right
+} derive(Show, FromJson, ToJson)
+
+pub enum TableRow {
+  Header(List[(Inline, TableCellLayout)])
+  Sep(List[Node[TableSep]])
+  Data(List[(Inline, TableCellLayout)])
+} derive(Show, FromJson, ToJson)
+
+pub typealias TableSep = (TableAlign?, Count)
+
+pub typealias TableCellLayout = (Blanks, Blanks)
+
+pub fn Table::new(
+  ~indent : Indent = 0,
+  rows : List[(Node[TableRow], Blanks)]
+) -> Table {
+  {
+    indent,
+    rows,
+    col_count: loop 0, rows {
+      c, Cons(({ v: Header(cols) | Data(cols), .. }, _), rs) =>
+        continue @math.maximum(cols.length(), c), rs
+      c, Cons(({ v: Sep(cols), .. }, _), rs) =>
+        continue @math.maximum(cols.length(), c), rs
+      c, Nil => c
+    },
+  }
+}
+
+pub fn Table::parse_sep_row(
+  cs : List[(Inline, TableCellLayout)]
+) -> List[Node[TableSep]]? {
+  loop List::Nil, cs {
+    acc, Nil => Some(acc.rev())
+    acc, Cons((Text({ v, meta }), ("", "")), cs) => {
+      guard v.is_empty().not() else { None }
+      let max = v.length() - 1
+      let first_colon = v[0] == ':'
+      let last_colon = v[max] == ':'
+      let first = if first_colon { 1 } else { 0 }
+      let last = if last_colon { max - 1 } else { max }
+      for i in first..=last {
+        guard v[i] == '-' else { break None }
+
+      } else {
+        let count = last - first + 1
+        let sep = match (first_colon, last_colon) {
+          (false, false) => None
+          (true, true) => Some(Center)
+          (true, false) => Some(Left)
+          (false, true) => Some(Right)
+        }
+        continue acc.add({ v: (sep, count), meta }), cs
+      }
+    }
+    _, _ => None
+  }
 }

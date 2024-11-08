@@ -1334,4 +1334,167 @@ fn Parser::parse_inline(
 
 // Parsing table rows
 
-// TODO: Implement this.
+fn Parser::get_blanks(
+  self : Parser,
+  line : LineSpan,
+  ~before : BytePos,
+  k : BytePos
+) -> (String, BytePos) {
+  let nb = @cmark_base.first_non_blank(self.i, last=before - 1, start=k)
+  let line = { ..line, first: k, last: nb - 1 }
+  (self.layout_clean_raw_span1(line), nb)
+}
+
+fn Parser::make_col(self : Parser, is : List[Inline]) -> Inline {
+  match is {
+    Nil => abort("unreachable")
+    Cons(i, Nil) => i
+    is => {
+      let last = is.unsafe_head().meta()
+      let is = is.rev()
+      let first = is.unsafe_head().meta()
+      let meta = self.meta_of_metas(~first, ~last)
+      Inlines({ v: is, meta })
+    }
+  }
+}
+
+fn Parser::find_pipe(
+  self : Parser,
+  line : LineSpan,
+  ~before : BytePos,
+  k : BytePos
+) -> Result[(Inline?, String, Col), Inline] {
+  fn text(first, last) {
+    let line = { ..line, first, last }
+    Text(self.clean_unesc_unref_span(line))
+  }
+
+  let n = @cmark_base.first_non_escaped_char(
+    '|',
+    self.i,
+    last=before - 1,
+    start=k,
+  )
+  if n == before {
+    return Err(text(k, n - 1))
+  }
+  let nb = @cmark_base.last_non_blank(self.i, first=k, start=n - 1)
+  let after = self.layout_clean_raw_span1(
+    { ..line, first: nb + 1, last: n - 1 },
+  )
+  let text = if nb < k { None } else { Some(text(k, nb)) }
+  Ok((text, after, n + 1))
+}
+
+fn Parser::start_col(
+  self : Parser,
+  line : LineSpan,
+  ~before : BytePos,
+  k : BytePos
+) -> StartColResult {
+  let (bbefore, k) = self.get_blanks(line, ~before, k)
+  if k >= before {
+    return Start(bbefore, Nil)
+  }
+  match self.find_pipe(line, ~before, k) {
+    Err(text) => Start(bbefore, List::of([text]))
+    Ok((text, bafter, k)) => {
+      let text = text.or_else(
+        fn() {
+          let l = self.text_loc_of_span({ ..line, first: k, last: k - 1 })
+          Inlines({ v: Nil, meta: self.meta(l) })
+        },
+      )
+      Col((text, (bbefore, bafter)), k)
+    }
+  }
+}
+
+enum StartColResult {
+  Col((Inline, TableCellLayout), BytePos)
+  Start(String, List[Inline])
+} derive(Show, FromJson, ToJson)
+
+fn Parser::finish_col(
+  self : Parser,
+  line : LineSpan,
+  blanks_before : String,
+  is : List[Inline],
+  toks : List[Token],
+  k : BytePos
+) -> ((Inline, TableCellLayout), List[Token], BytePos) {
+  match toks {
+    Nil => {
+      guard let Ok((text, after, k)) = self.find_pipe(
+        line,
+        before=line.last + 1,
+        k,
+      )
+      let is = text.map_or(is, fn(t) { is.add(t) })
+      ((self.make_col(is), (blanks_before, after)), Nil, k)
+    }
+    Cons(Inline({ start, inline, next, .. }), toks) as toks1 => {
+      if k >= start {
+        return self.finish_col(line, blanks_before, is.add(inline), toks, next)
+      }
+      match self.find_pipe(line, before=start, k) {
+        Err(text) => {
+          let is = is.add(text).add(inline)
+          self.finish_col(line, blanks_before, is, toks, next)
+        }
+        Ok((text, after, k)) => {
+          let is = text.map_or(is, fn(t) { is.add(t) })
+          ((self.make_col(is), (blanks_before, after)), toks1, k)
+        }
+      }
+    }
+    _ => abort("unreachable")
+  }
+}
+
+fn Parser::parse_cols(
+  self : Parser,
+  line : LineSpan,
+  acc : List[(Inline, TableCellLayout)],
+  toks : List[Token],
+  k : BytePos
+) -> List[(Inline, TableCellLayout)] {
+  match toks {
+    Nil => {
+      if k > line.last {
+        return acc.rev()
+      }
+      guard let Col(col, k) = self.start_col(line, before=line.last + 1, k)
+      self.parse_cols(line, acc.add(col), Nil, k)
+    }
+    Cons(Inline({ start, inline, next, .. }), toks) as toks1 =>
+      match self.start_col(line, before=start, k) {
+        Col(col, k) => self.parse_cols(line, acc.add(col), toks1, k)
+        Start(before, is) => {
+          let is = is.add(inline)
+          let (col, toks, k) = self.finish_col(line, before, is, toks, next)
+          self.parse_cols(line, acc.add(col), toks, k)
+        }
+      }
+    _ => abort("unreachable")
+  }
+}
+
+fn Parser::parse_table_row(
+  self : Parser,
+  line : LineSpan
+) -> List[(Inline, TableCellLayout)] {
+  let (cidx, toks, first_line) = tokenize(
+    self.i,
+    List::of([line]),
+    exts=self.exts,
+  )
+  self.cidx = cidx
+  let (toks, _had_link) = self.first_pass(toks, first_line)
+  let toks = self.second_pass(toks, first_line)
+  // We now have modified last pass, inner inlines will have gone through
+  // the regular `last_pass` which is fine since we are only interested
+  // in creating the toplevel text nodes further splited on (unescaped) `\`.
+  self.parse_cols(line, Nil, toks, line.first)
+}
