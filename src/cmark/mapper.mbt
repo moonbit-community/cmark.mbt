@@ -68,18 +68,6 @@ pub fn Mapper::new(
   { inline_ext_default, block_ext_default, inline, block }
 }
 
-// TODO: Replace this with List::filter_map() when it's merged
-fn filter_map[A, B](self_ : List[A], f : (A) -> B?) -> List[B] {
-  loop List::Nil, self_ {
-    acc, Nil => acc.rev()
-    acc, Cons(x, xs) =>
-      match f(x) {
-        Some(v) => continue acc.add(v), xs
-        None => continue acc, xs
-      }
-  }
-}
-
 pub fn Mapper::map_inline(self : Mapper, i : Inline) -> FilterMap[Inline] {
   guard let Default = (self.inline)(self, i) else { Map(i) => i }
   match i {
@@ -103,7 +91,7 @@ pub fn Mapper::map_inline(self : Mapper, i : Inline) -> FilterMap[Inline] {
     }
     Inlines({ v, meta }) => {
       // TODO: Use .filter_map
-      guard let Cons(_, _) as v = filter_map(v, fn(x) { self.map_inline(x) }) else {
+      guard let Cons(_, _) as v = v.filter_map(fn(x) { self.map_inline(x) }) else {
         _ => None
       }
       Some(Inlines({ v, meta }))
@@ -137,7 +125,7 @@ pub fn Mapper::map_block(self : Mapper, b : Block) -> FilterMap[Block] {
       Some(BlockQuote({ v: { ..v, block, }, meta }))
     }
     Blocks({ v, meta }) =>
-      match filter_map(v, fn(x) { self.map_block(x) }) {
+      match v.filter_map(fn(x) { self.map_block(x) }) {
         Nil => None
         v => Some(Blocks({ v, meta }))
       }
@@ -148,7 +136,7 @@ pub fn Mapper::map_block(self : Mapper, b : Block) -> FilterMap[Block] {
         Some({ v: { ..v, block, }, meta })
       }
 
-      match filter_map(v.items, map_list_item) {
+      match v.items.filter_map(map_list_item) {
         Nil => None
         items => Some(List({ v: { ..v, items, }, meta }))
       }
@@ -172,12 +160,12 @@ pub fn Mapper::map_block(self : Mapper, b : Block) -> FilterMap[Block] {
         let ({ v, meta }, blanks) = row
         match v {
           Header(is) => {
-            let is = filter_map(is, fn(i) { map_col(i.0, i.1) })
+            let is = is.filter_map(fn(i) { map_col(i.0, i.1) })
             ({ v: Header(is), meta }, blanks)
           }
           Sep(_) => row
           Data(is) => {
-            let is = filter_map(is, fn(i) { map_col(i.0, i.1) })
+            let is = is.filter_map(fn(i) { map_col(i.0, i.1) })
             ({ v: Data(is), meta }, blanks)
           }
         }
