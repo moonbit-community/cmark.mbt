@@ -28,6 +28,8 @@ pub enum MapperResult[A] {
   Map(FilterMap[A])
 } derive(Eq, Show, ToJson)
 
+pub impl[A] Default for MapperResult[A] with default() { Default }
+
 pub typealias FilterMap[A] = A?
 
 pub fn Mapper::delete[A]() -> MapperResult[A] {
@@ -90,7 +92,6 @@ pub fn Mapper::map_inline(self : Mapper, i : Inline) -> FilterMap[Inline] {
       Some(StrongEmphasis({ v: { ..v, inline, }, meta }))
     }
     Inlines({ v, meta }) => {
-      // TODO: Use .filter_map
       guard let Cons(_, _) as v = v.filter_map(fn(x) { self.map_inline(x) }) else {
         _ => None
       }
