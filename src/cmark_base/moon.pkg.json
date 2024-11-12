@@ -1,5 +1,6 @@
 {
   "import": [
     "rami3l/cmark/char"
-  ]
+  ],
+  "test-import-all": true
 }

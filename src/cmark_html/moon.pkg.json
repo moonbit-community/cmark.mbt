@@ -5,6 +5,7 @@
     "rami3l/cmark/cmark",
     "rami3l/cmark/cmark_renderer"
   ],
+  "test-import-all": true,
   "pre-build": [
     {
       "input": "../data/test/basic.md",
