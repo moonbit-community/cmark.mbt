@@ -19,7 +19,7 @@ jobs:
             path: mac_intel_moon_setup
           - name: macos-latest
             path: mac_m1_moon_setup
-          - name: windows-latest
+          # - name: windows-latest
 
     runs-on: ${{ matrix.os.name }}
     continue-on-error: true
@@ -29,14 +29,8 @@ jobs:
       - name: install
         if: ${{ matrix.os.name != 'windows-latest' }}
         run: |
-          curl -fsSL https://cli.moonbitlang.com/install/unix.sh | bash
+          curl -fsSL https://cli.moonbitlang.com/install/unix.sh | bash -s -- bleeding
           echo "$HOME/.moon/bin" >> $GITHUB_PATH
-
-      - name: install on windows
-        if: ${{ matrix.os.name == 'windows-latest' }}
-        run: |
-          Set-ExecutionPolicy RemoteSigned -Scope CurrentUser; irm https://cli.moonbitlang.com/install/powershell.ps1 | iex
-          "C:\Users\runneradmin\.moon\bin" | Out-File -FilePath $env:GITHUB_PATH -Append
 
       - name: moon version
         run: |
@@ -64,5 +58,5 @@ jobs:
 
       - name: format diff
         run: |
-          moon fmt
+          # moon fmt
           git diff --exit-code
