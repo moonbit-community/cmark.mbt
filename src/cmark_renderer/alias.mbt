@@ -1,4 +1,4 @@
-typealias Buffer = @buffer.Buffer
+typealias Buffer = @buffer.T
 
 typealias Dict = @cmark_base.Dict
 

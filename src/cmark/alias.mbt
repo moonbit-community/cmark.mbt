@@ -1,6 +1,6 @@
 typealias List[A] = @immut/list.T[A]
 
-typealias Buffer = @buffer.Buffer
+typealias Buffer = @buffer.T
 
 typealias Indent = @cmark_base.Indent
 

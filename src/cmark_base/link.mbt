@@ -153,8 +153,7 @@ pub fn link_label[A](
         }
         let acc = push_span(~line, start, line.last, acc)
         let start = first_non_blank_in_span(s, newline)
-        // TODO: Use b.length()
-        if b.to_bytes().length() != 0 {
+        if b.is_empty().not() {
           b.write_char(' ')
         }
         let prev = '\x00'
@@ -180,7 +179,7 @@ pub fn link_label[A](
         }
         (']', '\\') => ()
         (']', _) => {
-          let key = b.to_string()
+          let key = b.to_unchecked_string()
           if key.iter().all(@char.is_ascii_whitespace) {
             break None
           }
@@ -203,9 +202,7 @@ pub fn link_label[A](
         _ => ()
       }
       // Collapse non initial whitespace
-      if @char.is_ascii_blank(prev) &&
-        // TODO: Use b.length()
-        b.to_bytes().length() != 0 {
+      if @char.is_ascii_blank(prev) && b.is_empty().not() {
         b.write_char(' ')
       }
       let mut u = @char.at(s, k)
