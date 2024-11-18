@@ -62,10 +62,10 @@ pub fn Mapper::block_ext_none[A](
 }
 
 pub fn Mapper::new(
-  ~inline_ext_default : MapFn[Inline] = Mapper::inline_ext_none,
-  ~block_ext_default : MapFn[Block] = Mapper::block_ext_none,
-  ~inline : MapperFn[Inline] = Mapper::none,
-  ~block : MapperFn[Block] = Mapper::none
+  inline_ext_default~ : MapFn[Inline] = Mapper::inline_ext_none,
+  block_ext_default~ : MapFn[Block] = Mapper::block_ext_none,
+  inline~ : MapperFn[Inline] = Mapper::none,
+  block~ : MapperFn[Block] = Mapper::none
 ) -> Mapper {
   { inline_ext_default, block_ext_default, inline, block }
 }

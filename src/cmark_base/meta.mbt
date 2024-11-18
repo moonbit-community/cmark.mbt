@@ -10,7 +10,7 @@ typealias MetaId = Int
 
 let curr_id : Ref[MetaId] = Ref::new(0)
 
-pub fn Meta::new(~loc : TextLoc = text_loc_none) -> Meta {
+pub fn Meta::new(loc~ : TextLoc = text_loc_none) -> Meta {
   let res = { loc, id: curr_id.val, dict: Map::new() }
   curr_id.val += 1
   res
@@ -77,9 +77,9 @@ pub impl @json.FromJson for Meta with from_json(json, path) {
             (path, "expected object with id, loc, dict"),
           )
       }
-      let id = @json.from_json!(id, ~path)
-      let loc = @json.from_json!(loc, ~path)
-      let dict = @json.from_json!(dict, ~path)
+      let id = @json.from_json!(id, path~)
+      let loc = @json.from_json!(loc, path~)
+      let dict = @json.from_json!(dict, path~)
       { id, loc, dict }
     }
     _ => raise @json.JsonDecodeError((path, "expected object"))

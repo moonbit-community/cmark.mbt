@@ -11,10 +11,10 @@ pub fn at_checked(s : String, idx : Int) -> Result[Char, Char] {
 }
 
 pub fn sub_includes(
-  ~affix : String,
+  affix~ : String,
   s : String,
-  ~first : Int,
-  ~last : Int
+  first~ : Int,
+  last~ : Int
 ) -> Bool {
   let len_a = affix.length()
   let len_s = last - first + 1
@@ -60,7 +60,7 @@ fn code_point_at(s : String, idx : Int) -> Int {
   fst
 }
 
-pub fn prev_char(s : String, ~first : Int, ~before : Int) -> Char {
+pub fn prev_char(s : String, first~ : Int, before~ : Int) -> Char {
   if before <= first {
     return ' '
   }
@@ -82,7 +82,7 @@ pub fn prev_char(s : String, ~first : Int, ~before : Int) -> Char {
   at(s, k)
 }
 
-pub fn next_char(s : String, ~last : Int, ~after : Int) -> Char {
+pub fn next_char(s : String, last~ : Int, after~ : Int) -> Char {
   if after >= last {
     return ' '
   }
@@ -90,11 +90,11 @@ pub fn next_char(s : String, ~last : Int, ~after : Int) -> Char {
 }
 
 pub fn utf_16_clean_raw(
-  ~pad : Int = 0,
+  pad~ : Int = 0,
   buf : Buffer,
   s : String,
-  ~first : Int,
-  ~last : Int
+  first~ : Int,
+  last~ : Int
 ) -> String {
   fn pad_it() {
     for _ in 0..<pad {
@@ -105,7 +105,7 @@ pub fn utf_16_clean_raw(
   fn clean(last, first, dirty) {
     let flush = fn(last, start, k) {
       if start <= last {
-        buf.write_string(s.substring(~start, end=k))
+        buf.write_string(s.substring(start~, end=k))
       }
     }
     flush(last, first, dirty)
@@ -185,33 +185,33 @@ pub fn utf_16_clean_raw(
 pub fn utf_16_clean_unesc_unref(
   buf : Buffer,
   s : String,
-  ~first : Int,
-  ~last : Int
+  first~ : Int,
+  last~ : Int
 ) -> String {
-  _utf_16_clean_unesc_unref(do_unesc=true, buf, s, ~first, ~last)
+  _utf_16_clean_unesc_unref(do_unesc=true, buf, s, first~, last~)
 }
 
 pub fn utf_16_clean_unref(
   buf : Buffer,
   s : String,
-  ~first : Int,
-  ~last : Int
+  first~ : Int,
+  last~ : Int
 ) -> String {
-  _utf_16_clean_unesc_unref(do_unesc=false, buf, s, ~first, ~last)
+  _utf_16_clean_unesc_unref(do_unesc=false, buf, s, first~, last~)
 }
 
 fn flush(buf : Buffer, s : String, last : Int, start : Int, k : Int) -> Unit {
   if start <= last {
-    buf.write_string(s.substring(~start, end=k))
+    buf.write_string(s.substring(start~, end=k))
   }
 }
 
 fn _utf_16_clean_unesc_unref(
-  ~do_unesc : Bool,
+  do_unesc~ : Bool,
   buf : Buffer,
   s : String,
-  ~first : Int,
-  ~last : Int
+  first~ : Int,
+  last~ : Int
 ) -> String {
   let flush = fn(last, start, k) { flush(buf, s, last, start, k) }
 

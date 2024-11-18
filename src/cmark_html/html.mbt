@@ -29,8 +29,8 @@ fn backend_blocks(c : Context) -> Bool {
 }
 
 fn init_context(
-  ~backend_blocks : Bool = false,
-  ~safe : Bool,
+  backend_blocks~ : Bool = false,
+  safe~ : Bool,
   c : Context,
   _doc : Doc
 ) -> Unit {
@@ -133,7 +133,7 @@ pub fn buffer_add_html_escaped_string(b : Buffer, s : String) -> Unit {
   let max_idx = len - 1
   fn flush(b : Buffer, start : Int, i : Int) {
     if start < len {
-      b.write_string(s.substring(~start, end=i))
+      b.write_string(s.substring(start~, end=i))
     }
   }
 
@@ -191,7 +191,7 @@ pub fn buffer_add_pct_encoded_string(b : Buffer, s : String) -> Unit { // Percen
   }
   let flush = fn(b : Buffer, max : Int, start : Int, i : Int) -> Unit {
     if start <= max {
-      b.write_string(s.substring(~start, end=i))
+      b.write_string(s.substring(start~, end=i))
     }
   }
   loop b, s, s.length() - 1, 0, 0 {
@@ -324,7 +324,7 @@ fn link_dest_and_title(
   (dest, title)
 }
 
-fn image(c : Context, i : @cmark.InlineLink, ~close : String = " >") -> Unit {
+fn image(c : Context, i : @cmark.InlineLink, close~ : String = " >") -> Unit {
   match i.reference_definition(c.doc.defs) {
     Some(LinkDef({ v: ld, .. })) => {
       let plain_text = fn(i : @cmark.Inline) -> String {
@@ -513,7 +513,7 @@ fn paragraph!(c : Context, p : @cmark.BlockParagraph) -> Unit {
   c.b.write_string("</p>\n")
 }
 
-fn item_block!(~tight : Bool, c : Context, b : @cmark.Block) -> Unit {
+fn item_block!(tight~ : Bool, c : Context, b : @cmark.Block) -> Unit {
   match (b, tight) {
     (BlankLine(_), _) => ()
     (Paragraph({ v, .. }), true) => c.inline!(v.inline)
@@ -542,14 +542,14 @@ fn item_block!(~tight : Bool, c : Context, b : @cmark.Block) -> Unit {
 }
 
 fn list_item!(
-  ~tight : Bool,
+  tight~ : Bool,
   c : Context,
   i : @cmark.Node[@cmark.ListItem]
 ) -> Unit {
   c.b.write_string("<li>")
   guard let Some(mark) = i.v.ext_task_marker else {
     _ => {
-      item_block!(~tight, c, i.v.block)
+      item_block!(tight~, c, i.v.block)
       c.b.write_string("</li>\n")
       return
     }
@@ -574,7 +574,7 @@ fn list_item!(
       "<del></div></li>\n"
     }
   }
-  item_block!(~tight, c, i.v.block)
+  item_block!(tight~, c, i.v.block)
   c.b.write_string(close)
 }
 
@@ -584,7 +584,7 @@ fn list!(c : Context, l : @cmark.BlockList) -> Unit {
     Unordered(_) => {
       c.b.write_string("<ul>\n")
       for i in l.items {
-        list_item!(~tight, c, i)
+        list_item!(tight~, c, i)
       }
       c.b.write_string("</ul>\n")
     }
@@ -598,7 +598,7 @@ fn list!(c : Context, l : @cmark.BlockList) -> Unit {
         c.b.write_string("\">\n")
       }
       for i in l.items {
-        list_item!(~tight, c, i)
+        list_item!(tight~, c, i)
       }
       c.b.write_string("</ol>\n")
     }
@@ -822,33 +822,33 @@ fn doc!(c : Context, d : Doc) -> Bool {
 // Renderer
 
 pub fn renderer(
-  ~backend_blocks : Bool = false,
-  ~safe : Bool
+  backend_blocks~ : Bool = false,
+  safe~ : Bool
 ) -> @cmark_renderer.Renderer {
   @cmark_renderer.Renderer::new(
-    init_context=fn(ctx, doc) { init_context(~backend_blocks, ~safe, ctx, doc) },
-    ~inline,
-    ~block,
-    ~doc,
+    init_context=fn(ctx, doc) { init_context(backend_blocks~, safe~, ctx, doc) },
+    inline~,
+    block~,
+    doc~,
   )
 }
 
 pub fn xhtml_renderer(
-  ~backend_blocks : Bool = false,
-  ~safe : Bool
+  backend_blocks~ : Bool = false,
+  safe~ : Bool
 ) -> @cmark_renderer.Renderer {
   @cmark_renderer.Renderer::new(
-    init_context=fn(ctx, doc) { init_context(~backend_blocks, ~safe, ctx, doc) },
+    init_context=fn(ctx, doc) { init_context(backend_blocks~, safe~, ctx, doc) },
     inline=xhtml_inline,
     block=xhtml_block,
-    ~doc,
+    doc~,
   )
 }
 
 pub fn from_doc!(
-  ~backend_blocks : Bool = false,
-  ~safe : Bool,
+  backend_blocks~ : Bool = false,
+  safe~ : Bool,
   doc : Doc
 ) -> String {
-  renderer(~backend_blocks, ~safe).doc_to_string!(doc)
+  renderer(backend_blocks~, safe~).doc_to_string!(doc)
 }

@@ -6,8 +6,8 @@ pub struct Doc {
 } derive(Show, ToJson)
 
 pub fn Doc::new(
-  ~nl : String = "\n",
-  ~defs : LabelDefs = LabelDefs::empty(),
+  nl~ : String = "\n",
+  defs~ : LabelDefs = LabelDefs::empty(),
   block : Block
 ) -> Doc {
   { nl, block, defs }
@@ -18,28 +18,28 @@ pub fn Doc::empty() -> Doc {
 }
 
 pub fn Doc::from_string(
-  ~defs : LabelDefs = LabelDefs::empty(),
-  ~resolver : LabelResolverFn = LabelContext::default_resolver,
-  ~nested_links : Bool = false,
-  ~heading_auto_ids : Bool = false,
-  ~layout : Bool = false,
-  ~locs : Bool = false,
-  ~file : FilePath = file_path_none,
-  ~strict : Bool = true,
+  defs~ : LabelDefs = LabelDefs::empty(),
+  resolver~ : LabelResolverFn = LabelContext::default_resolver,
+  nested_links~ : Bool = false,
+  heading_auto_ids~ : Bool = false,
+  layout~ : Bool = false,
+  locs~ : Bool = false,
+  file~ : FilePath = file_path_none,
+  strict~ : Bool = true,
   s : String
 ) -> Doc {
   let p = Parser::new(
-    ~defs,
-    ~resolver,
-    ~nested_links,
-    ~heading_auto_ids,
-    ~layout,
-    ~locs,
-    ~file,
-    ~strict,
+    defs~,
+    resolver~,
+    nested_links~,
+    heading_auto_ids~,
+    layout~,
+    locs~,
+    file~,
+    strict~,
     s,
   )
   let (nl, doc) = p.parse_block()
   let block = p.block_struct_to_doc(doc)
-  Doc::new(~nl, block, defs=p.defs)
+  Doc::new(nl~, block, defs=p.defs)
 }

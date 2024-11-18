@@ -2,8 +2,8 @@
 /// `start` in the range `[start;last]` (assumed on the same line).
 pub fn autolink_email(
   s : String,
-  ~last : Int = s.length() - 1,
-  ~start : Int = 0
+  last~ : Int = s.length() - 1,
+  start~ : Int = 0
 ) -> Last? {
   fn label_seq(s : String, last : Int, k : Int) -> Int? {
     fn char_is_alphanum_or_hyp(c) {
@@ -56,8 +56,8 @@ pub fn autolink_email(
 /// `start` in the range `[start;last]` (assumed on the same line).
 pub fn autolink_uri(
   s : String,
-  ~last : Int = s.length() - 1,
-  ~start : Int = 0
+  last~ : Int = s.length() - 1,
+  start~ : Int = 0
 ) -> Last? {
   let char_is_scheme = fn(c) {
     @char.is_ascii_alphanum(c) || "+-.".contains_char(c)

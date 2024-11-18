@@ -30,8 +30,8 @@ pub struct Tight {
   node : StringNode
 } derive(Eq, FromJson, ToJson)
 
-pub fn Tight::empty(~meta : Meta = Meta::none()) -> Tight {
-  { blanks: "", node: StringNode::empty(~meta) }
+pub fn Tight::empty(meta~ : Meta = Meta::none()) -> Tight {
+  { blanks: "", node: StringNode::empty(meta~) }
 }
 
 pub impl Show for Tight with output(self, logger) {
@@ -54,17 +54,17 @@ pub fn Tight::list_text_loc(ls : List[Tight]) -> TextLoc {
 }
 
 fn BlockLine::flush(
-  ~meta : Meta = Meta::none(),
+  meta~ : Meta = Meta::none(),
   s : String,
   start : Int,
   last : Int,
   acc : List[StringNode]
 ) -> List[StringNode] {
-  acc.add({ meta, v: s.substring(~start, end=last + 1) })
+  acc.add({ meta, v: s.substring(start~, end=last + 1) })
 }
 
 fn BlockLine::flush_tight(
-  ~meta : Meta = Meta::none(),
+  meta~ : Meta = Meta::none(),
   s : String,
   start : Int,
   last : Int,
@@ -72,18 +72,18 @@ fn BlockLine::flush_tight(
 ) -> List[Tight] {
   // If [s] has newlines, blanks after newlines are layout
   if start > last {
-    return acc.add(Tight::empty(~meta))
+    return acc.add(Tight::empty(meta~))
   }
   // On the first line the blanks are legit 
   if acc.is_empty() {
     return acc.add(
-      { blanks: "", node: { meta, v: s.substring(~start, end=last + 1) } },
+      { blanks: "", node: { meta, v: s.substring(start~, end=last + 1) } },
     )
   }
-  let nb = @cmark_base.first_non_blank(s, ~last, ~start)
+  let nb = @cmark_base.first_non_blank(s, last~, start~)
   acc.add(
     {
-      blanks: s.substring(~start, end=nb),
+      blanks: s.substring(start~, end=nb),
       node: { meta, v: s.substring(start=nb, end=last + 1) },
     },
   )
