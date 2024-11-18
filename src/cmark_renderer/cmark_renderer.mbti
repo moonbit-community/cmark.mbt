@@ -1,0 +1,55 @@
+package rami3l/cmark/cmark_renderer
+
+alias @moonbitlang/core/buffer as @buffer
+alias @rami3l/cmark/cmark as @cmark
+
+// Values
+
+// Types and methods
+pub struct Context {
+  pub renderer : Renderer
+  pub state : Map[String, Json]
+  pub b : @buffer.T
+  pub doc : @cmark.Doc
+}
+impl Context {
+  block(Self, @cmark.Block) -> Unit!
+  byte(Self, Byte) -> Unit
+  char(Self, Char) -> Unit
+  doc(Self, @cmark.Doc) -> Unit!
+  init(Self, @cmark.Doc) -> Unit
+  inline(Self, @cmark.Inline) -> Unit!
+  new(Renderer, @buffer.T) -> Self
+  string(Self, String) -> Unit
+}
+
+pub type! RenderError String
+impl RenderError {
+  to_string(Self) -> String
+}
+impl Show for RenderError
+
+pub struct Renderer {
+  pub init_context : (Context, @cmark.Doc) -> Unit
+  pub inline : (Context, @cmark.Inline) -> Bool!
+  pub block : (Context, @cmark.Block) -> Bool!
+  pub doc : (Context, @cmark.Doc) -> Bool!
+}
+impl Renderer {
+  buffer_add_doc(Self, @buffer.T, @cmark.Doc) -> Unit!
+  compose(Self, Self) -> Self
+  doc_to_string(Self, @cmark.Doc) -> String!
+  new(init_context~ : (Context, @cmark.Doc) -> Unit = .., inline~ : (Context, @cmark.Inline) -> Bool! = .., block~ : (Context, @cmark.Block) -> Bool! = .., doc~ : (Context, @cmark.Doc) -> Bool! = ..) -> Self
+}
+
+// Type aliases
+pub typealias BlockFn = (Context, @cmark.Block) -> Bool!
+
+pub typealias DocFn = (Context, @cmark.Doc) -> Bool!
+
+pub typealias InitContextFn = (Context, @cmark.Doc) -> Unit
+
+pub typealias InlineFn = (Context, @cmark.Inline) -> Bool!
+
+// Traits
+

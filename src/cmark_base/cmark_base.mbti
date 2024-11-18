@@ -1,0 +1,242 @@
+package rami3l/cmark/cmark_base
+
+alias @moonbitlang/core/buffer as @buffer
+alias @moonbitlang/core/immut/list as @list
+alias @moonbitlang/core/json as @json
+
+// Values
+fn autolink_email(String, last~ : Int = .., start~ : Int = ..) -> Int?
+
+fn autolink_uri(String, last~ : Int = .., start~ : Int = ..) -> Int?
+
+let byte_pos_none : Int
+
+fn could_be_link_ref_definition(String, last~ : Int, start~ : Int) -> Bool
+
+fn ext_task_marker(String, last~ : Int, start~ : Int) -> (Char, Int)?
+
+let file_path_none : String
+
+fn first_non_blank(String, last~ : Int, start~ : Int) -> Int
+
+fn first_non_blank_in_span(String, LineSpan) -> Int
+
+fn first_non_blank_over_nl[A](next_line~ : (A) -> (A, LineSpan)?, String, A, line~ : LineSpan, start~ : Int) -> NextLineResult[A]?
+
+fn first_non_escaped_char(Char, String, last~ : Int, start~ : Int) -> Int
+
+fn last_non_blank(String, first~ : Int, start~ : Int) -> Int
+
+let line_num_none : Int
+
+let line_pos_none : (Int, Int)
+
+fn link_destination(String, last~ : Int, start~ : Int) -> (Bool, Int, Int)?
+
+fn link_label[A](@buffer.T, next_line~ : (A) -> (A, LineSpan)?, String, A, line~ : LineSpan, start~ : Int) -> (A, LineSpan, @list.T[Span], Int, String)?
+
+fn link_title[A](next_line~ : (A) -> (A, LineSpan)?, String, A, line~ : LineSpan, start~ : Int) -> (A, LineSpan, @list.T[Span], Int)?
+
+fn raw_html[A : Show](next_line~ : (A) -> (A, LineSpan)?, String, A, line~ : LineSpan, start~ : Int) -> (A, LineSpan, @list.T[Span], Int)?
+
+fn rev_drop_spaces(String, first~ : Int, start~ : Int) -> Int
+
+fn run_of(char~ : Char, String, last~ : Int, start~ : Int) -> Int
+
+// Types and methods
+pub type! Exit
+impl Exit {
+  to_string(Self) -> String
+}
+impl Show for Exit
+
+pub enum FencedCodeBlockContinue {
+  Close(Int, Int)
+  Code
+}
+impl FencedCodeBlockContinue {
+  new(String, fence~ : (Char, Int), last~ : Int, start~ : Int) -> Self
+  to_json(Self) -> Json
+  to_string(Self) -> String
+}
+impl Show for FencedCodeBlockContinue
+impl ToJson for FencedCodeBlockContinue
+
+pub enum HtmlBlockEndCond {
+  EndStr(String)
+  EndCond1
+  EndBlank
+  EndBlank7
+}
+impl HtmlBlockEndCond {
+  op_equal(Self, Self) -> Bool
+  to_json(Self) -> Json
+  to_string(Self) -> String
+}
+impl Eq for HtmlBlockEndCond
+impl Show for HtmlBlockEndCond
+impl ToJson for HtmlBlockEndCond
+
+pub struct LineSpan {
+  pub pos : (Int, Int)
+  pub first : Int
+  pub last : Int
+}
+impl LineSpan {
+  compare(Self, Self) -> Int
+  op_equal(Self, Self) -> Bool
+  to_json(Self) -> Json
+  to_string(Self) -> String
+}
+impl Compare for LineSpan
+impl Eq for LineSpan
+impl Show for LineSpan
+impl ToJson for LineSpan
+
+pub enum LineType {
+  AtxHeadingLine(Int, Int, Int, Int)
+  BlankLine
+  BlockQuoteLine
+  FencedCodeBlockLine(Int, Int, (Int, Int)?)
+  HtmlBlockLine(HtmlBlockEndCond)
+  IndentedCodeBlockLine
+  ListMarkerLine(ListType, Int)
+  ParagraphLine
+  SetextUnderlineLine(Int, Int)
+  ThematicBreakLine(Int)
+  ExtTableRow(Int)
+  ExtFootnoteLabel(@list.T[Span], Int, String)
+  Nomatch
+}
+impl LineType {
+  atx_heading(String, last~ : Int, start~ : Int) -> Self
+  ext_footnote_label(@buffer.T, String, line_pos~ : (Int, Int), last~ : Int, start~ : Int) -> Self
+  ext_table_row(String, last~ : Int, start~ : Int) -> Self
+  fenced_code_block_start(String, last~ : Int, start~ : Int) -> Self
+  html_block_end(String, end_cond~ : HtmlBlockEndCond, last~ : Int, start~ : Int) -> Bool
+  html_block_start(String, last~ : Int, start~ : Int) -> Self
+  list_marker(String, last~ : Int, start~ : Int) -> Self
+  op_equal(Self, Self) -> Bool
+  setext_heading_underline(String, last~ : Int, start~ : Int) -> Self
+  thematic_break(String, last~ : Int, start~ : Int) -> Self
+  to_json(Self) -> Json
+  to_string(Self) -> String
+}
+impl Eq for LineType
+impl Show for LineType
+impl ToJson for LineType
+
+pub enum ListType {
+  Unordered(Char)
+  Ordered(Int, Char)
+}
+impl ListType {
+  from_json(Json, @json.JsonPath) -> Self!@json.JsonDecodeError
+  is_same_type(Self, Self) -> Bool
+  op_equal(Self, Self) -> Bool
+  to_json(Self) -> Json
+  to_string(Self) -> String
+}
+impl Eq for ListType
+impl Show for ListType
+impl ToJson for ListType
+impl @json.FromJson for ListType
+
+pub struct Meta {
+  pub id : Int
+  pub loc : TextLoc
+  pub dict : Map[String, Json]
+}
+impl Meta {
+  compare(Self, Self) -> Int
+  is_none(Self) -> Bool
+  new(loc~ : TextLoc = ..) -> Self
+  none() -> Self
+  op_equal(Self, Self) -> Bool
+  to_json(Self) -> Json
+}
+impl Show for Meta
+impl ToJson for Meta
+impl @json.FromJson for Meta
+
+pub enum NextLineResult {
+  ThisLine(Int)
+  NextLine(A, LineSpan, Int)
+}
+impl NextLineResult {
+  to_json[A : ToJson](Self[A]) -> Json
+  to_string[A : Show](Self[A]) -> String
+}
+impl[A : Show] Show for NextLineResult[A]
+impl[A : ToJson] ToJson for NextLineResult[A]
+
+pub struct Span {
+  pub start : Int
+  pub span : LineSpan
+}
+impl Span {
+  compare(Self, Self) -> Int
+  op_equal(Self, Self) -> Bool
+  to_json(Self) -> Json
+  to_string(Self) -> String
+}
+impl Compare for Span
+impl Eq for Span
+impl Show for Span
+impl ToJson for Span
+
+pub struct TextLoc {
+  pub file : String
+  pub first_byte : Int
+  pub last_byte : Int
+  pub first_line : (Int, Int)
+  pub last_line : (Int, Int)
+}
+impl TextLoc {
+  after(Self) -> Self
+  compare(Self, Self) -> Int
+  from_json(Json, @json.JsonPath) -> Self!@json.JsonDecodeError
+  is_empty(Self) -> Bool
+  is_none(Self) -> Bool
+  none() -> Self
+  op_equal(Self, Self) -> Bool
+  reloc(Self, Self) -> Self
+  span(Self, Self) -> Self
+  to_first(Self) -> Self
+  to_json(Self) -> Json
+  to_last(Self) -> Self
+  to_string(Self) -> String
+}
+impl Compare for TextLoc
+impl Eq for TextLoc
+impl Show for TextLoc
+impl ToJson for TextLoc
+impl @json.FromJson for TextLoc
+
+// Type aliases
+pub typealias BytePos = Int
+
+pub typealias Dict = Map[String, Json]
+
+pub typealias FilePath = String
+
+pub typealias First = Int
+
+pub typealias HeadingLevel = Int
+
+pub typealias Indent = Int
+
+pub typealias Last = Int
+
+pub typealias LineNum = Int
+
+pub typealias LinePos = (Int, Int)
+
+pub typealias Next = Int
+
+pub typealias NextLineFn[A] = (A) -> (A, LineSpan)?
+
+pub typealias RevSpans = @list.T[Span]
+
+// Traits
+
