@@ -1,7 +1,5 @@
 package rami3l/cmark/char
 
-alias @moonbitlang/core/buffer as @buffer
-
 // Values
 fn ascii_digit_to_int(Char) -> Int
 
@@ -63,11 +61,11 @@ fn to_ascii_lower(Char) -> Char
 
 fn to_ascii_upper(Char) -> Char
 
-fn utf_16_clean_raw(pad~ : Int = .., @buffer.T, String, first~ : Int, last~ : Int) -> String
+fn utf_16_clean_raw(pad~ : Int = .., @moonbitlang/core/buffer.T, String, first~ : Int, last~ : Int) -> String
 
-fn utf_16_clean_unesc_unref(@buffer.T, String, first~ : Int, last~ : Int) -> String
+fn utf_16_clean_unesc_unref(@moonbitlang/core/buffer.T, String, first~ : Int, last~ : Int) -> String
 
-fn utf_16_clean_unref(@buffer.T, String, first~ : Int, last~ : Int) -> String
+fn utf_16_clean_unref(@moonbitlang/core/buffer.T, String, first~ : Int, last~ : Int) -> String
 
 // Types and methods
 
