@@ -1,1 +1,1 @@
-typealias Buffer = @buffer.Buffer
+typealias Buffer = @buffer.T

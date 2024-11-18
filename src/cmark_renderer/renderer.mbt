@@ -92,7 +92,7 @@ pub fn Context::doc!(self : Context, doc : Doc) -> Unit {
 pub fn Renderer::doc_to_string!(self : Renderer, doc : Doc) -> String {
   let buf = Buffer::new(size_hint=1024)
   self.buffer_add_doc!(buf, doc)
-  buf.to_string()
+  buf.to_unchecked_string()
 }
 
 pub fn Renderer::buffer_add_doc!(
