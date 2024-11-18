@@ -84,7 +84,7 @@ fn Parser::find_label_defining_key(self : Parser, key : String) -> Label? {
 }
 
 fn Parser::set_label_def(self : Parser, l : Label, def : LabelDef) -> Unit {
-  self.defs = self.defs.insert(l.key, def)
+  self.defs = self.defs.add(l.key, def)
 }
 
 fn Parser::def_label(self : Parser, l : Label) -> Label? {
