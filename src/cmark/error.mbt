@@ -1,3 +1,3 @@
-pub type! FolderError String
+pub type! FolderError String derive(Show)
 
-pub type! MapperError String
+pub type! MapperError String derive(Show)
