@@ -1,0 +1,77 @@
+package rami3l/cmark/char
+
+alias @moonbitlang/core/buffer as @buffer
+
+// Values
+fn ascii_digit_to_int(Char) -> Int
+
+fn ascii_hexdigit_to_int(Char) -> Int
+
+fn ascii_octdigit_to_int(Char) -> Int
+
+fn at(String, Int) -> Char
+
+fn at_checked(String, Int) -> Result[Char, Char]
+
+fn from_int_checked(Int) -> Char?
+
+fn is_ascii(Char) -> Bool
+
+fn is_ascii_alpha(Char) -> Bool
+
+fn is_ascii_alphanum(Char) -> Bool
+
+fn is_ascii_blank(Char) -> Bool
+
+fn is_ascii_control(Char) -> Bool
+
+fn is_ascii_digit(Char) -> Bool
+
+fn is_ascii_graphic(Char) -> Bool
+
+fn is_ascii_hexdigit(Char) -> Bool
+
+fn is_ascii_lower(Char) -> Bool
+
+fn is_ascii_octdigit(Char) -> Bool
+
+fn is_ascii_punctuation(Char) -> Bool
+
+fn is_ascii_upper(Char) -> Bool
+
+fn is_ascii_whitespace(Char) -> Bool
+
+fn is_high_surrogate(Int) -> Bool
+
+fn is_low_surrogate(Int) -> Bool
+
+fn length_utf16(Char) -> Int
+
+fn length_utf32(Char) -> Int
+
+fn length_utf8(Char) -> Int
+
+fn next_char(String, last~ : Int, after~ : Int) -> Char
+
+fn prev_char(String, first~ : Int, before~ : Int) -> Char
+
+let rep : Char
+
+fn sub_includes(affix~ : String, String, first~ : Int, last~ : Int) -> Bool
+
+fn to_ascii_lower(Char) -> Char
+
+fn to_ascii_upper(Char) -> Char
+
+fn utf_16_clean_raw(pad~ : Int = .., @buffer.T, String, first~ : Int, last~ : Int) -> String
+
+fn utf_16_clean_unesc_unref(@buffer.T, String, first~ : Int, last~ : Int) -> String
+
+fn utf_16_clean_unref(@buffer.T, String, first~ : Int, last~ : Int) -> String
+
+// Types and methods
+
+// Type aliases
+
+// Traits
+
