@@ -26,7 +26,7 @@ fn CloserIndex::add(self : CloserIndex, key : Closer, pos : Int) -> CloserIndex 
     fn() { PosSet::new().add(pos) },
     fn(occs) { occs.add(pos) },
   )
-  self._.insert(key, value)
+  self._.add(key, value)
 }
 
 fn CloserIndex::pos(self : CloserIndex, key : Closer, after~ : Int) -> Int? {
