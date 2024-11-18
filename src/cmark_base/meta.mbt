@@ -1,10 +1,10 @@
-pub struct Meta {
+pub(all) struct Meta {
   id : MetaId
   loc : TextLoc
   dict : Dict
 }
 
-pub typealias Dict = Map[String, Json]
+pub(all) typealias Dict = Map[String, Json]
 
 typealias MetaId = Int
 

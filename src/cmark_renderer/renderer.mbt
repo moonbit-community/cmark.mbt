@@ -1,7 +1,7 @@
 /// Renderer abstraction.
 ///
 /// Stateful renderer abstraction to render documents in memory.
-pub struct Renderer {
+pub(all) struct Renderer {
   init_context : InitContextFn
   inline : InlineFn
   block : BlockFn
@@ -28,7 +28,7 @@ pub fn Renderer::compose(self : Renderer, other : Renderer) -> Renderer {
   { init_context, inline, block, doc }
 }
 
-pub struct Context {
+pub(all) struct Context {
   renderer : Renderer
   state : Dict
   b : Buffer
@@ -43,13 +43,13 @@ pub fn Context::init(self : Context, doc : Doc) -> Unit {
   (self.renderer.init_context)(self, doc)
 }
 
-pub typealias InitContextFn = (Context, Doc) -> Unit
+pub(all) typealias InitContextFn = (Context, Doc) -> Unit
 
-pub typealias InlineFn = (Context, Inline) -> Bool!
+pub(all) typealias InlineFn = (Context, Inline) -> Bool!
 
-pub typealias BlockFn = (Context, Block) -> Bool!
+pub(all) typealias BlockFn = (Context, Block) -> Bool!
 
-pub typealias DocFn = (Context, Doc) -> Bool!
+pub(all) typealias DocFn = (Context, Doc) -> Bool!
 
 pub fn Context::byte(self : Context, byte : Byte) -> Unit {
   self.b.write_byte(byte)

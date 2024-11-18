@@ -1,7 +1,7 @@
 // Inlines.
 // NOTE: Document data in inline nodes is always stored unescaped and with entity and character references resolved.
 
-pub enum Inline {
+pub(all) enum Inline {
   Autolink(Node[InlineAutolink])
   Break(Node[InlineBreak])
   CodeSpan(Node[InlineCodeSpan])
@@ -182,7 +182,7 @@ pub fn Inline::id(
   }
 }
 
-pub struct InlineAutolink {
+pub(all) struct InlineAutolink {
   /// https://spec.commonmark.org/0.30/#email-address
   is_email : Bool
   /// https://spec.commonmark.org/0.30/#absolute-uri
@@ -195,7 +195,7 @@ pub fn InlineAutolink::new(link : StringNode) -> InlineAutolink {
   { is_email: not(@cmark_base.autolink_email(raw_link).is_empty()), link }
 }
 
-pub struct InlineBreak {
+pub(all) struct InlineBreak {
   layout_before : BlanksNode
   ty : InlineBreakType
   layout_after : BlanksNode
@@ -209,13 +209,13 @@ pub fn InlineBreak::new(
   { layout_before, ty, layout_after }
 }
 
-pub enum InlineBreakType {
+pub(all) enum InlineBreakType {
   Hard
   Soft
 } derive(Eq, Compare, Show, FromJson, ToJson)
 
 /// The type for [code spans](https://spec.commonmark.org/0.30/#code-spans).
-pub struct InlineCodeSpan {
+pub(all) struct InlineCodeSpan {
   backticks : Count
   code_layout : List[Tight]
 } derive(Eq, Show, FromJson, ToJson)
@@ -300,7 +300,7 @@ pub fn InlineCodeSpan::code(self : InlineCodeSpan) -> String {
 
 /// The type for emphasis and strong emphasis.
 /// https://spec.commonmark.org/0.30/#emphasis-and-strong-emphasis
-pub struct InlineEmphasis {
+pub(all) struct InlineEmphasis {
   delim : Char
   inline : Inline
 } derive(Eq, Show, FromJson, ToJson)
@@ -312,12 +312,12 @@ pub fn InlineEmphasis::new(
   { delim, inline }
 }
 
-pub struct InlineLink {
+pub(all) struct InlineLink {
   text : Inline
   reference : ReferenceKind
 } derive(Eq, Show, FromJson, ToJson)
 
-pub enum ReferenceKind {
+pub(all) enum ReferenceKind {
   /// https://spec.commonmark.org/0.30/#inline-link
   Inline(Node[LinkDefinition])
   /// https://spec.commonmark.org/0.30/#reference-link
@@ -326,7 +326,7 @@ pub enum ReferenceKind {
 } derive(Eq, Show, FromJson, ToJson)
 
 // The type for reference link layouts.
-pub enum ReferenceLayout {
+pub(all) enum ReferenceLayout {
   /// https://spec.commonmark.org/0.30/#collapsed-reference-link
   Collapsed
   /// https://spec.commonmark.org/0.30/#full-reference-link
@@ -390,15 +390,15 @@ pub fn InlineLink::is_unsafe(l : String) -> Bool {
 }
 
 /// The type for [inline raw HTML](https://spec.commonmark.org/0.30/#raw-html) (can span multiple lines).
-pub type InlineRawHtml List[Tight] derive(Eq, Show, FromJson, ToJson)
+pub(all) type InlineRawHtml List[Tight] derive(Eq, Show, FromJson, ToJson)
 
 /// The type for [textual content](https://spec.commonmark.org/0.30/#textual-content).
 ///
 /// Normally these strings should not contain newlines. This can
 /// however happen if the source had newlines as
 /// [character references](https://spec.commonmark.org/0.30/#entity-and-numeric-character-references).
-pub typealias InlineText = String
+pub(all) typealias InlineText = String
 
 // Extensions
 
-pub type InlineStrikethrough Inline derive(Eq, Show, FromJson, ToJson)
+pub(all) type InlineStrikethrough Inline derive(Eq, Show, FromJson, ToJson)

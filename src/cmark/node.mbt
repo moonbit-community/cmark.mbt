@@ -1,4 +1,4 @@
-pub struct Node[A] {
+pub(all) struct Node[A] {
   v : A
   meta : Meta
 } derive(Eq)
@@ -41,9 +41,9 @@ pub impl[A : @json.FromJson] @json.FromJson for Node[A] with from_json(
   }
 }
 
-pub typealias StringNode = Node[String]
+pub(all) typealias StringNode = Node[String]
 
-pub typealias BlanksNode = Node[Blanks]
+pub(all) typealias BlanksNode = Node[Blanks]
 
 pub fn StringNode::empty(meta~ : Meta = Meta::none()) -> StringNode {
   { v: "", meta }

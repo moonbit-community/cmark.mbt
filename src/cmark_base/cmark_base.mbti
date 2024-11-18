@@ -40,13 +40,13 @@ fn rev_drop_spaces(String, first~ : Int, start~ : Int) -> Int
 fn run_of(char~ : Char, String, last~ : Int, start~ : Int) -> Int
 
 // Types and methods
-pub type! Exit
+pub(all) type! Exit
 impl Exit {
   to_string(Self) -> String
 }
 impl Show for Exit
 
-pub enum FencedCodeBlockContinue {
+pub(all) enum FencedCodeBlockContinue {
   Close(Int, Int)
   Code
 }
@@ -58,7 +58,7 @@ impl FencedCodeBlockContinue {
 impl Show for FencedCodeBlockContinue
 impl ToJson for FencedCodeBlockContinue
 
-pub enum HtmlBlockEndCond {
+pub(all) enum HtmlBlockEndCond {
   EndStr(String)
   EndCond1
   EndBlank
@@ -73,7 +73,7 @@ impl Eq for HtmlBlockEndCond
 impl Show for HtmlBlockEndCond
 impl ToJson for HtmlBlockEndCond
 
-pub struct LineSpan {
+pub(all) struct LineSpan {
   pos : (Int, Int)
   first : Int
   last : Int
@@ -89,7 +89,7 @@ impl Eq for LineSpan
 impl Show for LineSpan
 impl ToJson for LineSpan
 
-pub enum LineType {
+pub(all) enum LineType {
   AtxHeadingLine(Int, Int, Int, Int)
   BlankLine
   BlockQuoteLine
@@ -122,7 +122,7 @@ impl Eq for LineType
 impl Show for LineType
 impl ToJson for LineType
 
-pub enum ListType {
+pub(all) enum ListType {
   Unordered(Char)
   Ordered(Int, Char)
 }
@@ -138,7 +138,7 @@ impl Show for ListType
 impl ToJson for ListType
 impl @moonbitlang/core/json.FromJson for ListType
 
-pub struct Meta {
+pub(all) struct Meta {
   id : Int
   loc : TextLoc
   dict : Map[String, Json]
@@ -155,7 +155,7 @@ impl Show for Meta
 impl ToJson for Meta
 impl @moonbitlang/core/json.FromJson for Meta
 
-pub enum NextLineResult {
+pub(all) enum NextLineResult {
   ThisLine(Int)
   NextLine(A, LineSpan, Int)
 }
@@ -166,7 +166,7 @@ impl NextLineResult {
 impl[A : Show] Show for NextLineResult[A]
 impl[A : ToJson] ToJson for NextLineResult[A]
 
-pub struct Span {
+pub(all) struct Span {
   start : Int
   span : LineSpan
 }
@@ -181,7 +181,7 @@ impl Eq for Span
 impl Show for Span
 impl ToJson for Span
 
-pub struct TextLoc {
+pub(all) struct TextLoc {
   file : String
   first_byte : Int
   last_byte : Int

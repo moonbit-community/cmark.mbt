@@ -3,7 +3,7 @@ package rami3l/cmark/cmark_renderer
 // Values
 
 // Types and methods
-pub struct Context {
+pub(all) struct Context {
   renderer : Renderer
   state : Map[String, Json]
   b : @moonbitlang/core/buffer.T
@@ -20,13 +20,13 @@ impl Context {
   string(Self, String) -> Unit
 }
 
-pub type! RenderError String
+pub(all) type! RenderError String
 impl RenderError {
   to_string(Self) -> String
 }
 impl Show for RenderError
 
-pub struct Renderer {
+pub(all) struct Renderer {
   init_context : (Context, @rami3l/cmark/cmark.Doc) -> Unit
   inline : (Context, @rami3l/cmark/cmark.Inline) -> Bool!
   block : (Context, @rami3l/cmark/cmark.Block) -> Bool!

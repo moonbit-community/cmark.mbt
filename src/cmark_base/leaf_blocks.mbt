@@ -1,14 +1,14 @@
 // Leaf blocks
 // The matching functions assume the indentation has been stripped.
 
-pub enum HtmlBlockEndCond {
+pub(all) enum HtmlBlockEndCond {
   EndStr(String)
   EndCond1
   EndBlank
   EndBlank7
 } derive(Show, ToJson, Eq)
 
-pub enum ListType {
+pub(all) enum ListType {
   /// With the given marker.
   Unordered(Char)
   /// Starting at given integer, markers ending with given character, i.e. ')' or '.'.
@@ -23,7 +23,7 @@ pub fn ListType::is_same_type(self : ListType, other : ListType) -> Bool {
   }
 }
 
-pub enum LineType {
+pub(all) enum LineType {
   AtxHeadingLine(HeadingLevel, BytePos, First, Last)
   BlankLine
   BlockQuoteLine
@@ -249,7 +249,7 @@ pub fn LineType::fenced_code_block_start(
   }
 }
 
-pub enum FencedCodeBlockContinue {
+pub(all) enum FencedCodeBlockContinue {
   Close(First, Last)
   Code
 } derive(Show, ToJson)
