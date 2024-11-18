@@ -3,7 +3,7 @@ pub struct Node[A] {
   meta : Meta
 } derive(Eq)
 
-pub fn Node::new[A](v : A, ~meta : Meta = Meta::none()) -> Node[A] {
+pub fn Node::new[A](v : A, meta~ : Meta = Meta::none()) -> Node[A] {
   { v, meta }
 }
 
@@ -34,9 +34,9 @@ pub impl[A : @json.FromJson] @json.FromJson for Node[A] with from_json(
   path
 ) {
   match json {
-    Array([v]) => Node::new(@json.from_json!(v, ~path))
+    Array([v]) => Node::new(@json.from_json!(v, path~))
     Array([v, meta]) =>
-      Node::new(@json.from_json!(v, ~path), meta=@json.from_json!(meta, ~path))
+      Node::new(@json.from_json!(v, path~), meta=@json.from_json!(meta, path~))
     _ => raise @json.JsonDecodeError((path, "expected array of length 1 or 2"))
   }
 }
@@ -45,6 +45,6 @@ pub typealias StringNode = Node[String]
 
 pub typealias BlanksNode = Node[Blanks]
 
-pub fn StringNode::empty(~meta : Meta = Meta::none()) -> StringNode {
+pub fn StringNode::empty(meta~ : Meta = Meta::none()) -> StringNode {
   { v: "", meta }
 }

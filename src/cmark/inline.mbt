@@ -31,7 +31,7 @@ pub fn Inline::is_empty(self : Inline) -> Bool {
 /// `meta(i)` is the metadata of `i`.
 pub fn Inline::meta(
   self : Inline
-  // ~ext : (Inline) -> Meta!InvalidArgumentError = fn(_i) {
+  // ext~ : (Inline) -> Meta!InvalidArgumentError = fn(_i) {
   //   raise InvalidArgumentError("Inline.meta")
   // }
 ) -> Meta {
@@ -99,13 +99,13 @@ pub fn Inline::normalize(self : Inline) -> Inline {
   }
 }
 
-/// `to_plain_text(i, ~break_on_soft, ~acc)` has the plain text of `i`
+/// `to_plain_text(i, break_on_soft~, acc~)` has the plain text of `i`
 /// as a sequence of lines represented by a list of strings to be
 /// concatenated. If `break_on_soft` is `true` soft line breaks
 /// are turned into hard line breaks.
 pub fn Inline::to_plain_text(
   self : Inline,
-  ~break_on_soft : Bool
+  break_on_soft~ : Bool
 ) -> List[List[String]] {
   let push = fn(s, acc : List[List[_]]) {
     acc.tail().add(acc.unsafe_head().add(s))
@@ -138,7 +138,7 @@ pub fn Inline::to_plain_text(
 
 pub fn Inline::id(
   self : Inline,
-  ~buf : Buffer = Buffer::new(size_hint=256)
+  buf~ : Buffer = Buffer::new(size_hint=256)
 ) -> String {
   let text = self.to_plain_text(break_on_soft=false)
   let s = text.map(fn(it) { String::concat(it.to_array()) }).to_array()
@@ -202,8 +202,8 @@ pub struct InlineBreak {
 } derive(Eq, Show, FromJson, ToJson)
 
 pub fn InlineBreak::new(
-  ~layout_before : BlanksNode = layout_empty,
-  ~layout_after : BlanksNode = layout_empty,
+  layout_before~ : BlanksNode = layout_empty,
+  layout_after~ : BlanksNode = layout_empty,
   ty : InlineBreakType
 ) -> InlineBreak {
   { layout_before, ty, layout_after }
@@ -221,13 +221,13 @@ pub struct InlineCodeSpan {
 } derive(Eq, Show, FromJson, ToJson)
 
 pub fn InlineCodeSpan::new(
-  ~backticks : Count,
+  backticks~ : Count,
   code_layout : List[Tight]
 ) -> InlineCodeSpan {
   { backticks, code_layout }
 }
 
-fn InlineCodeSpan::min_backticks(~min : Count, counts : List[Count]) -> Count {
+fn InlineCodeSpan::min_backticks(min~ : Count, counts : List[Count]) -> Count {
   loop min, counts.sort() {
     min, Nil => min
     min, Cons(c, cs) => if min != c { break min } else { continue c + 1, cs }
@@ -242,11 +242,11 @@ fn InlineCodeSpan::min_backticks(~min : Count, counts : List[Count]) -> Count {
 /// the lines of the resulting code layout (see `code_layout`).
 /// the resulting code layout (see `code_layout`).
 pub fn InlineCodeSpan::from_string(
-  ~meta : Meta = Meta::none(),
+  meta~ : Meta = Meta::none(),
   s : String
 ) -> InlineCodeSpan {
   if s.is_empty() {
-    return { backticks: 1, code_layout: List::of([Tight::empty(~meta)]) }
+    return { backticks: 1, code_layout: List::of([Tight::empty(meta~)]) }
   }
   // This finds out the needed backtick count, whether spaces are needed,
   // and treats blanks after newline as layout 
@@ -260,7 +260,7 @@ pub fn InlineCodeSpan::from_string(
         let layout = if acc.is_empty() {
           List::of([{ blanks: "", node: { v: s, meta } }])
         } else {
-          BlockLine::flush_tight(~meta, s, start, max, acc)
+          BlockLine::flush_tight(meta~, s, start, max, acc)
         }
         break (bt_counts, layout)
       }
@@ -271,7 +271,7 @@ pub fn InlineCodeSpan::from_string(
       if not(s[k] == '\n' || s[k] == '\r') {
         continue bt_counts, acc, max, 0, start, k + 1
       }
-      let acc = BlockLine::flush_tight(~meta, s, start, k - 1, acc)
+      let acc = BlockLine::flush_tight(meta~, s, start, k - 1, acc)
       let start = if k + 1 <= max && s[k] == '\r' && s[k + 1] == '\n' {
         k + 2
       } else {
@@ -306,7 +306,7 @@ pub struct InlineEmphasis {
 } derive(Eq, Show, FromJson, ToJson)
 
 pub fn InlineEmphasis::new(
-  ~delim : Char = '*',
+  delim~ : Char = '*',
   inline : Inline
 ) -> InlineEmphasis {
   { delim, inline }

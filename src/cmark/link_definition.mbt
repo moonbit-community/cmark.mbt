@@ -11,11 +11,11 @@ pub struct LinkDefinition {
 } derive(Eq, Show, FromJson, ToJson)
 
 pub fn LinkDefinition::new(
-  ~layout : LinkDefinitionLayout = LinkDefinitionLayout::default(),
-  ~label : Label? = None,
-  ~defined_label : Label? = None,
-  ~dest : StringNode? = None,
-  ~title : List[Tight]? = None
+  layout~ : LinkDefinitionLayout = LinkDefinitionLayout::default(),
+  label~ : Label? = None,
+  defined_label~ : Label? = None,
+  dest~ : StringNode? = None,
+  title~ : List[Tight]? = None
 ) -> LinkDefinition {
   { layout, label, defined_label, dest, title }
 }

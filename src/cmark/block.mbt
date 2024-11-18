@@ -69,12 +69,12 @@ pub fn Block::normalize(self : Block) -> Block {
 /// and `ExtFootnoteDefinition`) and adds them to `init` (defaults to an empty map).
 pub fn Block::defs(
   self : Block,
-  ~init : LabelDefs = LabelDefs::empty()
+  init~ : LabelDefs = LabelDefs::empty()
 ) -> LabelDefs {
   match self {
-    BlockQuote(bl) => bl.v.block.defs(~init)
-    Blocks(bl) => bl.v.fold(~init, fn(init, b) { b.defs(~init) })
-    List(bl) => bl.v.items.fold(~init, fn(init, it) { it.v.block.defs(~init) })
+    BlockQuote(bl) => bl.v.block.defs(init~)
+    Blocks(bl) => bl.v.fold(init~, fn(init, b) { b.defs(init~) })
+    List(bl) => bl.v.items.fold(init~, fn(init, it) { it.v.block.defs(init~) })
     LinkRefDefinition(bl) =>
       bl.v.defined_label.map_or(
         init,
@@ -101,7 +101,7 @@ pub struct BlockQuote {
   block : Block
 } derive(Show, FromJson, ToJson)
 
-pub fn BlockQuote::new(~indent : Int = 0, block : Block) -> BlockQuote {
+pub fn BlockQuote::new(indent~ : Int = 0, block : Block) -> BlockQuote {
   { indent, block }
 }
 
@@ -140,8 +140,8 @@ pub fn CodeBlockFencedLayout::default() -> CodeBlockFencedLayout {
 }
 
 pub fn CodeBlock::new(
-  ~layout : CodeBlockLayout = Fenced(CodeBlockFencedLayout::default()),
-  ~info_string : StringNode? = None,
+  layout~ : CodeBlockLayout = Fenced(CodeBlockFencedLayout::default()),
+  info_string~ : StringNode? = None,
   code : List[StringNode]
 ) -> CodeBlock {
   let layout = match (info_string, layout) {
@@ -238,9 +238,9 @@ pub enum BlockHeadingId {
 } derive(Show, FromJson, ToJson)
 
 pub fn BlockHeading::new(
-  ~id : BlockHeadingId? = None,
-  ~layout : BlockHeadingLayout = Atx(BlockHeadingAtxLayout::default()),
-  ~level : Int,
+  id~ : BlockHeadingId? = None,
+  layout~ : BlockHeadingLayout = Atx(BlockHeadingAtxLayout::default()),
+  level~ : Int,
   inline : Inline
 ) -> BlockHeading {
   { layout, level, inline, id }
@@ -260,10 +260,10 @@ pub struct ListItem {
 pub typealias ListItemBlock = ListItem
 
 pub fn ListItem::new(
-  ~before_marker : Indent = 0,
-  ~marker : StringNode = layout_empty,
-  ~after_marker : Indent = 1,
-  ~ext_task_marker : Node[Char]?,
+  before_marker~ : Indent = 0,
+  marker~ : StringNode = layout_empty,
+  after_marker~ : Indent = 1,
+  ext_task_marker~ : Node[Char]?,
   block : Block
 ) -> ListItem {
   { before_marker, marker, after_marker, block, ext_task_marker }
@@ -319,8 +319,8 @@ pub struct BlockParagraph {
 } derive(Show, FromJson, ToJson)
 
 pub fn BlockParagraph::new(
-  ~leading_indent : Indent = 0,
-  ~trailing_blanks : Blanks = "",
+  leading_indent~ : Indent = 0,
+  trailing_blanks~ : Blanks = "",
   inline : Inline
 ) -> BlockParagraph {
   { leading_indent, inline, trailing_blanks }
@@ -333,8 +333,8 @@ pub struct BlockThematicBreak {
 } derive(Show, FromJson, ToJson)
 
 pub fn BlockThematicBreak::new(
-  ~indent : Indent = 0,
-  ~layout : String = "---"
+  indent~ : Indent = 0,
+  layout~ : String = "---"
 ) -> BlockThematicBreak {
   { indent, layout }
 }
@@ -349,8 +349,8 @@ pub struct Footnote {
 } derive(Show, FromJson, ToJson)
 
 pub fn Footnote::new(
-  ~indent : Indent = 0,
-  ~defined_label? : Label?,
+  indent~ : Indent = 0,
+  defined_label? : Label?,
   label : Label,
   block : Block
 ) -> Footnote {
@@ -395,7 +395,7 @@ pub typealias TableSep = (TableAlign?, Count)
 pub typealias TableCellLayout = (Blanks, Blanks)
 
 pub fn Table::new(
-  ~indent : Indent = 0,
+  indent~ : Indent = 0,
   rows : List[(Node[TableRow], Blanks)]
 ) -> Table {
   {

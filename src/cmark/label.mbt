@@ -19,8 +19,8 @@ pub typealias LabelKey = String
 pub typealias LabelMap[V] = @immut/sorted_map.T[LabelKey, V]
 
 pub fn Label::new(
-  ~meta : Meta = Meta::none(),
-  ~key : String,
+  meta~ : Meta = Meta::none(),
+  key~ : String,
   text : List[Tight]
 ) -> Label {
   { meta, key, text }

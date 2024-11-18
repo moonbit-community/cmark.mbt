@@ -91,46 +91,46 @@ fn Token::start(self : Token) -> BytePos {
 
 fn CloserIndex::has_backticks(
   self : CloserIndex,
-  ~count : Int,
-  ~after : Int
+  count~ : Int,
+  after~ : Int
 ) -> Bool {
-  self.exists(Backticks(count), ~after)
+  self.exists(Backticks(count), after~)
 }
 
-fn CloserIndex::has_right_brack(self : CloserIndex, ~after : Int) -> Bool {
-  self.exists(RightBrack, ~after)
+fn CloserIndex::has_right_brack(self : CloserIndex, after~ : Int) -> Bool {
+  self.exists(RightBrack, after~)
 }
 
-fn CloserIndex::has_right_paren(self : CloserIndex, ~after : Int) -> Bool {
-  self.exists(RightParen, ~after)
+fn CloserIndex::has_right_paren(self : CloserIndex, after~ : Int) -> Bool {
+  self.exists(RightParen, after~)
 }
 
 fn CloserIndex::emphasis_pos(
   self : CloserIndex,
-  ~char : Char,
-  ~after : Int
+  char~ : Char,
+  after~ : Int
 ) -> Int? {
-  self.pos(EmphasisMarks(char), ~after)
+  self.pos(EmphasisMarks(char), after~)
 }
 
 fn CloserIndex::has_emphasis(
   self : CloserIndex,
-  ~char : Char,
-  ~after : Int
+  char~ : Char,
+  after~ : Int
 ) -> Bool {
-  self.exists(EmphasisMarks(char), ~after)
+  self.exists(EmphasisMarks(char), after~)
 }
 
-fn CloserIndex::has_strikethrough(self : CloserIndex, ~after : Int) -> Bool {
-  self.exists(StrikethroughMarks, ~after)
+fn CloserIndex::has_strikethrough(self : CloserIndex, after~ : Int) -> Bool {
+  self.exists(StrikethroughMarks, after~)
 }
 
 fn CloserIndex::has_math_span(
   self : CloserIndex,
-  ~count : Int,
-  ~after : Int
+  count~ : Int,
+  after~ : Int
 ) -> Bool {
-  self.exists(MathSpanMarks(count), ~after)
+  self.exists(MathSpanMarks(count), after~)
 }
 
 fn tokens_rev_and_make_closer_index(
@@ -165,7 +165,7 @@ fn tokens_rev_and_make_closer_index(
 
 /// Used to make the text delimitation precise for nested inlines.
 fn tokens_rev_and_shorten_last_line(
-  ~to_last : Int,
+  to_last~ : Int,
   acc : List[Token],
   toks : List[Token]
 ) -> List[Token] {
@@ -196,7 +196,7 @@ fn tokens_drop_stop_after_right_brack(toks : List[Token]) -> List[Token] {
   .tail()
 }
 
-fn tokens_drop_until(~start : Int, toks : List[Token]) -> List[Token] {
+fn tokens_drop_until(start~ : Int, toks : List[Token]) -> List[Token] {
   toks.drop_while(fn(t) { t.start() < start })
 }
 
@@ -218,7 +218,7 @@ fn Token::newline(
   // https://spec.commonmark.org/current/#softbreak
   // https://spec.commonmark.org/current/#hard-line-breaks
   let { first, last, .. } = prev_line
-  let non_space = @cmark_base.rev_drop_spaces(s, ~first, start=last)
+  let non_space = @cmark_base.rev_drop_spaces(s, first~, start=last)
   let (start, break_ty) = if non_space == last && s[non_space] == '\\' {
     (non_space, Hard)
   } else {
@@ -232,8 +232,8 @@ fn tokens_add_backtick(
   toks : List[Token],
   s : String,
   line : LineSpan,
-  ~prev_bslash : Bool,
-  ~start : Int
+  prev_bslash~ : Bool,
+  start~ : Int
 ) -> (List[Token], Int) {
   let last = @cmark_base.run_of(char='`', s, last=line.last, start=start + 1)
   let count = last - start + 1
@@ -244,7 +244,7 @@ fn tokens_try_add_image_link_start(
   toks : List[Token],
   s : String,
   line : LineSpan,
-  ~start : Int
+  start~ : Int
 ) -> (List[Token], Int) {
   let next = start + 1
   if next > line.last || s[next] != '[' {
@@ -257,14 +257,14 @@ fn tokens_try_add_emphasis(
   toks : List[Token],
   s : String,
   line : LineSpan,
-  ~start : Int
+  start~ : Int
 ) -> (List[Token], Int) {
   let { first, last, .. } = line
   let char = s[start]
-  let run_last = @cmark_base.run_of(~char, ~last, s, start=start + 1)
+  let run_last = @cmark_base.run_of(char~, last~, s, start=start + 1)
   let count = run_last - start + 1
-  let prev_char = @char.prev_char(s, ~first, before=start)
-  let next_char = @char.next_char(s, ~last, after=run_last)
+  let prev_char = @char.prev_char(s, first~, before=start)
+  let next_char = @char.next_char(s, last~, after=run_last)
   let is_prev_white = @char.is_ascii_whitespace(prev_char)
   let is_prev_punct = @char.is_ascii_punctuation(prev_char)
   let is_next_white = @char.is_ascii_whitespace(next_char)
@@ -299,18 +299,18 @@ fn tokens_try_add_strikethrough_marks(
   toks : List[Token],
   s : String,
   line : LineSpan,
-  ~start : Int
+  start~ : Int
 ) -> (List[Token], Int) {
   let { first, last, .. } = line
   let char = s[start]
-  let run_last = @cmark_base.run_of(~char, s, ~last, start=start + 1)
+  let run_last = @cmark_base.run_of(char~, s, last~, start=start + 1)
   let count = run_last - start + 1
   let next = run_last + 1
   if count != 2 {
     return (toks, next)
   }
-  let prev_char = @char.prev_char(s, ~first, before=start)
-  let next_char = @char.next_char(s, ~last, after=run_last)
+  let prev_char = @char.prev_char(s, first~, before=start)
+  let next_char = @char.next_char(s, last~, after=run_last)
   let may_open = @char.is_ascii_whitespace(next_char).not()
   let may_close = @char.is_ascii_whitespace(prev_char).not()
   (toks.add(StrikethroughMarks({ start, may_open, may_close })), next)
@@ -320,11 +320,11 @@ fn tokens_try_add_math_span_marks(
   toks : List[Token],
   s : String,
   line : LineSpan,
-  ~start : Int
+  start~ : Int
 ) -> (List[Token], Int) {
   let { first, last, .. } = line
   let char = s[start]
-  let run_last = @cmark_base.run_of(~char, s, ~last, start=start + 1)
+  let run_last = @cmark_base.run_of(char~, s, last~, start=start + 1)
   let count = run_last - start + 1
   let next = run_last + 1
   if count != 2 {
@@ -333,8 +333,8 @@ fn tokens_try_add_math_span_marks(
   let mut may_open = true
   let mut may_close = true
   if count == 1 {
-    let prev_char = @char.prev_char(s, ~first, before=start)
-    let next_char = @char.next_char(s, ~last, after=run_last)
+    let prev_char = @char.prev_char(s, first~, before=start)
+    let next_char = @char.next_char(s, last~, after=run_last)
     may_open = @char.is_ascii_whitespace(next_char).not()
     may_close = @char.is_ascii_whitespace(prev_char).not()
   }
@@ -345,7 +345,7 @@ fn tokens_try_add_math_span_marks(
 }
 
 fn tokenize(
-  ~exts : Bool,
+  exts~ : Bool,
   s : String,
   lines : List[LineSpan]
 ) -> (CloserIndex, List[Token], LineSpan) {
@@ -365,7 +365,7 @@ fn tokenize(
       }
       let (acc, next) = match (s[k], prev_bslash, exts) {
         ('\\', _, _) => continue lines, line, prev_bslash.not(), acc, k + 1
-        ('`', _, _) => tokens_add_backtick(acc, s, line, ~prev_bslash, start=k)
+        ('`', _, _) => tokens_add_backtick(acc, s, line, prev_bslash~, start=k)
         (_, true, _) => (acc, k + 1)
         ('*' | '_', _, _) => tokens_try_add_emphasis(acc, s, line, start=k)
         (']', _, _) => (acc.add(RightBrack({ start: k })), k + 1)
@@ -389,9 +389,9 @@ fn tokenize(
 fn Parser::break_inline(
   self : Parser,
   line : LineSpan,
-  ~start : Int,
-  ~break_ty : InlineBreakType,
-  ~newline : LineSpan
+  start~ : Int,
+  break_ty~ : InlineBreakType,
+  newline~ : LineSpan
 ) -> Inline {
   let layout_before = { ..line, first: start }
   let layout_after = {
@@ -407,8 +407,8 @@ fn Parser::break_inline(
 fn Parser::try_add_text_inline(
   self : Parser,
   line : LineSpan,
-  ~first : Int,
-  ~last : Int,
+  first~ : Int,
+  last~ : Int,
   acc : List[Inline]
 ) -> List[Inline] {
   if first > last {
@@ -424,20 +424,20 @@ fn Parser::try_add_text_inline(
 
 fn Parser::inlines_inline(
   self : Parser,
-  ~first : BytePos,
-  ~last : BytePos,
-  ~first_line : LineSpan,
-  ~last_line : LineSpan,
+  first~ : BytePos,
+  last~ : BytePos,
+  first_line~ : LineSpan,
+  last_line~ : LineSpan,
   acc : List[Inline]
 ) -> Inline {
   match acc {
     Cons(i, Nil) => i
     is => {
       let text_loc = self.text_loc_of_lines(
-        ~first,
-        ~last,
-        ~first_line,
-        ~last_line,
+        first~,
+        last~,
+        first_line~,
+        last_line~,
       )
       Inlines({ v: is, meta: self.meta(text_loc) })
     }
@@ -446,15 +446,15 @@ fn Parser::inlines_inline(
 
 fn Parser::code_span_token(
   self : Parser,
-  ~count : Int,
-  ~first : BytePos,
-  ~last : BytePos,
-  ~first_line : LineSpan,
-  ~last_line : LineSpan,
+  count~ : Int,
+  first~ : BytePos,
+  last~ : BytePos,
+  first_line~ : LineSpan,
+  last_line~ : LineSpan,
   rev_spans : RevSpans
 ) -> Token {
-  let text_loc = self.text_loc_of_lines(~first, ~last, ~first_line, ~last_line)
-  let code_layout = self.raw_tight_block_lines(~rev_spans)
+  let text_loc = self.text_loc_of_lines(first~, last~, first_line~, last_line~)
+  let code_layout = self.raw_tight_block_lines(rev_spans~)
   let meta = self.meta(text_loc)
   let cs = CodeSpan({ v: { backticks: count, code_layout }, meta })
   Inline({ start: first, inline: cs, endline: last_line, next: last + 1 })
@@ -463,9 +463,9 @@ fn Parser::code_span_token(
 fn Parser::autolink_token(
   self : Parser,
   line : LineSpan,
-  ~first : Int,
-  ~last : Int,
-  ~is_email : Bool
+  first~ : Int,
+  last~ : Int,
+  is_email~ : Bool
 ) -> Token {
   let meta = self.meta(self.text_loc_of_span({ ..line, first, last }))
   let link = { ..line, first: first + 1, last: last - 1 }
@@ -476,14 +476,14 @@ fn Parser::autolink_token(
 
 fn Parser::raw_html_token(
   self : Parser,
-  ~first : Int,
-  ~last : Int,
-  ~first_line : LineSpan,
-  ~last_line : LineSpan,
+  first~ : Int,
+  last~ : Int,
+  first_line~ : LineSpan,
+  last_line~ : LineSpan,
   rev_spans : RevSpans
 ) -> Token {
   let _ = first_line
-  let raw = self.raw_tight_block_lines(~rev_spans)
+  let raw = self.raw_tight_block_lines(rev_spans~)
   let text_loc = {
     let first = raw.head().unwrap().node.meta.loc
     let { last: last_byte, pos: last_line, .. } = rev_spans.head().unwrap().span
@@ -495,14 +495,14 @@ fn Parser::raw_html_token(
 
 fn Parser::link_token(
   self : Parser,
-  ~first : Int,
-  ~last : Int,
-  ~first_line : LineSpan,
-  ~last_line : LineSpan,
-  ~image : Bool,
+  first~ : Int,
+  last~ : Int,
+  first_line~ : LineSpan,
+  last_line~ : LineSpan,
+  image~ : Bool,
   link : InlineLink
 ) -> Token {
-  let text_loc = self.text_loc_of_lines(~first, ~last, ~first_line, ~last_line)
+  let text_loc = self.text_loc_of_lines(first~, last~, first_line~, last_line~)
   let link = { v: link, meta: self.meta(text_loc) }
   let inline : Inline = if image { Image(link) } else { Link(link) }
   Inline({ start: first, inline, endline: last_line, next: last + 1 })
@@ -510,14 +510,14 @@ fn Parser::link_token(
 
 fn Parser::emphasis_token(
   self : Parser,
-  ~first : Int,
-  ~last : Int,
-  ~first_line : LineSpan,
-  ~last_line : LineSpan,
-  ~strong : Bool,
+  first~ : Int,
+  last~ : Int,
+  first_line~ : LineSpan,
+  last_line~ : LineSpan,
+  strong~ : Bool,
   emph : Inline
 ) -> Token {
-  let text_loc = self.text_loc_of_lines(~first, ~last, ~first_line, ~last_line)
+  let text_loc = self.text_loc_of_lines(first~, last~, first_line~, last_line~)
   let delim = self.i[first]
   let emph = { v: { delim, inline: emph }, meta: self.meta(text_loc) }
   let inline = if strong { StrongEmphasis(emph) } else { Emphasis(emph) }
@@ -526,13 +526,13 @@ fn Parser::emphasis_token(
 
 fn Parser::ext_strikethough_token(
   self : Parser,
-  ~first : Int,
-  ~last : Int,
-  ~first_line : LineSpan,
-  ~last_line : LineSpan,
+  first~ : Int,
+  last~ : Int,
+  first_line~ : LineSpan,
+  last_line~ : LineSpan,
   s : Inline
 ) -> Token {
-  let text_loc = self.text_loc_of_lines(~first, ~last, ~first_line, ~last_line)
+  let text_loc = self.text_loc_of_lines(first~, last~, first_line~, last_line~)
   let inline = ExtStrikethrough({ v: s, meta: self.meta(text_loc) })
   Inline({ start: first, inline, endline: last_line, next: last + 1 })
 }
@@ -546,12 +546,12 @@ fn Parser::try_code(
   self : Parser,
   toks : List[Token],
   start_line : LineSpan,
-  ~start : BytePos,
-  ~count : Int,
-  ~escaped : Bool
+  start~ : BytePos,
+  count~ : Int,
+  escaped~ : Bool
 ) -> (List[Token], LineSpan, Token)? {
   let cstart = start
-  if escaped || has_backticks(~count, after=cstart, self.cidx).not() {
+  if escaped || has_backticks(count~, after=cstart, self.cidx).not() {
     return None
   }
   let first = cstart + count
@@ -571,11 +571,11 @@ fn Parser::try_code(
       let first_line = start_line
       let last_line = line
       let t = self.code_span_token(
-        ~count,
-        ~first,
-        ~last,
-        ~first_line,
-        ~last_line,
+        count~,
+        first~,
+        last~,
+        first_line~,
+        last_line~,
         spans,
       )
       Some((toks, line, t))
@@ -594,8 +594,8 @@ fn Parser::try_math_span(
   self : Parser,
   toks : List[Token],
   start_line : LineSpan,
-  ~start : BytePos,
-  ~count : Int
+  start~ : BytePos,
+  count~ : Int
 ) -> (List[Token], LineSpan, Token)? {
   let _ = (self, toks, start_line, start, count)
   abort("unimplemented")
@@ -605,19 +605,19 @@ fn Parser::try_autolink_or_html(
   self : Parser,
   toks : List[Token],
   line : LineSpan,
-  ~start : BytePos
+  start~ : BytePos
 ) -> (List[Token], LineSpan, Token)? {
   // Weirdly, there's seemingly no `if let` in Moonbit.
-  guard let None = @cmark_base.autolink_uri(self.i, last=line.last, ~start) else {
+  guard let None = @cmark_base.autolink_uri(self.i, last=line.last, start~) else {
     Some(last) => {
-      let t = self.autolink_token(line, first=start, ~last, is_email=false)
+      let t = self.autolink_token(line, first=start, last~, is_email=false)
       let toks = tokens_drop_until(start=last + 1, toks)
       return Some((toks, line, t))
     }
   }
-  guard let None = @cmark_base.autolink_email(self.i, last=line.last, ~start) else {
+  guard let None = @cmark_base.autolink_email(self.i, last=line.last, start~) else {
     Some(last) => {
-      let t = self.autolink_token(line, first=start, ~last, is_email=true)
+      let t = self.autolink_token(line, first=start, last~, is_email=true)
       let toks = tokens_drop_until(start=last + 1, toks)
       return Some((toks, line, t))
     }
@@ -626,21 +626,21 @@ fn Parser::try_autolink_or_html(
     next_line=tokens_next_line,
     self.i,
     toks,
-    ~line,
-    ~start,
+    line~,
+    start~,
   ) else {
     _ => return None
   }
   let first = start
   let first_line = line
-  let t = self.raw_html_token(~first, ~last, ~first_line, ~last_line, spans)
+  let t = self.raw_html_token(first~, last~, first_line~, last_line~, spans)
   let toks = tokens_drop_until(start=last + 1, toks)
   Some((toks, last_line, t))
 }
 
 fn Parser::label_of_rev_spans(
   self : Parser,
-  ~key : String,
+  key~ : String,
   rev_spans : RevSpans
 ) -> Label {
   let meta = if self.no_locs || rev_spans.is_empty() {
@@ -651,7 +651,7 @@ fn Parser::label_of_rev_spans(
       last=rev_spans.unsafe_head().span,
     )
   }
-  let text = self.tight_block_lines(~rev_spans)
+  let text = self.tight_block_lines(rev_spans~)
   { meta, key, text }
 }
 
@@ -660,23 +660,23 @@ fn Parser::try_full_reflink_remainder(
   self : Parser,
   toks : List[Token],
   line : LineSpan,
-  ~image : Bool,
-  ~start : BytePos
+  image~ : Bool,
+  start~ : BytePos
 ) -> (List[Token], LineSpan, ReferenceKind, BytePos)?? {
   @cmark_base.link_label(
     self.buf,
     next_line=tokens_next_line,
     self.i,
     toks,
-    ~line,
-    ~start,
+    line~,
+    start~,
   ).map(
     fn {
       (toks, line, rev_spans, last, key) => {
-        let ref = self.label_of_rev_spans(~key, rev_spans)
+        let ref = self.label_of_rev_spans(key~, rev_spans)
         let toks = tokens_drop_stop_after_right_brack(toks)
         self
-        .find_def_for_ref(~image, ref)
+        .find_def_for_ref(image~, ref)
         .map(fn(def) { (toks, line, ReferenceKind::Ref(Full, ref, def), last) })
       }
     },
@@ -688,8 +688,8 @@ fn Parser::try_shortcut_reflink(
   self : Parser,
   toks : List[Token],
   line : LineSpan,
-  ~image : Bool,
-  ~start : BytePos
+  image~ : Bool,
+  start~ : BytePos
 ) -> (List[Token], LineSpan, ReferenceKind, BytePos)? {
   let start = start + image.to_int() // [
   guard let Some((toks, line, rev_spans, last, key)) = @cmark_base.link_label(
@@ -697,15 +697,15 @@ fn Parser::try_shortcut_reflink(
     next_line=tokens_next_line,
     self.i,
     toks,
-    ~line,
-    ~start,
+    line~,
+    start~,
   ) else {
     _ => return None
   }
-  let ref = self.label_of_rev_spans(~key, rev_spans)
+  let ref = self.label_of_rev_spans(key~, rev_spans)
   let toks = tokens_drop_stop_after_right_brack(toks)
   self
-  .find_def_for_ref(~image, ref)
+  .find_def_for_ref(image~, ref)
   .map(fn(def) { (toks, line, ReferenceKind::Ref(Shortcut, ref, def), last) })
 }
 
@@ -714,8 +714,8 @@ fn Parser::try_collapsed_reflink(
   self : Parser,
   toks : List[Token],
   line : LineSpan,
-  ~image : Bool,
-  ~start : BytePos
+  image~ : Bool,
+  start~ : BytePos
 ) -> (List[Token], LineSpan, ReferenceKind, BytePos)? {
   let start = start + image.to_int() // [
   guard let Some((toks, line, rev_spans, last, key)) = @cmark_base.link_label(
@@ -723,17 +723,17 @@ fn Parser::try_collapsed_reflink(
     next_line=tokens_next_line,
     self.i,
     toks,
-    ~line,
-    ~start,
+    line~,
+    start~,
   ) else {
     _ => return None
   }
-  let ref = self.label_of_rev_spans(~key, rev_spans)
+  let ref = self.label_of_rev_spans(key~, rev_spans)
   let last = last + 2 // ][]
   let toks = tokens_drop_stop_after_right_brack(toks)
   let toks = tokens_drop_stop_after_right_brack(toks)
   self
-  .find_def_for_ref(~image, ref)
+  .find_def_for_ref(image~, ref)
   .map(fn(def) { (toks, line, ReferenceKind::Ref(Collapsed, ref, def), last) })
 }
 
@@ -742,8 +742,8 @@ fn Parser::try_inline_link_remainder(
   self : Parser,
   toks : List[Token],
   start_line : LineSpan,
-  ~image : Bool,
-  ~start : BytePos
+  image~ : Bool,
+  start~ : BytePos
 ) -> (List[Token], LineSpan, ReferenceKind, BytePos)? {
   let _ = image
   let st = start
@@ -757,7 +757,7 @@ fn Parser::try_inline_link_remainder(
     _ => return None
   }
   let (toks, line, angled_dest, dest, start) = match
-    @cmark_base.link_destination(self.i, last=line.last, ~start) {
+    @cmark_base.link_destination(self.i, last=line.last, start~) {
     None => (toks, line, false, None, start)
     Some((angled, first, last)) => {
       let dest = self.clean_unesc_unref_span({ ..line, first, last })
@@ -766,7 +766,7 @@ fn Parser::try_inline_link_remainder(
     }
   }
   let (toks, line, after_dest, title_open_delim, title, start) = match
-    self.first_non_blank_over_nl(next_line=tokens_next_line, toks, line, ~start) {
+    self.first_non_blank_over_nl(next_line=tokens_next_line, toks, line, start~) {
     None => (toks, line, List::Nil, '"', None, start)
     Some((toks, line, after_dest, start1)) =>
       if start1 == start {
@@ -778,19 +778,19 @@ fn Parser::try_inline_link_remainder(
             next_line=tokens_next_line,
             self.i,
             toks,
-            ~line,
-            ~start,
+            line~,
+            start~,
           ) {
           None => (toks, line, after_dest, '"', None, start)
           Some((toks, line, rev_spans, last)) => {
-            let title = self.tight_block_lines(~rev_spans)
+            let title = self.tight_block_lines(rev_spans~)
             (toks, line, after_dest, self.i[start], Some(title), last + 1)
           }
         }
       }
   }
   let (toks, line, after_title, last) = self
-    .first_non_blank_over_nl(next_line=tokens_next_line, toks, line, ~start)
+    .first_non_blank_over_nl(next_line=tokens_next_line, toks, line, start~)
     .or((toks, line, List::Nil, start))
   if last > line.last || self.i[last] != ')' {
     return None
@@ -822,7 +822,7 @@ fn Parser::find_link_text_tokens(
   self : Parser,
   toks : List[Token],
   start_line : LineSpan,
-  ~start : BytePos
+  start~ : BytePos
 ) -> (List[Token], LineSpan, List[Token], BytePos)? {
   let _ = start
   loop toks, start_line, 0, List::Nil {
@@ -831,7 +831,7 @@ fn Parser::find_link_text_tokens(
       Some((toks, line, acc, last))
     }
     Cons(Backticks({ start, count, escaped }), toks), line, nest, acc =>
-      match self.try_code(toks, line, ~start, ~count, ~escaped) {
+      match self.try_code(toks, line, start~, count~, escaped~) {
         None => continue toks, line, nest, acc
         Some((toks, line, t)) => continue toks, line, nest, acc.add(t)
       }
@@ -842,13 +842,13 @@ fn Parser::find_link_text_tokens(
       if may_open.not() {
         continue toks, line, nest, acc
       }
-      match self.try_math_span(toks, line, ~start, ~count) {
+      match self.try_math_span(toks, line, start~, count~) {
         None => continue toks, line, nest, acc
         Some((toks, line, t)) => continue toks, line, nest, acc.add(t)
       }
     }
     Cons(AutolinkOrHtmlStart({ start }), toks), line, nest, acc =>
-      match self.try_autolink_or_html(toks, line, ~start) {
+      match self.try_autolink_or_html(toks, line, start~) {
         None => continue toks, line, nest, acc
         Some((toks, line, t)) => continue toks, line, nest, acc.add(t)
       }
@@ -867,46 +867,46 @@ fn Parser::find_link_text_tokens(
 
 fn Parser::try_link_def(
   self : Parser,
-  ~start : BytePos,
-  ~start_toks : List[Token],
-  ~start_line : LineSpan,
-  ~toks : List[Token],
-  ~line : LineSpan,
-  ~text_last : BytePos,
-  ~image : Bool,
+  start~ : BytePos,
+  start_toks~ : List[Token],
+  start_line~ : LineSpan,
+  toks~ : List[Token],
+  line~ : LineSpan,
+  text_last~ : BytePos,
+  image~ : Bool,
   text : List[Inline]
 ) -> (List[Token], LineSpan, Token, Bool)? {
   let next = text_last + 1
   let link = if next > line.last {
-    self.try_shortcut_reflink(start_toks, start_line, ~image, ~start)
+    self.try_shortcut_reflink(start_toks, start_line, image~, start~)
   } else {
     match self.i[next] {
       '(' =>
-        match self.try_inline_link_remainder(toks, line, ~image, start=next) {
+        match self.try_inline_link_remainder(toks, line, image~, start=next) {
           None =>
-            self.try_shortcut_reflink(start_toks, start_line, ~image, ~start)
+            self.try_shortcut_reflink(start_toks, start_line, image~, start~)
           Some(_) as v => v
         }
       '[' => {
         let next1 = next + 1
         if next1 <= line.last && self.i[next1] == ']' {
-          self.try_collapsed_reflink(start_toks, start_line, ~image, ~start)
+          self.try_collapsed_reflink(start_toks, start_line, image~, start~)
         } else {
           let r = self.try_full_reflink_remainder(
             toks,
             line,
-            ~image,
+            image~,
             start=next,
           )
           match r {
             None =>
-              self.try_shortcut_reflink(start_toks, start_line, ~image, ~start)
+              self.try_shortcut_reflink(start_toks, start_line, image~, start~)
             Some(None) => None
             Some(Some(_) as v) => v
           }
         }
       }
-      _ => self.try_shortcut_reflink(start_toks, start_line, ~image, ~start)
+      _ => self.try_shortcut_reflink(start_toks, start_line, image~, start~)
     }
   }
   guard let Some((toks, endline, reference, last)) = link else {
@@ -914,7 +914,7 @@ fn Parser::try_link_def(
   }
   let first = start
   let text = self.inlines_inline(
-    ~first,
+    first~,
     last=text_last,
     first_line=start_line,
     last_line=line,
@@ -922,11 +922,11 @@ fn Parser::try_link_def(
   )
   let link : InlineLink = { text, reference }
   let t = self.link_token(
-    ~first,
-    ~last,
+    first~,
+    last~,
     first_line=start_line,
     last_line=endline,
-    ~image,
+    image~,
     link,
   )
   let had_link = image.not() && self.nested_links.not()
@@ -942,14 +942,14 @@ fn Parser::try_link(
   self : Parser,
   start_toks : List[Token],
   start_line : LineSpan,
-  ~image : Bool,
-  ~start : BytePos
+  image~ : Bool,
+  start~ : BytePos
 ) -> (List[Token], LineSpan, Token, Bool)? {
   guard self.cidx.has_right_brack(after=start) else { return None }
   guard let Some((toks, line, text_toks, text_last)) = self.find_link_text_tokens( // text_last with ] delim
     start_toks,
     start_line,
-    ~start,
+    start~,
   ) else {
     _ => return None
   }
@@ -969,13 +969,13 @@ fn Parser::try_link(
     return None
   }
   self.try_link_def(
-    ~start,
-    ~start_toks,
-    ~start_line,
-    ~toks,
-    ~line,
-    ~text_last,
-    ~image,
+    start~,
+    start_toks~,
+    start_line~,
+    toks~,
+    line~,
+    text_last~,
+    image~,
     text,
   )
 }
@@ -990,7 +990,7 @@ fn Parser::first_pass(
   loop toks, line, false, List::Nil {
     Nil, _, had_link, acc => (acc.rev(), had_link)
     Cons(Backticks({ start, count, escaped }), toks), line, had_link, acc =>
-      match self.try_code(toks, line, ~start, ~count, ~escaped) {
+      match self.try_code(toks, line, start~, count~, escaped~) {
         None => continue toks, line, had_link, acc
         Some((toks, line, t)) => continue toks, line, had_link, acc.add(t)
       }
@@ -1001,18 +1001,18 @@ fn Parser::first_pass(
       if may_open.not() {
         continue toks, line, had_link, acc
       }
-      match self.try_math_span(toks, line, ~start, ~count) {
+      match self.try_math_span(toks, line, start~, count~) {
         None => continue toks, line, had_link, acc
         Some((toks, line, t)) => continue toks, line, had_link, acc.add(t)
       }
     }
     Cons(AutolinkOrHtmlStart({ start, .. }), toks), line, had_link, acc =>
-      match self.try_autolink_or_html(toks, line, ~start) {
+      match self.try_autolink_or_html(toks, line, start~) {
         None => continue toks, line, had_link, acc
         Some((toks, line, t)) => continue toks, line, had_link, acc.add(t)
       }
     Cons(LinkStart({ start, image }), toks), line, had_link, acc =>
-      match self.try_link(toks, line, ~image, ~start) {
+      match self.try_link(toks, line, image~, start~) {
         None => continue toks, line, had_link, acc
         Some((toks, line, t, had_link)) =>
           continue toks, line, had_link, acc.add(t)
@@ -1032,7 +1032,7 @@ fn Parser::find_emphasis_text(
   self : Parser,
   toks : List[Token],
   line : LineSpan,
-  ~opener : TokenEmphasisMarks
+  opener~ : TokenEmphasisMarks
 ) ->
      Result[
        (List[Token], LineSpan, Int, List[Token], TokenEmphasisMarks),
@@ -1056,8 +1056,8 @@ fn Parser::find_emphasis_text(
     }
     // Rule 15
     let after = marks.start
-    self.cidx.emphasis_pos(char=marks.char, ~after) <
-    self.cidx.emphasis_pos(char=opener.char, ~after)
+    self.cidx.emphasis_pos(char=marks.char, after~) <
+    self.cidx.emphasis_pos(char=opener.char, after~)
   }
 
   loop toks, line, List::Nil, opener {
@@ -1067,14 +1067,14 @@ fn Parser::find_emphasis_text(
       if marks.may_close && marks_match(marks, opener) {
         let used = if marks.count >= 2 && opener.count >= 2 { 2 } else { 1 }
         let to_last = marks.start - 1
-        let acc = tokens_rev_and_shorten_last_line(~to_last, Nil, acc)
+        let acc = tokens_rev_and_shorten_last_line(to_last~, Nil, acc)
         Ok((toks, line, used, acc, marks))
       } else if marks.may_open && marks_has_precedence(marks, opener) {
         match self.try_emphasis(toks, line, opener=marks) {
           Err(toks) => continue toks, line, acc, opener
           Ok((toks, line)) => continue toks, line, acc, opener
         }
-      } else if self.cidx.has_emphasis(char=opener.char, ~after) {
+      } else if self.cidx.has_emphasis(char=opener.char, after~) {
         continue toks, line, acc.add(t), opener
       } else {
         Err(acc.add(t).rev_concat(toks))
@@ -1093,7 +1093,7 @@ fn Parser::try_emphasis(
   self : Parser,
   start_toks : List[Token],
   start_line : LineSpan,
-  ~opener : TokenEmphasisMarks
+  opener~ : TokenEmphasisMarks
 ) -> Result[(List[Token], LineSpan), List[Token]] {
   let start = opener.start
   guard self.cidx.has_emphasis(char=opener.char, after=start) else {
@@ -1102,7 +1102,7 @@ fn Parser::try_emphasis(
   guard let Ok((toks, line, used, emph_toks, closer)) = self.find_emphasis_text(
     start_toks,
     start_line,
-    ~opener,
+    opener~,
   ) else {
     Err(toks) => Err(toks)
   }
@@ -1117,7 +1117,7 @@ fn Parser::try_emphasis(
     let text_start = { ..start_line, first: text_first, last }
     let emph_toks = self.second_pass(emph_toks, text_start)
     let text = self.last_pass(emph_toks, text_start)
-    self.inlines_inline(~first, last=text_last, ~first_line, ~last_line, text)
+    self.inlines_inline(first~, last=text_last, first_line~, last_line~, text)
   }
   let toks = {
     let count = closer.count - used
@@ -1130,11 +1130,11 @@ fn Parser::try_emphasis(
   let toks = {
     let strong = used == 2
     let emph = self.emphasis_token(
-      ~first,
-      ~last,
-      ~first_line,
-      ~last_line,
-      ~strong,
+      first~,
+      last~,
+      first_line~,
+      last_line~,
+      strong~,
       emph,
     )
     toks.add(emph)
@@ -1164,7 +1164,7 @@ fn Parser::find_strikethrough_text(
     Cons(StrikethroughMarks(marks), toks), line, acc =>
       if marks.may_close {
         let to_last = marks.start - 1
-        let acc = tokens_rev_and_shorten_last_line(~to_last, Nil, acc)
+        let acc = tokens_rev_and_shorten_last_line(to_last~, Nil, acc)
         Ok((toks, line, acc, marks))
       } else if marks.may_open {
         match self.try_strikethrough(toks, line, opener=marks) {
@@ -1185,7 +1185,7 @@ fn Parser::try_strikethrough(
   self : Parser,
   start_toks : List[Token],
   start_line : LineSpan,
-  ~opener : TokenStrikethroughMarks
+  opener~ : TokenStrikethroughMarks
 ) -> Result[(List[Token], LineSpan), List[Token]] {
   let start = opener.start
   guard self.cidx.has_strikethrough(after=start) else { Err(start_toks) }
@@ -1205,13 +1205,13 @@ fn Parser::try_strikethrough(
     }
     let emph_toks = self.second_pass(striken_toks, text_start)
     let text = self.last_pass(emph_toks, text_start)
-    self.inlines_inline(~first, ~last, ~first_line, ~last_line, text)
+    self.inlines_inline(first~, last~, first_line~, last_line~, text)
   }
   let toks = toks.add(
     {
       let first = opener.start
       let last = closer.start + 1
-      self.ext_strikethough_token(~first, ~last, ~first_line, ~last_line, text)
+      self.ext_strikethough_token(first~, last~, first_line~, last_line~, text)
     },
   )
   Ok((toks, line))
@@ -1226,7 +1226,7 @@ fn Parser::second_pass(
     Nil, _, acc => acc.rev()
     Cons(EmphasisMarks(opener), toks), line, acc =>
       if opener.may_open {
-        match self.try_emphasis(toks, line, ~opener) {
+        match self.try_emphasis(toks, line, opener~) {
           Err(toks) => continue toks, line, acc
           Ok((toks, line)) => continue toks, line, acc
         }
@@ -1235,7 +1235,7 @@ fn Parser::second_pass(
       }
     Cons(StrikethroughMarks(opener), toks), line, acc =>
       if opener.may_open {
-        match self.try_strikethrough(toks, line, ~opener) {
+        match self.try_strikethrough(toks, line, opener~) {
           Err(toks) => continue toks, line, acc
           Ok((toks, line)) => continue toks, line, acc
         }
@@ -1264,7 +1264,7 @@ fn Parser::last_pass(
       self.try_add_text_inline(line, first=k, last=line.last, acc).rev()
     Cons(Newline({ start, break_ty, newline }), toks), line, acc, k => {
       let acc = self.try_add_text_inline(line, first=k, last=start - 1, acc)
-      let break_ = self.break_inline(line, ~start, ~break_ty, ~newline)
+      let break_ = self.break_inline(line, start~, break_ty~, newline~)
       continue toks, newline, acc.add(break_), newline.first
     }
     Cons(Inline({ start, inline, endline, next }), toks), line, acc, k => {
@@ -1297,7 +1297,7 @@ fn Parser::strip_paragraph(
   let (last, trailing_blanks) = {
     let line = lines.unsafe_head()
     let { first, last: start, .. } = line
-    let non_blank = @cmark_base.last_non_blank(self.i, ~first, ~start)
+    let non_blank = @cmark_base.last_non_blank(self.i, first~, start~)
     let last = { ..line, last: non_blank }
     let trailing_blanks = self.layout_clean_raw_span1(
       { ..line, first: non_blank + 1 },
@@ -1313,7 +1313,7 @@ fn Parser::strip_paragraph(
     (first, leading_indent)
   }
   let lines = lines.tail().add(first)
-  ((leading_indent, trailing_blanks), self.meta_of_spans(~first, ~last), lines)
+  ((leading_indent, trailing_blanks), self.meta_of_spans(first~, last~), lines)
 }
 
 fn Parser::parse_inline(
@@ -1337,7 +1337,7 @@ fn Parser::parse_inline(
 fn Parser::get_blanks(
   self : Parser,
   line : LineSpan,
-  ~before : BytePos,
+  before~ : BytePos,
   k : BytePos
 ) -> (String, BytePos) {
   let nb = @cmark_base.first_non_blank(self.i, last=before - 1, start=k)
@@ -1353,7 +1353,7 @@ fn Parser::make_col(self : Parser, is : List[Inline]) -> Inline {
       let last = is.unsafe_head().meta()
       let is = is.rev()
       let first = is.unsafe_head().meta()
-      let meta = self.meta_of_metas(~first, ~last)
+      let meta = self.meta_of_metas(first~, last~)
       Inlines({ v: is, meta })
     }
   }
@@ -1362,7 +1362,7 @@ fn Parser::make_col(self : Parser, is : List[Inline]) -> Inline {
 fn Parser::find_pipe(
   self : Parser,
   line : LineSpan,
-  ~before : BytePos,
+  before~ : BytePos,
   k : BytePos
 ) -> Result[(Inline?, String, Col), Inline] {
   fn text(first, last) {
@@ -1390,14 +1390,14 @@ fn Parser::find_pipe(
 fn Parser::start_col(
   self : Parser,
   line : LineSpan,
-  ~before : BytePos,
+  before~ : BytePos,
   k : BytePos
 ) -> StartColResult {
-  let (bbefore, k) = self.get_blanks(line, ~before, k)
+  let (bbefore, k) = self.get_blanks(line, before~, k)
   if k >= before {
     return Start(bbefore, Nil)
   }
-  match self.find_pipe(line, ~before, k) {
+  match self.find_pipe(line, before~, k) {
     Err(text) => Start(bbefore, List::of([text]))
     Ok((text, bafter, k)) => {
       let text = text.or_else(

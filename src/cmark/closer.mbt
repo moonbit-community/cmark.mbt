@@ -29,10 +29,10 @@ fn CloserIndex::add(self : CloserIndex, key : Closer, pos : Int) -> CloserIndex 
   self._.insert(key, value)
 }
 
-fn CloserIndex::pos(self : CloserIndex, key : Closer, ~after : Int) -> Int? {
+fn CloserIndex::pos(self : CloserIndex, key : Closer, after~ : Int) -> Int? {
   self._[key].bind(fn(s) { s.iter().find_first(fn(pos) { pos > after }) })
 }
 
-fn CloserIndex::exists(self : CloserIndex, key : Closer, ~after : Int) -> Bool {
-  self.pos(key, ~after).is_empty().not()
+fn CloserIndex::exists(self : CloserIndex, key : Closer, after~ : Int) -> Bool {
+  self.pos(key, after~).is_empty().not()
 }

@@ -43,14 +43,14 @@ struct Parser {
 } derive(Show)
 
 fn Parser::new(
-  ~defs : LabelDefs = LabelDefs::empty(),
-  ~resolver : LabelResolverFn = LabelContext::default_resolver,
-  ~nested_links : Bool = false,
-  ~heading_auto_ids : Bool = false,
-  ~layout : Bool = false,
-  ~locs : Bool = false,
-  ~file : FilePath = file_path_none,
-  ~strict : Bool = true,
+  defs~ : LabelDefs = LabelDefs::empty(),
+  resolver~ : LabelResolverFn = LabelContext::default_resolver,
+  nested_links~ : Bool = false,
+  heading_auto_ids~ : Bool = false,
+  layout~ : Bool = false,
+  locs~ : Bool = false,
+  file~ : FilePath = file_path_none,
+  strict~ : Bool = true,
   i : String
 ) -> Parser {
   {
@@ -93,7 +93,7 @@ fn Parser::def_label(self : Parser, l : Label) -> Label? {
 
 fn Parser::find_def_for_ref(
   self : Parser,
-  ~image : Bool,
+  image~ : Bool,
   ref : Label
 ) -> Label? {
   let kind : LinkKind = if image { Image } else { Link }
@@ -111,8 +111,8 @@ fn Parser::debug_line(self : Parser) -> String {
 
 fn Parser::curr_line_span(
   self : Parser,
-  ~first : BytePos,
-  ~last : BytePos
+  first~ : BytePos,
+  last~ : BytePos
 ) -> LineSpan {
   { first, last, pos: self.curr_line_pos }
 }
@@ -125,7 +125,7 @@ fn Parser::meta(self : Parser, loc : TextLoc) -> Meta {
   if self.no_locs {
     return Meta::none()
   }
-  Meta::new(~loc)
+  Meta::new(loc~)
 }
 
 fn Parser::text_loc_of_span(self : Parser, span : LineSpan) -> TextLoc {
@@ -143,10 +143,10 @@ fn Parser::text_loc_of_span(self : Parser, span : LineSpan) -> TextLoc {
 
 fn Parser::text_loc_of_lines(
   self : Parser,
-  ~first : BytePos,
-  ~last : BytePos,
-  ~first_line : LineSpan,
-  ~last_line : LineSpan
+  first~ : BytePos,
+  last~ : BytePos,
+  first_line~ : LineSpan,
+  last_line~ : LineSpan
 ) -> TextLoc {
   if self.no_locs {
     return TextLoc::none()
@@ -162,8 +162,8 @@ fn Parser::text_loc_of_lines(
 
 fn Parser::meta_of_spans(
   self : Parser,
-  ~first : LineSpan,
-  ~last : LineSpan
+  first~ : LineSpan,
+  last~ : LineSpan
 ) -> Meta {
   if self.no_locs {
     return Meta::none()
@@ -178,7 +178,7 @@ fn Parser::meta_of_spans(
   )
 }
 
-fn Parser::meta_of_metas(self : Parser, ~first : Meta, ~last : Meta) -> Meta {
+fn Parser::meta_of_metas(self : Parser, first~ : Meta, last~ : Meta) -> Meta {
   if self.no_locs {
     return Meta::none()
   }
@@ -187,12 +187,12 @@ fn Parser::meta_of_metas(self : Parser, ~first : Meta, ~last : Meta) -> Meta {
 
 fn Parser::clean_raw_span(
   self : Parser,
-  ~pad : Int = 0,
+  pad~ : Int = 0,
   span : LineSpan
 ) -> StringNode {
   {
     v: @char.utf_16_clean_raw(
-      ~pad,
+      pad~,
       self.buf,
       self.i,
       first=span.first,
@@ -228,7 +228,7 @@ fn Parser::clean_unesc_unref_span(self : Parser, span : LineSpan) -> StringNode 
 
 fn Parser::layout_clean_raw_span(
   self : Parser,
-  ~pad : Int = 0,
+  pad~ : Int = 0,
   span : LineSpan
 ) -> StringNode {
   if self.no_layouts {
@@ -236,20 +236,20 @@ fn Parser::layout_clean_raw_span(
   }
   {
     meta: self.meta(self.text_loc_of_span(span)),
-    v: self.layout_clean_raw_span1(~pad, span),
+    v: self.layout_clean_raw_span1(pad~, span),
   }
 }
 
 fn Parser::layout_clean_raw_span1(
   self : Parser,
-  ~pad : Int = 0,
+  pad~ : Int = 0,
   span : LineSpan
 ) -> String {
   if self.no_layouts {
     return ""
   }
   @char.utf_16_clean_raw(
-    ~pad,
+    pad~,
     self.buf,
     self.i,
     first=span.first,
@@ -259,16 +259,16 @@ fn Parser::layout_clean_raw_span1(
 
 fn Parser::tight_block_lines(
   self : Parser,
-  ~rev_spans : RevSpans
+  rev_spans~ : RevSpans
 ) -> List[Tight] {
-  self._tight_block_lines(Parser::clean_unesc_unref_span, ~rev_spans)
+  self._tight_block_lines(Parser::clean_unesc_unref_span, rev_spans~)
 }
 
 fn Parser::raw_tight_block_lines(
   self : Parser,
-  ~rev_spans : RevSpans
+  rev_spans~ : RevSpans
 ) -> List[Tight] {
-  self._tight_block_lines(fn(p, s) { p.clean_raw_span(s) }, ~rev_spans)
+  self._tight_block_lines(fn(p, s) { p.clean_raw_span(s) }, rev_spans~)
 }
 
 typealias ParserCleanSpanFn = (Parser, LineSpan) -> StringNode
@@ -276,7 +276,7 @@ typealias ParserCleanSpanFn = (Parser, LineSpan) -> StringNode
 fn Parser::_tight_block_lines(
   self : Parser,
   f : ParserCleanSpanFn,
-  ~rev_spans : RevSpans
+  rev_spans~ : RevSpans
 ) -> List[Tight] {
   loop List::Nil, rev_spans {
     acc, Nil => acc
@@ -304,18 +304,18 @@ fn Parser::first_non_blank_in_span(self : Parser, span : LineSpan) -> BytePos {
 
 fn Parser::first_non_blank_over_nl[A](
   self : Parser,
-  ~next_line : NextLineFn[A],
+  next_line~ : NextLineFn[A],
   lines : A,
   line : LineSpan,
-  ~start : BytePos
+  start~ : BytePos
 ) -> (A, LineSpan, List[StringNode], Int)? {
   match
     @cmark_base.first_non_blank_over_nl(
-      ~next_line,
+      next_line~,
       self.i,
       lines,
-      ~line,
-      ~start,
+      line~,
+      start~,
     ) {
     None => None
     Some(ThisLine(nb)) => {
