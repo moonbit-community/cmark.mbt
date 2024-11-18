@@ -1,1 +1,1 @@
-pub type! Exit
+pub type! Exit  derive(Show)

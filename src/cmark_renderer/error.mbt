@@ -1,1 +1,1 @@
-pub type! RenderError String
+pub type! RenderError String derive(Show)
