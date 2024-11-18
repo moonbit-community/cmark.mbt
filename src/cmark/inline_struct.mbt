@@ -432,14 +432,14 @@ fn Parser::inlines_inline(
 ) -> Inline {
   match acc {
     Cons(i, Nil) => i
-    is => {
+    is_ => {
       let text_loc = self.text_loc_of_lines(
         first~,
         last~,
         first_line~,
         last_line~,
       )
-      Inlines({ v: is, meta: self.meta(text_loc) })
+      Inlines({ v: is_, meta: self.meta(text_loc) })
     }
   }
 }
@@ -673,11 +673,13 @@ fn Parser::try_full_reflink_remainder(
   ).map(
     fn {
       (toks, line, rev_spans, last, key) => {
-        let ref = self.label_of_rev_spans(key~, rev_spans)
+        let ref_ = self.label_of_rev_spans(key~, rev_spans)
         let toks = tokens_drop_stop_after_right_brack(toks)
         self
-        .find_def_for_ref(image~, ref)
-        .map(fn(def) { (toks, line, ReferenceKind::Ref(Full, ref, def), last) })
+        .find_def_for_ref(image~, ref_)
+        .map(
+          fn(def) { (toks, line, ReferenceKind::Ref(Full, ref_, def), last) },
+        )
       }
     },
   )
@@ -702,11 +704,11 @@ fn Parser::try_shortcut_reflink(
   ) else {
     _ => return None
   }
-  let ref = self.label_of_rev_spans(key~, rev_spans)
+  let ref_ = self.label_of_rev_spans(key~, rev_spans)
   let toks = tokens_drop_stop_after_right_brack(toks)
   self
-  .find_def_for_ref(image~, ref)
-  .map(fn(def) { (toks, line, ReferenceKind::Ref(Shortcut, ref, def), last) })
+  .find_def_for_ref(image~, ref_)
+  .map(fn(def) { (toks, line, ReferenceKind::Ref(Shortcut, ref_, def), last) })
 }
 
 /// https://spec.commonmark.org/current/#collapsed-reference-link
@@ -728,13 +730,13 @@ fn Parser::try_collapsed_reflink(
   ) else {
     _ => return None
   }
-  let ref = self.label_of_rev_spans(key~, rev_spans)
+  let ref_ = self.label_of_rev_spans(key~, rev_spans)
   let last = last + 2 // ][]
   let toks = tokens_drop_stop_after_right_brack(toks)
   let toks = tokens_drop_stop_after_right_brack(toks)
   self
-  .find_def_for_ref(image~, ref)
-  .map(fn(def) { (toks, line, ReferenceKind::Ref(Collapsed, ref, def), last) })
+  .find_def_for_ref(image~, ref_)
+  .map(fn(def) { (toks, line, ReferenceKind::Ref(Collapsed, ref_, def), last) })
 }
 
 /// https://spec.commonmark.org/current/#inline-link
@@ -1270,7 +1272,7 @@ fn Parser::last_pass(
     Cons(Inline({ start, inline, endline, next }), toks), line, acc, k => {
       let acc = self.try_add_text_inline(line, first=k, last=start - 1, acc)
       let acc = match inline {
-        Inlines({ v: is, .. }) => is.rev().rev_concat(acc)
+        Inlines({ v: is_, .. }) => is_.rev().rev_concat(acc)
         i => acc.add(i)
       }
       continue toks, endline, acc, next
@@ -1324,10 +1326,10 @@ fn Parser::parse_inline(
   let (layout, meta, lines) = self.strip_paragraph(lines)
   let (cidx, toks, first_line) = tokenize(self.i, lines, exts=self.exts)
   self.cidx = cidx
-  let (is, _) = self.parse_tokens(toks, first_line)
-  let inline = match is {
+  let (is_, _) = self.parse_tokens(toks, first_line)
+  let inline = match is_ {
     Cons(i, Nil) => i
-    _ => Inlines({ v: is, meta })
+    _ => Inlines({ v: is_, meta })
   }
   (layout, inline)
 }
@@ -1345,16 +1347,16 @@ fn Parser::get_blanks(
   (self.layout_clean_raw_span1(line), nb)
 }
 
-fn Parser::make_col(self : Parser, is : List[Inline]) -> Inline {
-  match is {
+fn Parser::make_col(self : Parser, is_ : List[Inline]) -> Inline {
+  match is_ {
     Nil => abort("unreachable")
     Cons(i, Nil) => i
-    is => {
-      let last = is.unsafe_head().meta()
-      let is = is.rev()
-      let first = is.unsafe_head().meta()
+    is_ => {
+      let last = is_.unsafe_head().meta()
+      let is_ = is_.rev()
+      let first = is_.unsafe_head().meta()
       let meta = self.meta_of_metas(first~, last~)
-      Inlines({ v: is, meta })
+      Inlines({ v: is_, meta })
     }
   }
 }
@@ -1420,7 +1422,7 @@ fn Parser::finish_col(
   self : Parser,
   line : LineSpan,
   blanks_before : String,
-  is : List[Inline],
+  is_ : List[Inline],
   toks : List[Token],
   k : BytePos
 ) -> ((Inline, TableCellLayout), List[Token], BytePos) {
@@ -1431,21 +1433,21 @@ fn Parser::finish_col(
         before=line.last + 1,
         k,
       )
-      let is = text.map_or(is, fn(t) { is.add(t) })
-      ((self.make_col(is), (blanks_before, after)), Nil, k)
+      let is_ = text.map_or(is_, fn(t) { is_.add(t) })
+      ((self.make_col(is_), (blanks_before, after)), Nil, k)
     }
     Cons(Inline({ start, inline, next, .. }), toks) as toks1 => {
       if k >= start {
-        return self.finish_col(line, blanks_before, is.add(inline), toks, next)
+        return self.finish_col(line, blanks_before, is_.add(inline), toks, next)
       }
       match self.find_pipe(line, before=start, k) {
         Err(text) => {
-          let is = is.add(text).add(inline)
-          self.finish_col(line, blanks_before, is, toks, next)
+          let is_ = is_.add(text).add(inline)
+          self.finish_col(line, blanks_before, is_, toks, next)
         }
         Ok((text, after, k)) => {
-          let is = text.map_or(is, fn(t) { is.add(t) })
-          ((self.make_col(is), (blanks_before, after)), toks1, k)
+          let is_ = text.map_or(is_, fn(t) { is_.add(t) })
+          ((self.make_col(is_), (blanks_before, after)), toks1, k)
         }
       }
     }
@@ -1471,9 +1473,9 @@ fn Parser::parse_cols(
     Cons(Inline({ start, inline, next, .. }), toks) as toks1 =>
       match self.start_col(line, before=start, k) {
         Col(col, k) => self.parse_cols(line, acc.add(col), toks1, k)
-        Start(before, is) => {
-          let is = is.add(inline)
-          let (col, toks, k) = self.finish_col(line, before, is, toks, next)
+        Start(before, is_) => {
+          let is_ = is_.add(inline)
+          let (col, toks, k) = self.finish_col(line, before, is_, toks, next)
           self.parse_cols(line, acc.add(col), toks, k)
         }
       }

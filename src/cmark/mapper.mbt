@@ -160,14 +160,14 @@ pub fn Mapper::map_block(self : Mapper, b : Block) -> FilterMap[Block] {
       fn map_row(row) {
         let ({ v, meta }, blanks) = row
         match v {
-          Header(is) => {
-            let is = is.filter_map(fn(i) { map_col(i.0, i.1) })
-            ({ v: Header(is), meta }, blanks)
+          Header(is_) => {
+            let is_ = is_.filter_map(fn(i) { map_col(i.0, i.1) })
+            ({ v: Header(is_), meta }, blanks)
           }
           Sep(_) => row
-          Data(is) => {
-            let is = is.filter_map(fn(i) { map_col(i.0, i.1) })
-            ({ v: Data(is), meta }, blanks)
+          Data(is_) => {
+            let is_ = is_.filter_map(fn(i) { map_col(i.0, i.1) })
+            ({ v: Data(is_), meta }, blanks)
           }
         }
       }

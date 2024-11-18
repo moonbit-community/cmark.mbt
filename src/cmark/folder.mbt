@@ -66,9 +66,9 @@ pub fn Folder::fold_inline[A](
     Image({ v, .. }) | Link({ v, .. }) => self.fold_inline!(acc, v.text)
     Emphasis({ v, .. }) | StrongEmphasis({ v, .. }) =>
       self.fold_inline!(acc, v.inline)
-    Inlines({ v: is, .. }) => {
+    Inlines({ v: is_, .. }) => {
       let mut acc = acc
-      for x in is {
+      for x in is_ {
         acc = self.fold_inline!(acc, x)
       }
       acc
@@ -110,8 +110,8 @@ pub fn Folder::fold_block[A](
       let mut acc = acc
       for x in v.rows {
         match x.0.v {
-          Header(is) | Data(is) =>
-            for y in is {
+          Header(is_) | Data(is_) =>
+            for y in is_ {
               acc = self.fold_inline!(acc, y.0)
             }
           Sep(_) => ()

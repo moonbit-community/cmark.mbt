@@ -74,26 +74,26 @@ pub fn Inline::normalize(self : Inline) -> Inline {
     ExtStrikethrough({ v: raw, meta }) =>
       ExtStrikethrough({ v: raw._.normalize(), meta })
     Inlines({ v: Cons(i, Nil), .. }) => i
-    Inlines({ v: Cons(i, is), meta }) => {
-      let is = loop List::of([i.normalize()]), is {
-        acc, Cons(Inlines({ v: is1, .. }), is) =>
-          continue acc, is1.rev().rev_concat(is)
-        acc, Cons(Text({ v: t1, meta: meta1 }) as i1, is) =>
+    Inlines({ v: Cons(i, is_), meta }) => {
+      let is_ = loop List::of([i.normalize()]), is_ {
+        acc, Cons(Inlines({ v: is1, .. }), is_) =>
+          continue acc, is1.rev().rev_concat(is_)
+        acc, Cons(Text({ v: t1, meta: meta1 }) as i1, is_) =>
           match acc {
             Cons(Text({ v: t, meta }), acc) => {
               let i = Text(
                 { v: t + t1, meta: { ..meta, loc: meta.loc.span(meta1.loc) } },
               )
-              continue acc.add(i), is
+              continue acc.add(i), is_
             }
-            _ => continue acc.add(i1.normalize()), is
+            _ => continue acc.add(i1.normalize()), is_
           }
-        acc, Cons(i, is) => continue acc.add(i.normalize()), is
+        acc, Cons(i, is_) => continue acc.add(i.normalize()), is_
         acc, Nil => break acc.rev()
       }
-      match is {
+      match is_ {
         Cons(i, Nil) => i
-        is => Inlines({ v: is, meta })
+        is_ => Inlines({ v: is_, meta })
       }
     }
   }
@@ -114,24 +114,24 @@ pub fn Inline::to_plain_text(
     acc.tail().add(acc.unsafe_head().rev()).add(Nil)
   }
   loop List::of([List::Nil]), List::of([self]) {
-    acc, Cons(Autolink(a), is) => continue push("<\{a.v.link.v}>", acc), is
-    acc, Cons(Break({ v: { ty: Hard, .. }, .. }), is) =>
-      continue newline(acc), is
-    acc, Cons(Break({ v: { ty: Soft, .. }, .. }), is) =>
-      continue if break_on_soft { newline(acc) } else { push(" ", acc) }, is
-    acc, Cons(CodeSpan(cs), is) => continue push(cs.v.code(), acc), is
+    acc, Cons(Autolink(a), is_) => continue push("<\{a.v.link.v}>", acc), is_
+    acc, Cons(Break({ v: { ty: Hard, .. }, .. }), is_) =>
+      continue newline(acc), is_
+    acc, Cons(Break({ v: { ty: Soft, .. }, .. }), is_) =>
+      continue if break_on_soft { newline(acc) } else { push(" ", acc) }, is_
+    acc, Cons(CodeSpan(cs), is_) => continue push(cs.v.code(), acc), is_
     acc,
-    Cons(Emphasis({ v: { inline, .. }, .. }), is)
-    | Cons(StrongEmphasis({ v: { inline, .. }, .. }), is) =>
-      continue acc, Cons(inline, is)
-    acc, Cons(Inlines({ v: is1, .. }), is) =>
-      continue acc, is1.rev().rev_concat(is)
-    acc, Cons(Link(l), is) => continue acc, Cons(l.v.text, is)
-    acc, Cons(RawHtml(_), is) => continue acc, is
-    acc, Cons(Text(t), is) => continue push(t.v, acc), is
-    acc, Cons(ExtStrikethrough(i), is) => continue acc, Cons(i.v._, is)
-    // acc, Cons(ExtMathSpan(m), is) => continue push(m.v.tex(), acc), is
-    acc, Cons(i, is) => continue acc, Cons(i, is) // TODO: Consider `ext`?
+    Cons(Emphasis({ v: { inline, .. }, .. }), is_)
+    | Cons(StrongEmphasis({ v: { inline, .. }, .. }), is_) =>
+      continue acc, Cons(inline, is_)
+    acc, Cons(Inlines({ v: is1, .. }), is_) =>
+      continue acc, is1.rev().rev_concat(is_)
+    acc, Cons(Link(l), is_) => continue acc, Cons(l.v.text, is_)
+    acc, Cons(RawHtml(_), is_) => continue acc, is_
+    acc, Cons(Text(t), is_) => continue push(t.v, acc), is_
+    acc, Cons(ExtStrikethrough(i), is_) => continue acc, Cons(i.v._, is_)
+    // acc, Cons(ExtMathSpan(m), is_) => continue push(m.v.tex(), acc), is_
+    acc, Cons(i, is_) => continue acc, Cons(i, is_) // TODO: Consider `ext`?
     acc, Nil => acc.tail().add(acc.unsafe_head().rev()).rev()
   }
 }
