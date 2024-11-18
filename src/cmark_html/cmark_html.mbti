@@ -1,51 +1,46 @@
 package rami3l/cmark/cmark_html
 
-alias @moonbitlang/core/buffer as @buffer
-alias @moonbitlang/core/json as @json
-alias @rami3l/cmark/cmark as @cmark
-alias @rami3l/cmark/cmark_renderer as @cmark_renderer
-
 // Values
-fn buffer_add_html_escaped_char(@buffer.T, Char) -> Unit
+fn buffer_add_html_escaped_char(@moonbitlang/core/buffer.T, Char) -> Unit
 
-fn buffer_add_html_escaped_string(@buffer.T, String) -> Unit
+fn buffer_add_html_escaped_string(@moonbitlang/core/buffer.T, String) -> Unit
 
-fn buffer_add_pct_encoded_string(@buffer.T, String) -> Unit
+fn buffer_add_pct_encoded_string(@moonbitlang/core/buffer.T, String) -> Unit
 
-fn from_doc(backend_blocks~ : Bool = .., safe~ : Bool, @cmark.Doc) -> String!
+fn from_doc(backend_blocks~ : Bool = .., safe~ : Bool, @rami3l/cmark/cmark.Doc) -> String!
 
-fn html_escaped_char(@cmark_renderer.Context, Char) -> Unit
+fn html_escaped_char(@rami3l/cmark/cmark_renderer.Context, Char) -> Unit
 
-fn html_escaped_string(@cmark_renderer.Context, String) -> Unit
+fn html_escaped_string(@rami3l/cmark/cmark_renderer.Context, String) -> Unit
 
-fn pct_encoded_string(@cmark_renderer.Context, String) -> Unit
+fn pct_encoded_string(@rami3l/cmark/cmark_renderer.Context, String) -> Unit
 
-fn renderer(backend_blocks~ : Bool = .., safe~ : Bool) -> @cmark_renderer.Renderer
+fn renderer(backend_blocks~ : Bool = .., safe~ : Bool) -> @rami3l/cmark/cmark_renderer.Renderer
 
-fn safe(@cmark_renderer.Context) -> Bool
+fn safe(@rami3l/cmark/cmark_renderer.Context) -> Bool
 
-fn xhtml_renderer(backend_blocks~ : Bool = .., safe~ : Bool) -> @cmark_renderer.Renderer
+fn xhtml_renderer(backend_blocks~ : Bool = .., safe~ : Bool) -> @rami3l/cmark/cmark_renderer.Renderer
 
 // Types and methods
 type HtmlRenderFootnote
 impl HtmlRenderFootnote {
-  from_json(Json, @json.JsonPath) -> Self!@json.JsonDecodeError
+  from_json(Json, @moonbitlang/core/json.JsonPath) -> Self!@moonbitlang/core/json.JsonDecodeError
   to_json(Self) -> Json
   to_string(Self) -> String
 }
 impl Show for HtmlRenderFootnote
 impl ToJson for HtmlRenderFootnote
-impl @json.FromJson for HtmlRenderFootnote
+impl @moonbitlang/core/json.FromJson for HtmlRenderFootnote
 
 type State
 impl State {
-  from_json(Json, @json.JsonPath) -> Self!@json.JsonDecodeError
+  from_json(Json, @moonbitlang/core/json.JsonPath) -> Self!@moonbitlang/core/json.JsonDecodeError
   to_json(Self) -> Json
   to_string(Self) -> String
 }
 impl Show for State
 impl ToJson for State
-impl @json.FromJson for State
+impl @moonbitlang/core/json.FromJson for State
 
 // Type aliases
 

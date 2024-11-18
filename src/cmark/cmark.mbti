@@ -1,15 +1,9 @@
 package rami3l/cmark/cmark
 
-alias @moonbitlang/core/buffer as @buffer
-alias @moonbitlang/core/immut/list as @list
-alias @moonbitlang/core/immut/sorted_map as @sorted_map
-alias @moonbitlang/core/json as @json
-alias @rami3l/cmark/cmark_base as @cmark_base
-
 // Values
 let layout_empty : Node[String]
 
-fn layout_of_string(meta~ : @cmark_base.Meta = .., String) -> Node[String]
+fn layout_of_string(meta~ : @rami3l/cmark/cmark_base.Meta = .., String) -> Node[String]
 
 // Types and methods
 type Atx
@@ -29,7 +23,7 @@ impl Eq for BState
 pub enum Block {
   BlankLine(Node[String])
   BlockQuote(Node[BlockQuote])
-  Blocks(Node[@list.T[Block]])
+  Blocks(Node[@moonbitlang/core/immut/list.T[Block]])
   CodeBlock(Node[CodeBlock])
   Heading(Node[BlockHeading])
   HtmlBlock(Node[HtmlBlock])
@@ -41,104 +35,104 @@ pub enum Block {
   ExtFootnoteDefinition(Node[Footnote])
 }
 impl Block {
-  defs(Self, init~ : @sorted_map.T[String, LabelDef] = ..) -> @sorted_map.T[String, LabelDef]
+  defs(Self, init~ : @moonbitlang/core/immut/sorted_map.T[String, LabelDef] = ..) -> @moonbitlang/core/immut/sorted_map.T[String, LabelDef]
   empty() -> Self
-  from_json(Json, @json.JsonPath) -> Self!@json.JsonDecodeError
-  meta(Self) -> @cmark_base.Meta
+  from_json(Json, @moonbitlang/core/json.JsonPath) -> Self!@moonbitlang/core/json.JsonDecodeError
+  meta(Self) -> @rami3l/cmark/cmark_base.Meta
   normalize(Self) -> Self
   to_json(Self) -> Json
   to_string(Self) -> String
 }
 impl Show for Block
 impl ToJson for Block
-impl @json.FromJson for Block
+impl @moonbitlang/core/json.FromJson for Block
 
 pub struct BlockHeading {
-  pub layout : BlockHeadingLayout
-  pub level : Int
-  pub inline : Inline
-  pub id : BlockHeadingId?
+  layout : BlockHeadingLayout
+  level : Int
+  inline : Inline
+  id : BlockHeadingId?
 }
 impl BlockHeading {
-  from_json(Json, @json.JsonPath) -> Self!@json.JsonDecodeError
+  from_json(Json, @moonbitlang/core/json.JsonPath) -> Self!@moonbitlang/core/json.JsonDecodeError
   new(id~ : BlockHeadingId? = .., layout~ : BlockHeadingLayout = .., level~ : Int, Inline) -> Self
   to_json(Self) -> Json
   to_string(Self) -> String
 }
 impl Show for BlockHeading
 impl ToJson for BlockHeading
-impl @json.FromJson for BlockHeading
+impl @moonbitlang/core/json.FromJson for BlockHeading
 
 pub struct BlockHeadingAtxLayout {
-  pub indent : Int
-  pub after_opening : String
-  pub closing : String
+  indent : Int
+  after_opening : String
+  closing : String
 }
 impl BlockHeadingAtxLayout {
   default() -> Self
-  from_json(Json, @json.JsonPath) -> Self!@json.JsonDecodeError
+  from_json(Json, @moonbitlang/core/json.JsonPath) -> Self!@moonbitlang/core/json.JsonDecodeError
   to_json(Self) -> Json
   to_string(Self) -> String
 }
 impl Show for BlockHeadingAtxLayout
 impl ToJson for BlockHeadingAtxLayout
-impl @json.FromJson for BlockHeadingAtxLayout
+impl @moonbitlang/core/json.FromJson for BlockHeadingAtxLayout
 
 pub enum BlockHeadingId {
   Auto(String)
   Id(String)
 }
 impl BlockHeadingId {
-  from_json(Json, @json.JsonPath) -> Self!@json.JsonDecodeError
+  from_json(Json, @moonbitlang/core/json.JsonPath) -> Self!@moonbitlang/core/json.JsonDecodeError
   to_json(Self) -> Json
   to_string(Self) -> String
 }
 impl Show for BlockHeadingId
 impl ToJson for BlockHeadingId
-impl @json.FromJson for BlockHeadingId
+impl @moonbitlang/core/json.FromJson for BlockHeadingId
 
 pub enum BlockHeadingLayout {
   Atx(BlockHeadingAtxLayout)
   Setext(BlockHeadingSetextLayout)
 }
 impl BlockHeadingLayout {
-  from_json(Json, @json.JsonPath) -> Self!@json.JsonDecodeError
+  from_json(Json, @moonbitlang/core/json.JsonPath) -> Self!@moonbitlang/core/json.JsonDecodeError
   to_json(Self) -> Json
   to_string(Self) -> String
 }
 impl Show for BlockHeadingLayout
 impl ToJson for BlockHeadingLayout
-impl @json.FromJson for BlockHeadingLayout
+impl @moonbitlang/core/json.FromJson for BlockHeadingLayout
 
 pub struct BlockHeadingSetextLayout {
-  pub leading_indent : Int
-  pub trailing_blanks : String
-  pub underline_indent : Int
-  pub underline_count : Node[Int]
-  pub underline_blanks : String
+  leading_indent : Int
+  trailing_blanks : String
+  underline_indent : Int
+  underline_count : Node[Int]
+  underline_blanks : String
 }
 impl BlockHeadingSetextLayout {
-  from_json(Json, @json.JsonPath) -> Self!@json.JsonDecodeError
+  from_json(Json, @moonbitlang/core/json.JsonPath) -> Self!@moonbitlang/core/json.JsonDecodeError
   to_json(Self) -> Json
   to_string(Self) -> String
 }
 impl Show for BlockHeadingSetextLayout
 impl ToJson for BlockHeadingSetextLayout
-impl @json.FromJson for BlockHeadingSetextLayout
+impl @moonbitlang/core/json.FromJson for BlockHeadingSetextLayout
 
 pub type BlockLine Node[String]
 impl BlockLine {
-  list_text_loc(@list.T[Self]) -> @cmark_base.TextLoc
+  list_text_loc(@moonbitlang/core/immut/list.T[Self]) -> @rami3l/cmark/cmark_base.TextLoc
   to_string(Self) -> String
 }
 
 pub struct BlockList {
-  pub ty : @cmark_base.ListType
-  pub tight : Bool
-  pub items : @list.T[Node[ListItem]]
+  ty : @rami3l/cmark/cmark_base.ListType
+  tight : Bool
+  items : @moonbitlang/core/immut/list.T[Node[ListItem]]
 }
 impl BlockList {
-  from_json(Json, @json.JsonPath) -> Self!@json.JsonDecodeError
+  from_json(Json, @moonbitlang/core/json.JsonPath) -> Self!@moonbitlang/core/json.JsonDecodeError
   map_items(Self, (ListItem) -> ListItem) -> Self
   normalize_items(Self) -> Self
   to_json(Self) -> Json
@@ -146,29 +140,29 @@ impl BlockList {
 }
 impl Show for BlockList
 impl ToJson for BlockList
-impl @json.FromJson for BlockList
+impl @moonbitlang/core/json.FromJson for BlockList
 
 pub struct BlockParagraph {
-  pub leading_indent : Int
-  pub inline : Inline
-  pub trailing_blanks : String
+  leading_indent : Int
+  inline : Inline
+  trailing_blanks : String
 }
 impl BlockParagraph {
-  from_json(Json, @json.JsonPath) -> Self!@json.JsonDecodeError
+  from_json(Json, @moonbitlang/core/json.JsonPath) -> Self!@moonbitlang/core/json.JsonDecodeError
   new(leading_indent~ : Int = .., trailing_blanks~ : String = .., Inline) -> Self
   to_json(Self) -> Json
   to_string(Self) -> String
 }
 impl Show for BlockParagraph
 impl ToJson for BlockParagraph
-impl @json.FromJson for BlockParagraph
+impl @moonbitlang/core/json.FromJson for BlockParagraph
 
 pub struct BlockQuote {
-  pub indent : Int
-  pub block : Block
+  indent : Int
+  block : Block
 }
 impl BlockQuote {
-  from_json(Json, @json.JsonPath) -> Self!@json.JsonDecodeError
+  from_json(Json, @moonbitlang/core/json.JsonPath) -> Self!@moonbitlang/core/json.JsonDecodeError
   map_block(Self, (Block) -> Block) -> Self
   new(indent~ : Int = .., Block) -> Self
   normalize_block(Self) -> Self
@@ -177,7 +171,7 @@ impl BlockQuote {
 }
 impl Show for BlockQuote
 impl ToJson for BlockQuote
-impl @json.FromJson for BlockQuote
+impl @moonbitlang/core/json.FromJson for BlockQuote
 
 type BlockStruct
 impl BlockStruct {
@@ -188,18 +182,18 @@ impl Show for BlockStruct
 impl ToJson for BlockStruct
 
 pub struct BlockThematicBreak {
-  pub indent : Int
-  pub layout : String
+  indent : Int
+  layout : String
 }
 impl BlockThematicBreak {
-  from_json(Json, @json.JsonPath) -> Self!@json.JsonDecodeError
+  from_json(Json, @moonbitlang/core/json.JsonPath) -> Self!@moonbitlang/core/json.JsonDecodeError
   new(indent~ : Int = .., layout~ : String = ..) -> Self
   to_json(Self) -> Json
   to_string(Self) -> String
 }
 impl Show for BlockThematicBreak
 impl ToJson for BlockThematicBreak
-impl @json.FromJson for BlockThematicBreak
+impl @moonbitlang/core/json.FromJson for BlockThematicBreak
 
 type Closer
 impl Closer {
@@ -224,49 +218,49 @@ impl Show for CloserIndex
 impl ToJson for CloserIndex
 
 pub struct CodeBlock {
-  pub layout : CodeBlockLayout
-  pub info_string : Node[String]?
-  pub code : @list.T[Node[String]]
+  layout : CodeBlockLayout
+  info_string : Node[String]?
+  code : @moonbitlang/core/immut/list.T[Node[String]]
 }
 impl CodeBlock {
-  from_json(Json, @json.JsonPath) -> Self!@json.JsonDecodeError
+  from_json(Json, @moonbitlang/core/json.JsonPath) -> Self!@moonbitlang/core/json.JsonDecodeError
   language_of_info_string(String) -> (String, String)?
   make_fence(Self) -> (Char, Int)
-  new(layout~ : CodeBlockLayout = .., info_string~ : Node[String]? = .., @list.T[Node[String]]) -> Self
+  new(layout~ : CodeBlockLayout = .., info_string~ : Node[String]? = .., @moonbitlang/core/immut/list.T[Node[String]]) -> Self
   to_json(Self) -> Json
   to_string(Self) -> String
 }
 impl Show for CodeBlock
 impl ToJson for CodeBlock
-impl @json.FromJson for CodeBlock
+impl @moonbitlang/core/json.FromJson for CodeBlock
 
 pub struct CodeBlockFencedLayout {
-  pub indent : Int
-  pub opening_fence : Node[String]
-  pub closing_fence : Node[String]?
+  indent : Int
+  opening_fence : Node[String]
+  closing_fence : Node[String]?
 }
 impl CodeBlockFencedLayout {
   default() -> Self
-  from_json(Json, @json.JsonPath) -> Self!@json.JsonDecodeError
+  from_json(Json, @moonbitlang/core/json.JsonPath) -> Self!@moonbitlang/core/json.JsonDecodeError
   to_json(Self) -> Json
   to_string(Self) -> String
 }
 impl Show for CodeBlockFencedLayout
 impl ToJson for CodeBlockFencedLayout
-impl @json.FromJson for CodeBlockFencedLayout
+impl @moonbitlang/core/json.FromJson for CodeBlockFencedLayout
 
 pub enum CodeBlockLayout {
   Indented
   Fenced(CodeBlockFencedLayout)
 }
 impl CodeBlockLayout {
-  from_json(Json, @json.JsonPath) -> Self!@json.JsonDecodeError
+  from_json(Json, @moonbitlang/core/json.JsonPath) -> Self!@moonbitlang/core/json.JsonDecodeError
   to_json(Self) -> Json
   to_string(Self) -> String
 }
 impl Show for CodeBlockLayout
 impl ToJson for CodeBlockLayout
-impl @json.FromJson for CodeBlockLayout
+impl @moonbitlang/core/json.FromJson for CodeBlockLayout
 
 type CodeBlockStruct
 impl CodeBlockStruct {
@@ -277,14 +271,14 @@ impl Show for CodeBlockStruct
 impl ToJson for CodeBlockStruct
 
 pub struct Doc {
-  pub nl : String
-  pub block : Block
-  pub defs : @sorted_map.T[String, LabelDef]
+  nl : String
+  block : Block
+  defs : @moonbitlang/core/immut/sorted_map.T[String, LabelDef]
 }
 impl Doc {
   empty() -> Self
-  from_string(defs~ : @sorted_map.T[String, LabelDef] = .., resolver~ : (LabelContext) -> Label? = .., nested_links~ : Bool = .., heading_auto_ids~ : Bool = .., layout~ : Bool = .., locs~ : Bool = .., file~ : String = .., strict~ : Bool = .., String) -> Self
-  new(nl~ : String = .., defs~ : @sorted_map.T[String, LabelDef] = .., Block) -> Self
+  from_string(defs~ : @moonbitlang/core/immut/sorted_map.T[String, LabelDef] = .., resolver~ : (LabelContext) -> Label? = .., nested_links~ : Bool = .., heading_auto_ids~ : Bool = .., layout~ : Bool = .., locs~ : Bool = .., file~ : String = .., strict~ : Bool = .., String) -> Self
+  new(nl~ : String = .., defs~ : @moonbitlang/core/immut/sorted_map.T[String, LabelDef] = .., Block) -> Self
   to_json(Self) -> Json
   to_string(Self) -> String
 }
@@ -308,10 +302,10 @@ impl Show for FenceCodeBlockStruct
 impl ToJson for FenceCodeBlockStruct
 
 pub struct Folder {
-  pub inline_ext_default : (Folder[A], A, Inline) -> A!FolderError
-  pub block_ext_default : (Folder[A], A, Block) -> A!FolderError
-  pub inline : (Folder[A], A, Inline) -> FolderResult[A]
-  pub block : (Folder[A], A, Block) -> FolderResult[A]
+  inline_ext_default : (Folder[A], A, Inline) -> A!FolderError
+  block_ext_default : (Folder[A], A, Block) -> A!FolderError
+  inline : (Folder[A], A, Inline) -> FolderResult[A]
+  block : (Folder[A], A, Block) -> FolderResult[A]
 }
 impl Folder {
   block_ext_none[A](Self[A], A, Block) -> A!FolderError
@@ -345,13 +339,13 @@ impl[A : Show] Show for FolderResult[A]
 impl[A : ToJson] ToJson for FolderResult[A]
 
 pub struct Footnote {
-  pub indent : Int
-  pub label : Label
-  pub defined_label : Label?
-  pub block : Block
+  indent : Int
+  label : Label
+  defined_label : Label?
+  block : Block
 }
 impl Footnote {
-  from_json(Json, @json.JsonPath) -> Self!@json.JsonDecodeError
+  from_json(Json, @moonbitlang/core/json.JsonPath) -> Self!@moonbitlang/core/json.JsonDecodeError
   map_block(Self, (Block) -> Block) -> Self
   new(indent~ : Int = .., defined_label? : Label?, Label, Block) -> Self
   normalize_block(Self) -> Self
@@ -360,7 +354,7 @@ impl Footnote {
 }
 impl Show for Footnote
 impl ToJson for Footnote
-impl @json.FromJson for Footnote
+impl @moonbitlang/core/json.FromJson for Footnote
 
 type Heading
 impl Heading {
@@ -370,15 +364,15 @@ impl Heading {
 impl Show for Heading
 impl ToJson for Heading
 
-pub type HtmlBlock @list.T[Node[String]]
+pub type HtmlBlock @moonbitlang/core/immut/list.T[Node[String]]
 impl HtmlBlock {
-  from_json(Json, @json.JsonPath) -> Self!@json.JsonDecodeError
+  from_json(Json, @moonbitlang/core/json.JsonPath) -> Self!@moonbitlang/core/json.JsonDecodeError
   to_json(Self) -> Json
   to_string(Self) -> String
 }
 impl Show for HtmlBlock
 impl ToJson for HtmlBlock
-impl @json.FromJson for HtmlBlock
+impl @moonbitlang/core/json.FromJson for HtmlBlock
 
 type HtmlBlockStruct
 impl HtmlBlockStruct {
@@ -402,7 +396,7 @@ pub enum Inline {
   CodeSpan(Node[InlineCodeSpan])
   Emphasis(Node[InlineEmphasis])
   Image(Node[InlineLink])
-  Inlines(Node[@list.T[Inline]])
+  Inlines(Node[@moonbitlang/core/immut/list.T[Inline]])
   Link(Node[InlineLink])
   RawHtml(Node[InlineRawHtml])
   StrongEmphasis(Node[InlineEmphasis])
@@ -411,27 +405,27 @@ pub enum Inline {
 }
 impl Inline {
   empty() -> Self
-  from_json(Json, @json.JsonPath) -> Self!@json.JsonDecodeError
-  id(Self, buf~ : @buffer.T = ..) -> String
+  from_json(Json, @moonbitlang/core/json.JsonPath) -> Self!@moonbitlang/core/json.JsonDecodeError
+  id(Self, buf~ : @moonbitlang/core/buffer.T = ..) -> String
   is_empty(Self) -> Bool
-  meta(Self) -> @cmark_base.Meta
+  meta(Self) -> @rami3l/cmark/cmark_base.Meta
   normalize(Self) -> Self
   op_equal(Self, Self) -> Bool
   to_json(Self) -> Json
-  to_plain_text(Self, break_on_soft~ : Bool) -> @list.T[@list.T[String]]
+  to_plain_text(Self, break_on_soft~ : Bool) -> @moonbitlang/core/immut/list.T[@moonbitlang/core/immut/list.T[String]]
   to_string(Self) -> String
 }
 impl Eq for Inline
 impl Show for Inline
 impl ToJson for Inline
-impl @json.FromJson for Inline
+impl @moonbitlang/core/json.FromJson for Inline
 
 pub struct InlineAutolink {
-  pub is_email : Bool
-  pub link : Node[String]
+  is_email : Bool
+  link : Node[String]
 }
 impl InlineAutolink {
-  from_json(Json, @json.JsonPath) -> Self!@json.JsonDecodeError
+  from_json(Json, @moonbitlang/core/json.JsonPath) -> Self!@moonbitlang/core/json.JsonDecodeError
   new(Node[String]) -> Self
   op_equal(Self, Self) -> Bool
   to_json(Self) -> Json
@@ -440,15 +434,15 @@ impl InlineAutolink {
 impl Eq for InlineAutolink
 impl Show for InlineAutolink
 impl ToJson for InlineAutolink
-impl @json.FromJson for InlineAutolink
+impl @moonbitlang/core/json.FromJson for InlineAutolink
 
 pub struct InlineBreak {
-  pub layout_before : Node[String]
-  pub ty : InlineBreakType
-  pub layout_after : Node[String]
+  layout_before : Node[String]
+  ty : InlineBreakType
+  layout_after : Node[String]
 }
 impl InlineBreak {
-  from_json(Json, @json.JsonPath) -> Self!@json.JsonDecodeError
+  from_json(Json, @moonbitlang/core/json.JsonPath) -> Self!@moonbitlang/core/json.JsonDecodeError
   new(layout_before~ : Node[String] = .., layout_after~ : Node[String] = .., InlineBreakType) -> Self
   op_equal(Self, Self) -> Bool
   to_json(Self) -> Json
@@ -457,7 +451,7 @@ impl InlineBreak {
 impl Eq for InlineBreak
 impl Show for InlineBreak
 impl ToJson for InlineBreak
-impl @json.FromJson for InlineBreak
+impl @moonbitlang/core/json.FromJson for InlineBreak
 
 pub enum InlineBreakType {
   Hard
@@ -465,7 +459,7 @@ pub enum InlineBreakType {
 }
 impl InlineBreakType {
   compare(Self, Self) -> Int
-  from_json(Json, @json.JsonPath) -> Self!@json.JsonDecodeError
+  from_json(Json, @moonbitlang/core/json.JsonPath) -> Self!@moonbitlang/core/json.JsonDecodeError
   op_equal(Self, Self) -> Bool
   to_json(Self) -> Json
   to_string(Self) -> String
@@ -474,17 +468,17 @@ impl Compare for InlineBreakType
 impl Eq for InlineBreakType
 impl Show for InlineBreakType
 impl ToJson for InlineBreakType
-impl @json.FromJson for InlineBreakType
+impl @moonbitlang/core/json.FromJson for InlineBreakType
 
 pub struct InlineCodeSpan {
-  pub backticks : Int
-  pub code_layout : @list.T[Tight]
+  backticks : Int
+  code_layout : @moonbitlang/core/immut/list.T[Tight]
 }
 impl InlineCodeSpan {
   code(Self) -> String
-  from_json(Json, @json.JsonPath) -> Self!@json.JsonDecodeError
-  from_string(meta~ : @cmark_base.Meta = .., String) -> Self
-  new(backticks~ : Int, @list.T[Tight]) -> Self
+  from_json(Json, @moonbitlang/core/json.JsonPath) -> Self!@moonbitlang/core/json.JsonDecodeError
+  from_string(meta~ : @rami3l/cmark/cmark_base.Meta = .., String) -> Self
+  new(backticks~ : Int, @moonbitlang/core/immut/list.T[Tight]) -> Self
   op_equal(Self, Self) -> Bool
   to_json(Self) -> Json
   to_string(Self) -> String
@@ -492,14 +486,14 @@ impl InlineCodeSpan {
 impl Eq for InlineCodeSpan
 impl Show for InlineCodeSpan
 impl ToJson for InlineCodeSpan
-impl @json.FromJson for InlineCodeSpan
+impl @moonbitlang/core/json.FromJson for InlineCodeSpan
 
 pub struct InlineEmphasis {
-  pub delim : Char
-  pub inline : Inline
+  delim : Char
+  inline : Inline
 }
 impl InlineEmphasis {
-  from_json(Json, @json.JsonPath) -> Self!@json.JsonDecodeError
+  from_json(Json, @moonbitlang/core/json.JsonPath) -> Self!@moonbitlang/core/json.JsonDecodeError
   new(delim~ : Char = .., Inline) -> Self
   op_equal(Self, Self) -> Bool
   to_json(Self) -> Json
@@ -508,18 +502,18 @@ impl InlineEmphasis {
 impl Eq for InlineEmphasis
 impl Show for InlineEmphasis
 impl ToJson for InlineEmphasis
-impl @json.FromJson for InlineEmphasis
+impl @moonbitlang/core/json.FromJson for InlineEmphasis
 
 pub struct InlineLink {
-  pub text : Inline
-  pub reference : ReferenceKind
+  text : Inline
+  reference : ReferenceKind
 }
 impl InlineLink {
-  from_json(Json, @json.JsonPath) -> Self!@json.JsonDecodeError
+  from_json(Json, @moonbitlang/core/json.JsonPath) -> Self!@moonbitlang/core/json.JsonDecodeError
   is_unsafe(String) -> Bool
   new(Inline, ReferenceKind) -> Self
   op_equal(Self, Self) -> Bool
-  reference_definition(Self, @sorted_map.T[String, LabelDef]) -> LabelDef?
+  reference_definition(Self, @moonbitlang/core/immut/sorted_map.T[String, LabelDef]) -> LabelDef?
   referenced_label(Self) -> Label?
   to_json(Self) -> Json
   to_string(Self) -> String
@@ -527,11 +521,11 @@ impl InlineLink {
 impl Eq for InlineLink
 impl Show for InlineLink
 impl ToJson for InlineLink
-impl @json.FromJson for InlineLink
+impl @moonbitlang/core/json.FromJson for InlineLink
 
-pub type InlineRawHtml @list.T[Tight]
+pub type InlineRawHtml @moonbitlang/core/immut/list.T[Tight]
 impl InlineRawHtml {
-  from_json(Json, @json.JsonPath) -> Self!@json.JsonDecodeError
+  from_json(Json, @moonbitlang/core/json.JsonPath) -> Self!@moonbitlang/core/json.JsonDecodeError
   op_equal(Self, Self) -> Bool
   to_json(Self) -> Json
   to_string(Self) -> String
@@ -539,11 +533,11 @@ impl InlineRawHtml {
 impl Eq for InlineRawHtml
 impl Show for InlineRawHtml
 impl ToJson for InlineRawHtml
-impl @json.FromJson for InlineRawHtml
+impl @moonbitlang/core/json.FromJson for InlineRawHtml
 
 pub type InlineStrikethrough Inline
 impl InlineStrikethrough {
-  from_json(Json, @json.JsonPath) -> Self!@json.JsonDecodeError
+  from_json(Json, @moonbitlang/core/json.JsonPath) -> Self!@moonbitlang/core/json.JsonDecodeError
   op_equal(Self, Self) -> Bool
   to_json(Self) -> Json
   to_string(Self) -> String
@@ -551,25 +545,25 @@ impl InlineStrikethrough {
 impl Eq for InlineStrikethrough
 impl Show for InlineStrikethrough
 impl ToJson for InlineStrikethrough
-impl @json.FromJson for InlineStrikethrough
+impl @moonbitlang/core/json.FromJson for InlineStrikethrough
 
 pub struct Label {
-  pub meta : @cmark_base.Meta
-  pub key : String
-  pub text : @list.T[Tight]
+  meta : @rami3l/cmark/cmark_base.Meta
+  key : String
+  text : @moonbitlang/core/immut/list.T[Tight]
 }
 impl Label {
   compare(Self, Self) -> Int
-  from_json(Json, @json.JsonPath) -> Self!@json.JsonDecodeError
-  new(meta~ : @cmark_base.Meta = .., key~ : String, @list.T[Tight]) -> Self
+  from_json(Json, @moonbitlang/core/json.JsonPath) -> Self!@moonbitlang/core/json.JsonDecodeError
+  new(meta~ : @rami3l/cmark/cmark_base.Meta = .., key~ : String, @moonbitlang/core/immut/list.T[Tight]) -> Self
   op_equal(Self, Self) -> Bool
-  text_loc(Self) -> @cmark_base.TextLoc
+  text_loc(Self) -> @rami3l/cmark/cmark_base.TextLoc
   to_json(Self) -> Json
   to_string(Self) -> String
 }
 impl Show for Label
 impl ToJson for Label
-impl @json.FromJson for Label
+impl @moonbitlang/core/json.FromJson for Label
 
 pub enum LabelContext {
   Def(Label?, Label)
@@ -591,15 +585,15 @@ impl Show for LabelDef
 impl ToJson for LabelDef
 
 pub struct LinkDefinition {
-  pub layout : LinkDefinitionLayout
-  pub label : Label?
-  pub defined_label : Label?
-  pub dest : Node[String]?
-  pub title : @list.T[Tight]?
+  layout : LinkDefinitionLayout
+  label : Label?
+  defined_label : Label?
+  dest : Node[String]?
+  title : @moonbitlang/core/immut/list.T[Tight]?
 }
 impl LinkDefinition {
-  from_json(Json, @json.JsonPath) -> Self!@json.JsonDecodeError
-  new(layout~ : LinkDefinitionLayout = .., label~ : Label? = .., defined_label~ : Label? = .., dest~ : Node[String]? = .., title~ : @list.T[Tight]? = ..) -> Self
+  from_json(Json, @moonbitlang/core/json.JsonPath) -> Self!@moonbitlang/core/json.JsonDecodeError
+  new(layout~ : LinkDefinitionLayout = .., label~ : Label? = .., defined_label~ : Label? = .., dest~ : Node[String]? = .., title~ : @moonbitlang/core/immut/list.T[Tight]? = ..) -> Self
   op_equal(Self, Self) -> Bool
   to_json(Self) -> Json
   to_string(Self) -> String
@@ -607,20 +601,20 @@ impl LinkDefinition {
 impl Eq for LinkDefinition
 impl Show for LinkDefinition
 impl ToJson for LinkDefinition
-impl @json.FromJson for LinkDefinition
+impl @moonbitlang/core/json.FromJson for LinkDefinition
 
 pub struct LinkDefinitionLayout {
-  pub indent : Int
-  pub angled_dest : Bool
-  pub before_dest : @list.T[Node[String]]
-  pub after_dest : @list.T[Node[String]]
-  pub title_open_delim : Char
-  pub after_title : @list.T[Node[String]]
+  indent : Int
+  angled_dest : Bool
+  before_dest : @moonbitlang/core/immut/list.T[Node[String]]
+  after_dest : @moonbitlang/core/immut/list.T[Node[String]]
+  title_open_delim : Char
+  after_title : @moonbitlang/core/immut/list.T[Node[String]]
 }
 impl LinkDefinitionLayout {
   default() -> Self
   for_dest(String) -> Self
-  from_json(Json, @json.JsonPath) -> Self!@json.JsonDecodeError
+  from_json(Json, @moonbitlang/core/json.JsonPath) -> Self!@moonbitlang/core/json.JsonDecodeError
   op_equal(Self, Self) -> Bool
   to_json(Self) -> Json
   to_string(Self) -> String
@@ -628,7 +622,7 @@ impl LinkDefinitionLayout {
 impl Eq for LinkDefinitionLayout
 impl Show for LinkDefinitionLayout
 impl ToJson for LinkDefinitionLayout
-impl @json.FromJson for LinkDefinitionLayout
+impl @moonbitlang/core/json.FromJson for LinkDefinitionLayout
 
 pub enum LinkKind {
   Link
@@ -644,14 +638,14 @@ impl Show for ListBlockStruct
 impl ToJson for ListBlockStruct
 
 pub struct ListItem {
-  pub before_marker : Int
-  pub marker : Node[String]
-  pub after_marker : Int
-  pub block : Block
-  pub ext_task_marker : Node[Char]?
+  before_marker : Int
+  marker : Node[String]
+  after_marker : Int
+  block : Block
+  ext_task_marker : Node[Char]?
 }
 impl ListItem {
-  from_json(Json, @json.JsonPath) -> Self!@json.JsonDecodeError
+  from_json(Json, @moonbitlang/core/json.JsonPath) -> Self!@moonbitlang/core/json.JsonDecodeError
   map_block(Self, (Block) -> Block) -> Self
   new(before_marker~ : Int = .., marker~ : Node[String] = .., after_marker~ : Int = .., ext_task_marker~ : Node[Char]?, Block) -> Self
   normalize_block(Self) -> Self
@@ -660,7 +654,7 @@ impl ListItem {
 }
 impl Show for ListItem
 impl ToJson for ListItem
-impl @json.FromJson for ListItem
+impl @moonbitlang/core/json.FromJson for ListItem
 
 type ListItemStruct
 impl ListItemStruct {
@@ -681,10 +675,10 @@ impl ListTaskStatus {
 }
 
 pub struct Mapper {
-  pub inline_ext_default : (Mapper, Inline) -> Inline?!MapperError
-  pub block_ext_default : (Mapper, Block) -> Block?!MapperError
-  pub inline : (Mapper, Inline) -> MapperResult[Inline]
-  pub block : (Mapper, Block) -> MapperResult[Block]
+  inline_ext_default : (Mapper, Inline) -> Inline?!MapperError
+  block_ext_default : (Mapper, Block) -> Block?!MapperError
+  inline : (Mapper, Inline) -> MapperResult[Inline]
+  block : (Mapper, Block) -> MapperResult[Block]
 }
 impl Mapper {
   block_ext_none[A](Self, A) -> A?!MapperError
@@ -719,19 +713,19 @@ impl[A : Show] Show for MapperResult[A]
 impl[A : ToJson] ToJson for MapperResult[A]
 
 pub struct Node {
-  pub v : A
-  pub meta : @cmark_base.Meta
+  v : A
+  meta : @rami3l/cmark/cmark_base.Meta
 }
 impl Node {
-  empty(meta~ : @cmark_base.Meta = ..) -> Self[String]
+  empty(meta~ : @rami3l/cmark/cmark_base.Meta = ..) -> Self[String]
   map[A, B](Self[A], (A) -> B) -> Self[B]
-  new[A](A, meta~ : @cmark_base.Meta = ..) -> Self[A]
+  new[A](A, meta~ : @rami3l/cmark/cmark_base.Meta = ..) -> Self[A]
   op_equal[A : Eq](Self[A], Self[A]) -> Bool
 }
 impl[A : Eq] Eq for Node[A]
 impl[A : Show] Show for Node[A]
 impl[A : ToJson] ToJson for Node[A]
-impl[A : @json.FromJson] @json.FromJson for Node[A]
+impl[A : @moonbitlang/core/json.FromJson] @moonbitlang/core/json.FromJson for Node[A]
 
 type Paragraph
 impl Paragraph {
@@ -752,7 +746,7 @@ pub enum ReferenceKind {
   Ref(ReferenceLayout, Label, Label)
 }
 impl ReferenceKind {
-  from_json(Json, @json.JsonPath) -> Self!@json.JsonDecodeError
+  from_json(Json, @moonbitlang/core/json.JsonPath) -> Self!@moonbitlang/core/json.JsonDecodeError
   op_equal(Self, Self) -> Bool
   to_json(Self) -> Json
   to_string(Self) -> String
@@ -760,7 +754,7 @@ impl ReferenceKind {
 impl Eq for ReferenceKind
 impl Show for ReferenceKind
 impl ToJson for ReferenceKind
-impl @json.FromJson for ReferenceKind
+impl @moonbitlang/core/json.FromJson for ReferenceKind
 
 pub enum ReferenceLayout {
   Collapsed
@@ -768,7 +762,7 @@ pub enum ReferenceLayout {
   Shortcut
 }
 impl ReferenceLayout {
-  from_json(Json, @json.JsonPath) -> Self!@json.JsonDecodeError
+  from_json(Json, @moonbitlang/core/json.JsonPath) -> Self!@moonbitlang/core/json.JsonDecodeError
   op_equal(Self, Self) -> Bool
   to_json(Self) -> Json
   to_string(Self) -> String
@@ -776,7 +770,7 @@ impl ReferenceLayout {
 impl Eq for ReferenceLayout
 impl Show for ReferenceLayout
 impl ToJson for ReferenceLayout
-impl @json.FromJson for ReferenceLayout
+impl @moonbitlang/core/json.FromJson for ReferenceLayout
 
 type Setext
 impl Setext {
@@ -788,29 +782,29 @@ impl ToJson for Setext
 
 type StartColResult
 impl StartColResult {
-  from_json(Json, @json.JsonPath) -> Self!@json.JsonDecodeError
+  from_json(Json, @moonbitlang/core/json.JsonPath) -> Self!@moonbitlang/core/json.JsonDecodeError
   to_json(Self) -> Json
   to_string(Self) -> String
 }
 impl Show for StartColResult
 impl ToJson for StartColResult
-impl @json.FromJson for StartColResult
+impl @moonbitlang/core/json.FromJson for StartColResult
 
 pub struct Table {
-  pub indent : Int
-  pub col_count : Int
-  pub rows : @list.T[(Node[TableRow], String)]
+  indent : Int
+  col_count : Int
+  rows : @moonbitlang/core/immut/list.T[(Node[TableRow], String)]
 }
 impl Table {
-  from_json(Json, @json.JsonPath) -> Self!@json.JsonDecodeError
-  new(indent~ : Int = .., @list.T[(Node[TableRow], String)]) -> Self
-  parse_sep_row(@list.T[(Inline, (String, String))]) -> @list.T[Node[(TableAlign?, Int)]]?
+  from_json(Json, @moonbitlang/core/json.JsonPath) -> Self!@moonbitlang/core/json.JsonDecodeError
+  new(indent~ : Int = .., @moonbitlang/core/immut/list.T[(Node[TableRow], String)]) -> Self
+  parse_sep_row(@moonbitlang/core/immut/list.T[(Inline, (String, String))]) -> @moonbitlang/core/immut/list.T[Node[(TableAlign?, Int)]]?
   to_json(Self) -> Json
   to_string(Self) -> String
 }
 impl Show for Table
 impl ToJson for Table
-impl @json.FromJson for Table
+impl @moonbitlang/core/json.FromJson for Table
 
 pub enum TableAlign {
   Left
@@ -818,36 +812,36 @@ pub enum TableAlign {
   Right
 }
 impl TableAlign {
-  from_json(Json, @json.JsonPath) -> Self!@json.JsonDecodeError
+  from_json(Json, @moonbitlang/core/json.JsonPath) -> Self!@moonbitlang/core/json.JsonDecodeError
   to_json(Self) -> Json
   to_string(Self) -> String
 }
 impl Show for TableAlign
 impl ToJson for TableAlign
-impl @json.FromJson for TableAlign
+impl @moonbitlang/core/json.FromJson for TableAlign
 
 pub enum TableRow {
-  Header(@list.T[(Inline, (String, String))])
-  Sep(@list.T[Node[(TableAlign?, Int)]])
-  Data(@list.T[(Inline, (String, String))])
+  Header(@moonbitlang/core/immut/list.T[(Inline, (String, String))])
+  Sep(@moonbitlang/core/immut/list.T[Node[(TableAlign?, Int)]])
+  Data(@moonbitlang/core/immut/list.T[(Inline, (String, String))])
 }
 impl TableRow {
-  from_json(Json, @json.JsonPath) -> Self!@json.JsonDecodeError
+  from_json(Json, @moonbitlang/core/json.JsonPath) -> Self!@moonbitlang/core/json.JsonDecodeError
   to_json(Self) -> Json
   to_string(Self) -> String
 }
 impl Show for TableRow
 impl ToJson for TableRow
-impl @json.FromJson for TableRow
+impl @moonbitlang/core/json.FromJson for TableRow
 
 pub struct Tight {
-  pub blanks : String
-  pub node : Node[String]
+  blanks : String
+  node : Node[String]
 }
 impl Tight {
-  empty(meta~ : @cmark_base.Meta = ..) -> Self
-  from_json(Json, @json.JsonPath) -> Self!@json.JsonDecodeError
-  list_text_loc(@list.T[Self]) -> @cmark_base.TextLoc
+  empty(meta~ : @rami3l/cmark/cmark_base.Meta = ..) -> Self
+  from_json(Json, @moonbitlang/core/json.JsonPath) -> Self!@moonbitlang/core/json.JsonDecodeError
+  list_text_loc(@moonbitlang/core/immut/list.T[Self]) -> @rami3l/cmark/cmark_base.TextLoc
   op_equal(Self, Self) -> Bool
   to_json(Self) -> Json
   to_string(Self) -> String
@@ -855,7 +849,7 @@ impl Tight {
 impl Eq for Tight
 impl Show for Tight
 impl ToJson for Tight
-impl @json.FromJson for Tight
+impl @moonbitlang/core/json.FromJson for Tight
 
 type Token
 impl Token {
@@ -948,11 +942,11 @@ pub typealias FolderFn[A, B] = (Folder[B], B, A) -> FolderResult[B]
 
 pub typealias InlineText = String
 
-pub typealias LabelDefs = @sorted_map.T[String, LabelDef]
+pub typealias LabelDefs = @moonbitlang/core/immut/sorted_map.T[String, LabelDef]
 
 pub typealias LabelKey = String
 
-pub typealias LabelMap[V] = @sorted_map.T[String, V]
+pub typealias LabelMap[V] = @moonbitlang/core/immut/sorted_map.T[String, V]
 
 pub typealias LabelResolverFn = (LabelContext) -> Label?
 
