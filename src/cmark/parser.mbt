@@ -94,11 +94,11 @@ fn Parser::def_label(self : Parser, l : Label) -> Label? {
 fn Parser::find_def_for_ref(
   self : Parser,
   image~ : Bool,
-  ref : Label
+  ref_ : Label
 ) -> Label? {
   let kind : LinkKind = if image { Image } else { Link }
-  let def = self.find_label_defining_key(ref.key)
-  (self.resolver)(Ref(kind, ref, def))
+  let def = self.find_label_defining_key(ref_.key)
+  (self.resolver)(Ref(kind, ref_, def))
 }
 
 fn Parser::debug_span(self : Parser, s : LineSpan) -> String {

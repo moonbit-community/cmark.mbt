@@ -357,7 +357,7 @@ fn link_footnote!(
   f : @cmark.Footnote
 ) -> Unit {
   let key = l.referenced_label().unwrap().key
-  let (text, label, ref) = make_footnote_ref_ids(c, key, f)
+  let (text, label, ref_) = make_footnote_ref_ids(c, key, f)
   let is_full_ref = match l.reference {
     Ref(Full, _, _) => true
     _ => false
@@ -366,7 +366,7 @@ fn link_footnote!(
     c.b.write_string("<a href=\"#")
     pct_encoded_string(c, label)
     c.b.write_string("\" id=\"")
-    html_escaped_string(c, ref)
+    html_escaped_string(c, ref_)
     c.b.write_string("\" role=\"doc-noteref\">")
     c.inline!(l.text)
     c.b.write_string("</a>")
@@ -374,7 +374,7 @@ fn link_footnote!(
     c.b.write_string("<sup><a href=\"#")
     pct_encoded_string(c, label)
     c.b.write_string("\" id=\"")
-    html_escaped_string(c, ref)
+    html_escaped_string(c, ref_)
     c.b.write_string("\" role=\"doc-noteref\" class=\"fn-label\">")
     c.b.write_string(text)
     c.b.write_string("</a></sup>")
@@ -431,8 +431,8 @@ fn inline!(c : Context, i : @cmark.Inline) -> Bool {
     CodeSpan(cs) => code_span(c, cs.v)
     Emphasis(e) => emphasis!(c, e.v)
     Image(i) => image(c, i.v)
-    Inlines(is) =>
-      for i in is.v {
+    Inlines(is_) =>
+      for i in is_.v {
         c.inline!(i)
       }
     Link(l) => link!(c, l.v)
