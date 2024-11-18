@@ -1,4 +1,4 @@
-pub struct TextLoc {
+pub(all) struct TextLoc {
   file : FilePath
   first_byte : BytePos
   last_byte : BytePos
@@ -66,37 +66,37 @@ pub fn TextLoc::reloc(self : TextLoc, other : TextLoc) -> TextLoc {
 
 // TODO: Formatters unimplemented
 
-pub typealias FilePath = String
+pub(all) typealias FilePath = String
 
 pub let file_path_none = "-"
 
-pub typealias BytePos = Int // 0-based
+pub(all) typealias BytePos = Int // 0-based
 
 pub let byte_pos_none : BytePos = -1
 
-pub typealias LineNum = Int // 1-based
+pub(all) typealias LineNum = Int // 1-based
 
 pub let line_num_none = -1
 
-pub typealias LinePos = (LineNum, BytePos)
+pub(all) typealias LinePos = (LineNum, BytePos)
 
 pub let line_pos_none : LinePos = (line_num_none, byte_pos_none)
 
-pub struct LineSpan {
+pub(all) struct LineSpan {
   pos : LinePos
   first : BytePos
   last : BytePos
 } derive(Show, ToJson, Eq, Compare)
 
 // A line span with the byte position on where the line starts (inside a CommonMark container).  The [line_start] is the start of line in the container, the [line_span] has the actual data. The characters in the \[[line_start];[line_span.first - 1]\] are blanks.
-pub struct Span {
+pub(all) struct Span {
   start : BytePos
   span : LineSpan
 } derive(Show, ToJson, Eq, Compare)
 
-pub typealias NextLineFn[A] = (A) -> (A, LineSpan)?
+pub(all) typealias NextLineFn[A] = (A) -> (A, LineSpan)?
 
-pub enum NextLineResult[A] {
+pub(all) enum NextLineResult[A] {
   ThisLine(BytePos)
   NextLine(A, LineSpan, BytePos)
 } derive(Show, ToJson)

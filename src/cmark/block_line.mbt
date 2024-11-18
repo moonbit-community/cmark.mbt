@@ -5,9 +5,9 @@
 // paragraph in a block quote are the lines stripped from the block
 // quote markers.  We call the line resulting from stripping the
 // block structure preceeding a given block a {e block line}.
-pub type BlockLine Node[String]
+pub(all) type BlockLine Node[String]
 
-pub typealias BlockLineBlank = Node[Blanks]
+pub(all) typealias BlockLineBlank = Node[Blanks]
 
 pub fn BlockLine::to_string(self : BlockLine) -> String {
   self._.v
@@ -25,7 +25,7 @@ pub fn BlockLine::list_text_loc(ls : List[BlockLine]) -> TextLoc {
 }
 
 // Tight block lines: a block line with its initial blanks trimmed but kept for layout. 
-pub struct Tight {
+pub(all) struct Tight {
   blanks : Blanks
   node : StringNode
 } derive(Eq, FromJson, ToJson)

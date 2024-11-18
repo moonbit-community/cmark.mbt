@@ -5,7 +5,7 @@
 /// [link reference definitions](https://spec.commonmark.org/0.30/#link-reference-definitions),
 /// [footnote definitions](#footnote-definitions) and your own
 /// [interpretations](#resolvers).
-pub struct Label {
+pub(all) struct Label {
   meta : Meta
   key : LabelKey
   text : List[Tight]
@@ -14,9 +14,9 @@ pub struct Label {
 /// The type for label keys. These are
 /// [link labels](https://spec.commonmark.org/0.30/#link-label)
 /// normalized for [matches](https://spec.commonmark.org/0.30/#matches).
-pub typealias LabelKey = String
+pub(all) typealias LabelKey = String
 
-pub typealias LabelMap[V] = @immut/sorted_map.T[LabelKey, V]
+pub(all) typealias LabelMap[V] = @immut/sorted_map.T[LabelKey, V]
 
 pub fn Label::new(
   meta~ : Meta = Meta::none(),
@@ -38,12 +38,12 @@ pub fn Label::compare(self : Label, other : Label) -> Int {
   self.key.compare(other.key)
 }
 
-pub enum LabelDef {
+pub(all) enum LabelDef {
   LinkDef(Node[LinkDefinition])
   FootnoteDef(Node[Footnote])
 } derive(Show, ToJson)
 
-pub typealias LabelDefs = @immut/sorted_map.T[LabelKey, LabelDef]
+pub(all) typealias LabelDefs = @immut/sorted_map.T[LabelKey, LabelDef]
 
 /// `context` is:
 /// - `Def (prev, current)` when we just hit a
@@ -64,17 +64,17 @@ pub typealias LabelDefs = @immut/sorted_map.T[LabelKey, LabelDef]
 ///   `InlineLink` node;
 ///   `None` means that `label` is undefined and the inline becomes
 ///   `InlineText` like in CommonMark.
-pub enum LabelContext {
+pub(all) enum LabelContext {
   Def(Label?, Label)
   Ref(LinkKind, Label, Label?)
 }
 
-pub enum LinkKind {
+pub(all) enum LinkKind {
   Link
   Image
 }
 
-pub typealias LabelResolverFn = (LabelContext) -> Label?
+pub(all) typealias LabelResolverFn = (LabelContext) -> Label?
 
 pub fn LabelContext::default_resolver(self : LabelContext) -> Label? {
   match self {

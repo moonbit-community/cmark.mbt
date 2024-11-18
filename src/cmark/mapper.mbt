@@ -10,27 +10,27 @@
 /// - Node deletion by mapping to `None`
 /// - Node transformation by mapping to `Some _`
 /// - Node expansion by mapping to `Some (Inlines _)` or `Some (Blocks _)`
-pub struct Mapper {
+pub(all) struct Mapper {
   inline_ext_default : MapFn[Inline]
   block_ext_default : MapFn[Block]
   inline : MapperFn[Inline]
   block : MapperFn[Block]
 }
 
-pub typealias MapFn[A] = (Mapper, A) -> FilterMap[A]!MapperError
+pub(all) typealias MapFn[A] = (Mapper, A) -> FilterMap[A]!MapperError
 
-pub typealias MapperFn[A] = (Mapper, A) -> MapperResult[A]
+pub(all) typealias MapperFn[A] = (Mapper, A) -> MapperResult[A]
 
 /// The type for mapper results.
 /// `Default` means doing the default map.
-pub enum MapperResult[A] {
+pub(all) enum MapperResult[A] {
   Default
   Map(FilterMap[A])
 } derive(Eq, Show, ToJson)
 
 pub impl[A] Default for MapperResult[A] with default() { Default }
 
-pub typealias FilterMap[A] = A?
+pub(all) typealias FilterMap[A] = A?
 
 pub fn Mapper::delete[A]() -> MapperResult[A] {
   Map(None)

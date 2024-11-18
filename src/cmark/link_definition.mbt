@@ -2,7 +2,7 @@
 // {{:https://spec.commonmark.org/0.30/#link-reference-definitions}
 // link references definitions} and
 // {{:https://spec.commonmark.org/0.30/#inline-link}inline links}.
-pub struct LinkDefinition {
+pub(all) struct LinkDefinition {
   layout : LinkDefinitionLayout
   label : Label?
   defined_label : Label?
@@ -20,7 +20,7 @@ pub fn LinkDefinition::new(
   { layout, label, defined_label, dest, title }
 }
 
-pub struct LinkDefinitionLayout {
+pub(all) struct LinkDefinitionLayout {
   indent : Indent
   angled_dest : Bool
   before_dest : List[BlockLineBlank]

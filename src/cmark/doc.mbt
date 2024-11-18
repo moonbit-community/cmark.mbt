@@ -1,5 +1,5 @@
 /// The type for CommonMark documents.
-pub struct Doc {
+pub(all) struct Doc {
   nl : String
   block : Block
   defs : LabelDefs

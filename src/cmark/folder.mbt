@@ -1,17 +1,17 @@
-pub struct Folder[A] {
+pub(all) struct Folder[A] {
   inline_ext_default : FoldFn[Inline, A]
   block_ext_default : FoldFn[Block, A]
   inline : FolderFn[Inline, A]
   block : FolderFn[Block, A]
 }
 
-pub typealias FoldFn[A, B] = (Folder[B], B, A) -> B!FolderError
+pub(all) typealias FoldFn[A, B] = (Folder[B], B, A) -> B!FolderError
 
-pub typealias FolderFn[A, B] = (Folder[B], B, A) -> FolderResult[B]
+pub(all) typealias FolderFn[A, B] = (Folder[B], B, A) -> FolderResult[B]
 
 /// The type for folder results.
 /// `Default` means doing the default fold.
-pub enum FolderResult[A] {
+pub(all) enum FolderResult[A] {
   Default
   Fold(A)
 } derive(Eq, Show, ToJson)
