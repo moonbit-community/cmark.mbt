@@ -21,9 +21,6 @@ impl Context {
 }
 
 pub(all) type! RenderError String
-impl RenderError {
-  to_string(Self) -> String
-}
 impl Show for RenderError
 
 pub(all) struct Renderer {
