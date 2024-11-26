@@ -26,7 +26,6 @@ type HtmlRenderFootnote
 impl HtmlRenderFootnote {
   from_json(Json, @moonbitlang/core/json.JsonPath) -> Self!@moonbitlang/core/json.JsonDecodeError
   to_json(Self) -> Json
-  to_string(Self) -> String
 }
 impl Show for HtmlRenderFootnote
 impl ToJson for HtmlRenderFootnote
@@ -36,7 +35,6 @@ type State
 impl State {
   from_json(Json, @moonbitlang/core/json.JsonPath) -> Self!@moonbitlang/core/json.JsonDecodeError
   to_json(Self) -> Json
-  to_string(Self) -> String
 }
 impl Show for State
 impl ToJson for State

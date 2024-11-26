@@ -41,9 +41,6 @@ fn run_of(char~ : Char, String, last~ : Int, start~ : Int) -> Int
 
 // Types and methods
 pub(all) type! Exit
-impl Exit {
-  to_string(Self) -> String
-}
 impl Show for Exit
 
 pub(all) enum FencedCodeBlockContinue {
@@ -53,7 +50,6 @@ pub(all) enum FencedCodeBlockContinue {
 impl FencedCodeBlockContinue {
   new(String, fence~ : (Char, Int), last~ : Int, start~ : Int) -> Self
   to_json(Self) -> Json
-  to_string(Self) -> String
 }
 impl Show for FencedCodeBlockContinue
 impl ToJson for FencedCodeBlockContinue
@@ -67,7 +63,6 @@ pub(all) enum HtmlBlockEndCond {
 impl HtmlBlockEndCond {
   op_equal(Self, Self) -> Bool
   to_json(Self) -> Json
-  to_string(Self) -> String
 }
 impl Eq for HtmlBlockEndCond
 impl Show for HtmlBlockEndCond
@@ -82,7 +77,6 @@ impl LineSpan {
   compare(Self, Self) -> Int
   op_equal(Self, Self) -> Bool
   to_json(Self) -> Json
-  to_string(Self) -> String
 }
 impl Compare for LineSpan
 impl Eq for LineSpan
@@ -116,7 +110,6 @@ impl LineType {
   setext_heading_underline(String, last~ : Int, start~ : Int) -> Self
   thematic_break(String, last~ : Int, start~ : Int) -> Self
   to_json(Self) -> Json
-  to_string(Self) -> String
 }
 impl Eq for LineType
 impl Show for LineType
@@ -131,7 +124,6 @@ impl ListType {
   is_same_type(Self, Self) -> Bool
   op_equal(Self, Self) -> Bool
   to_json(Self) -> Json
-  to_string(Self) -> String
 }
 impl Eq for ListType
 impl Show for ListType
@@ -161,7 +153,6 @@ pub(all) enum NextLineResult {
 }
 impl NextLineResult {
   to_json[A : ToJson](Self[A]) -> Json
-  to_string[A : Show](Self[A]) -> String
 }
 impl[A : Show] Show for NextLineResult[A]
 impl[A : ToJson] ToJson for NextLineResult[A]
@@ -174,7 +165,6 @@ impl Span {
   compare(Self, Self) -> Int
   op_equal(Self, Self) -> Bool
   to_json(Self) -> Json
-  to_string(Self) -> String
 }
 impl Compare for Span
 impl Eq for Span
@@ -201,7 +191,6 @@ impl TextLoc {
   to_first(Self) -> Self
   to_json(Self) -> Json
   to_last(Self) -> Self
-  to_string(Self) -> String
 }
 impl Compare for TextLoc
 impl Eq for TextLoc
