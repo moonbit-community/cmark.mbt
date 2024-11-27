@@ -592,14 +592,14 @@ pub fn LineType::list_marker(
         Nomatch
       }
     }
-    '0' | '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9' as c =>
+    '0'..='9' as c =>
       loop s, last, 1, @char.ascii_digit_to_int(c), start + 1 {
         s, last, count, acc, k => {
           if k > last || count > 9 {
             return Nomatch
           }
           match s[k] {
-            '0' | '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9' as c =>
+            '0'..='9' as c =>
               continue s,
                 last,
                 count + 1,

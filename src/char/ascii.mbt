@@ -63,8 +63,7 @@ pub fn is_ascii_digit(c : Char) -> Bool {
 
 pub fn ascii_digit_to_int(c : Char) -> Int {
   match c {
-    '0' | '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9' =>
-      c.to_int() - 0x30
+    '0'..='9' => c.to_int() - '0'.to_int()
     _ => panic()
   }
 }
@@ -75,7 +74,7 @@ pub fn is_ascii_octdigit(c : Char) -> Bool {
 
 pub fn ascii_octdigit_to_int(c : Char) -> Int {
   match c {
-    '0' | '1' | '2' | '3' | '4' | '5' | '6' | '7' => c.to_int() - 0x30
+    '0'..='7' => c.to_int() - '0'.to_int()
     _ => panic()
   }
 }
@@ -86,10 +85,9 @@ pub fn is_ascii_hexdigit(c : Char) -> Bool {
 
 pub fn ascii_hexdigit_to_int(c : Char) -> Int {
   match c {
-    '0' | '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9' =>
-      c.to_int() - 0x30
-    'A' | 'B' | 'C' | 'D' | 'E' | 'F' => c.to_int() - 0x37
-    'a' | 'b' | 'c' | 'd' | 'e' | 'f' => c.to_int() - 0x57
+    '0'..='9' => c.to_int() - '0'.to_int() + 0x0
+    'A'..='F' => c.to_int() - 'A'.to_int() + 0xa
+    'a'..='f' => c.to_int() - 'a'.to_int() + 0xa
     _ => panic()
   }
 }
