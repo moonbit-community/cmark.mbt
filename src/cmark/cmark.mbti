@@ -30,6 +30,7 @@ pub(all) enum Block {
   List(Node[BlockList])
   Paragraph(Node[BlockParagraph])
   ThematicBreak(Node[BlockThematicBreak])
+  ExtMathBlock(Node[CodeBlock])
   ExtTable(Node[Table])
   ExtFootnoteDefinition(Node[Footnote])
 }
@@ -372,6 +373,7 @@ pub(all) enum Inline {
   StrongEmphasis(Node[InlineEmphasis])
   Text(Node[String])
   ExtStrikethrough(Node[InlineStrikethrough])
+  ExtMathSpan(Node[InlineMathSpan])
 }
 impl Inline {
   empty() -> Self
@@ -485,6 +487,21 @@ impl Eq for InlineLink
 impl Show for InlineLink
 impl ToJson for InlineLink
 impl @moonbitlang/core/json.FromJson for InlineLink
+
+pub(all) struct InlineMathSpan {
+  display : Bool
+  tex_layout : @moonbitlang/core/immut/list.T[Tight]
+}
+impl InlineMathSpan {
+  from_json(Json, @moonbitlang/core/json.JsonPath) -> Self!@moonbitlang/core/json.JsonDecodeError
+  op_equal(Self, Self) -> Bool
+  tex(Self) -> String
+  to_json(Self) -> Json
+}
+impl Eq for InlineMathSpan
+impl Show for InlineMathSpan
+impl ToJson for InlineMathSpan
+impl @moonbitlang/core/json.FromJson for InlineMathSpan
 
 pub(all) type InlineRawHtml @moonbitlang/core/immut/list.T[Tight]
 impl InlineRawHtml {

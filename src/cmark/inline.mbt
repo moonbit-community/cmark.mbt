@@ -13,7 +13,7 @@ pub(all) enum Inline {
   StrongEmphasis(Node[InlineEmphasis])
   Text(Node[InlineText])
   ExtStrikethrough(Node[InlineStrikethrough])
-  // ExtMathSpan
+  ExtMathSpan(Node[InlineMathSpan])
 } derive(Eq, Show, FromJson, ToJson)
 
 pub fn Inline::empty() -> Inline {
@@ -45,7 +45,8 @@ pub fn Inline::meta(
     | Link({ meta, .. })
     | RawHtml({ meta, .. })
     | StrongEmphasis({ meta, .. })
-    | Text({ meta, .. }) | ExtStrikethrough({ meta, .. }) => meta
+    | Text({ meta, .. })
+    | ExtStrikethrough({ meta, .. }) | ExtMathSpan({ meta, .. }) => meta
   }
 }
 
@@ -60,7 +61,9 @@ pub fn Inline::meta(
 pub fn Inline::normalize(self : Inline) -> Inline {
   match self {
     Autolink(_)
-    | Break(_) | CodeSpan(_) | RawHtml(_) | Text(_) | Inlines({ v: Nil, .. })
+    | Break(_)
+    | CodeSpan(_)
+    | RawHtml(_) | Text(_) | Inlines({ v: Nil, .. }) | ExtMathSpan(_)
     as
     i => i
     Image({ v: raw, meta }) =>
@@ -130,8 +133,8 @@ pub fn Inline::to_plain_text(
     acc, Cons(RawHtml(_), is_) => continue acc, is_
     acc, Cons(Text(t), is_) => continue push(t.v, acc), is_
     acc, Cons(ExtStrikethrough(i), is_) => continue acc, Cons(i.v._, is_)
-    // acc, Cons(ExtMathSpan(m), is_) => continue push(m.v.tex(), acc), is_
-    acc, Cons(i, is_) => continue acc, Cons(i, is_) // TODO: Consider `ext`?
+    acc, Cons(ExtMathSpan(m), is_) => continue push(m.v.tex(), acc), is_
+    acc, Cons(i, is_) => continue acc, Cons(i, is_)
     acc, Nil => acc.tail().add(acc.unsafe_head().rev()).rev()
   }
 }
@@ -402,3 +405,13 @@ pub(all) typealias InlineText = String
 // Extensions
 
 pub(all) type InlineStrikethrough Inline derive(Eq, Show, FromJson, ToJson)
+
+pub(all) struct InlineMathSpan {
+  display : Bool
+  tex_layout : List[Tight]
+} derive(Eq, Show, FromJson, ToJson)
+
+pub fn tex(self : InlineMathSpan) -> String {
+  self.tex_layout.map(Tight::to_string).to_array()
+  |> String::concat(separator=" ")
+}

@@ -1371,9 +1371,9 @@ fn Parser::block_struct_to_code_block(
         self.meta_of_spans(first~, last~)
       }
       let cb = { layout: Fenced(layout), info_string, code }
-      // if self.exts && CodeBlock::is_math_block(info_string.map(fn(i) { i.v })) {
-      //   return ExtMathBlock(cb, meta)
-      // }
+      if self.exts && CodeBlock::is_math_block(info_string.map(fn(i) { i.v })) {
+        return ExtMathBlock({ v: cb, meta })
+      }
       CodeBlock({ v: cb, meta })
     }
   }
