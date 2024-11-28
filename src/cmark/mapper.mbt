@@ -73,8 +73,8 @@ pub fn Mapper::new(
 pub fn Mapper::map_inline(self : Mapper, i : Inline) -> FilterMap[Inline] {
   guard let Default = (self.inline)(self, i) else { Map(i) => i }
   match i {
-    // | ExtMathSpan(_)
-    Autolink(_) | Break(_) | CodeSpan(_) | RawHtml(_) | Text(_) => Some(i)
+    Autolink(_) | Break(_) | CodeSpan(_) | RawHtml(_) | Text(_) | ExtMathSpan(_) =>
+      Some(i)
     Image({ v, meta }) => {
       let text = self.map_inline(v.text).or(Inline::empty())
       Some(Image({ v: { ..v, text, }, meta }))
@@ -108,9 +108,9 @@ pub fn Mapper::map_inline(self : Mapper, i : Inline) -> FilterMap[Inline] {
 pub fn Mapper::map_block(self : Mapper, b : Block) -> FilterMap[Block] {
   guard let Default = (self.block)(self, b) else { Map(b) => b }
   match b {
-    // | ExtMathBlock(_)
     BlankLine(_)
-    | CodeBlock(_) | HtmlBlock(_) | LinkRefDefinition(_) | ThematicBreak(_)
+    | CodeBlock(_)
+    | HtmlBlock(_) | LinkRefDefinition(_) | ThematicBreak(_) | ExtMathBlock(_)
     as
     b => Some(b)
     Heading({ v, meta }) => {

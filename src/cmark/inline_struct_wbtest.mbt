@@ -835,3 +835,58 @@ test "should tokenize nested strikethroughs and emphases" {
     ],
   )
 }
+
+test "should tokenize inline math" {
+  @json.inspect!(
+    tokenize_only(
+      strict=false,
+      #| This is $\LaTeX$ !!
+      ,
+    ),
+    content=[
+      { "MathSpanMarks(1)": [16] },
+      [
+        {
+          "$tag": "MathSpanMarks",
+          "0": { "start": 9, "count": 1, "may_open": true, "may_close": false },
+        },
+        {
+          "$tag": "MathSpanMarks",
+          "0": { "start": 16, "count": 1, "may_open": false, "may_close": true },
+        },
+      ],
+      { "pos": [1, 0], "first": 1, "last": 19 },
+    ],
+  )
+}
+
+test "should parse inline math" {
+  @json.inspect!(
+    parse_only(
+      strict=false,
+      #| This is $\LaTeX$ !!
+      ,
+    ),
+    content=[
+      [1, ""],
+      {
+        "$tag": "Inlines",
+        "0": [
+          [
+            { "$tag": "Text", "0": ["This is "] },
+            {
+              "$tag": "ExtMathSpan",
+              "0": [
+                {
+                  "display": false,
+                  "tex_layout": [{ "blanks": "", "node": ["\\LaTeX"] }],
+                },
+              ],
+            },
+            { "$tag": "Text", "0": [" !!"] },
+          ],
+        ],
+      },
+    ],
+  )
+}

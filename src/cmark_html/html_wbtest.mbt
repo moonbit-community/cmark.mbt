@@ -96,6 +96,35 @@ test "should render footnotes" (it : @test.T) {
   it.snapshot!(filename="footnote.html")
 }
 
+test "should render math" (it : @test.T) {
+  let doc =
+    #|## Math
+    #|
+    #|The inline $\sqrt{x^2-1}$ equation.
+    #|
+    #|There must be no blanks after the opener and before the closer. This
+    #|makes so you can donate $5 or $10 dollars here and there without problem.
+    #|
+    #|There is no such think as nesting $\sqrt{x^2-1}$+3$+3$. As usual
+    #|delimiters can be \$escaped\$ $\sqrt{16\$}$
+    #|
+    #|Amazing, this is [hyperlinked math $3x^2$](https://example.org)
+    #|
+    #|The HTML renderer should be careful with $a < b$ escapes.
+    #|
+    #|Display math can be in `math` code blocks.
+    #|
+    #|```math
+    #|\left( \sum_{k=1}^n a_k b_k \right)^2 < \Phi
+    #|```
+    #|
+    #|But it can also be in $$ \left( \sum_{k=1}^n
+    #|   a_k b_k \right)^2 < \Phi $$
+  let rendered = from_doc!(safe=false, Doc::from_string(strict=false, doc))
+  it.write(rendered)
+  it.snapshot!(filename="math.html")
+}
+
 test "should render tables" (it : @test.T) {
   let doc =
     #|## Tables
@@ -114,8 +143,8 @@ test "should render tables" (it : @test.T) {
     #|| Fancy | maybe | hu\|glu |
     #||-------|-------|-------|
     #|| *a | b* | `code |` | [bl|a] |
-    // #|| not \| two cols | $\sqrt(x^2 - 1)$ |
-    #|| not \| two cols | **sorry, NO mAtH YeT** |
+    #|| not \| two cols | $\sqrt(x^2 - 1)$ |
+    // #|| not \| two cols | **sorry, NO mAtH YeT** |
     #|
     #|[bl|a]: https://example.org
     #|

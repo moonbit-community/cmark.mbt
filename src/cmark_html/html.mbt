@@ -422,7 +422,27 @@ fn strikethrough!(c : Context, s : @cmark.InlineStrikethrough) -> Unit {
   c.b.write_string("</del>")
 }
 
-// fn math_span()
+fn math_span(c : Context, ms : @cmark.InlineMathSpan) -> Unit {
+  fn tex_line(c : Context, l : @cmark.Tight) {
+    html_escaped_string(c, l.to_string())
+  }
+
+  fn tex_lines(c : Context, ls : List[@cmark.Tight]) {
+    guard let Some(head) = ls.head() else { _ => return  }
+    tex_line(c, head)
+    for l in ls.tail() {
+      c.b.write_char('\n')
+      tex_line(c, l)
+    }
+  }
+
+  let tex = ms.tex_layout
+  guard tex.is_empty().not() else { return  }
+  let (lb, rb) = if ms.display { ("\\[", "\\]") } else { ("\\(", "\\)") }
+  c.b.write_string(lb)
+  tex_lines(c, tex)
+  c.b.write_string(rb)
+}
 
 fn inline!(c : Context, i : @cmark.Inline) -> Bool {
   match i {
@@ -440,7 +460,7 @@ fn inline!(c : Context, i : @cmark.Inline) -> Bool {
     StrongEmphasis(e) => strong_emphasis!(c, e.v)
     Text(t) => html_escaped_string(c, t.v)
     ExtStrikethrough(s) => strikethrough!(c, s.v)
-    // ExtMathSpan(ms) => math_span(c, ms.v)
+    ExtMathSpan(ms) => math_span(c, ms.v)
     // _ => comment(c, "<!-- Unknown inline -->")
   }
   true
@@ -621,14 +641,14 @@ fn thematic_break(c : Context) -> Unit {
   c.b.write_string("<hr>\n")
 }
 
-// fn math_block(c : Context, cb : @cmark.CodeBlock) -> Unit {
-//   c.b.write_string("\\[\n")
-//   for l in cb.code {
-//     html_escaped_string(c, l.v)
-//     c.b.write_char('\n')
-//   }
-//   c.b.write_string("\\]\n")
-// }
+fn math_block(c : Context, cb : @cmark.CodeBlock) -> Unit {
+  c.b.write_string("\\[\n")
+  for l in cb.code {
+    html_escaped_string(c, l.v)
+    c.b.write_char('\n')
+  }
+  c.b.write_string("\\]\n")
+}
 
 fn table!(c : Context, t : @cmark.Table) -> Unit {
   fn start(c : Context, align : @cmark.TableAlign?, tag) {
@@ -737,7 +757,7 @@ fn block!(c : Context, b : @cmark.Block) -> Bool {
     List(l) => list!(c, l.v)
     Paragraph(p) => paragraph!(c, p.v)
     ThematicBreak(_) => thematic_break(c)
-    // ExtMathBlock(cb) => math_block(c, cb.v)
+    ExtMathBlock(cb) => math_block(c, cb.v)
     ExtTable(t) => table!(c, t.v)
     BlankLine(_) | LinkRefDefinition(_) | ExtFootnoteDefinition(_) => ()
   }

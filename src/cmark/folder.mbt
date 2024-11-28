@@ -61,8 +61,8 @@ pub fn Folder::fold_inline[A](
 ) -> A!FolderError {
   guard let Default = (self.inline)(self, acc, i) else { Fold(acc) => acc }
   match i {
-    // ExtMathSpan(_) | 
-    Autolink(_) | Break(_) | CodeSpan(_) | RawHtml(_) | Text(_) => acc
+    Autolink(_) | Break(_) | CodeSpan(_) | RawHtml(_) | Text(_) | ExtMathSpan(_) =>
+      acc
     Image({ v, .. }) | Link({ v, .. }) => self.fold_inline!(acc, v.text)
     Emphasis({ v, .. }) | StrongEmphasis({ v, .. }) =>
       self.fold_inline!(acc, v.inline)
@@ -85,9 +85,9 @@ pub fn Folder::fold_block[A](
 ) -> A!FolderError {
   guard let Default = (self.block)(self, acc, b) else { Fold(acc) => acc }
   match b {
-    // ExtMathBlock(_) | 
     BlankLine(_)
-    | CodeBlock(_) | HtmlBlock(_) | LinkRefDefinition(_) | ThematicBreak(_) =>
+    | CodeBlock(_)
+    | HtmlBlock(_) | LinkRefDefinition(_) | ThematicBreak(_) | ExtMathBlock(_) =>
       acc
     Heading({ v, .. }) => self.fold_inline!(acc, v.inline)
     BlockQuote({ v, .. }) => self.fold_block!(acc, v.block)

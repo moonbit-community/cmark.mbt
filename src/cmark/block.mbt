@@ -10,7 +10,7 @@ pub(all) enum Block {
   List(Node[BlockList])
   Paragraph(Node[BlockParagraph])
   ThematicBreak(Node[BlockThematicBreak])
-  // ExtMathBlock
+  ExtMathBlock(Node[CodeBlock])
   ExtTable(Node[Table])
   ExtFootnoteDefinition(Node[Footnote])
 } derive(Show, FromJson, ToJson)
@@ -33,6 +33,7 @@ pub fn Block::meta(self : Block) -> Meta {
     ThematicBreak(bl) => bl.meta
     ExtFootnoteDefinition(bl) => bl.meta
     ExtTable(bl) => bl.meta
+    ExtMathBlock(bl) => bl.meta
   }
 }
 

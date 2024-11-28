@@ -327,9 +327,7 @@ fn tokens_try_add_math_span_marks(
   let run_last = @cmark_base.run_of(char~, s, last~, start=start + 1)
   let count = run_last - start + 1
   let next = run_last + 1
-  if count != 2 {
-    return (toks, next)
-  }
+  guard count <= 2 else { (toks, next) }
   let mut may_open = true
   let mut may_close = true
   if count == 1 {
@@ -537,7 +535,22 @@ fn Parser::ext_strikethough_token(
   Inline({ start: first, inline, endline: last_line, next: last + 1 })
 }
 
-// fn Parser::ext_math_span_token()
+fn Parser::ext_math_span_token(
+  self : Parser,
+  count~ : Int,
+  first~ : Int,
+  last~ : Int,
+  first_line~ : LineSpan,
+  last_line~ : LineSpan,
+  rev_spans : RevSpans
+) -> Token {
+  let textloc = self.text_loc_of_lines(first~, last~, first_line~, last_line~)
+  let tex_layout = self.raw_tight_block_lines(rev_spans~)
+  let meta = self.meta(textloc)
+  let ms = { display: count == 2, tex_layout }
+  let inline = ExtMathSpan({ v: ms, meta })
+  Inline({ start: first, inline, endline: last_line, next: last + 1 })
+}
 
 // Parsers
 
@@ -597,8 +610,42 @@ fn Parser::try_math_span(
   start~ : BytePos,
   count~ : Int
 ) -> (List[Token], LineSpan, Token)? {
-  let _ = (self, toks, start_line, start, count)
-  abort("unimplemented")
+  let cstart = start
+  guard self.cidx.has_math_span(count~, after=cstart) else { None }
+  let first = cstart + count
+  loop toks, { ..start_line, first, }, count, List::Nil, first {
+    Nil, _, _, _, _ => None
+    Cons(MathSpanMarks({ start, count: c, may_close, .. }), toks),
+    line,
+    count,
+    spans,
+    k => {
+      guard c == count && may_close else {
+        continue toks, line, count, spans, k
+      }
+      let span : Span = {
+        start: line.first,
+        span: { ..line, first: k, last: start - 1 },
+      }
+      let spans = spans.add(span)
+      let t = self.ext_math_span_token(
+        count~,
+        first=cstart,
+        last=start + count - 1,
+        first_line=start_line,
+        last_line=line,
+        spans,
+      )
+      Some((toks, line, t))
+    }
+    Cons(Newline({ newline, .. }), toks), line, count, spans, k => {
+      let span : Span = { start: line.first, span: { ..line, first: k } }
+      let spans = spans.add(span)
+      let k = self.first_non_blank_in_span(newline)
+      continue toks, newline, count, spans, k
+    }
+    Cons(_, toks), line, count, spans, k => continue toks, line, count, spans, k
+  }
 }
 
 fn Parser::try_autolink_or_html(
