@@ -12,10 +12,12 @@ Supported CommonMark features include:
 
 - Vanilla CommonMark syntax;
 - Common syntax extensions, including:
-  - Strikethroughs;
-  - Task lists;
-  - Footnotes;
-  - Tables.
+  - Strikethroughs
+  - Task lists
+  - Footnotes
+  - Tables
+  - Inline math
+  - Math blocks
 
 ## Building
 
