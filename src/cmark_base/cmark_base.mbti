@@ -49,7 +49,6 @@ pub(all) enum FencedCodeBlockContinue {
 }
 impl FencedCodeBlockContinue {
   new(String, fence~ : (Char, Int), last~ : Int, start~ : Int) -> Self
-  to_json(Self) -> Json
 }
 impl Show for FencedCodeBlockContinue
 impl ToJson for FencedCodeBlockContinue
@@ -60,10 +59,6 @@ pub(all) enum HtmlBlockEndCond {
   EndBlank
   EndBlank7
 }
-impl HtmlBlockEndCond {
-  op_equal(Self, Self) -> Bool
-  to_json(Self) -> Json
-}
 impl Eq for HtmlBlockEndCond
 impl Show for HtmlBlockEndCond
 impl ToJson for HtmlBlockEndCond
@@ -72,11 +67,6 @@ pub(all) struct LineSpan {
   pos : (Int, Int)
   first : Int
   last : Int
-}
-impl LineSpan {
-  compare(Self, Self) -> Int
-  op_equal(Self, Self) -> Bool
-  to_json(Self) -> Json
 }
 impl Compare for LineSpan
 impl Eq for LineSpan
@@ -106,10 +96,8 @@ impl LineType {
   html_block_end(String, end_cond~ : HtmlBlockEndCond, last~ : Int, start~ : Int) -> Bool
   html_block_start(String, last~ : Int, start~ : Int) -> Self
   list_marker(String, last~ : Int, start~ : Int) -> Self
-  op_equal(Self, Self) -> Bool
   setext_heading_underline(String, last~ : Int, start~ : Int) -> Self
   thematic_break(String, last~ : Int, start~ : Int) -> Self
-  to_json(Self) -> Json
 }
 impl Eq for LineType
 impl Show for LineType
@@ -120,10 +108,7 @@ pub(all) enum ListType {
   Ordered(Int, Char)
 }
 impl ListType {
-  from_json(Json, @moonbitlang/core/json.JsonPath) -> Self!@moonbitlang/core/json.JsonDecodeError
   is_same_type(Self, Self) -> Bool
-  op_equal(Self, Self) -> Bool
-  to_json(Self) -> Json
 }
 impl Eq for ListType
 impl Show for ListType
@@ -151,20 +136,12 @@ pub(all) enum NextLineResult {
   ThisLine(Int)
   NextLine(A, LineSpan, Int)
 }
-impl NextLineResult {
-  to_json[A : ToJson](Self[A]) -> Json
-}
 impl[A : Show] Show for NextLineResult[A]
 impl[A : ToJson] ToJson for NextLineResult[A]
 
 pub(all) struct Span {
   start : Int
   span : LineSpan
-}
-impl Span {
-  compare(Self, Self) -> Int
-  op_equal(Self, Self) -> Bool
-  to_json(Self) -> Json
 }
 impl Compare for Span
 impl Eq for Span
@@ -180,16 +157,12 @@ pub(all) struct TextLoc {
 }
 impl TextLoc {
   after(Self) -> Self
-  compare(Self, Self) -> Int
-  from_json(Json, @moonbitlang/core/json.JsonPath) -> Self!@moonbitlang/core/json.JsonDecodeError
   is_empty(Self) -> Bool
   is_none(Self) -> Bool
   none() -> Self
-  op_equal(Self, Self) -> Bool
   reloc(Self, Self) -> Self
   span(Self, Self) -> Self
   to_first(Self) -> Self
-  to_json(Self) -> Json
   to_last(Self) -> Self
 }
 impl Compare for TextLoc

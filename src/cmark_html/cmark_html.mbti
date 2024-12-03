@@ -23,19 +23,11 @@ fn xhtml_renderer(backend_blocks~ : Bool = .., safe~ : Bool) -> @rami3l/cmark/cm
 
 // Types and methods
 type HtmlRenderFootnote
-impl HtmlRenderFootnote {
-  from_json(Json, @moonbitlang/core/json.JsonPath) -> Self!@moonbitlang/core/json.JsonDecodeError
-  to_json(Self) -> Json
-}
 impl Show for HtmlRenderFootnote
 impl ToJson for HtmlRenderFootnote
 impl @moonbitlang/core/json.FromJson for HtmlRenderFootnote
 
 type State
-impl State {
-  from_json(Json, @moonbitlang/core/json.JsonPath) -> Self!@moonbitlang/core/json.JsonDecodeError
-  to_json(Self) -> Json
-}
 impl Show for State
 impl ToJson for State
 impl @moonbitlang/core/json.FromJson for State
