@@ -1,10 +1,11 @@
-/// The type for CommonMark documents.
+///| The type for CommonMark documents.
 pub(all) struct Doc {
   nl : String
   block : Block
   defs : LabelDefs
 } derive(Show, ToJson)
 
+///|
 pub fn Doc::new(
   nl~ : String = "\n",
   defs~ : LabelDefs = LabelDefs::empty(),
@@ -13,10 +14,12 @@ pub fn Doc::new(
   { nl, block, defs }
 }
 
+///|
 pub fn Doc::empty() -> Doc {
   Doc::new(Block::empty())
 }
 
+///|
 pub fn Doc::from_string(
   defs~ : LabelDefs = LabelDefs::empty(),
   resolver~ : LabelResolverFn = LabelContext::default_resolver,

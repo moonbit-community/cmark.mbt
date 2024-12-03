@@ -1,6 +1,6 @@
 // Inline structure parsing
 
-/// Tokens for parsing inlines.
+///| Tokens for parsing inlines.
 ///
 /// The list of tokens of a paragraph are the points to consider to
 /// parse it into inlines. Tokens gradually become `Inline` tokens
@@ -24,16 +24,19 @@ enum Token {
   MathSpanMarks(TokenMathSpanMarks)
 } derive(Show, ToJson)
 
+///|
 struct TokenStart {
   start : BytePos
 } derive(Show, ToJson)
 
+///|
 struct TokenBackticks {
   start : BytePos
   count : Int
   escaped : Bool
 } derive(Show, ToJson)
 
+///|
 struct TokenEmphasisMarks {
   start : BytePos
   char : Char
@@ -42,6 +45,7 @@ struct TokenEmphasisMarks {
   may_close : Bool
 } derive(Show, ToJson)
 
+///|
 struct TokenInline {
   start : BytePos
   inline : Inline
@@ -49,11 +53,13 @@ struct TokenInline {
   next : BytePos
 } derive(Show, ToJson)
 
+///|
 struct TokenLinkStart {
   start : BytePos
   image : Bool
 } derive(Show, ToJson)
 
+///|
 struct TokenNewline {
   /// Points at spaces or `\` on the broken line
   start : BytePos
@@ -61,12 +67,14 @@ struct TokenNewline {
   newline : LineSpan
 } derive(Show, ToJson)
 
+///|
 struct TokenStrikethroughMarks {
   start : BytePos
   may_open : Bool
   may_close : Bool
 } derive(Show, ToJson)
 
+///|
 struct TokenMathSpanMarks {
   start : BytePos
   count : Int
@@ -74,6 +82,7 @@ struct TokenMathSpanMarks {
   may_close : Bool
 } derive(Show, ToJson)
 
+///|
 fn Token::start(self : Token) -> BytePos {
   match self {
     Token::AutolinkOrHtmlStart(t) => t.start
@@ -89,6 +98,7 @@ fn Token::start(self : Token) -> BytePos {
   }
 }
 
+///|
 fn CloserIndex::has_backticks(
   self : CloserIndex,
   count~ : Int,
@@ -97,14 +107,17 @@ fn CloserIndex::has_backticks(
   self.exists(Backticks(count), after~)
 }
 
+///|
 fn CloserIndex::has_right_brack(self : CloserIndex, after~ : Int) -> Bool {
   self.exists(RightBrack, after~)
 }
 
+///|
 fn CloserIndex::has_right_paren(self : CloserIndex, after~ : Int) -> Bool {
   self.exists(RightParen, after~)
 }
 
+///|
 fn CloserIndex::emphasis_pos(
   self : CloserIndex,
   char~ : Char,
@@ -113,6 +126,7 @@ fn CloserIndex::emphasis_pos(
   self.pos(EmphasisMarks(char), after~)
 }
 
+///|
 fn CloserIndex::has_emphasis(
   self : CloserIndex,
   char~ : Char,
@@ -121,10 +135,12 @@ fn CloserIndex::has_emphasis(
   self.exists(EmphasisMarks(char), after~)
 }
 
+///|
 fn CloserIndex::has_strikethrough(self : CloserIndex, after~ : Int) -> Bool {
   self.exists(StrikethroughMarks, after~)
 }
 
+///|
 fn CloserIndex::has_math_span(
   self : CloserIndex,
   count~ : Int,
@@ -133,6 +149,7 @@ fn CloserIndex::has_math_span(
   self.exists(MathSpanMarks(count), after~)
 }
 
+///|
 fn tokens_rev_and_make_closer_index(
   toks : List[Token]
 ) -> (CloserIndex, List[Token]) {
@@ -163,7 +180,7 @@ fn tokens_rev_and_make_closer_index(
   }
 }
 
-/// Used to make the text delimitation precise for nested inlines.
+///| Used to make the text delimitation precise for nested inlines.
 fn tokens_rev_and_shorten_last_line(
   to_last~ : Int,
   acc : List[Token],
@@ -183,6 +200,7 @@ fn tokens_rev_and_shorten_last_line(
   }
 }
 
+///|
 fn tokens_drop_stop_after_right_brack(toks : List[Token]) -> List[Token] {
   toks
   .drop_while(
@@ -196,10 +214,12 @@ fn tokens_drop_stop_after_right_brack(toks : List[Token]) -> List[Token] {
   .tail()
 }
 
+///|
 fn tokens_drop_until(start~ : Int, toks : List[Token]) -> List[Token] {
   toks.drop_while(fn(t) { t.start() < start })
 }
 
+///|
 fn tokens_next_line(toks : List[Token]) -> (List[Token], LineSpan)? {
   loop toks {
     Nil => None
@@ -210,6 +230,7 @@ fn tokens_next_line(toks : List[Token]) -> (List[Token], LineSpan)? {
 
 // Tokenization
 
+///|
 fn Token::newline(
   s : String,
   prev_line : LineSpan,
@@ -228,6 +249,7 @@ fn Token::newline(
   Newline({ start, break_ty, newline })
 }
 
+///|
 fn tokens_add_backtick(
   toks : List[Token],
   s : String,
@@ -240,6 +262,7 @@ fn tokens_add_backtick(
   (toks.add(Backticks({ start, count, escaped: prev_bslash })), last + 1)
 }
 
+///|
 fn tokens_try_add_image_link_start(
   toks : List[Token],
   s : String,
@@ -253,6 +276,7 @@ fn tokens_try_add_image_link_start(
   (toks.add(LinkStart({ start, image: true })), next + 1)
 }
 
+///|
 fn tokens_try_add_emphasis(
   toks : List[Token],
   s : String,
@@ -295,6 +319,7 @@ fn tokens_try_add_emphasis(
   (toks.add(EmphasisMarks({ start, char, count, may_open, may_close })), next)
 }
 
+///|
 fn tokens_try_add_strikethrough_marks(
   toks : List[Token],
   s : String,
@@ -316,6 +341,7 @@ fn tokens_try_add_strikethrough_marks(
   (toks.add(StrikethroughMarks({ start, may_open, may_close })), next)
 }
 
+///|
 fn tokens_try_add_math_span_marks(
   toks : List[Token],
   s : String,
@@ -342,6 +368,7 @@ fn tokens_try_add_math_span_marks(
   (toks.add(MathSpanMarks({ start, count, may_open, may_close })), next)
 }
 
+///|
 fn tokenize(
   exts~ : Bool,
   s : String,
@@ -384,6 +411,7 @@ fn tokenize(
 
 // Making inlines and inline tokens
 
+///|
 fn Parser::break_inline(
   self : Parser,
   line : LineSpan,
@@ -402,6 +430,7 @@ fn Parser::break_inline(
   Break({ v: { ty: break_ty, layout_before, layout_after }, meta: m })
 }
 
+///|
 fn Parser::try_add_text_inline(
   self : Parser,
   line : LineSpan,
@@ -420,6 +449,7 @@ fn Parser::try_add_text_inline(
   acc.add(Text(self.clean_unesc_unref_span({ ..line, first, last })))
 }
 
+///|
 fn Parser::inlines_inline(
   self : Parser,
   first~ : BytePos,
@@ -442,6 +472,7 @@ fn Parser::inlines_inline(
   }
 }
 
+///|
 fn Parser::code_span_token(
   self : Parser,
   count~ : Int,
@@ -458,6 +489,7 @@ fn Parser::code_span_token(
   Inline({ start: first, inline: cs, endline: last_line, next: last + 1 })
 }
 
+///|
 fn Parser::autolink_token(
   self : Parser,
   line : LineSpan,
@@ -472,6 +504,7 @@ fn Parser::autolink_token(
   Inline({ start: first, inline, endline: line, next: last + 1 })
 }
 
+///|
 fn Parser::raw_html_token(
   self : Parser,
   first~ : Int,
@@ -491,6 +524,7 @@ fn Parser::raw_html_token(
   Inline({ start: first, inline, endline: last_line, next: last + 1 })
 }
 
+///|
 fn Parser::link_token(
   self : Parser,
   first~ : Int,
@@ -506,6 +540,7 @@ fn Parser::link_token(
   Inline({ start: first, inline, endline: last_line, next: last + 1 })
 }
 
+///|
 fn Parser::emphasis_token(
   self : Parser,
   first~ : Int,
@@ -522,6 +557,7 @@ fn Parser::emphasis_token(
   Inline({ start: first, inline, endline: last_line, next: last + 1 })
 }
 
+///|
 fn Parser::ext_strikethough_token(
   self : Parser,
   first~ : Int,
@@ -535,6 +571,7 @@ fn Parser::ext_strikethough_token(
   Inline({ start: first, inline, endline: last_line, next: last + 1 })
 }
 
+///|
 fn Parser::ext_math_span_token(
   self : Parser,
   count~ : Int,
@@ -554,7 +591,7 @@ fn Parser::ext_math_span_token(
 
 // Parsers
 
-/// https://spec.commonmark.org/current/#code-span
+///| https://spec.commonmark.org/current/#code-span
 fn Parser::try_code(
   self : Parser,
   toks : List[Token],
@@ -603,6 +640,7 @@ fn Parser::try_code(
   }
 }
 
+///|
 fn Parser::try_math_span(
   self : Parser,
   toks : List[Token],
@@ -648,6 +686,7 @@ fn Parser::try_math_span(
   }
 }
 
+///|
 fn Parser::try_autolink_or_html(
   self : Parser,
   toks : List[Token],
@@ -685,6 +724,7 @@ fn Parser::try_autolink_or_html(
   Some((toks, last_line, t))
 }
 
+///|
 fn Parser::label_of_rev_spans(
   self : Parser,
   key~ : String,
@@ -702,7 +742,7 @@ fn Parser::label_of_rev_spans(
   { meta, key, text }
 }
 
-/// https://spec.commonmark.org/current/#full-reference-link
+///| https://spec.commonmark.org/current/#full-reference-link
 fn Parser::try_full_reflink_remainder(
   self : Parser,
   toks : List[Token],
@@ -732,7 +772,7 @@ fn Parser::try_full_reflink_remainder(
   )
 }
 
-/// https://spec.commonmark.org/current/#shortcut-reference-link
+///| https://spec.commonmark.org/current/#shortcut-reference-link
 fn Parser::try_shortcut_reflink(
   self : Parser,
   toks : List[Token],
@@ -758,7 +798,7 @@ fn Parser::try_shortcut_reflink(
   .map(fn(def) { (toks, line, ReferenceKind::Ref(Shortcut, ref_, def), last) })
 }
 
-/// https://spec.commonmark.org/current/#collapsed-reference-link
+///| https://spec.commonmark.org/current/#collapsed-reference-link
 fn Parser::try_collapsed_reflink(
   self : Parser,
   toks : List[Token],
@@ -786,7 +826,7 @@ fn Parser::try_collapsed_reflink(
   .map(fn(def) { (toks, line, ReferenceKind::Ref(Collapsed, ref_, def), last) })
 }
 
-/// https://spec.commonmark.org/current/#inline-link
+///| https://spec.commonmark.org/current/#inline-link
 fn Parser::try_inline_link_remainder(
   self : Parser,
   toks : List[Token],
@@ -867,6 +907,7 @@ fn Parser::try_inline_link_remainder(
 }
 
 // https://spec.commonmark.org/current/#link-text
+///|
 fn Parser::find_link_text_tokens(
   self : Parser,
   toks : List[Token],
@@ -914,6 +955,7 @@ fn Parser::find_link_text_tokens(
   }
 }
 
+///|
 fn Parser::try_link_def(
   self : Parser,
   start~ : BytePos,
@@ -987,6 +1029,7 @@ fn Parser::try_link_def(
 
 // First pass
 
+///|
 fn Parser::try_link(
   self : Parser,
   start_toks : List[Token],
@@ -1029,7 +1072,7 @@ fn Parser::try_link(
   )
 }
 
-/// Parse inline atoms and links.
+///| Parse inline atoms and links.
 /// Links are parsed here otherwise link reference data gets parsed as atoms. 
 fn Parser::first_pass(
   self : Parser,
@@ -1077,6 +1120,7 @@ fn Parser::first_pass(
 
 // Second pass
 
+///|
 fn Parser::find_emphasis_text(
   self : Parser,
   toks : List[Token],
@@ -1138,6 +1182,7 @@ fn Parser::find_emphasis_text(
   }
 }
 
+///|
 fn Parser::try_emphasis(
   self : Parser,
   start_toks : List[Token],
@@ -1199,6 +1244,7 @@ fn Parser::try_emphasis(
   Ok((toks, line))
 }
 
+///|
 fn Parser::find_strikethrough_text(
   self : Parser,
   toks : List[Token],
@@ -1230,6 +1276,7 @@ fn Parser::find_strikethrough_text(
   }
 }
 
+///|
 fn Parser::try_strikethrough(
   self : Parser,
   start_toks : List[Token],
@@ -1266,6 +1313,7 @@ fn Parser::try_strikethrough(
   Ok((toks, line))
 }
 
+///|
 fn Parser::second_pass(
   self : Parser,
   toks : List[Token],
@@ -1300,7 +1348,7 @@ fn Parser::second_pass(
 
 // Last pass
 
-/// Only `Inline` and `Newline` tokens remain. We fold over them to
+///| Only `Inline` and `Newline` tokens remain. We fold over them to
 /// convert them to `inline` values and `Break`s. `Text` inlines
 /// are created for data between them.
 fn Parser::last_pass(
@@ -1328,6 +1376,7 @@ fn Parser::last_pass(
   }
 }
 
+///|
 fn Parser::parse_tokens(
   self : Parser,
   toks : List[Token],
@@ -1339,6 +1388,7 @@ fn Parser::parse_tokens(
   (inlines, had_link)
 }
 
+///|
 fn Parser::strip_paragraph(
   self : Parser,
   lines : List[LineSpan]
@@ -1365,6 +1415,7 @@ fn Parser::strip_paragraph(
   ((leading_indent, trailing_blanks), self.meta_of_spans(first~, last~), lines)
 }
 
+///|
 fn Parser::parse_inline(
   self : Parser,
   // NOTE: The `lines` here are in reverse order.
@@ -1383,6 +1434,7 @@ fn Parser::parse_inline(
 
 // Parsing table rows
 
+///|
 fn Parser::get_blanks(
   self : Parser,
   line : LineSpan,
@@ -1394,6 +1446,7 @@ fn Parser::get_blanks(
   (self.layout_clean_raw_span1(line), nb)
 }
 
+///|
 fn Parser::make_col(self : Parser, is_ : List[Inline]) -> Inline {
   match is_ {
     Nil => abort("unreachable")
@@ -1408,6 +1461,7 @@ fn Parser::make_col(self : Parser, is_ : List[Inline]) -> Inline {
   }
 }
 
+///|
 fn Parser::find_pipe(
   self : Parser,
   line : LineSpan,
@@ -1436,6 +1490,7 @@ fn Parser::find_pipe(
   Ok((text, after, n + 1))
 }
 
+///|
 fn Parser::start_col(
   self : Parser,
   line : LineSpan,
@@ -1460,11 +1515,13 @@ fn Parser::start_col(
   }
 }
 
+///|
 enum StartColResult {
   Col((Inline, TableCellLayout), BytePos)
   Start(String, List[Inline])
 } derive(Show, FromJson, ToJson)
 
+///|
 fn Parser::finish_col(
   self : Parser,
   line : LineSpan,
@@ -1502,6 +1559,7 @@ fn Parser::finish_col(
   }
 }
 
+///|
 fn Parser::parse_cols(
   self : Parser,
   line : LineSpan,
@@ -1530,6 +1588,7 @@ fn Parser::parse_cols(
   }
 }
 
+///|
 fn Parser::parse_table_row(
   self : Parser,
   line : LineSpan

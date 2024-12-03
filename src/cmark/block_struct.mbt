@@ -1,25 +1,31 @@
 // Block structure parsing.
 
+///|
 fn Parser::curr_col(self : Parser) -> Col {
   self.curr_char_col + self.tab_consumed_cols
 }
 
+///|
 fn Parser::curr_indent(self : Parser) -> Col {
   self.next_non_blank_col - self.curr_col()
 }
 
+///|
 fn Parser::end_of_line(self : Parser) -> Bool {
   self.curr_char > self.curr_line_last_char
 }
 
+///|
 fn Parser::only_blanks(self : Parser) -> Bool {
   self.next_non_blank > self.curr_line_last_char
 }
 
+///|
 fn Parser::has_next_non_blank(self : Parser) -> Bool {
   self.next_non_blank <= self.curr_line_last_char
 }
 
+///|
 fn Parser::update_next_non_blank(self : Parser) -> Unit {
   loop self.i, self.curr_line_last_char, self.curr_char, self.curr_char_col {
     s, last, k, col =>
@@ -39,6 +45,7 @@ fn Parser::update_next_non_blank(self : Parser) -> Unit {
   }
 }
 
+///|
 fn Parser::accept_cols(self : Parser, count~ : Int) -> Unit {
   loop count, self.curr_char, self.curr_char_col {
     count, k, col =>
@@ -62,7 +69,7 @@ fn Parser::accept_cols(self : Parser, count~ : Int) -> Unit {
   self.update_next_non_blank()
 }
 
-/// https://spec.commonmark.org/current/#block-quote-marker
+///| https://spec.commonmark.org/current/#block-quote-marker
 fn Parser::match_and_accept_block_quote(self : Parser) -> Bool {
   if self.end_of_line() || self.i[self.curr_char] != '>' {
     return false
@@ -81,7 +88,7 @@ fn Parser::match_and_accept_block_quote(self : Parser) -> Bool {
   true
 }
 
-/// Returns min indent after marker for list item
+///| Returns min indent after marker for list item
 fn Parser::accept_list_marker_and_indent(
   self : Parser,
   marker_size~ : Int,
@@ -99,7 +106,7 @@ fn Parser::accept_list_marker_and_indent(
   min_indent
 }
 
-/// Returns padding for partially consumed tab and content first char
+///| Returns padding for partially consumed tab and content first char
 fn Parser::accept_code_indent(self : Parser, count~ : Int) -> (Int, BytePos) {
   self.accept_cols(count~)
   if self.tab_consumed_cols == 0 {
@@ -115,15 +122,17 @@ fn Parser::accept_code_indent(self : Parser, count~ : Int) -> (Int, BytePos) {
 // order. We don't extract data from the input here. We just store
 // line spans. See:
 // https://spec.commonmark.org/current/#phase-1-block-structure
-/// Number of space characters to pad content with
+///| Number of space characters to pad content with
 typealias SpacePad = Int
 
+///|
 struct IndentedCodeLine {
   pad : SpacePad
   code : LineSpan
   is_blank : Bool
 } derive(Show, ToJson)
 
+///|
 struct Fence {
   indent : Indent
   opening_fence : LineSpan
@@ -132,16 +141,19 @@ struct Fence {
   closing_fence : LineSpan?
 } derive(Show, ToJson)
 
+///|
 struct FenceCodeBlockStruct {
   fence : Fence
   code : List[(SpacePad, LineSpan)]
 } derive(Show, ToJson)
 
+///|
 enum CodeBlockStruct {
   Indented(List[IndentedCodeLine])
   Fenced(FenceCodeBlockStruct)
 } derive(Show, ToJson)
 
+///|
 struct Atx {
   indent : Indent
   level : HeadingLevel
@@ -150,6 +162,7 @@ struct Atx {
   layout_after : LineSpan
 } derive(Show, ToJson)
 
+///|
 struct Setext {
   level : HeadingLevel
   heading_lines : List[LineSpan]
@@ -157,21 +170,25 @@ struct Setext {
   underline : (Indent, LineSpan, LineSpan)
 } derive(Show, ToJson)
 
+///|
 enum Heading {
   Atx(Atx)
   Setext(Setext)
 } derive(Show, ToJson)
 
+///|
 struct HtmlBlockStruct {
   end_cond : HtmlBlockEndCond?
   html : List[LineSpan]
 } derive(Show, ToJson)
 
+///|
 struct Paragraph {
   maybe_ref : Bool
   lines : List[LineSpan]
 } derive(Show, ToJson)
 
+///|
 enum BlockStruct {
   BlockQuote(Indent, List[BlockStruct])
   BlankLine(SpacePad, LineSpan)
@@ -186,6 +203,7 @@ enum BlockStruct {
   ExtFootnote(Indent, (Label, Label?), List[BlockStruct])
 } derive(Show, ToJson)
 
+///|
 struct ListItemStruct {
   before_marker : Indent
   marker : LineSpan
@@ -194,6 +212,7 @@ struct ListItemStruct {
   blocks : List[BlockStruct]
 } derive(Show, ToJson)
 
+///|
 struct ListBlockStruct {
   last_blank : Bool // Last added line was blank and not first line of item
   loose : Bool // Inter-item looseness, intra-item is computed later
@@ -202,6 +221,7 @@ struct ListBlockStruct {
   items : List[ListItemStruct]
 } derive(Show, ToJson)
 
+///|
 fn BlockStruct::is_blank_line(self : BlockStruct) -> Bool {
   guard let BlockStruct::BlankLine(_, _) = self else { _ => return false }
   true
@@ -209,12 +229,14 @@ fn BlockStruct::is_blank_line(self : BlockStruct) -> Bool {
 
 // Making blocks from the current line status
 
+///|
 fn Parser::blank_line(self : Parser) -> BlockStruct {
   let first = self.curr_char
   let last = self.curr_line_last_char
   BlockStruct::BlankLine(0, self.curr_line_span(first~, last~))
 }
 
+///|
 fn Parser::thematic_break(
   self : Parser,
   indent~ : Indent,
@@ -228,6 +250,7 @@ fn Parser::thematic_break(
   )
 }
 
+///|
 fn Parser::atx_heading(
   self : Parser,
   indent~ : Indent,
@@ -244,6 +267,7 @@ fn Parser::atx_heading(
   Heading(Atx({ indent, level, after_open, heading, layout_after }))
 }
 
+///|
 fn Parser::setext_heading(
   self : Parser,
   level~ : HeadingLevel,
@@ -260,12 +284,14 @@ fn Parser::setext_heading(
   Heading(Setext({ level, heading_lines, underline }))
 }
 
+///|
 fn Parser::indented_code_block(self : Parser) -> BlockStruct {
   let (pad, first) = self.accept_code_indent(count=4)
   let code = self.curr_line_span(first~, last=self.curr_line_last_char)
   CodeBlock(Indented(List::of([{ pad, code, is_blank: false }])))
 }
 
+///|
 fn Parser::fenced_code_block(
   self : Parser,
   indent~ : Indent,
@@ -283,6 +309,7 @@ fn Parser::fenced_code_block(
   CodeBlock(Fenced({ fence, code: Nil }))
 }
 
+///|
 fn Parser::html_block(
   self : Parser,
   end_cond~ : HtmlBlockEndCond,
@@ -304,6 +331,7 @@ fn Parser::html_block(
   HtmlBlock({ end_cond, html: List::of([self.curr_line_span(first~, last~)]) })
 }
 
+///|
 fn Parser::paragraph(self : Parser, start~ : BytePos) -> BlockStruct {
   let last = self.curr_line_last_char
   let maybe_ref = @cmark_base.could_be_link_ref_definition(
@@ -315,6 +343,7 @@ fn Parser::paragraph(self : Parser, start~ : BytePos) -> BlockStruct {
   Paragraph({ maybe_ref, lines })
 }
 
+///|
 fn Parser::add_paragraph_line(
   self : Parser,
   indent_start~ : Indent,
@@ -327,6 +356,7 @@ fn Parser::add_paragraph_line(
   bs.add(Paragraph({ ..par, lines, }))
 }
 
+///|
 fn Parser::table_row(
   self : Parser,
   first~ : BytePos,
@@ -338,6 +368,7 @@ fn Parser::table_row(
   )
 }
 
+///|
 fn Parser::table(
   self : Parser,
   indent~ : Indent,
@@ -350,7 +381,7 @@ fn Parser::table(
 // Link reference definition parsing
 // This is invoked when we close a paragraph and works on the paragraph lines.
 
-/// Has no side effect on [p], parsing occurs on [lines] spans.
+///| Has no side effect on [p], parsing occurs on [lines] spans.
 /// https://spec.commonmark.org/current/#link-reference-definitions
 fn Parser::parse_link_ref_definition(
   self : Parser,
@@ -478,6 +509,7 @@ fn Parser::parse_link_ref_definition(
   }
 }
 
+///|
 fn Parser::maybe_add_link_ref_definitions(
   self : Parser,
   lines : List[LineSpan],
@@ -494,6 +526,7 @@ fn Parser::maybe_add_link_ref_definitions(
   }
 }
 
+///|
 fn Parser::close_indented_code_block(
   self : Parser,
   lines : List[IndentedCodeLine],
@@ -513,6 +546,7 @@ fn Parser::close_indented_code_block(
 
 // Closing blocks and finishing the document.
 
+///|
 fn Parser::close_paragraph(
   self : Parser,
   par : Paragraph,
@@ -522,6 +556,7 @@ fn Parser::close_paragraph(
   self.maybe_add_link_ref_definitions(par.lines, bs)
 }
 
+///|
 fn Parser::close_last_block(
   self : Parser,
   bs : List[BlockStruct]
@@ -535,6 +570,7 @@ fn Parser::close_last_block(
   }
 }
 
+///|
 fn Parser::close_list(
   self : Parser,
   l : ListBlockStruct,
@@ -556,6 +592,7 @@ fn Parser::close_list(
   }
 }
 
+///|
 fn Parser::close_footnote(
   self : Parser,
   indent : Indent,
@@ -573,6 +610,7 @@ fn Parser::close_footnote(
   blanks.rev_concat(bs.add(ExtFootnote(indent, label, blocks)))
 }
 
+///|
 fn Parser::close_last_list_item(
   self : Parser,
   l : ListBlockStruct
@@ -582,6 +620,7 @@ fn Parser::close_last_list_item(
   { ..l, items: l.items.tail().add(item) }
 }
 
+///|
 fn Parser::end_doc_close_fenced_code_block(
   self : Parser,
   fenced : FenceCodeBlockStruct,
@@ -599,6 +638,7 @@ fn Parser::end_doc_close_fenced_code_block(
   bs.add(CodeBlock(Fenced(fenced)))
 }
 
+///|
 fn Parser::end_doc_close_html(
   self : Parser,
   h : HtmlBlockStruct,
@@ -615,6 +655,7 @@ fn Parser::end_doc_close_html(
   bs.add(HtmlBlock({ ..h, end_cond: None }))
 }
 
+///|
 fn Parser::end_doc(self : Parser, bs : List[BlockStruct]) -> List[BlockStruct] {
   match bs {
     Cons(BlockQuote(indent, bq), bs) =>
@@ -633,7 +674,7 @@ fn Parser::end_doc(self : Parser, bs : List[BlockStruct]) -> List[BlockStruct] {
 
 // Adding lines to blocks
 
-/// Effects on [p]'s column advance
+///| Effects on [p]'s column advance
 fn Parser::match_line_type(
   self : Parser,
   no_setext~ : Bool,
@@ -744,6 +785,7 @@ fn Parser::match_line_type(
   }
 }
 
+///|
 fn Parser::list_marker_can_interrupt_paragraph(
   self : Parser,
   marker : ListType,
@@ -758,6 +800,7 @@ fn Parser::list_marker_can_interrupt_paragraph(
   non_blank <= self.curr_line_last_char // Line is not blank
 }
 
+///|
 fn Parser::add_open_blocks_with_line_class(
   self : Parser,
   indent_start~ : Indent,
@@ -793,6 +836,7 @@ fn Parser::add_open_blocks_with_line_class(
   }
 }
 
+///|
 fn Parser::add_open_blocks(
   self : Parser,
   bs : List[BlockStruct]
@@ -807,6 +851,7 @@ fn Parser::add_open_blocks(
   )
 }
 
+///|
 fn Parser::footnote(
   self : Parser,
   indent~ : Indent,
@@ -823,6 +868,7 @@ fn Parser::footnote(
   ExtFootnote(indent, (label, defined_label), self.add_open_blocks(Nil))
 }
 
+///|
 fn Parser::list_item(
   self : Parser,
   indent~ : Indent,
@@ -856,6 +902,7 @@ fn Parser::list_item(
   (min, { before_marker, marker, after_marker, ext_task_marker, blocks })
 }
 
+///|
 fn Parser::list(
   self : Parser,
   indent~ : Indent,
@@ -870,6 +917,7 @@ fn Parser::list(
   bs.add(List({ last_blank, loose, item_min_indent, list_type, items }))
 }
 
+///|
 fn Parser::try_add_to_list(
   self : Parser,
   indent~ : Indent,
@@ -908,6 +956,7 @@ fn Parser::try_add_to_list(
   }
 }
 
+///|
 fn Parser::try_add_to_paragraph(
   self : Parser,
   par : Paragraph,
@@ -919,8 +968,9 @@ fn Parser::try_add_to_paragraph(
     // These can't interrupt paragraphs
     HtmlBlockLine(HtmlBlockEndCond::EndBlank7)
     | IndentedCodeBlockLine
-    | ExtTableRow(_) | ExtFootnoteLabel(_) | ParagraphLine =>
-      self.add_paragraph_line(indent_start~, par~, bs~)
+    | ExtTableRow(_)
+    | ExtFootnoteLabel(_)
+    | ParagraphLine => self.add_paragraph_line(indent_start~, par~, bs~)
     ListMarkerLine(marker, marker_last) =>
       if self.list_marker_can_interrupt_paragraph(marker, marker_last) {
         self.list(indent~, marker, marker_last, self.close_paragraph(par, bs))
@@ -966,6 +1016,7 @@ fn Parser::try_add_to_paragraph(
   }
 }
 
+///|
 fn Parser::try_add_to_indented_code_block(
   self : Parser,
   ls : List[IndentedCodeLine],
@@ -991,6 +1042,7 @@ fn Parser::try_add_to_indented_code_block(
   }
 }
 
+///|
 fn Parser::try_add_to_fenced_code_block(
   self : Parser,
   f : FenceCodeBlockStruct,
@@ -1020,6 +1072,7 @@ fn Parser::try_add_to_fenced_code_block(
   }
 }
 
+///|
 fn Parser::try_add_to_html_block(
   self : Parser,
   b : HtmlBlockStruct,
@@ -1044,6 +1097,7 @@ fn Parser::try_add_to_html_block(
   }
 }
 
+///|
 fn Parser::try_lazy_continuation(
   self : Parser,
   indent_start~ : Indent,
@@ -1071,6 +1125,7 @@ fn Parser::try_lazy_continuation(
   }
 }
 
+///|
 fn Parser::try_add_to_table(
   self : Parser,
   indent : Indent,
@@ -1096,6 +1151,7 @@ fn Parser::try_add_to_table(
   }
 }
 
+///|
 fn Parser::try_add_to_block_quote(
   self : Parser,
   indent_layout : Indent,
@@ -1126,6 +1182,7 @@ fn Parser::try_add_to_block_quote(
   }
 }
 
+///|
 fn Parser::try_add_to_footnote(
   self : Parser,
   fn_indent : Indent,
@@ -1158,6 +1215,7 @@ fn Parser::try_add_to_footnote(
   }
 }
 
+///|
 fn Parser::try_add_to_list_item(
   self : Parser,
   list : ListBlockStruct,
@@ -1216,11 +1274,12 @@ fn Parser::try_add_to_list_item(
   }
 }
 
+///|
 fn Parser::add_line(self : Parser, bs : List[BlockStruct]) -> List[BlockStruct] {
   match bs {
     Cons(Paragraph(par), bs) => self.try_add_to_paragraph(par, bs)
-    Cons(ThematicBreak(_) | Heading(_) | BlankLine(_) | LinkRefDef(_), _) | Nil =>
-      self.add_open_blocks(bs)
+    Cons(ThematicBreak(_) | Heading(_) | BlankLine(_) | LinkRefDef(_), _)
+    | Nil => self.add_open_blocks(bs)
     Cons(List(l), bs) => self.try_add_to_list_item(l, bs)
     Cons(CodeBlock(Indented(ls)), bs) =>
       self.try_add_to_indented_code_block(ls, bs)
@@ -1234,6 +1293,7 @@ fn Parser::add_line(self : Parser, bs : List[BlockStruct]) -> List[BlockStruct] 
   }
 }
 
+///|
 fn Parser::get_first_line(self : Parser) -> String {
   let max = self.i.length() - 1
   let mut k = 0
@@ -1256,6 +1316,7 @@ fn Parser::get_first_line(self : Parser) -> String {
   "\r"
 }
 
+///|
 fn Parser::get_next_line(self : Parser) -> Bool {
   let max = self.i.length() - 1
   if self.curr_line_last_char == max {
@@ -1289,6 +1350,7 @@ fn Parser::get_next_line(self : Parser) -> Bool {
   true
 }
 
+///|
 fn Parser::parse_block(self : Parser) -> (String, Node[List[BlockStruct]]) {
   fn meta() {
     self.meta(
@@ -1317,6 +1379,7 @@ fn Parser::parse_block(self : Parser) -> (String, Node[List[BlockStruct]]) {
 
 // Building the final AST, invokes inline parsing.
 
+///|
 fn Parser::block_struct_to_blank_line(
   self : Parser,
   pad : Indent,
@@ -1325,6 +1388,7 @@ fn Parser::block_struct_to_blank_line(
   BlankLine(self.clean_raw_span(pad~, span))
 }
 
+///|
 fn Parser::block_struct_to_code_block(
   self : Parser,
   b : CodeBlockStruct
@@ -1379,6 +1443,7 @@ fn Parser::block_struct_to_code_block(
   }
 }
 
+///|
 fn Parser::block_struct_to_heading(self : Parser, b : Heading) -> Block {
   match b {
     Atx({ indent, level, after_open, heading, layout_after }) => {
@@ -1433,6 +1498,7 @@ fn Parser::block_struct_to_heading(self : Parser, b : Heading) -> Block {
   }
 }
 
+///|
 fn Parser::block_struct_to_html_block(
   self : Parser,
   b : HtmlBlockStruct
@@ -1446,6 +1512,7 @@ fn Parser::block_struct_to_html_block(
   HtmlBlock({ v: lines, meta })
 }
 
+///|
 fn Parser::block_struct_to_paragraph(self : Parser, par : Paragraph) -> Block {
   let (layout, inline) = self.parse_inline(par.lines)
   let (leading_indent, trailing_blanks) = layout
@@ -1453,6 +1520,7 @@ fn Parser::block_struct_to_paragraph(self : Parser, par : Paragraph) -> Block {
   Paragraph({ v: { leading_indent, inline, trailing_blanks }, meta })
 }
 
+///|
 fn Parser::block_struct_to_thematic_break(
   self : Parser,
   indent : Indent,
@@ -1462,6 +1530,7 @@ fn Parser::block_struct_to_thematic_break(
   ThematicBreak({ v: { indent, layout }, meta })
 }
 
+///|
 fn Parser::block_struct_to_table(
   self : Parser,
   indent : Indent,
@@ -1493,6 +1562,7 @@ fn Parser::block_struct_to_table(
   ExtTable({ v: { indent, col_count, rows }, meta })
 }
 
+///|
 fn Parser::block_struct_to_block_quote(
   self : Parser,
   indent : Indent,
@@ -1514,6 +1584,7 @@ fn Parser::block_struct_to_block_quote(
   BlockQuote({ v: { indent, block }, meta: block.meta() })
 }
 
+///|
 fn Parser::block_struct_to_footnote_definition(
   self : Parser,
   indent : Indent,
@@ -1553,12 +1624,14 @@ fn Parser::block_struct_to_footnote_definition(
   ExtFootnoteDefinition(footnote)
 }
 
+///|
 enum BState {
   Blank
   TrailBlank
   NonBlank
 } derive(Eq)
 
+///|
 fn Parser::block_struct_to_list_item(
   self : Parser,
   i : ListItemStruct
@@ -1615,6 +1688,7 @@ fn Parser::block_struct_to_list_item(
   ({ v, meta }, tight)
 }
 
+///|
 fn Parser::block_struct_to_list(self : Parser, list : ListBlockStruct) -> Block {
   let items = list.items
   let (last, tight) = self.block_struct_to_list_item(items.unsafe_head())
@@ -1632,6 +1706,7 @@ fn Parser::block_struct_to_list(self : Parser, list : ListBlockStruct) -> Block 
   List({ v: { ty: list.list_type, tight, items }, meta })
 }
 
+///|
 fn Parser::block_struct_to_block(self : Parser, b : BlockStruct) -> Block {
   match b {
     BlockQuote(indent, bs) => self.block_struct_to_block_quote(indent, bs)
@@ -1650,6 +1725,7 @@ fn Parser::block_struct_to_block(self : Parser, b : BlockStruct) -> Block {
   }
 }
 
+///|
 fn Parser::block_struct_to_doc(
   self : Parser,
   doc : Node[List[BlockStruct]]
