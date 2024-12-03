@@ -1,6 +1,7 @@
 // Leaf blocks
 // The matching functions assume the indentation has been stripped.
 
+///|
 pub(all) enum HtmlBlockEndCond {
   EndStr(String)
   EndCond1
@@ -8,6 +9,7 @@ pub(all) enum HtmlBlockEndCond {
   EndBlank7
 } derive(Show, ToJson, Eq)
 
+///|
 pub(all) enum ListType {
   /// With the given marker.
   Unordered(Char)
@@ -15,6 +17,7 @@ pub(all) enum ListType {
   Ordered(Int, Char)
 } derive(Show, FromJson, ToJson, Eq)
 
+///|
 pub fn ListType::is_same_type(self : ListType, other : ListType) -> Bool {
   match (self, other) {
     (Ordered(_, c0), Ordered(_, c1)) => c0 == c1
@@ -23,6 +26,7 @@ pub fn ListType::is_same_type(self : ListType, other : ListType) -> Bool {
   }
 }
 
+///|
 pub(all) enum LineType {
   AtxHeadingLine(HeadingLevel, BytePos, First, Last)
   BlankLine
@@ -39,7 +43,7 @@ pub(all) enum LineType {
   Nomatch
 } derive(Show, ToJson, Eq)
 
-/// https://spec.commonmark.org/current/#thematic-breaks
+///| https://spec.commonmark.org/current/#thematic-breaks
 pub fn LineType::thematic_break(
   s : String,
   last~ : BytePos,
@@ -70,7 +74,7 @@ pub fn LineType::thematic_break(
   }
 }
 
-/// https://spec.commonmark.org/current/#atx-headings
+///| https://spec.commonmark.org/current/#atx-headings
 pub fn LineType::atx_heading(
   s : String,
   last~ : BytePos,
@@ -151,7 +155,7 @@ pub fn LineType::atx_heading(
   level(s, last, 1, start + 1)
 }
 
-/// https://spec.commonmark.org/current/#setext-heading
+///| https://spec.commonmark.org/current/#setext-heading
 pub fn LineType::setext_heading_underline(
   s : String,
   last~ : BytePos,
@@ -184,6 +188,7 @@ pub fn LineType::setext_heading_underline(
   underline(s, last, start, start + 1)
 }
 
+///|
 pub fn LineType::fenced_code_block_start(
   s : String,
   last~ : BytePos,
@@ -249,12 +254,13 @@ pub fn LineType::fenced_code_block_start(
   }
 }
 
+///|
 pub(all) enum FencedCodeBlockContinue {
   Close(First, Last)
   Code
 } derive(Show, ToJson)
 
-/// `fenced_code_block_continue(fence, s, last, start)` indicates
+///| `fenced_code_block_continue(fence, s, last, start)` indicates
 /// whether the fence code continues or closes in the the range
 /// [start;last] given the opening `open` which indicates the
 /// indent, fence char and number of fence chars.
@@ -303,10 +309,12 @@ pub fn FencedCodeBlockContinue::new(
   }
 }
 
+///|
 let html_start_cond_1_set : @immut/hashset.T[String] = @immut/hashset.of(
   ["pre", "script", "style", "textarea"],
 )
 
+///|
 let html_start_cond_6_set : @immut/hashset.T[String] = @immut/hashset.of(
   [
     "address", "article", "aside", "base", "basefont", "blockquote", "body", "caption",
@@ -319,6 +327,7 @@ let html_start_cond_6_set : @immut/hashset.T[String] = @immut/hashset.of(
   ],
 )
 
+///|
 fn LineType::html_block_start_5(
   s : String,
   last~ : BytePos,
@@ -332,6 +341,7 @@ fn LineType::html_block_start_5(
   HtmlBlockLine(EndStr("]]>"))
 }
 
+///|
 fn LineType::html_block_start_2(
   s : String,
   last~ : BytePos,
@@ -344,6 +354,7 @@ fn LineType::html_block_start_2(
   HtmlBlockLine(EndStr("-->"))
 }
 
+///|
 fn LineType::html_block_start_7_open_tag(
   s : String,
   last~ : BytePos,
@@ -368,6 +379,7 @@ fn LineType::html_block_start_7_open_tag(
   }
 }
 
+///|
 fn LineType::html_block_start_7_close_tag(
   s : String,
   last~ : BytePos,
@@ -391,7 +403,7 @@ fn LineType::html_block_start_7_close_tag(
   }
 }
 
-/// https://spec.commonmark.org/current/#html-blocks
+///| https://spec.commonmark.org/current/#html-blocks
 pub fn LineType::html_block_start(
   s : String,
   last~ : BytePos,
@@ -457,7 +469,7 @@ pub fn LineType::html_block_start(
   }
 }
 
-/// https://spec.commonmark.org/current/#html-blocks end condition 1.
+///| https://spec.commonmark.org/current/#html-blocks end condition 1.
 fn LineType::html_block_end_cond_1(
   s : String,
   last~ : BytePos,
@@ -495,6 +507,7 @@ fn LineType::html_block_end_cond_1(
   }
 }
 
+///|
 pub fn LineType::html_block_end(
   s : String,
   end_cond~ : HtmlBlockEndCond,
@@ -508,6 +521,7 @@ pub fn LineType::html_block_end(
   }
 }
 
+///|
 pub fn LineType::ext_table_row(
   s : String,
   last~ : BytePos,
@@ -522,6 +536,7 @@ pub fn LineType::ext_table_row(
   ExtTableRow(last_nb)
 }
 
+///|
 pub fn LineType::ext_footnote_label(
   buf : Buffer,
   s : String,
@@ -551,6 +566,7 @@ pub fn LineType::ext_footnote_label(
 }
 
 // https://spec.commonmark.org/current/#link-reference-definition
+///|
 pub fn could_be_link_ref_definition(
   s : String,
   last~ : BytePos,
@@ -575,6 +591,7 @@ pub fn could_be_link_ref_definition(
 // Container blocks
 
 // https://spec.commonmark.org/current/#list-marker
+///|
 pub fn LineType::list_marker(
   s : String,
   last~ : BytePos,
@@ -621,6 +638,7 @@ pub fn LineType::list_marker(
   }
 }
 
+///|
 pub fn ext_task_marker(
   s : String,
   last~ : BytePos,

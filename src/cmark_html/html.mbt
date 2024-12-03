@@ -1,3 +1,4 @@
+///|
 struct State {
   safe : Bool
   backend_blocks : Bool
@@ -6,6 +7,7 @@ struct State {
   footnotes : LabelMap[HtmlRenderFootnote]
 } derive(Show, ToJson, FromJson)
 
+///|
 struct HtmlRenderFootnote {
   text : String
   id : String
@@ -14,20 +16,25 @@ struct HtmlRenderFootnote {
 } derive(Show, ToJson, FromJson)
 
 // We use `sorted_map.T` to serialize to JSON objects instead of arrays.
+///|
 typealias StringSet = @immut/sorted_map.T[String, Unit]
 
+///|
 let state = "CmarkHtmlRendererState"
 
+///|
 pub fn safe(c : Context) -> Bool {
   guard let Some({ "safe": True | False as b }) = c.state[state]
   b == True
 }
 
+///|
 fn backend_blocks(c : Context) -> Bool {
   guard let Some({ "backend_blocks": True | False as b }) = c.state[state]
   b == True
 }
 
+///|
 fn init_context(
   backend_blocks~ : Bool = false,
   safe~ : Bool,
@@ -44,6 +51,7 @@ fn init_context(
   c.state[state] = st.to_json()
 }
 
+///|
 fn uid(c : Context, id : String) -> String {
   guard let Some(Object({ "ids": Object(ids) })) = c.state[state]
   loop ids, id, 0 {
@@ -58,6 +66,7 @@ fn uid(c : Context, id : String) -> String {
   }
 }
 
+///|
 fn footnote_id(l : String) -> String {
   let res = StringBuilder::new()
   res.write_string("fn-")
@@ -72,10 +81,12 @@ fn footnote_id(l : String) -> String {
   res.to_string()
 }
 
+///|
 fn footnote_ref_id(fnid : String, c : Int) -> String {
   String::concat(separator="-", ["ref", c.to_string(), fnid])
 }
 
+///|
 fn make_footnote_ref_ids(
   c : Context,
   label : String,
@@ -86,9 +97,7 @@ fn make_footnote_ref_ids(
       {
         "footnotes": Object(footnotes),
         "footnote_count": Number(footnote_count),
-      }
-      as
-      st
+      } as st
     )
   ) = c.state[state]
   guard let Some(
@@ -112,6 +121,7 @@ fn make_footnote_ref_ids(
 
 // Escaping
 
+///|
 pub fn buffer_add_html_escaped_char(b : Buffer, ch : Char) -> Unit {
   match ch {
     '\x00' => b.write_char(@char.rep)
@@ -124,10 +134,12 @@ pub fn buffer_add_html_escaped_char(b : Buffer, ch : Char) -> Unit {
   }
 }
 
+///|
 pub fn html_escaped_char(c : Context, ch : Char) -> Unit {
   buffer_add_html_escaped_char(c.b, ch)
 }
 
+///|
 pub fn buffer_add_html_escaped_string(b : Buffer, s : String) -> Unit {
   let len = s.length()
   let max_idx = len - 1
@@ -181,10 +193,12 @@ pub fn buffer_add_html_escaped_string(b : Buffer, s : String) -> Unit {
   }
 }
 
+///|
 pub fn html_escaped_string(c : Context, s : String) -> Unit {
   buffer_add_html_escaped_string(c.b, s)
 }
 
+///|
 pub fn buffer_add_pct_encoded_string(b : Buffer, s : String) -> Unit { // Percent encoded + HTML escaped
   let unsafe_hexdigit = fn(i : Int) -> Byte {
     (if i < 10 { i + 0x30 } else { i + 0x37 }).to_byte()
@@ -228,20 +242,23 @@ pub fn buffer_add_pct_encoded_string(b : Buffer, s : String) -> Unit { // Percen
   }
 }
 
+///|
 pub fn pct_encoded_string(c : Context, s : String) -> Unit {
   buffer_add_pct_encoded_string(c.b, s)
 }
 
 // Rendering functions
 
+///|
 fn comment(c : Context, s : String) -> Unit {
   c.b.write_string("<!--")
   html_escaped_string(c, s)
   c.b.write_string("-->")
 }
 
+///|
 fn comment_undefined_label(c : Context, l : @cmark.InlineLink) -> Unit {
-  guard let Some(def) = l.referenced_label() else { _ => return  }
+  guard let Some(def) = l.referenced_label() else { _ => return }
   comment(c, "Undefined label \{def.key}")
 }
 
@@ -250,13 +267,15 @@ fn comment_undefined_label(c : Context, l : @cmark.InlineLink) -> Unit {
 //   comment(c, "Unknown label definition type for \{def.key}")
 // }
 
+///|
 fn comment_footnote_image(c : Context, l : @cmark.InlineLink) -> Unit {
-  guard let Some(def) = l.referenced_label() else { _ => return  }
+  guard let Some(def) = l.referenced_label() else { _ => return }
   comment(c, "Footnote \{def.key} referenced as image")
 }
 
+///|
 fn block_lines(c : Context, ls : List[@cmark.StringNode]) -> Unit {
-  guard let Cons({ v, .. }, ls) = ls else { _ => return  }
+  guard let Cons({ v, .. }, ls) = ls else { _ => return }
   c.b.write_string(v)
   for l in ls {
     c.b.write_char('\n')
@@ -266,6 +285,7 @@ fn block_lines(c : Context, ls : List[@cmark.StringNode]) -> Unit {
 
 // Inline rendering
 
+///|
 fn autolink(c : Context, a : @cmark.InlineAutolink) -> Unit {
   let pre = if a.is_email { "mailto:" } else { "" }
   let url = pre + a.link.v
@@ -277,6 +297,7 @@ fn autolink(c : Context, a : @cmark.InlineAutolink) -> Unit {
   c.b.write_string("</a>")
 }
 
+///|
 fn break_(c : Context, b : @cmark.InlineBreak) -> Unit {
   match b.ty {
     Hard => c.b.write_string("<br>\n")
@@ -284,24 +305,28 @@ fn break_(c : Context, b : @cmark.InlineBreak) -> Unit {
   }
 }
 
+///|
 fn code_span(c : Context, cs : @cmark.InlineCodeSpan) -> Unit {
   c.b.write_string("<code>")
   html_escaped_string(c, cs.code())
   c.b.write_string("</code>")
 }
 
+///|
 fn emphasis!(c : Context, e : @cmark.InlineEmphasis) -> Unit {
   c.b.write_string("<em>")
   c.inline!(e.inline)
   c.b.write_string("</em>")
 }
 
+///|
 fn strong_emphasis!(c : Context, e : @cmark.InlineEmphasis) -> Unit {
   c.b.write_string("<strong>")
   c.inline!(e.inline)
   c.b.write_string("</strong>")
 }
 
+///|
 fn link_dest_and_title(
   c : Context,
   ld : @cmark.LinkDefinition
@@ -324,6 +349,7 @@ fn link_dest_and_title(
   (dest, title)
 }
 
+///|
 fn image(c : Context, i : @cmark.InlineLink, close~ : String = " >") -> Unit {
   match i.reference_definition(c.doc.defs) {
     Some(LinkDef({ v: ld, .. })) => {
@@ -351,6 +377,7 @@ fn image(c : Context, i : @cmark.InlineLink, close~ : String = " >") -> Unit {
   }
 }
 
+///|
 fn link_footnote!(
   c : Context,
   l : @cmark.InlineLink,
@@ -381,6 +408,7 @@ fn link_footnote!(
   }
 }
 
+///|
 fn link!(c : Context, l : @cmark.InlineLink) -> Unit {
   match l.reference_definition(c.doc.defs) {
     Some(LinkDef({ v: ld, .. })) => {
@@ -401,6 +429,7 @@ fn link!(c : Context, l : @cmark.InlineLink) -> Unit {
   }
 }
 
+///|
 fn raw_html(c : Context, h : @cmark.InlineRawHtml) -> Unit {
   if safe(c) {
     comment(c, "CommonMark raw HTML omitted")
@@ -416,19 +445,21 @@ fn raw_html(c : Context, h : @cmark.InlineRawHtml) -> Unit {
   }
 }
 
+///|
 fn strikethrough!(c : Context, s : @cmark.InlineStrikethrough) -> Unit {
   c.b.write_string("<del>")
   c.inline!(s._)
   c.b.write_string("</del>")
 }
 
+///|
 fn math_span(c : Context, ms : @cmark.InlineMathSpan) -> Unit {
   fn tex_line(c : Context, l : @cmark.Tight) {
     html_escaped_string(c, l.to_string())
   }
 
   fn tex_lines(c : Context, ls : List[@cmark.Tight]) {
-    guard let Some(head) = ls.head() else { _ => return  }
+    guard let Some(head) = ls.head() else { _ => return }
     tex_line(c, head)
     for l in ls.tail() {
       c.b.write_char('\n')
@@ -437,13 +468,14 @@ fn math_span(c : Context, ms : @cmark.InlineMathSpan) -> Unit {
   }
 
   let tex = ms.tex_layout
-  guard tex.is_empty().not() else { return  }
+  guard tex.is_empty().not() else { return }
   let (lb, rb) = if ms.display { ("\\[", "\\]") } else { ("\\(", "\\)") }
   c.b.write_string(lb)
   tex_lines(c, tex)
   c.b.write_string(rb)
 }
 
+///|
 fn inline!(c : Context, i : @cmark.Inline) -> Bool {
   match i {
     Autolink(a) => autolink(c, a.v)
@@ -468,12 +500,14 @@ fn inline!(c : Context, i : @cmark.Inline) -> Bool {
 
 // Block rendering
 
+///|
 fn block_quote!(c : Context, bq : @cmark.BlockQuote) -> Unit {
   c.b.write_string("<blockquote>\n")
   c.block!(bq.block)
   c.b.write_string("</blockquote>\n")
 }
 
+///|
 fn code_block(c : Context, cb : @cmark.CodeBlock) -> Unit {
   let i = cb.info_string.map(fn(i) { i.v })
   let lang = i.bind(@cmark.CodeBlock::language_of_info_string)
@@ -507,6 +541,7 @@ fn code_block(c : Context, cb : @cmark.CodeBlock) -> Unit {
   c.b.write_string("</code></pre>\n")
 }
 
+///|
 fn heading!(c : Context, h : @cmark.BlockHeading) -> Unit {
   c.b.write_string("<h")
   c.b.write_object(h.level)
@@ -527,12 +562,14 @@ fn heading!(c : Context, h : @cmark.BlockHeading) -> Unit {
   c.b.write_string(">\n")
 }
 
+///|
 fn paragraph!(c : Context, p : @cmark.BlockParagraph) -> Unit {
   c.b.write_string("<p>")
   c.inline!(p.inline)
   c.b.write_string("</p>\n")
 }
 
+///|
 fn item_block!(tight~ : Bool, c : Context, b : @cmark.Block) -> Unit {
   match (b, tight) {
     (BlankLine(_), _) => ()
@@ -561,6 +598,7 @@ fn item_block!(tight~ : Bool, c : Context, b : @cmark.Block) -> Unit {
   }
 }
 
+///|
 fn list_item!(
   tight~ : Bool,
   c : Context,
@@ -598,6 +636,7 @@ fn list_item!(
   c.b.write_string(close)
 }
 
+///|
 fn list!(c : Context, l : @cmark.BlockList) -> Unit {
   let tight = l.tight
   match l.ty {
@@ -625,6 +664,7 @@ fn list!(c : Context, l : @cmark.BlockList) -> Unit {
   }
 }
 
+///|
 fn html_block(c : Context, html : @cmark.HtmlBlock) -> Unit {
   if safe(c) {
     comment(c, "CommonMark HTML block omitted")
@@ -637,10 +677,12 @@ fn html_block(c : Context, html : @cmark.HtmlBlock) -> Unit {
   }
 }
 
+///|
 fn thematic_break(c : Context) -> Unit {
   c.b.write_string("<hr>\n")
 }
 
+///|
 fn math_block(c : Context, cb : @cmark.CodeBlock) -> Unit {
   c.b.write_string("\\[\n")
   for l in cb.code {
@@ -650,6 +692,7 @@ fn math_block(c : Context, cb : @cmark.CodeBlock) -> Unit {
   c.b.write_string("\\]\n")
 }
 
+///|
 fn table!(c : Context, t : @cmark.Table) -> Unit {
   fn start(c : Context, align : @cmark.TableAlign?, tag) {
     c.b.write_char('<')
@@ -744,6 +787,7 @@ fn table!(c : Context, t : @cmark.Table) -> Unit {
   c.b.write_string("</table></div>")
 }
 
+///|
 fn block!(c : Context, b : @cmark.Block) -> Bool {
   match b {
     BlockQuote(bq) => block_quote!(c, bq.v)
@@ -766,6 +810,7 @@ fn block!(c : Context, b : @cmark.Block) -> Bool {
 
 // XHTML rendering
 
+///|
 fn xhtml_block!(c : Context, b : @cmark.Block) -> Bool {
   match b {
     ThematicBreak(_) => {
@@ -776,6 +821,7 @@ fn xhtml_block!(c : Context, b : @cmark.Block) -> Bool {
   }
 }
 
+///|
 fn xhtml_inline!(c : Context, i : @cmark.Inline) -> Bool {
   match i {
     Break(b) =>
@@ -794,6 +840,7 @@ fn xhtml_inline!(c : Context, i : @cmark.Inline) -> Bool {
 
 // Document rendering
 
+///|
 fn footnotes!(c : Context, fs : Map[String, Json]) -> Unit {
   let fs = fs.values().to_array()
   fs.sort_by_key(
@@ -825,6 +872,7 @@ fn footnotes!(c : Context, fs : Map[String, Json]) -> Unit {
   c.b.write_string("</ol></section>\n")
 }
 
+///|
 fn doc!(c : Context, d : Doc) -> Bool {
   let _ = c.block!(d.block)
   match c.state[state] {
@@ -841,6 +889,7 @@ fn doc!(c : Context, d : Doc) -> Bool {
 
 // Renderer
 
+///|
 pub fn renderer(
   backend_blocks~ : Bool = false,
   safe~ : Bool
@@ -853,6 +902,7 @@ pub fn renderer(
   )
 }
 
+///|
 pub fn xhtml_renderer(
   backend_blocks~ : Bool = false,
   safe~ : Bool
@@ -865,6 +915,7 @@ pub fn xhtml_renderer(
   )
 }
 
+///|
 pub fn from_doc!(
   backend_blocks~ : Bool = false,
   safe~ : Bool,

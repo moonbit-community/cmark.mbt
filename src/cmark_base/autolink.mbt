@@ -1,4 +1,4 @@
-/// `autolink_email(s, last, start)` matches an email autolink starting at
+///| `autolink_email(s, last, start)` matches an email autolink starting at
 /// `start` in the range `[start;last]` (assumed on the same line).
 pub fn autolink_email(
   s : String,
@@ -52,7 +52,7 @@ pub fn autolink_email(
   }
 }
 
-/// `autolink_uri(s, last, start)` matches an URI autolink starting at
+///| `autolink_uri(s, last, start)` matches an URI autolink starting at
 /// `start` in the range `[start;last]` (assumed on the same line).
 pub fn autolink_uri(
   s : String,

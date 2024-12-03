@@ -1,7 +1,9 @@
+///|
 pub fn at(s : String, idx : Int) -> Char {
   Char::from_int(code_point_at(s, idx))
 }
 
+///|
 pub fn at_checked(s : String, idx : Int) -> Result[Char, Char] {
   let cp = code_point_at(s, idx)
   match from_int_checked(cp) {
@@ -10,6 +12,7 @@ pub fn at_checked(s : String, idx : Int) -> Result[Char, Char] {
   }
 }
 
+///|
 pub fn sub_includes(
   affix~ : String,
   s : String,
@@ -48,6 +51,7 @@ pub fn sub_includes(
 }
 
 // https://github.com/mathiasbynens/String.prototype.codePointAt/blob/c3b623184014a50de6cf3e322f0cf598c3fd4894/implementation.js#L20-L33
+///|
 fn code_point_at(s : String, idx : Int) -> Int {
   let fst = s[idx].to_int()
   if is_high_surrogate(fst) && idx < s.length() - 1 { // there is a next code unit
@@ -60,6 +64,7 @@ fn code_point_at(s : String, idx : Int) -> Int {
   fst
 }
 
+///|
 pub fn prev_char(s : String, first~ : Int, before~ : Int) -> Char {
   if before <= first {
     return ' '
@@ -82,6 +87,7 @@ pub fn prev_char(s : String, first~ : Int, before~ : Int) -> Char {
   at(s, k)
 }
 
+///|
 pub fn next_char(s : String, last~ : Int, after~ : Int) -> Char {
   if after >= last {
     return ' '
@@ -89,6 +95,7 @@ pub fn next_char(s : String, last~ : Int, after~ : Int) -> Char {
   at(s, after + 1)
 }
 
+///|
 pub fn utf_16_clean_raw(
   pad~ : Int = 0,
   buf : Buffer,
@@ -182,6 +189,7 @@ pub fn utf_16_clean_raw(
   clean(last, first, first)
 }
 
+///|
 pub fn utf_16_clean_unesc_unref(
   buf : Buffer,
   s : String,
@@ -191,6 +199,7 @@ pub fn utf_16_clean_unesc_unref(
   _utf_16_clean_unesc_unref(do_unesc=true, buf, s, first~, last~)
 }
 
+///|
 pub fn utf_16_clean_unref(
   buf : Buffer,
   s : String,
@@ -200,12 +209,14 @@ pub fn utf_16_clean_unref(
   _utf_16_clean_unesc_unref(do_unesc=false, buf, s, first~, last~)
 }
 
+///|
 fn flush(buf : Buffer, s : String, last : Int, start : Int, k : Int) -> Unit {
   if start <= last {
     buf.write_string(s.substring(start~, end=k))
   }
 }
 
+///|
 fn _utf_16_clean_unesc_unref(
   do_unesc~ : Bool,
   buf : Buffer,

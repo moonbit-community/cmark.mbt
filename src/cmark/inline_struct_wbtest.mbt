@@ -1,3 +1,4 @@
+///|
 fn parse_only(
   txt : String,
   strict~ : Bool = true,
@@ -18,6 +19,7 @@ fn parse_only(
   p.parse_inline(lines1)
 }
 
+///|
 fn tokenize_only(
   txt : String,
   strict~ : Bool = true
