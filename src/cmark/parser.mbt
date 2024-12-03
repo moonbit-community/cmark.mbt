@@ -40,7 +40,7 @@ struct Parser {
 
   // Number of cols consumed from tab if i[curr_char] = '\t'.
   mut tab_consumed_cols : Col
-} derive(Show)
+}
 
 fn Parser::new(
   defs~ : LabelDefs = LabelDefs::empty(),
