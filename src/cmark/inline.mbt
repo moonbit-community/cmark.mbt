@@ -154,14 +154,14 @@ pub fn Inline::id(
     |> String::concat(separator="\n")
   // Collapses non initial white 
   let collapse_blanks = fn(prev) {
-    if @char.is_ascii_blank(prev) && buf.is_empty().not() {
+    if @char.is_ascii_blank(prev) && buf.to_string().is_empty().not() { // TODO: Replace with StringBuilder::is_empty()
       buf.write_char('-')
     }
   }
   loop buf, s, s.length() - 1, '\x00', 0 {
     b, s, max, prev, k => {
       if k > max {
-        break buf.to_unchecked_string()
+        break buf.to_string()
       }
       match s[k] {
         ' ' | '\t' as prev_byte => continue b, s, max, prev_byte, k + 1

@@ -61,11 +61,6 @@ pub(all) typealias BlockFn = (Context, Block) -> Bool!
 pub(all) typealias DocFn = (Context, Doc) -> Bool!
 
 ///|
-pub fn Context::byte(self : Context, byte : Byte) -> Unit {
-  self.b.write_byte(byte)
-}
-
-///|
 pub fn Context::char(self : Context, ch : Char) -> Unit {
   self.b.write_char(ch)
 }
@@ -108,7 +103,7 @@ pub fn Context::doc!(self : Context, doc : Doc) -> Unit {
 pub fn Renderer::doc_to_string!(self : Renderer, doc : Doc) -> String {
   let buf = Buffer::new(size_hint=1024)
   self.buffer_add_doc!(buf, doc)
-  buf.to_unchecked_string()
+  buf.to_string()
 }
 
 ///|

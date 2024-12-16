@@ -1,2 +1,2 @@
 ///|
-typealias Buffer = @buffer.T
+typealias Buffer = StringBuilder

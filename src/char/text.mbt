@@ -120,7 +120,7 @@ pub fn utf_16_clean_raw(
       last, start, k => {
         if k > last {
           flush(last, start, k)
-          break buf.to_unchecked_string()
+          break buf.to_string()
         }
         if s[k] == '\x00' {
           let next = k + 1
@@ -176,7 +176,7 @@ pub fn utf_16_clean_raw(
     }
     buf.reset()
     pad_it()
-    return buf.to_unchecked_string()
+    return buf.to_string()
   }
   let max = s.length() - 1
   let last = @math.minimum(last, max)
@@ -307,7 +307,7 @@ fn _utf_16_clean_unesc_unref(
   fn resolve(last, start, k) {
     if k > last {
       flush(last, start, k)
-      return buf.to_unchecked_string()
+      return buf.to_string()
     }
     let next = k + 1
     match (s[k], do_unesc) {

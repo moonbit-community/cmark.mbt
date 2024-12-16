@@ -1,5 +1,5 @@
 ///|
-typealias Buffer = @buffer.T
+typealias Buffer = StringBuilder
 
 ///|
 typealias Inline = @cmark.Inline

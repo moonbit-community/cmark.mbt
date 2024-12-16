@@ -5,7 +5,7 @@ typealias List[A] = @immut/list.T[A]
 typealias Context = @cmark_renderer.Context
 
 ///|
-typealias Buffer = @buffer.T
+typealias Buffer = StringBuilder
 
 ///|
 typealias Doc = @cmark.Doc

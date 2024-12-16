@@ -2,7 +2,7 @@
 typealias List[A] = @immut/list.T[A]
 
 ///|
-typealias Buffer = @buffer.T
+typealias Buffer = StringBuilder
 
 ///|
 typealias Indent = @cmark_base.Indent
