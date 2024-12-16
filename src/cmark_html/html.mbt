@@ -92,7 +92,7 @@ fn make_footnote_ref_ids(
   f : @cmark.Footnote
 ) -> (String, String, String) {
   guard let Some(EState({ footnotes, footnote_count, .. } as st)) = c.state
-  guard let Some({ text, id, count: refc, .. } as rf) = footnotes[label] else {
+  guard let Some({ text, id, .. } as rf) = footnotes[label] else {
     None => {
       let footnote_count = footnote_count + 1
       st.footnote_count = footnote_count
@@ -102,9 +102,8 @@ fn make_footnote_ref_ids(
       (text, id, footnote_ref_id(id, 1))
     }
   }
-  let refc = refc + 1
-  rf.count = refc
-  (text, id, footnote_ref_id(id, refc))
+  rf.count += 1
+  (text, id, footnote_ref_id(id, rf.count))
 }
 
 // Escaping
