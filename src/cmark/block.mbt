@@ -1,4 +1,4 @@
-/// A markdown block.
+///| A markdown block.
 pub(all) enum Block {
   BlankLine(Node[BlockBlankLine])
   BlockQuote(Node[BlockQuote])
@@ -15,12 +15,12 @@ pub(all) enum Block {
   ExtFootnoteDefinition(Node[Footnote])
 } derive(Show, ToJson)
 
-///
+///|
 pub fn Block::empty() -> Block {
   Blocks({ v: Nil, meta: Meta::none() })
 }
 
-///
+///|
 pub fn Block::meta(self : Block) -> Meta {
   match self {
     BlankLine(bl) => bl.meta
@@ -39,7 +39,7 @@ pub fn Block::meta(self : Block) -> Meta {
   }
 }
 
-/// Normalize a block.
+///| Normalize a block.
 ///
 /// `b.normalize()` has the same content as `b` but is such that for any
 /// occurrence of `Blocks` in `b` the list of blocks `bs`:
@@ -68,7 +68,7 @@ pub fn Block::normalize(self : Block) -> Block {
   }
 }
 
-/// Collects the given `Block`'s link definitions (e.g. `LinkRefDefinition`
+///| Collects the given `Block`'s link definitions (e.g. `LinkRefDefinition`
 /// and `ExtFootnoteDefinition`) and adds them to `init` (defaults to an empty map).
 pub fn Block::defs(
   self : Block,
@@ -89,11 +89,11 @@ pub fn Block::defs(
   }
 }
 
-/// The type for [blank lines](https://spec.commonmark.org/0.30/#blank-lines).
+///| The type for [blank lines](https://spec.commonmark.org/0.30/#blank-lines).
 /// These can be ignored during rendering, they are kept for layout.
 pub(all) typealias BlockBlankLine = Blanks
 
-/// The type for [block quotes](https://spec.commonmark.org/0.30/#block-quotes).
+///| The type for [block quotes](https://spec.commonmark.org/0.30/#block-quotes).
 pub(all) struct BlockQuote {
   /// The indentation to the block quote marker found on the first line.
   indent : Indent
@@ -101,12 +101,12 @@ pub(all) struct BlockQuote {
   block : Block
 } derive(Show, ToJson)
 
-///
+///|
 pub fn BlockQuote::new(indent~ : Int = 0, block : Block) -> BlockQuote {
   { indent, block }
 }
 
-///
+///|
 pub fn BlockQuote::map_block(
   self : BlockQuote,
   f : (Block) -> Block
@@ -114,12 +114,12 @@ pub fn BlockQuote::map_block(
   { ..self, block: f(self.block) }
 }
 
-///
+///|
 pub fn BlockQuote::normalize_block(self : BlockQuote) -> BlockQuote {
   self.map_block(Block::normalize)
 }
 
-/// The type for [indented](https://spec.commonmark.org/0.30/#indented-code-block) and
+///| The type for [indented](https://spec.commonmark.org/0.30/#indented-code-block) and
 /// [fenced](:https://spec.commonmark.org/0.30/#fenced-code-blocks) code blocks.
 pub(all) struct CodeBlock {
   layout : CodeBlockLayout
@@ -127,25 +127,25 @@ pub(all) struct CodeBlock {
   code : List[StringNode]
 } derive(Show, ToJson)
 
-///
+///|
 pub(all) enum CodeBlockLayout {
   Indented
   Fenced(CodeBlockFencedLayout)
 } derive(Show, ToJson)
 
-///
+///|
 pub(all) struct CodeBlockFencedLayout {
   indent : Indent
   opening_fence : StringNode
   closing_fence : StringNode?
 } derive(Show, ToJson)
 
-///
+///|
 pub fn CodeBlockFencedLayout::default() -> CodeBlockFencedLayout {
   { indent: 0, opening_fence: layout_empty, closing_fence: Some(layout_empty) }
 }
 
-///
+///|
 pub fn CodeBlock::new(
   layout~ : CodeBlockLayout = Fenced(CodeBlockFencedLayout::default()),
   info_string~ : StringNode? = None,
@@ -159,8 +159,7 @@ pub fn CodeBlock::new(
   { layout, info_string, code }
 }
 
-// [make_fence cb] is a fence character and count suitable for [cb].
-///
+///| [make_fence cb] is a fence character and count suitable for [cb].
 pub fn CodeBlock::make_fence(self : CodeBlock) -> (Char, Count) {
   let ch = match self.info_string {
     Some(info) => if info.v.contains_char('`') { '~' } else { '`' }
@@ -180,9 +179,8 @@ pub fn CodeBlock::make_fence(self : CodeBlock) -> (Char, Count) {
   (ch, InlineCodeSpan::min_backticks(min=3, counts))
 }
 
-// [language_of_info_string s] extracts a (non-empty) language, the first word of [s] and a trimmed remainder.
-// Assumes [s] is {!String.trim}ed which is what {!info_string} gives you.
-///
+///| [language_of_info_string s] extracts a (non-empty) language, the first word of [s] and a trimmed remainder.
+/// Assumes [s] is {!String.trim}ed which is what {!info_string} gives you.
 pub fn CodeBlock::language_of_info_string(s : String) -> (String, String)? {
   if s.is_empty() {
     return None
@@ -204,13 +202,13 @@ pub fn CodeBlock::language_of_info_string(s : String) -> (String, String)? {
   Some((lang, s.substring(start=rem_first, end=max + 1)))
 }
 
-///
+///|
 fn CodeBlock::is_math_block(s : String?) -> Bool {
   guard let Some(s) = s else { _ => return false }
   language_of_info_string(s).map(fn(i) { i.0 }) == Some("math")
 }
 
-/// The type for [ATX](https://spec.commonmark.org/0.30/#atx-headings) 
+///| The type for [ATX](https://spec.commonmark.org/0.30/#atx-headings) 
 /// and [Setext](https://spec.commonmark.org/0.30/#setext-headings) headings.
 pub(all) struct BlockHeading {
   layout : BlockHeadingLayout
@@ -219,25 +217,25 @@ pub(all) struct BlockHeading {
   id : BlockHeadingId?
 } derive(Show, ToJson)
 
-///
+///|
 pub(all) enum BlockHeadingLayout {
   Atx(BlockHeadingAtxLayout)
   Setext(BlockHeadingSetextLayout)
 } derive(Show, ToJson)
 
-///
+///|
 pub(all) struct BlockHeadingAtxLayout {
   indent : Indent
   after_opening : Blanks
   closing : String
 } derive(Show, FromJson, ToJson)
 
-///
+///|
 pub fn BlockHeadingAtxLayout::default() -> BlockHeadingAtxLayout {
   { indent: 0, after_opening: "", closing: "" }
 }
 
-///
+///|
 pub(all) struct BlockHeadingSetextLayout {
   leading_indent : Indent
   trailing_blanks : Blanks
@@ -246,13 +244,13 @@ pub(all) struct BlockHeadingSetextLayout {
   underline_blanks : Blanks
 } derive(Show, ToJson)
 
-///
+///|
 pub(all) enum BlockHeadingId {
   Auto(String)
   Id(String)
 } derive(Show, FromJson, ToJson)
 
-///
+///|
 pub fn BlockHeading::new(
   id~ : BlockHeadingId? = None,
   layout~ : BlockHeadingLayout = Atx(BlockHeadingAtxLayout::default()),
@@ -262,10 +260,10 @@ pub fn BlockHeading::new(
   { layout, level, inline, id }
 }
 
-/// The type for [HTML blocks](https://spec.commonmark.org/0.30/#html-blocks).
+///| The type for [HTML blocks](https://spec.commonmark.org/0.30/#html-blocks).
 pub(all) type HtmlBlock List[StringNode] derive(Show, ToJson)
 
-///
+///|
 pub(all) struct ListItem {
   before_marker : Indent
   marker : StringNode
@@ -274,10 +272,10 @@ pub(all) struct ListItem {
   ext_task_marker : Node[Char]?
 } derive(Show, ToJson)
 
-///
+///|
 pub(all) typealias ListItemBlock = ListItem
 
-///
+///|
 pub fn ListItem::new(
   before_marker~ : Indent = 0,
   marker~ : StringNode = layout_empty,
@@ -288,17 +286,17 @@ pub fn ListItem::new(
   { before_marker, marker, after_marker, block, ext_task_marker }
 }
 
-///
+///|
 pub fn ListItem::map_block(self : ListItem, f : (Block) -> Block) -> ListItem {
   { ..self, block: f(self.block) }
 }
 
-///
+///|
 pub fn ListItem::normalize_block(self : ListItem) -> ListItem {
   self.map_block(Block::normalize)
 }
 
-///
+///|
 pub(all) enum ListTaskStatus {
   Cancelled
   Checked
@@ -306,7 +304,7 @@ pub(all) enum ListTaskStatus {
   Other(Char)
 }
 
-///
+///|
 pub fn ListTaskStatus::from_marker(marker : Char) -> ListTaskStatus {
   match marker {
     ' ' => Unchecked
@@ -316,14 +314,14 @@ pub fn ListTaskStatus::from_marker(marker : Char) -> ListTaskStatus {
   }
 }
 
-/// The type for [lists](https://spec.commonmark.org/0.30/#lists).
+///| The type for [lists](https://spec.commonmark.org/0.30/#lists).
 pub(all) struct BlockList {
   ty : ListType
   tight : Bool
   items : List[Node[ListItem]]
 } derive(Show, ToJson)
 
-///
+///|
 pub fn BlockList::map_items(
   self : BlockList,
   f : (ListItem) -> ListItem
@@ -331,19 +329,19 @@ pub fn BlockList::map_items(
   { ..self, items: self.items.map(fn(it) { it.map(f) }) }
 }
 
-///
+///|
 pub fn BlockList::normalize_items(self : BlockList) -> BlockList {
   self.map_items(ListItem::normalize_block)
 }
 
-/// The type for [paragraphs](https://spec.commonmark.org/0.30/#paragraphs).
+///| The type for [paragraphs](https://spec.commonmark.org/0.30/#paragraphs).
 pub(all) struct BlockParagraph {
   leading_indent : Indent
   inline : Inline
   trailing_blanks : Blanks
 } derive(Show, ToJson)
 
-///
+///|
 pub fn BlockParagraph::new(
   leading_indent~ : Indent = 0,
   trailing_blanks~ : Blanks = "",
@@ -352,13 +350,13 @@ pub fn BlockParagraph::new(
   { leading_indent, inline, trailing_blanks }
 }
 
-/// The type for [thematic breaks](https://spec.commonmark.org/0.30/#thematic-break).
+///| The type for [thematic breaks](https://spec.commonmark.org/0.30/#thematic-break).
 pub(all) struct BlockThematicBreak {
   indent : Indent
   layout : String
 } derive(Show, FromJson, ToJson)
 
-///
+///|
 pub fn BlockThematicBreak::new(
   indent~ : Indent = 0,
   layout~ : String = "---"
@@ -368,7 +366,7 @@ pub fn BlockThematicBreak::new(
 
 // Extensions
 
-///
+///|
 pub(all) struct Footnote {
   indent : Indent
   label : Label
@@ -376,7 +374,7 @@ pub(all) struct Footnote {
   block : Block
 } derive(Show, ToJson)
 
-///
+///|
 pub fn Footnote::new(
   indent~ : Indent = 0,
   defined_label? : Label?,
@@ -387,51 +385,51 @@ pub fn Footnote::new(
   { indent, label, defined_label, block }
 }
 
-///
+///|
 pub fn Footnote::map_block(self : Footnote, f : (Block) -> Block) -> Footnote {
   { ..self, block: f(self.block) }
 }
 
-///
+///|
 pub fn Footnote::normalize_block(self : Footnote) -> Footnote {
   self.map_block(Block::normalize)
 }
 
-///
+///|
 fn Label::stub(label : Label, defined_label : Label?) -> LabelDef {
   FootnoteDef(
     Node::new({ indent: 0, label, defined_label, block: Block::empty() }),
   )
 }
 
-///
+///|
 pub(all) struct Table {
   indent : Indent
   col_count : Count
   rows : List[(Node[TableRow], Blanks)]
 } derive(Show, ToJson)
 
-///
+///|
 pub(all) enum TableAlign {
   Left
   Center
   Right
 } derive(Show, FromJson, ToJson)
 
-///
+///|
 pub(all) enum TableRow {
   Header(List[(Inline, TableCellLayout)])
   Sep(List[Node[TableSep]])
   Data(List[(Inline, TableCellLayout)])
 } derive(Show, ToJson)
 
-///
+///|
 pub(all) typealias TableSep = (TableAlign?, Count)
 
-///
+///|
 pub(all) typealias TableCellLayout = (Blanks, Blanks)
 
-///
+///|
 pub fn Table::new(
   indent~ : Indent = 0,
   rows : List[(Node[TableRow], Blanks)]
@@ -449,7 +447,7 @@ pub fn Table::new(
   }
 }
 
-///
+///|
 pub fn Table::parse_sep_row(
   cs : List[(Inline, TableCellLayout)]
 ) -> List[Node[TableSep]]? {

@@ -1,7 +1,7 @@
 // Inlines.
 // NOTE: Document data in inline nodes is always stored unescaped and with entity and character references resolved.
 
-///
+///|
 pub(all) enum Inline {
   Autolink(Node[InlineAutolink])
   Break(Node[InlineBreak])
@@ -17,12 +17,12 @@ pub(all) enum Inline {
   ExtMathSpan(Node[InlineMathSpan])
 } derive(Eq, Show, ToJson)
 
-///
+///|
 pub fn Inline::empty() -> Inline {
   Inlines({ v: Nil, meta: Meta::none() })
 }
 
-///
+///|
 pub fn Inline::is_empty(self : Inline) -> Bool {
   match self {
     Inlines({ v: raw, .. }) => raw.is_empty()
@@ -31,7 +31,7 @@ pub fn Inline::is_empty(self : Inline) -> Bool {
   }
 }
 
-/// `meta(i)` is the metadata of `i`.
+///| `meta(i)` is the metadata of `i`.
 pub fn Inline::meta(
   self : Inline
   // ext~ : (Inline) -> Meta!InvalidArgumentError = fn(_i) {
@@ -54,7 +54,7 @@ pub fn Inline::meta(
   }
 }
 
-/// `normalize(i)` has the same content as `i` but is such that for any
+///| `normalize(i)` has the same content as `i` but is such that for any
 /// occurence of `Inlines(is, _)` in `i` the list of inlines `is`:
 /// - `is` is not a singleton list.
 /// - Has no two consecutive `Text _` cases. If that occurs the texts are
@@ -107,7 +107,7 @@ pub fn Inline::normalize(self : Inline) -> Inline {
   }
 }
 
-/// `to_plain_text(i, break_on_soft~, acc~)` has the plain text of `i`
+///| `to_plain_text(i, break_on_soft~, acc~)` has the plain text of `i`
 /// as a sequence of lines represented by a list of strings to be
 /// concatenated. If `break_on_soft` is `true` soft line breaks
 /// are turned into hard line breaks.
@@ -144,7 +144,7 @@ pub fn Inline::to_plain_text(
   }
 }
 
-///
+///|
 pub fn Inline::id(
   self : Inline,
   buf~ : Buffer = Buffer::new(size_hint=256)
@@ -191,7 +191,7 @@ pub fn Inline::id(
   }
 }
 
-///
+///|
 pub(all) struct InlineAutolink {
   /// https://spec.commonmark.org/0.30/#email-address
   is_email : Bool
@@ -200,20 +200,20 @@ pub(all) struct InlineAutolink {
   link : StringNode
 } derive(Eq, Show, ToJson)
 
-///
+///|
 pub fn InlineAutolink::new(link : StringNode) -> InlineAutolink {
   let raw_link = "<{$link.raw}>"
   { is_email: not(@cmark_base.autolink_email(raw_link).is_empty()), link }
 }
 
-///
+///|
 pub(all) struct InlineBreak {
   layout_before : BlanksNode
   ty : InlineBreakType
   layout_after : BlanksNode
 } derive(Eq, Show, ToJson)
 
-///
+///|
 pub fn InlineBreak::new(
   layout_before~ : BlanksNode = layout_empty,
   layout_after~ : BlanksNode = layout_empty,
@@ -222,19 +222,19 @@ pub fn InlineBreak::new(
   { layout_before, ty, layout_after }
 }
 
-///
+///|
 pub(all) enum InlineBreakType {
   Hard
   Soft
 } derive(Eq, Compare, Show, FromJson, ToJson)
 
-/// The type for [code spans](https://spec.commonmark.org/0.30/#code-spans).
+///| The type for [code spans](https://spec.commonmark.org/0.30/#code-spans).
 pub(all) struct InlineCodeSpan {
   backticks : Count
   code_layout : List[Tight]
 } derive(Eq, Show, ToJson)
 
-///
+///|
 pub fn InlineCodeSpan::new(
   backticks~ : Count,
   code_layout : List[Tight]
@@ -242,7 +242,7 @@ pub fn InlineCodeSpan::new(
   { backticks, code_layout }
 }
 
-///
+///|
 fn InlineCodeSpan::min_backticks(min~ : Count, counts : List[Count]) -> Count {
   loop min, counts.sort() {
     min, Nil => min
@@ -250,7 +250,7 @@ fn InlineCodeSpan::min_backticks(min~ : Count, counts : List[Count]) -> Count {
   }
 }
 
-/// `from_string(s)` is a code span for `s`. `s` can start with or
+///| `from_string(s)` is a code span for `s`. `s` can start with or
 /// include backticks; the appropriate minimal backtick count and
 /// possible needed leading and trailing space are computed
 /// accordingly. If `s` contains newlines, blanks after newlines
@@ -299,7 +299,7 @@ pub fn InlineCodeSpan::from_string(
   { code_layout, backticks: InlineCodeSpan::min_backticks(min=1, bt_counts) }
 }
 
-/// https://spec.commonmark.org/0.30/#code-spans
+///| https://spec.commonmark.org/0.30/#code-spans
 pub fn InlineCodeSpan::code(self : InlineCodeSpan) -> String {
   let s = self.code_layout.iter().map(Tight::to_string).to_array()
     |> String::concat(separator=" ")
@@ -314,14 +314,14 @@ pub fn InlineCodeSpan::code(self : InlineCodeSpan) -> String {
   s
 }
 
-/// The type for emphasis and strong emphasis.
+///| The type for emphasis and strong emphasis.
 /// https://spec.commonmark.org/0.30/#emphasis-and-strong-emphasis
 pub(all) struct InlineEmphasis {
   delim : Char
   inline : Inline
 } derive(Eq, Show, ToJson)
 
-///
+///|
 pub fn InlineEmphasis::new(
   delim~ : Char = '*',
   inline : Inline
@@ -329,13 +329,13 @@ pub fn InlineEmphasis::new(
   { delim, inline }
 }
 
-///
+///|
 pub(all) struct InlineLink {
   text : Inline
   reference : ReferenceKind
 } derive(Eq, Show, ToJson)
 
-///
+///|
 pub(all) enum ReferenceKind {
   /// https://spec.commonmark.org/0.30/#inline-link
   Inline(Node[LinkDefinition])
@@ -345,7 +345,7 @@ pub(all) enum ReferenceKind {
 } derive(Eq, Show, ToJson)
 
 // The type for reference link layouts.
-///
+///|
 pub(all) enum ReferenceLayout {
   /// https://spec.commonmark.org/0.30/#collapsed-reference-link
   Collapsed
@@ -355,12 +355,12 @@ pub(all) enum ReferenceLayout {
   Shortcut
 } derive(Eq, Show, FromJson, ToJson)
 
-///
+///|
 pub fn InlineLink::new(text : Inline, reference : ReferenceKind) -> InlineLink {
   { text, reference }
 }
 
-/// `referenced_label(l)` is the label referenced by the label of `l`.
+///| `referenced_label(l)` is the label referenced by the label of `l`.
 /// This is the second label of `Ref(_)` or `None` on inline references.
 pub fn InlineLink::referenced_label(self : InlineLink) -> Label? {
   match self.reference {
@@ -369,7 +369,7 @@ pub fn InlineLink::referenced_label(self : InlineLink) -> Label? {
   }
 }
 
-/// `reference_definition(defs, l)` is the definition of `l`'s reference.
+///| `reference_definition(defs, l)` is the definition of `l`'s reference.
 /// If `l` is an `Inline` reference this returns its link definition
 /// wrapped in a `LinkDef`. If `l` is `Ref` this looks up the
 /// `referenced_label` in `defs`.
@@ -383,7 +383,7 @@ pub fn InlineLink::reference_definition(
   }
 }
 
-/// `is_unsafe(l)` is `true` if `l` is deemed unsafe.
+///| `is_unsafe(l)` is `true` if `l` is deemed unsafe.
 /// This is the case if `l` starts with a caseless match of
 /// `javascript:`, `vbscript:`, `file:` or `data:` except if
 /// `data:image/{gif,png,jpeg,webp}`.
@@ -410,10 +410,10 @@ pub fn InlineLink::is_unsafe(l : String) -> Bool {
   (lower.starts_with("data:") && not(allowed_data_url(l)))
 }
 
-/// The type for [inline raw HTML](https://spec.commonmark.org/0.30/#raw-html) (can span multiple lines).
+///| The type for [inline raw HTML](https://spec.commonmark.org/0.30/#raw-html) (can span multiple lines).
 pub(all) type InlineRawHtml List[Tight] derive(Eq, Show, ToJson)
 
-/// The type for [textual content](https://spec.commonmark.org/0.30/#textual-content).
+///| The type for [textual content](https://spec.commonmark.org/0.30/#textual-content).
 ///
 /// Normally these strings should not contain newlines. This can
 /// however happen if the source had newlines as
@@ -422,16 +422,16 @@ pub(all) typealias InlineText = String
 
 // Extensions
 
-///
+///|
 pub(all) type InlineStrikethrough Inline derive(Eq, Show, ToJson)
 
-///
+///|
 pub(all) struct InlineMathSpan {
   display : Bool
   tex_layout : List[Tight]
 } derive(Eq, Show, ToJson)
 
-///
+///|
 pub fn tex(self : InlineMathSpan) -> String {
   self.tex_layout.map(Tight::to_string).to_array()
   |> String::concat(separator=" ")
