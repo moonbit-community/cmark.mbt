@@ -23,30 +23,42 @@ pub fn to_ascii_upper(c : Char) -> Char {
 
 ///|
 pub fn is_ascii_blank(c : Char) -> Bool {
-  " \t".contains_char(c)
+  match c {
+    ' ' | '\t' => true
+    _ => false
+  }
 }
 
 ///|
 pub fn is_ascii_whitespace(c : Char) -> Bool {
-  " \t\x0A\x0B\x0C\x0D".contains_char(c)
+  match c {
+    ' ' | '\x0A'..='\x0D' => true
+    _ => false
+  }
 }
 
 ///|
 pub fn is_ascii_control(c : Char) -> Bool {
-  ('\x00' <= c && c <= '\x1F') || c == '\x7F'
+  match c {
+    '\x00'..='\x1F' | '\x7F' => true
+    _ => false
+  }
 }
 
 ///|
 pub fn is_ascii_punctuation(c : Char) -> Bool {
-  ('!' <= c && c <= '/') ||
-  (':' <= c && c <= '@') ||
-  ('[' <= c && c <= '`') ||
-  ('{' <= c && c <= '~')
+  match c {
+    '!'..='/' | ':'..='@' | '['..='`' | '{'..='~' => true
+    _ => false
+  }
 }
 
 ///|
 pub fn is_ascii_graphic(c : Char) -> Bool {
-  '!' <= c && c <= '~'
+  match c {
+    '!'..='~' => true
+    _ => false
+  }
 }
 
 ///|
@@ -61,17 +73,26 @@ pub fn is_ascii_alpha(c : Char) -> Bool {
 
 ///|
 pub fn is_ascii_upper(c : Char) -> Bool {
-  'A' <= c && c <= 'Z'
+  match c {
+    'A'..='Z' => true
+    _ => false
+  }
 }
 
 ///|
 pub fn is_ascii_lower(c : Char) -> Bool {
-  'a' <= c && c <= 'z'
+  match c {
+    'a'..='z' => true
+    _ => false
+  }
 }
 
 ///|
 pub fn is_ascii_digit(c : Char) -> Bool {
-  '0' <= c && c <= '9'
+  match c {
+    '0'..='9' => true
+    _ => false
+  }
 }
 
 ///|
@@ -84,7 +105,10 @@ pub fn ascii_digit_to_int(c : Char) -> Int {
 
 ///|
 pub fn is_ascii_octdigit(c : Char) -> Bool {
-  '0' <= c && c <= '7'
+  match c {
+    '0'..='7' => true
+    _ => false
+  }
 }
 
 ///|
@@ -97,7 +121,10 @@ pub fn ascii_octdigit_to_int(c : Char) -> Int {
 
 ///|
 pub fn is_ascii_hexdigit(c : Char) -> Bool {
-  is_ascii_digit(c) || ('A' <= c && c <= 'F') || ('a' <= c && c <= 'f')
+  match c {
+    '0'..='9' | 'A'..='F' | 'a'..='f' => true
+    _ => false
+  }
 }
 
 ///|

@@ -18,7 +18,32 @@ fn max_by_key[T, K : Compare](a : T, b : T, key : (T) -> K) -> T {
 
 ///|
 fn char_is_atext_plus_dot(c : Char) -> Bool {
-  @char.is_ascii_alphanum(c) || "!#$%&\\*+-/=?^_`{|}~.".contains_char(c)
+  if @char.is_ascii_alphanum(c) {
+    return true
+  }
+  match c {
+    '!'
+    | '#'
+    | '$'
+    | '%'
+    | '&'
+    | '\\'
+    | '*'
+    | '+'
+    | '-'
+    | '/'
+    | '='
+    | '?'
+    | '^'
+    | '_'
+    | '`'
+    | '|'
+    | '{'
+    | '}'
+    | '~'
+    | '.' => true
+    _ => false
+  }
 }
 
 // /// @alert deprecated "`dbg()` should not be used in production"
