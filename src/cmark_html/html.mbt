@@ -188,8 +188,8 @@ pub fn html_escaped_string(c : Context, s : String) -> Unit {
 
 ///|
 pub fn buffer_add_pct_encoded_string(b : Buffer, s : String) -> Unit { // Percent encoded + HTML escaped
-  let unsafe_hexdigit = fn(i : Int) -> Byte {
-    (if i < 10 { i + 0x30 } else { i + 0x37 }).to_byte()
+  let unsafe_hexdigit = fn(i : Int) {
+    Char::from_int(if i < 10 { i + 0x30 } else { i + 0x37 })
   }
   let flush = fn(b : Buffer, max : Int, start : Int, i : Int) -> Unit {
     if start <= max {
@@ -223,8 +223,8 @@ pub fn buffer_add_pct_encoded_string(b : Buffer, s : String) -> Unit { // Percen
       let hi = (c.to_int() >> 4) & 0xF
       let lo = c.to_int() & 0xF
       b.write_char('%')
-      b.write_byte(unsafe_hexdigit(hi))
-      b.write_byte(unsafe_hexdigit(lo))
+      b.write_char(unsafe_hexdigit(hi))
+      b.write_char(unsafe_hexdigit(lo))
       continue b, s, max, next, next
     }
   }
