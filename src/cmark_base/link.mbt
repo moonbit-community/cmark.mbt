@@ -92,32 +92,28 @@ pub fn link_title[A](
     '(' => {
       let start = start + 1
       loop next_line, s, lines, line, false, start, List::Nil, start {
-        next_line, s, lines, line, prev_bslash, start, acc, k =>
+        next_line, s, lines, line, prev_bslash, start, acc, k => {
           if k > line.last {
             guard let Some((lines, newline)) = next_line(lines) else {
               _ => break None
             }
-            if newline.first > newline.last {
-              break None
-            }
+            guard newline.first <= newline.last else { break None }
             let acc = push_span(line~, start, line.last, acc)
             let start = first_non_blank_in_span(s, newline)
             let prev_bslash = false
             continue next_line, s, lines, newline, prev_bslash, start, acc, start
-          } else {
-            if prev_bslash.not() {
-              if s[k] == '(' {
-                break None
-              }
-              if s[k] == ')' {
-                break Some(
-                  (lines, line, push_span(line~, start, k - 1, acc), k),
-                )
-              }
-            }
-            let prev_bslash = s[k] == '\\' && prev_bslash.not()
-            continue next_line, s, lines, line, prev_bslash, start, acc, k + 1
           }
+          if prev_bslash.not() {
+            if s[k] == '(' {
+              break None
+            }
+            if s[k] == ')' {
+              break Some((lines, line, push_span(line~, start, k - 1, acc), k))
+            }
+          }
+          let prev_bslash = s[k] == '\\' && prev_bslash.not()
+          continue next_line, s, lines, line, prev_bslash, start, acc, k + 1
+        }
       }
     }
     _ => None
