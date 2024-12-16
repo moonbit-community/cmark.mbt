@@ -204,10 +204,25 @@ pub fn buffer_add_pct_encoded_string(b : Buffer, s : String) -> Unit { // Percen
       }
       let next = i + 1
       let c = s[i]
-      if @char.is_ascii_alphanum(c) ||
-        #|-._~!$()*+,;=:/?#@
-        .contains_char(c) {
-        continue b, s, max, start, next
+      match c {
+        '-'
+        | '.'
+        | '_'
+        | '~'
+        | '!'
+        | '$'
+        | '('
+        | ')'
+        | '*'
+        | '+'
+        | ','
+        | ';'
+        | '='
+        | ':'
+        | '/'
+        | '?'
+        | '@' => continue b, s, max, start, next
+        _ => if @char.is_ascii_alphanum(c) { continue b, s, max, start, next }
       }
       if c == '&' {
         flush(b, max, start, i)

@@ -1297,7 +1297,7 @@ fn Parser::add_line(self : Parser, bs : List[BlockStruct]) -> List[BlockStruct] 
 fn Parser::get_first_line(self : Parser) -> String {
   let max = self.i.length() - 1
   let mut k = 0
-  let last_char = while k <= max && "\r\n".contains_char(self.i[k]).not() {
+  let last_char = while k <= max && self.i[k] != '\r' && self.i[k] != '\n' {
     k += 1
   } else {
     // If the line is empty, we have -1

@@ -108,9 +108,7 @@ pub fn LineType::atx_heading(
     if k > last {
       return k - 1
     }
-    if " \t".contains_char(s[k]).not() {
-      return content(s, last, k + 1)
-    }
+    guard s[k] == ' ' || s[k] == '\t' else { content(s, last, k + 1) }
     let end1 = find_end(s, last, k)
     if end1 > last {
       return k - 1
@@ -169,7 +167,7 @@ pub fn LineType::setext_heading_underline(
     if s[k] == s[start] {
       return underline(s, last, start, k + 1)
     }
-    if " \t".contains_char(s[k]).not() {
+    if s[k] != ' ' && s[k] != '\t' {
       return Nomatch
     }
     let end_blank = first_non_blank(s, last~, start=k + 1)
@@ -182,7 +180,7 @@ pub fn LineType::setext_heading_underline(
   if start > last {
     return Nomatch
   }
-  if "-=".contains_char(s[start]).not() {
+  if s[start] != '-' && s[start] != '=' {
     return Nomatch
   }
   underline(s, last, start, start + 1)
@@ -201,7 +199,7 @@ pub fn LineType::fenced_code_block_start(
     if nobt && s[k] == '`' {
       raise Exit
     }
-    if " \t".contains_char(s[k]).not() {
+    if s[k] != ' ' && s[k] != '\t' {
       return info!(s, last, nobt, info_first, k + 1)
     }
     let after_blank = first_non_blank(s, last~, start=k)
@@ -242,7 +240,7 @@ pub fn LineType::fenced_code_block_start(
       if k - first + 1 < 4 && s[k] == ' ' {
         continue s, first, last, k + 1
       }
-      if "~`".contains_char(s[k]).not() {
+      if s[k] != '~' && s[k] != '`' {
         break Nomatch
       }
       try {
@@ -445,7 +443,7 @@ pub fn LineType::html_block_start(
       let tag = s.substring(start=tag_first, end=tag_last + 1).to_lower()
       let is_open_end = {
         let n = tag_last + 1
-        n > last || " \t>".contains_char(s[n])
+        n > last || s[n] == ' ' || s[n] == '\t' || s[n] == '>'
       }
       let is_open_close_end = is_open_end ||
         (
@@ -478,12 +476,8 @@ fn LineType::html_block_end_cond_1(
   let lower_s = s.to_lower()
   loop last, start {
     last, k => {
-      if k + 3 > last {
-        break false
-      }
-      if s[k] != '<' || s[k + 1] != '/' {
-        continue last, k + 1
-      }
+      guard k + 3 <= last else { break false }
+      guard s[k] == '<' && s[k + 1] == '/' else { continue last, k + 1 }
       let next = k + 2
       let is_end_tag = {
         let lower_s_sub = lower_s.substring(start=next)
@@ -499,9 +493,7 @@ fn LineType::html_block_end_cond_1(
           _ => false
         }
       }
-      if is_end_tag {
-        break true
-      }
+      guard is_end_tag.not() else { break true }
       continue last, k + 1
     }
   }
