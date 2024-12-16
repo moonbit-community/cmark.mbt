@@ -277,18 +277,18 @@ pub fn FencedCodeBlockContinue::new(
   }
   let (fc, fcount) = fence
   fn fence(s : String, last, fence_first, k) -> _!Exit {
-    if k <= last && s[k] == fc {
-      return fence!(s, last, fence_first, k + 1)
+    loop s, last, fence_first, k {
+      s, last, fence_first, k => {
+        if k <= last && s[k] == fc {
+          continue s, last, fence_first, k + 1
+        }
+        let fence_last = k - 1
+        guard fence_last - fence_first + 1 >= fcount else { raise Exit } // Not closing
+        let after_blank = first_non_blank(s, last~, start=k)
+        guard after_blank > last else { raise Exit }
+        Close(fence_first, fence_last)
+      }
     }
-    let fence_last = k - 1
-    if fence_last - fence_first + 1 < fcount {
-      raise Exit // Not closing
-    }
-    let after_blank = first_non_blank(s, last~, start=k)
-    if after_blank > last {
-      return Close(fence_first, fence_last)
-    }
-    raise Exit
   }
 
   loop s, start, last, start {
