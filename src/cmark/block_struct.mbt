@@ -1335,7 +1335,7 @@ fn Parser::get_next_line(self : Parser) -> Bool {
     }
   }
   let last_char = for k = first_char
-                      k <= max && "\r\n".contains_char(self.i[k]).not()
+                      k <= max && self.i[k] != '\r' && self.i[k] != '\n'
                       k = k + 1 {
 
   } else {
