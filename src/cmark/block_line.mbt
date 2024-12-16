@@ -1,22 +1,21 @@
-// Block lines.
-//
-// In CommonMark blocks, a "line" does not necessarily correspond to
-// a line in the source plain text. For example the lines of a
-// paragraph in a block quote are the lines stripped from the block
-// quote markers.  We call the line resulting from stripping the
-// block structure preceeding a given block a {e block line}.
+///| Block lines.
 ///
+/// In CommonMark blocks, a "line" does not necessarily correspond to
+/// a line in the source plain text. For example the lines of a
+/// paragraph in a block quote are the lines stripped from the block
+/// quote markers.  We call the line resulting from stripping the
+/// block structure preceeding a given block a {e block line}.
 pub(all) type BlockLine Node[String]
 
-///
+///|
 pub(all) typealias BlockLineBlank = Node[Blanks]
 
-///
+///|
 pub fn BlockLine::to_string(self : BlockLine) -> String {
   self._.v
 }
 
-///
+///|
 pub fn BlockLine::list_text_loc(ls : List[BlockLine]) -> TextLoc {
   match ls {
     Nil => TextLoc::none()
@@ -28,29 +27,28 @@ pub fn BlockLine::list_text_loc(ls : List[BlockLine]) -> TextLoc {
   }
 }
 
-// Tight block lines: a block line with its initial blanks trimmed but kept for layout. 
-///
+///| Tight block lines: a block line with its initial blanks trimmed but kept for layout. 
 pub(all) struct Tight {
   blanks : Blanks
   node : StringNode
 } derive(Eq, ToJson)
 
-///
+///|
 pub fn Tight::empty(meta~ : Meta = Meta::none()) -> Tight {
   { blanks: "", node: StringNode::empty(meta~) }
 }
 
-///
+///|
 pub impl Show for Tight with output(self, logger) {
   logger.write_object(self.node.v)
 }
 
-///
+///|
 pub fn Tight::to_string(self : Tight) -> String {
   self.node.v
 }
 
-///
+///|
 pub fn Tight::list_text_loc(ls : List[Tight]) -> TextLoc {
   match ls {
     Nil => TextLoc::none()
@@ -62,7 +60,7 @@ pub fn Tight::list_text_loc(ls : List[Tight]) -> TextLoc {
   }
 }
 
-///
+///|
 fn BlockLine::flush(
   meta~ : Meta = Meta::none(),
   s : String,
@@ -73,7 +71,7 @@ fn BlockLine::flush(
   acc.add({ meta, v: s.substring(start~, end=last + 1) })
 }
 
-///
+///|
 fn BlockLine::flush_tight(
   meta~ : Meta = Meta::none(),
   s : String,
@@ -100,10 +98,10 @@ fn BlockLine::flush_tight(
   )
 }
 
-///
+///|
 typealias FlushFn[A] = (String, Int, Int, List[A]) -> List[A]
 
-///
+///|
 fn _list_of_string[A](flush : FlushFn[A], s : String) -> List[A] {
   loop s, List::Nil, s.length() - 1, 0, 0 {
     s, acc, max, start, k => {
