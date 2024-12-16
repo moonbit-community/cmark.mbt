@@ -1,6 +1,6 @@
 // Labels.
 
-///| Labels are used by [reference links](https://spec.commonmark.org/0.30/#reference-link) to
+/// Labels are used by [reference links](https://spec.commonmark.org/0.30/#reference-link) to
 /// refer to the [definitions](#definitions) of
 /// [link reference definitions](https://spec.commonmark.org/0.30/#link-reference-definitions),
 /// [footnote definitions](#footnote-definitions) and your own
@@ -9,17 +9,17 @@ pub(all) struct Label {
   meta : Meta
   key : LabelKey
   text : List[Tight]
-} derive(Show, FromJson, ToJson)
+} derive(Show, ToJson)
 
-///| The type for label keys. These are
+/// The type for label keys. These are
 /// [link labels](https://spec.commonmark.org/0.30/#link-label)
 /// normalized for [matches](https://spec.commonmark.org/0.30/#matches).
 pub(all) typealias LabelKey = String
 
-///|
-pub(all) typealias LabelMap[V] = @immut/sorted_map.T[LabelKey, V]
+///
+pub(all) typealias LabelMap[V] = Map[LabelKey, V]
 
-///|
+///
 pub fn Label::new(
   meta~ : Meta = Meta::none(),
   key~ : String,
@@ -28,31 +28,31 @@ pub fn Label::new(
   { meta, key, text }
 }
 
-///|
+///
 pub fn Label::text_loc(self : Label) -> TextLoc {
   Tight::list_text_loc(self.text)
 }
 
-///|
+///
 pub fn Label::op_equal(self : Label, other : Label) -> Bool {
   self.key == other.key
 }
 
-///|
+///
 pub fn Label::compare(self : Label, other : Label) -> Int {
   self.key.compare(other.key)
 }
 
-///|
+///
 pub(all) enum LabelDef {
   LinkDef(Node[LinkDefinition])
   FootnoteDef(Node[Footnote])
 } derive(Show, ToJson)
 
-///|
+///
 pub(all) typealias LabelDefs = @immut/sorted_map.T[LabelKey, LabelDef]
 
-///| `context` is:
+/// `context` is:
 /// - `Def (prev, current)` when we just hit a
 ///   [link reference definition](https://spec.commonmark.org/0.30/#link-reference-definitions)
 ///   or footnote definition that defines the label `current`.
@@ -76,16 +76,16 @@ pub(all) enum LabelContext {
   Ref(LinkKind, Label, Label?)
 }
 
-///|
+///
 pub(all) enum LinkKind {
   Link
   Image
 }
 
-///|
+///
 pub(all) typealias LabelResolverFn = (LabelContext) -> Label?
 
-///|
+///
 pub fn LabelContext::default_resolver(self : LabelContext) -> Label? {
   match self {
     Def(None, k) => Some(k)
