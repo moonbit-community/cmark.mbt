@@ -210,23 +210,27 @@ pub fn LineType::fenced_code_block_start(
   }
 
   fn fence(s : String, last, fence_first, k) -> _!Exit {
-    if k <= last && s[k] == s[fence_first] {
-      return fence!(s, last, fence_first, k + 1)
-    }
-    let fence_last = k - 1
-    let fcount = fence_last - fence_first + 1
-    if fcount < 3 {
-      return Nomatch
-    }
-    let info = {
-      let after_blank = first_non_blank(s, last~, start=k)
-      if after_blank > last {
-        None
-      } else {
-        info!(s, last, s[fence_first] == '`', after_blank, after_blank)
+    loop s, last, fence_first, k {
+      s, last, fence_first, k => {
+        if k <= last && s[k] == s[fence_first] {
+          continue s, last, fence_first, k + 1
+        }
+        let fence_last = k - 1
+        let fcount = fence_last - fence_first + 1
+        if fcount < 3 {
+          return Nomatch
+        }
+        let info = {
+          let after_blank = first_non_blank(s, last~, start=k)
+          if after_blank > last {
+            None
+          } else {
+            info!(s, last, s[fence_first] == '`', after_blank, after_blank)
+          }
+        }
+        FencedCodeBlockLine(fence_first, fence_last, info)
       }
     }
-    FencedCodeBlockLine(fence_first, fence_last, info)
   }
 
   if start > last {
