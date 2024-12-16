@@ -81,13 +81,11 @@ pub fn LineType::atx_heading(
   start~ : BytePos
 ) -> LineType {
   fn skip_hashes(s : String, last, k) {
-    if k > last {
-      return k
+    for k = k; k <= last && s[k] == '#'; k = k + 1 {
+
+    } else {
+      k
     }
-    if s[k] == '#' {
-      return skip_hashes(s, last, k + 1)
-    }
-    k
   }
 
   fn find_end(s : String, last, k) { // Blank on k, last + 1 if blank* [#+] blank*
@@ -105,15 +103,15 @@ pub fn LineType::atx_heading(
   }
 
   fn content(s : String, last, k) {
-    if k > last {
-      return k - 1
+    loop s, last, k {
+      s, last, k => {
+        guard k <= last else { k - 1 }
+        guard s[k] == ' ' || s[k] == '\t' else { continue s, last, k + 1 }
+        let end1 = find_end(s, last, k)
+        guard end1 <= last else { k - 1 }
+        continue s, last, end1
+      }
     }
-    guard s[k] == ' ' || s[k] == '\t' else { content(s, last, k + 1) }
-    let end1 = find_end(s, last, k)
-    if end1 > last {
-      return k - 1
-    }
-    content(s, last, end1)
   }
 
   fn level(s : String, last, acc, k) {
