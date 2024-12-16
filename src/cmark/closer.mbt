@@ -21,7 +21,7 @@ type CloserIndex @immut/sorted_map.T[Closer, PosSet] derive(Show, ToJson)
 
 ///|
 fn CloserIndex::new() -> CloserIndex {
-  @immut/sorted_map.empty()
+  @immut/sorted_map.new()
 }
 
 ///|

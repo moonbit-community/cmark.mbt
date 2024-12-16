@@ -8,7 +8,7 @@ pub(all) struct Doc {
 ///|
 pub fn Doc::new(
   nl~ : String = "\n",
-  defs~ : LabelDefs = LabelDefs::empty(),
+  defs~ : LabelDefs = LabelDefs::new(),
   block : Block
 ) -> Doc {
   { nl, block, defs }
@@ -21,7 +21,7 @@ pub fn Doc::empty() -> Doc {
 
 ///|
 pub fn Doc::from_string(
-  defs~ : LabelDefs = LabelDefs::empty(),
+  defs~ : LabelDefs = LabelDefs::new(),
   resolver~ : LabelResolverFn = LabelContext::default_resolver,
   nested_links~ : Bool = false,
   heading_auto_ids~ : Bool = false,
