@@ -333,7 +333,7 @@ fn LineType::html_block_start_5(
 ) -> LineType {
   let next = start + 3 // 3 first chars checked
   let sub = "CDATA["
-  if start + 8 > last || s.substring(start=next).starts_with(sub).not() {
+  if start + 8 > last || not(s.substring(start=next).starts_with(sub)) {
     return Nomatch
   }
   HtmlBlockLine(EndStr("]]>"))
@@ -434,7 +434,7 @@ pub fn LineType::html_block_start(
       let tag_first = if c == '/' { next + 1 } else { next }
       let tag_last = loop s, last, tag_first {
         s, last, i => {
-          if i > last || @char.is_ascii_alpha(s[i]).not() {
+          if i > last || not(@char.is_ascii_alpha(s[i])) {
             break i - 1
           }
           continue s, last, i + 1
@@ -493,7 +493,7 @@ fn LineType::html_block_end_cond_1(
           _ => false
         }
       }
-      guard is_end_tag.not() else { break true }
+      guard not(is_end_tag) else { break true }
       continue last, k + 1
     }
   }

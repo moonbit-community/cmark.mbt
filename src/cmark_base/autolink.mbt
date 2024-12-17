@@ -21,7 +21,7 @@ pub fn autolink_email(
         if char_is_alphanum_or_hyp(s[k]) && c <= 63 {
           continue s, last, c + 1, k + 1
         }
-        if c > 63 || @char.is_ascii_alphanum(s[k - 1]).not() {
+        if c > 63 || not(@char.is_ascii_alphanum(s[k - 1])) {
           break None
         }
         match s[k] {

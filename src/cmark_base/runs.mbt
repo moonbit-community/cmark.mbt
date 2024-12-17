@@ -139,11 +139,11 @@ fn accept_upto[A](
         let prev_bslash = false
         continue char, next_line, s, lines, newline, prev_bslash, start, acc, start
       } else {
-        if s[k] == char && prev_bslash.not() {
+        if s[k] == char && not(prev_bslash) {
           let acc = push_span(line~, start, k - 1, acc)
           break Some((lines, line, acc, k))
         }
-        let prev_bslash = s[k] == '\\' && prev_bslash.not()
+        let prev_bslash = s[k] == '\\' && not(prev_bslash)
         continue char, next_line, s, lines, line, prev_bslash, start, acc, k + 1
       }
   }

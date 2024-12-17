@@ -18,7 +18,7 @@ pub fn Node::map[A, B](self : Node[A], f : (A) -> B) -> Node[B] {
 pub impl[A : Show] Show for Node[A] with output(self, logger) {
   logger.write_string("Node::new(")
   logger.write_object(self.v)
-  if self.meta.is_none().not() {
+  if not(self.meta.is_none()) {
     logger.write_string(", meta=")
     logger.write_object(self.meta)
   }
@@ -28,7 +28,7 @@ pub impl[A : Show] Show for Node[A] with output(self, logger) {
 ///|
 pub impl[A : ToJson] ToJson for Node[A] with to_json(self) {
   let jsons = [self.v.to_json()]
-  if self.meta.is_none().not() {
+  if not(self.meta.is_none()) {
     jsons.push(self.meta.to_json())
   }
   Array(jsons)

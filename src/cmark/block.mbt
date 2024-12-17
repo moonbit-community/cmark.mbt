@@ -453,7 +453,7 @@ pub fn Table::parse_sep_row(
   loop List::Nil, cs {
     acc, Nil => Some(acc.rev())
     acc, Cons((Text({ v, meta }), ("", "")), cs) => {
-      guard v.is_empty().not() else { None }
+      guard not(v.is_empty()) else { None }
       let max = v.length() - 1
       let first_colon = v[0] == ':'
       let last_colon = v[max] == ':'

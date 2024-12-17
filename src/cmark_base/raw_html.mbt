@@ -30,12 +30,12 @@ fn attribute_name(
     }
   }
 
-  if start > last || char_is_start(s[start]).not() {
+  if start > last || not(char_is_start(s[start])) {
     return None
   }
   loop s, last, start + 1 {
     s, last, k => {
-      if k > last || char_is_cont(s[k]).not() {
+      if k > last || not(char_is_cont(s[k])) {
         break Some(k - 1)
       }
       continue s, last, k + 1
@@ -71,7 +71,7 @@ fn attribute_value[A](
 
   loop s, line.last, start + 1 {
     s, last, k => {
-      if k > last || is_cont(s[k]).not() {
+      if k > last || not(is_cont(s[k])) {
         let last = k - 1
         let spans = push_span(line~, start, last, spans)
         break Some((lines, line, spans, last))
@@ -321,7 +321,7 @@ fn cdata_section[A](
   if start + 8 > line.last {
     return None
   }
-  if s.substring(start=start + 3).starts_with("CDATA[").not() {
+  if not(s.substring(start=start + 3).starts_with("CDATA[")) {
     return None
   }
   loop lines, line, start, List::Nil, start + 9 {

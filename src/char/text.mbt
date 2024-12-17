@@ -323,7 +323,7 @@ fn _utf_16_clean_unesc_unref(
           return resolve(last, start, next)
         }
         let nc = s[next]
-        if is_ascii_punctuation(nc).not() {
+        if not(is_ascii_punctuation(nc)) {
           return resolve(last, start, next)
         }
         let next1 = next + 1
