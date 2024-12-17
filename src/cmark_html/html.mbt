@@ -16,6 +16,16 @@ struct HtmlRenderFootnote {
 } derive(Show, ToJson)
 
 ///|
+impl Eq for HtmlRenderFootnote with op_equal(self, other) {
+  self.id == other.id
+}
+
+///|
+impl Compare for HtmlRenderFootnote with compare(self, other) {
+  self.id.compare(other.id)
+}
+
+///|
 pub(all) type! EState State
 
 ///|
@@ -845,7 +855,7 @@ fn xhtml_inline!(c : Context, i : @cmark.Inline) -> Bool {
 ///|
 fn footnotes!(c : Context, fs : LabelMap[HtmlRenderFootnote]) -> Unit {
   let fs = fs.values().to_array()
-  fs.sort_by_key(fn(f) { f.id })
+  fs.sort()
   c.b.write_string("<section role=\"doc-endnotes\"><ol>\n")
   for f in fs {
     let { id, footnote, .. } = f
