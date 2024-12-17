@@ -29,7 +29,7 @@ let line_pos_none : (Int, Int)
 
 fn link_destination(String, last~ : Int, start~ : Int) -> (Bool, Int, Int)?
 
-fn link_label[A](@moonbitlang/core/buffer.T, next_line~ : (A) -> (A, LineSpan)?, String, A, line~ : LineSpan, start~ : Int) -> (A, LineSpan, @moonbitlang/core/immut/list.T[Span], Int, String)?
+fn link_label[A](StringBuilder, next_line~ : (A) -> (A, LineSpan)?, String, A, line~ : LineSpan, start~ : Int) -> (A, LineSpan, @moonbitlang/core/immut/list.T[Span], Int, String)?
 
 fn link_title[A](next_line~ : (A) -> (A, LineSpan)?, String, A, line~ : LineSpan, start~ : Int) -> (A, LineSpan, @moonbitlang/core/immut/list.T[Span], Int)?
 
@@ -90,7 +90,7 @@ pub(all) enum LineType {
 }
 impl LineType {
   atx_heading(String, last~ : Int, start~ : Int) -> Self
-  ext_footnote_label(@moonbitlang/core/buffer.T, String, line_pos~ : (Int, Int), last~ : Int, start~ : Int) -> Self
+  ext_footnote_label(StringBuilder, String, line_pos~ : (Int, Int), last~ : Int, start~ : Int) -> Self
   ext_table_row(String, last~ : Int, start~ : Int) -> Self
   fenced_code_block_start(String, last~ : Int, start~ : Int) -> Self
   html_block_end(String, end_cond~ : HtmlBlockEndCond, last~ : Int, start~ : Int) -> Bool
@@ -118,7 +118,7 @@ impl @moonbitlang/core/json.FromJson for ListType
 pub(all) struct Meta {
   id : Int
   loc : TextLoc
-  dict : Map[String, Json]
+  extra : Error?
 }
 impl Meta {
   compare(Self, Self) -> Int
@@ -130,7 +130,6 @@ impl Meta {
 }
 impl Show for Meta
 impl ToJson for Meta
-impl @moonbitlang/core/json.FromJson for Meta
 
 pub(all) enum NextLineResult {
   ThisLine(Int)
@@ -173,8 +172,6 @@ impl @moonbitlang/core/json.FromJson for TextLoc
 
 // Type aliases
 pub typealias BytePos = Int
-
-pub typealias Dict = Map[String, Json]
 
 pub typealias FilePath = String
 

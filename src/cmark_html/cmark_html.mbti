@@ -1,11 +1,11 @@
 package rami3l/cmark/cmark_html
 
 // Values
-fn buffer_add_html_escaped_char(@moonbitlang/core/buffer.T, Char) -> Unit
+fn buffer_add_html_escaped_char(StringBuilder, Char) -> Unit
 
-fn buffer_add_html_escaped_string(@moonbitlang/core/buffer.T, String) -> Unit
+fn buffer_add_html_escaped_string(StringBuilder, String) -> Unit
 
-fn buffer_add_pct_encoded_string(@moonbitlang/core/buffer.T, String) -> Unit
+fn buffer_add_pct_encoded_string(StringBuilder, String) -> Unit
 
 fn from_doc(backend_blocks~ : Bool = .., safe~ : Bool, @rami3l/cmark/cmark.Doc) -> String!
 
@@ -22,15 +22,14 @@ fn safe(@rami3l/cmark/cmark_renderer.Context) -> Bool
 fn xhtml_renderer(backend_blocks~ : Bool = .., safe~ : Bool) -> @rami3l/cmark/cmark_renderer.Renderer
 
 // Types and methods
+pub(all) type! EState State
+
 type HtmlRenderFootnote
 impl Show for HtmlRenderFootnote
 impl ToJson for HtmlRenderFootnote
-impl @moonbitlang/core/json.FromJson for HtmlRenderFootnote
 
 type State
 impl Show for State
-impl ToJson for State
-impl @moonbitlang/core/json.FromJson for State
 
 // Type aliases
 

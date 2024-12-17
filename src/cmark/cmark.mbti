@@ -36,7 +36,6 @@ impl Block {
 }
 impl Show for Block
 impl ToJson for Block
-impl @moonbitlang/core/json.FromJson for Block
 
 pub(all) struct BlockHeading {
   layout : BlockHeadingLayout
@@ -49,7 +48,6 @@ impl BlockHeading {
 }
 impl Show for BlockHeading
 impl ToJson for BlockHeading
-impl @moonbitlang/core/json.FromJson for BlockHeading
 
 pub(all) struct BlockHeadingAtxLayout {
   indent : Int
@@ -77,7 +75,6 @@ pub(all) enum BlockHeadingLayout {
 }
 impl Show for BlockHeadingLayout
 impl ToJson for BlockHeadingLayout
-impl @moonbitlang/core/json.FromJson for BlockHeadingLayout
 
 pub(all) struct BlockHeadingSetextLayout {
   leading_indent : Int
@@ -88,7 +85,6 @@ pub(all) struct BlockHeadingSetextLayout {
 }
 impl Show for BlockHeadingSetextLayout
 impl ToJson for BlockHeadingSetextLayout
-impl @moonbitlang/core/json.FromJson for BlockHeadingSetextLayout
 
 pub(all) type BlockLine Node[String]
 impl BlockLine {
@@ -107,7 +103,6 @@ impl BlockList {
 }
 impl Show for BlockList
 impl ToJson for BlockList
-impl @moonbitlang/core/json.FromJson for BlockList
 
 pub(all) struct BlockParagraph {
   leading_indent : Int
@@ -119,7 +114,6 @@ impl BlockParagraph {
 }
 impl Show for BlockParagraph
 impl ToJson for BlockParagraph
-impl @moonbitlang/core/json.FromJson for BlockParagraph
 
 pub(all) struct BlockQuote {
   indent : Int
@@ -132,7 +126,6 @@ impl BlockQuote {
 }
 impl Show for BlockQuote
 impl ToJson for BlockQuote
-impl @moonbitlang/core/json.FromJson for BlockQuote
 
 type BlockStruct
 impl Show for BlockStruct
@@ -172,7 +165,6 @@ impl CodeBlock {
 }
 impl Show for CodeBlock
 impl ToJson for CodeBlock
-impl @moonbitlang/core/json.FromJson for CodeBlock
 
 pub(all) struct CodeBlockFencedLayout {
   indent : Int
@@ -184,7 +176,6 @@ impl CodeBlockFencedLayout {
 }
 impl Show for CodeBlockFencedLayout
 impl ToJson for CodeBlockFencedLayout
-impl @moonbitlang/core/json.FromJson for CodeBlockFencedLayout
 
 pub(all) enum CodeBlockLayout {
   Indented
@@ -192,7 +183,6 @@ pub(all) enum CodeBlockLayout {
 }
 impl Show for CodeBlockLayout
 impl ToJson for CodeBlockLayout
-impl @moonbitlang/core/json.FromJson for CodeBlockLayout
 
 type CodeBlockStruct
 impl Show for CodeBlockStruct
@@ -261,7 +251,6 @@ impl Footnote {
 }
 impl Show for Footnote
 impl ToJson for Footnote
-impl @moonbitlang/core/json.FromJson for Footnote
 
 type Heading
 impl Show for Heading
@@ -270,7 +259,6 @@ impl ToJson for Heading
 pub(all) type HtmlBlock @moonbitlang/core/immut/list.T[Node[String]]
 impl Show for HtmlBlock
 impl ToJson for HtmlBlock
-impl @moonbitlang/core/json.FromJson for HtmlBlock
 
 type HtmlBlockStruct
 impl Show for HtmlBlockStruct
@@ -296,7 +284,7 @@ pub(all) enum Inline {
 }
 impl Inline {
   empty() -> Self
-  id(Self, buf~ : @moonbitlang/core/buffer.T = ..) -> String
+  id(Self, buf~ : StringBuilder = ..) -> String
   is_empty(Self) -> Bool
   meta(Self) -> @rami3l/cmark/cmark_base.Meta
   normalize(Self) -> Self
@@ -305,7 +293,6 @@ impl Inline {
 impl Eq for Inline
 impl Show for Inline
 impl ToJson for Inline
-impl @moonbitlang/core/json.FromJson for Inline
 
 pub(all) struct InlineAutolink {
   is_email : Bool
@@ -317,7 +304,6 @@ impl InlineAutolink {
 impl Eq for InlineAutolink
 impl Show for InlineAutolink
 impl ToJson for InlineAutolink
-impl @moonbitlang/core/json.FromJson for InlineAutolink
 
 pub(all) struct InlineBreak {
   layout_before : Node[String]
@@ -330,7 +316,6 @@ impl InlineBreak {
 impl Eq for InlineBreak
 impl Show for InlineBreak
 impl ToJson for InlineBreak
-impl @moonbitlang/core/json.FromJson for InlineBreak
 
 pub(all) enum InlineBreakType {
   Hard
@@ -354,7 +339,6 @@ impl InlineCodeSpan {
 impl Eq for InlineCodeSpan
 impl Show for InlineCodeSpan
 impl ToJson for InlineCodeSpan
-impl @moonbitlang/core/json.FromJson for InlineCodeSpan
 
 pub(all) struct InlineEmphasis {
   delim : Char
@@ -366,7 +350,6 @@ impl InlineEmphasis {
 impl Eq for InlineEmphasis
 impl Show for InlineEmphasis
 impl ToJson for InlineEmphasis
-impl @moonbitlang/core/json.FromJson for InlineEmphasis
 
 pub(all) struct InlineLink {
   text : Inline
@@ -381,7 +364,6 @@ impl InlineLink {
 impl Eq for InlineLink
 impl Show for InlineLink
 impl ToJson for InlineLink
-impl @moonbitlang/core/json.FromJson for InlineLink
 
 pub(all) struct InlineMathSpan {
   display : Bool
@@ -393,19 +375,16 @@ impl InlineMathSpan {
 impl Eq for InlineMathSpan
 impl Show for InlineMathSpan
 impl ToJson for InlineMathSpan
-impl @moonbitlang/core/json.FromJson for InlineMathSpan
 
 pub(all) type InlineRawHtml @moonbitlang/core/immut/list.T[Tight]
 impl Eq for InlineRawHtml
 impl Show for InlineRawHtml
 impl ToJson for InlineRawHtml
-impl @moonbitlang/core/json.FromJson for InlineRawHtml
 
 pub(all) type InlineStrikethrough Inline
 impl Eq for InlineStrikethrough
 impl Show for InlineStrikethrough
 impl ToJson for InlineStrikethrough
-impl @moonbitlang/core/json.FromJson for InlineStrikethrough
 
 pub(all) struct Label {
   meta : @rami3l/cmark/cmark_base.Meta
@@ -420,7 +399,6 @@ impl Label {
 }
 impl Show for Label
 impl ToJson for Label
-impl @moonbitlang/core/json.FromJson for Label
 
 pub(all) enum LabelContext {
   Def(Label?, Label)
@@ -450,7 +428,6 @@ impl LinkDefinition {
 impl Eq for LinkDefinition
 impl Show for LinkDefinition
 impl ToJson for LinkDefinition
-impl @moonbitlang/core/json.FromJson for LinkDefinition
 
 pub(all) struct LinkDefinitionLayout {
   indent : Int
@@ -467,7 +444,6 @@ impl LinkDefinitionLayout {
 impl Eq for LinkDefinitionLayout
 impl Show for LinkDefinitionLayout
 impl ToJson for LinkDefinitionLayout
-impl @moonbitlang/core/json.FromJson for LinkDefinitionLayout
 
 pub(all) enum LinkKind {
   Link
@@ -492,7 +468,6 @@ impl ListItem {
 }
 impl Show for ListItem
 impl ToJson for ListItem
-impl @moonbitlang/core/json.FromJson for ListItem
 
 type ListItemStruct
 impl Show for ListItemStruct
@@ -550,7 +525,6 @@ impl Node {
 impl[A : Eq] Eq for Node[A]
 impl[A : Show] Show for Node[A]
 impl[A : ToJson] ToJson for Node[A]
-impl[A : @moonbitlang/core/json.FromJson] @moonbitlang/core/json.FromJson for Node[A]
 
 type Paragraph
 impl Show for Paragraph
@@ -565,7 +539,6 @@ pub(all) enum ReferenceKind {
 impl Eq for ReferenceKind
 impl Show for ReferenceKind
 impl ToJson for ReferenceKind
-impl @moonbitlang/core/json.FromJson for ReferenceKind
 
 pub(all) enum ReferenceLayout {
   Collapsed
@@ -584,7 +557,6 @@ impl ToJson for Setext
 type StartColResult
 impl Show for StartColResult
 impl ToJson for StartColResult
-impl @moonbitlang/core/json.FromJson for StartColResult
 
 pub(all) struct Table {
   indent : Int
@@ -597,7 +569,6 @@ impl Table {
 }
 impl Show for Table
 impl ToJson for Table
-impl @moonbitlang/core/json.FromJson for Table
 
 pub(all) enum TableAlign {
   Left
@@ -615,7 +586,6 @@ pub(all) enum TableRow {
 }
 impl Show for TableRow
 impl ToJson for TableRow
-impl @moonbitlang/core/json.FromJson for TableRow
 
 pub(all) struct Tight {
   blanks : String
@@ -629,7 +599,6 @@ impl Tight {
 impl Eq for Tight
 impl Show for Tight
 impl ToJson for Tight
-impl @moonbitlang/core/json.FromJson for Tight
 
 type Token
 impl Show for Token
@@ -690,7 +659,7 @@ pub typealias LabelDefs = @moonbitlang/core/immut/sorted_map.T[String, LabelDef]
 
 pub typealias LabelKey = String
 
-pub typealias LabelMap[V] = @moonbitlang/core/immut/sorted_map.T[String, V]
+pub typealias LabelMap[V] = Map[String, V]
 
 pub typealias LabelResolverFn = (LabelContext) -> Label?
 
