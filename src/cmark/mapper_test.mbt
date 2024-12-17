@@ -64,9 +64,11 @@ test "map_block with blocks" {
 test "map_block with paragraph" {
   let mapper = Mapper::new()
   let para = Block::Paragraph(
-    Node::new(
-      { leading_indent: 0, inline: Inline::empty(), trailing_blanks: "" },
-    ),
+    Node::new({
+      leading_indent: 0,
+      inline: Inline::empty(),
+      trailing_blanks: "",
+    }),
   )
   let result = mapper.map_block(para)
   inspect!(result, content="None")

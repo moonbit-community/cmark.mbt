@@ -89,9 +89,10 @@ pub fn Inline::normalize(self : Inline) -> Inline {
         acc, Cons(Text({ v: t1, meta: meta1 }) as i1, is_) =>
           match acc {
             Cons(Text({ v: t, meta }), acc) => {
-              let i = Text(
-                { v: t + t1, meta: { ..meta, loc: meta.loc.span(meta1.loc) } },
-              )
+              let i = Text({
+                v: t + t1,
+                meta: { ..meta, loc: meta.loc.span(meta1.loc) },
+              })
               continue acc.add(i), is_
             }
             _ => continue acc.add(i1.normalize()), is_

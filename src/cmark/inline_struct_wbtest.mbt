@@ -10,9 +10,11 @@ fn parse_only(
   let mut ln_num = 1
   let mut lines1 : List[LineSpan] = Nil
   for ln in lines.iter() {
-    lines1 = lines1.add(
-      { pos: (ln_num, 0), first: byte_pos, last: byte_pos + ln.length() - 1 },
-    )
+    lines1 = lines1.add({
+      pos: (ln_num, 0),
+      first: byte_pos,
+      last: byte_pos + ln.length() - 1,
+    })
     ln_num += 1
     byte_pos += ln.length() + 1 // considering the trailing '\n'
   }
@@ -30,9 +32,11 @@ fn tokenize_only(
   let mut ln_num = 1
   let mut lines1 : List[LineSpan] = Nil
   for ln in lines.iter() {
-    lines1 = lines1.add(
-      { pos: (ln_num, 0), first: byte_pos, last: byte_pos + ln.length() - 1 },
-    )
+    lines1 = lines1.add({
+      pos: (ln_num, 0),
+      first: byte_pos,
+      last: byte_pos + ln.length() - 1,
+    })
     ln_num += 1
     byte_pos += ln.length() + 1 // considering the trailing '\n'
   }
@@ -72,26 +76,20 @@ test "should parse entity and numeric char references" {
 }
 
 test "should parse autolinks" {
-  @json.inspect!(
-    parse_only("<http://example.org>"),
-    content=[
-      [0, ""],
-      {
-        "$tag": "Autolink",
-        "0": [{ "is_email": false, "link": ["http://example.org"] }],
-      },
-    ],
-  )
-  @json.inspect!(
-    parse_only("<you@example.org>"),
-    content=[
-      [0, ""],
-      {
-        "$tag": "Autolink",
-        "0": [{ "is_email": true, "link": ["you@example.org"] }],
-      },
-    ],
-  )
+  @json.inspect!(parse_only("<http://example.org>"), content=[
+    [0, ""],
+    {
+      "$tag": "Autolink",
+      "0": [{ "is_email": false, "link": ["http://example.org"] }],
+    },
+  ])
+  @json.inspect!(parse_only("<you@example.org>"), content=[
+    [0, ""],
+    {
+      "$tag": "Autolink",
+      "0": [{ "is_email": true, "link": ["you@example.org"] }],
+    },
+  ])
 }
 
 test "should parse breaks" {
@@ -238,30 +236,27 @@ test "should tokenize codespans" {
 }
 
 test "should parse codespans on a single line" {
-  @json.inspect!(
-    parse_only("Wow, we have `code spans` now!"),
-    content=[
-      [0, ""],
-      {
-        "$tag": "Inlines",
-        "0": [
-          [
-            { "$tag": "Text", "0": ["Wow, we have "] },
-            {
-              "$tag": "CodeSpan",
-              "0": [
-                {
-                  "backticks": 1,
-                  "code_layout": [{ "blanks": "", "node": ["code spans"] }],
-                },
-              ],
-            },
-            { "$tag": "Text", "0": [" now!"] },
-          ],
+  @json.inspect!(parse_only("Wow, we have `code spans` now!"), content=[
+    [0, ""],
+    {
+      "$tag": "Inlines",
+      "0": [
+        [
+          { "$tag": "Text", "0": ["Wow, we have "] },
+          {
+            "$tag": "CodeSpan",
+            "0": [
+              {
+                "backticks": 1,
+                "code_layout": [{ "blanks": "", "node": ["code spans"] }],
+              },
+            ],
+          },
+          { "$tag": "Text", "0": [" now!"] },
         ],
-      },
-    ],
-  )
+      ],
+    },
+  ])
 }
 
 test "should parse codespans across multiple lines" {
@@ -378,114 +373,90 @@ test "should parse codespans across multiple lines" {
 }
 
 test "should parse emphases" {
-  @json.inspect!(
-    parse_only("*it's just emph*"),
-    content=[
-      [0, ""],
-      {
-        "$tag": "Emphasis",
-        "0": [
+  @json.inspect!(parse_only("*it's just emph*"), content=[
+    [0, ""],
+    {
+      "$tag": "Emphasis",
+      "0": [
+        { "delim": "*", "inline": { "$tag": "Text", "0": ["it's just emph"] } },
+      ],
+    },
+  ])
+  @json.inspect!(parse_only("_and another emph_"), content=[
+    [0, ""],
+    {
+      "$tag": "Emphasis",
+      "0": [
+        {
+          "delim": "_",
+          "inline": { "$tag": "Text", "0": ["and another emph"] },
+        },
+      ],
+    },
+  ])
+  @json.inspect!(parse_only("**and strong emph**"), content=[
+    [0, ""],
+    {
+      "$tag": "StrongEmphasis",
+      "0": [
+        { "delim": "*", "inline": { "$tag": "Text", "0": ["and strong emph"] } },
+      ],
+    },
+  ])
+  @json.inspect!(parse_only("__and another strong emph__"), content=[
+    [0, ""],
+    {
+      "$tag": "StrongEmphasis",
+      "0": [
+        {
+          "delim": "_",
+          "inline": { "$tag": "Text", "0": ["and another strong emph"] },
+        },
+      ],
+    },
+  ])
+  @json.inspect!(parse_only("be careful about **embedded * markers**!"), content=[
+    [0, ""],
+    {
+      "$tag": "Inlines",
+      "0": [
+        [
+          { "$tag": "Text", "0": ["be careful about "] },
           {
-            "delim": "*",
-            "inline": { "$tag": "Text", "0": ["it's just emph"] },
+            "$tag": "StrongEmphasis",
+            "0": [
+              {
+                "delim": "*",
+                "inline": { "$tag": "Text", "0": ["embedded * markers"] },
+              },
+            ],
           },
+          { "$tag": "Text", "0": ["!"] },
         ],
-      },
-    ],
-  )
-  @json.inspect!(
-    parse_only("_and another emph_"),
-    content=[
-      [0, ""],
-      {
-        "$tag": "Emphasis",
-        "0": [
+      ],
+    },
+  ])
+  @json.inspect!(parse_only("This *is not ** what* you want?"), content=[
+    [0, ""],
+    {
+      "$tag": "Inlines",
+      "0": [
+        [
+          { "$tag": "Text", "0": ["This "] },
           {
-            "delim": "_",
-            "inline": { "$tag": "Text", "0": ["and another emph"] },
+            "$tag": "Emphasis",
+            "0": [
+              {
+                "delim": "*",
+                "inline": { "$tag": "Text", "0": ["is not ** what"] },
+              },
+            ],
           },
+          { "$tag": "Text", "0": [" you want?"] },
         ],
-      },
-    ],
-  )
-  @json.inspect!(
-    parse_only("**and strong emph**"),
-    content=[
-      [0, ""],
-      {
-        "$tag": "StrongEmphasis",
-        "0": [
-          {
-            "delim": "*",
-            "inline": { "$tag": "Text", "0": ["and strong emph"] },
-          },
-        ],
-      },
-    ],
-  )
-  @json.inspect!(
-    parse_only("__and another strong emph__"),
-    content=[
-      [0, ""],
-      {
-        "$tag": "StrongEmphasis",
-        "0": [
-          {
-            "delim": "_",
-            "inline": { "$tag": "Text", "0": ["and another strong emph"] },
-          },
-        ],
-      },
-    ],
-  )
-  @json.inspect!(
-    parse_only("be careful about **embedded * markers**!"),
-    content=[
-      [0, ""],
-      {
-        "$tag": "Inlines",
-        "0": [
-          [
-            { "$tag": "Text", "0": ["be careful about "] },
-            {
-              "$tag": "StrongEmphasis",
-              "0": [
-                {
-                  "delim": "*",
-                  "inline": { "$tag": "Text", "0": ["embedded * markers"] },
-                },
-              ],
-            },
-            { "$tag": "Text", "0": ["!"] },
-          ],
-        ],
-      },
-    ],
-  )
-  @json.inspect!(
-    parse_only("This *is not ** what* you want?"),
-    content=[
-      [0, ""],
-      {
-        "$tag": "Inlines",
-        "0": [
-          [
-            { "$tag": "Text", "0": ["This "] },
-            {
-              "$tag": "Emphasis",
-              "0": [
-                {
-                  "delim": "*",
-                  "inline": { "$tag": "Text", "0": ["is not ** what"] },
-                },
-              ],
-            },
-            { "$tag": "Text", "0": [" you want?"] },
-          ],
-        ],
-      },
-    ],
-  )
+      ],
+    },
+  ])
 }
 
 test "should parse links/images/refs" {
@@ -753,89 +724,86 @@ test "should parse raw HTML" {
 test "should tokenize nested strikethroughs and emphases" {
   let doc =
     #|Nesting the nest ~~*emph2* ~~stroke~~ *emph3 **emph4  ~~strikeagain~~***~~
-  @json.inspect!(
-    tokenize_only(doc, strict=false),
-    content=[
-      { "EmphasisMarks('*')": [25, 69], "StrikethroughMarks": [35, 67, 72] },
-      [
-        {
-          "$tag": "StrikethroughMarks",
-          "0": { "start": 17, "may_open": true, "may_close": false },
+  @json.inspect!(tokenize_only(doc, strict=false), content=[
+    { "EmphasisMarks('*')": [25, 69], "StrikethroughMarks": [35, 67, 72] },
+    [
+      {
+        "$tag": "StrikethroughMarks",
+        "0": { "start": 17, "may_open": true, "may_close": false },
+      },
+      {
+        "$tag": "EmphasisMarks",
+        "0": {
+          "start": 19,
+          "char": "*",
+          "count": 1,
+          "may_open": true,
+          "may_close": false,
         },
-        {
-          "$tag": "EmphasisMarks",
-          "0": {
-            "start": 19,
-            "char": "*",
-            "count": 1,
-            "may_open": true,
-            "may_close": false,
-          },
+      },
+      {
+        "$tag": "EmphasisMarks",
+        "0": {
+          "start": 25,
+          "char": "*",
+          "count": 1,
+          "may_open": false,
+          "may_close": true,
         },
-        {
-          "$tag": "EmphasisMarks",
-          "0": {
-            "start": 25,
-            "char": "*",
-            "count": 1,
-            "may_open": false,
-            "may_close": true,
-          },
+      },
+      {
+        "$tag": "StrikethroughMarks",
+        "0": { "start": 27, "may_open": true, "may_close": false },
+      },
+      {
+        "$tag": "StrikethroughMarks",
+        "0": { "start": 35, "may_open": false, "may_close": true },
+      },
+      {
+        "$tag": "EmphasisMarks",
+        "0": {
+          "start": 38,
+          "char": "*",
+          "count": 1,
+          "may_open": true,
+          "may_close": false,
         },
-        {
-          "$tag": "StrikethroughMarks",
-          "0": { "start": 27, "may_open": true, "may_close": false },
+      },
+      {
+        "$tag": "EmphasisMarks",
+        "0": {
+          "start": 45,
+          "char": "*",
+          "count": 2,
+          "may_open": true,
+          "may_close": false,
         },
-        {
-          "$tag": "StrikethroughMarks",
-          "0": { "start": 35, "may_open": false, "may_close": true },
+      },
+      {
+        "$tag": "StrikethroughMarks",
+        "0": { "start": 54, "may_open": true, "may_close": false },
+      },
+      {
+        "$tag": "StrikethroughMarks",
+        "0": { "start": 67, "may_open": true, "may_close": true },
+      },
+      {
+        "$tag": "EmphasisMarks",
+        "0": {
+          "start": 69,
+          "char": "*",
+          "count": 3,
+          "may_open": true,
+          "may_close": true,
         },
-        {
-          "$tag": "EmphasisMarks",
-          "0": {
-            "start": 38,
-            "char": "*",
-            "count": 1,
-            "may_open": true,
-            "may_close": false,
-          },
-        },
-        {
-          "$tag": "EmphasisMarks",
-          "0": {
-            "start": 45,
-            "char": "*",
-            "count": 2,
-            "may_open": true,
-            "may_close": false,
-          },
-        },
-        {
-          "$tag": "StrikethroughMarks",
-          "0": { "start": 54, "may_open": true, "may_close": false },
-        },
-        {
-          "$tag": "StrikethroughMarks",
-          "0": { "start": 67, "may_open": true, "may_close": true },
-        },
-        {
-          "$tag": "EmphasisMarks",
-          "0": {
-            "start": 69,
-            "char": "*",
-            "count": 3,
-            "may_open": true,
-            "may_close": true,
-          },
-        },
-        {
-          "$tag": "StrikethroughMarks",
-          "0": { "start": 72, "may_open": false, "may_close": true },
-        },
-      ],
-      { "pos": [1, 0], "first": 0, "last": 73 },
+      },
+      {
+        "$tag": "StrikethroughMarks",
+        "0": { "start": 72, "may_open": false, "may_close": true },
+      },
     ],
-  )
+    { "pos": [1, 0], "first": 0, "last": 73 },
+  ])
 }
 
 test "should tokenize inline math" {

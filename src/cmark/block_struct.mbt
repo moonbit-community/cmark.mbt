@@ -459,9 +459,9 @@ fn Parser::parse_link_ref_definition(
                 None
               } else {
                 Some(
-                  List::of(
-                    [self.layout_clean_raw_span({ ..line1, first: start })],
-                  ),
+                  List::of([
+                    self.layout_clean_raw_span({ ..line1, first: start }),
+                  ]),
                 )
               }
             }
@@ -930,28 +930,24 @@ fn Parser::try_add_to_list(
   if list.list_type.is_same_type(list_type) {
     let l = self.close_last_list_item(list)
     bs.add(
-      List(
-        {
-          last_blank: false,
-          loose: l.last_blank,
-          item_min_indent,
-          list_type: l.list_type,
-          items: l.items.add(item),
-        },
-      ),
+      List({
+        last_blank: false,
+        loose: l.last_blank,
+        item_min_indent,
+        list_type: l.list_type,
+        items: l.items.add(item),
+      }),
     )
   } else {
     let bs = self.close_list(list, bs)
     bs.add(
-      List(
-        {
-          last_blank: false,
-          loose: false,
-          item_min_indent,
-          list_type,
-          items: List::of([item]),
-        },
-      ),
+      List({
+        last_blank: false,
+        loose: false,
+        item_min_indent,
+        list_type,
+        items: List::of([item]),
+      }),
     )
   }
 }
@@ -1114,12 +1110,10 @@ fn Parser::try_lazy_continuation(
       let i = l.items.unsafe_head()
       self
       .try_lazy_continuation(indent_start~, i.blocks)
-      .map(
-        fn(blocks) {
-          let items = l.items.tail().add({ ..i, blocks, })
-          bs.add(List({ ..l, items, last_blank: false }))
-        },
-      )
+      .map(fn(blocks) {
+        let items = l.items.tail().add({ ..i, blocks, })
+        bs.add(List({ ..l, items, last_blank: false }))
+      })
     }
     _ => None
   }
@@ -1353,15 +1347,13 @@ fn Parser::get_next_line(self : Parser) -> Bool {
 ///|
 fn Parser::parse_block(self : Parser) -> (String, Node[List[BlockStruct]]) {
   fn meta() {
-    self.meta(
-      {
-        file: self.file,
-        first_byte: 0,
-        last_byte: self.curr_line_last_char,
-        first_line: (1, 0),
-        last_line: self.curr_line_pos,
-      },
-    )
+    self.meta({
+      file: self.file,
+      first_byte: 0,
+      last_byte: self.curr_line_last_char,
+      first_line: (1, 0),
+      last_line: self.curr_line_pos,
+    })
   }
 
   let nl = self.get_first_line()
@@ -1413,14 +1405,14 @@ fn Parser::block_struct_to_code_block(
     Fenced({ fence, code: ls }) => {
       let layout = {
         let opening_fence = self.layout_clean_raw_span(fence.opening_fence)
-        let closing_fence = fence.closing_fence.map(
-          fn(i) { self.layout_clean_raw_span(i) },
-        )
+        let closing_fence = fence.closing_fence.map(fn(i) {
+          self.layout_clean_raw_span(i)
+        })
         { indent: fence.indent, opening_fence, closing_fence }
       }
-      let info_string = fence.info_string.map(
-        fn(i) { self.clean_unesc_unref_span(i) },
-      )
+      let info_string = fence.info_string.map(fn(i) {
+        self.clean_unesc_unref_span(i)
+      })
       let code = ls.rev_map(fn(i) { self.clean_raw_span(pad=i.0, i.1) })
       let meta = {
         let first = fence.opening_fence
