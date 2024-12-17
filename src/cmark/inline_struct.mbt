@@ -291,27 +291,27 @@ fn tokens_try_add_emphasis(
   let is_prev_punct = @char.is_ascii_punctuation(prev_char)
   let is_next_white = @char.is_ascii_whitespace(next_char)
   let is_next_punct = @char.is_ascii_punctuation(next_char)
-  let is_left_flanking = is_next_white.not() &&
-    (is_next_punct.not() || is_prev_white || is_prev_punct)
-  let is_right_flanking = is_prev_white.not() &&
-    (is_prev_punct.not() || is_next_white || is_next_punct)
+  let is_left_flanking = not(is_next_white) &&
+    (not(is_next_punct) || is_prev_white || is_prev_punct)
+  let is_right_flanking = not(is_prev_white) &&
+    (not(is_prev_punct) || is_next_white || is_next_punct)
   let next = run_last + 1
-  if is_left_flanking.not() && is_right_flanking.not() {
+  if not(is_left_flanking) && not(is_right_flanking) {
     return (toks, next)
   }
   let may_open = (char == '*' && is_left_flanking) ||
     (
       char == '_' &&
       is_left_flanking &&
-      (is_right_flanking.not() || is_prev_punct)
+      (not(is_right_flanking) || is_prev_punct)
     )
   let may_close = (char == '*' && is_right_flanking) ||
     (
       char == '_' &&
       is_right_flanking &&
-      (is_left_flanking.not() || is_next_punct)
+      (not(is_left_flanking) || is_next_punct)
     )
-  if may_open.not() && may_close.not() {
+  if not(may_open) && not(may_close) {
     return (toks, next)
   }
   (toks.add(EmphasisMarks({ start, char, count, may_open, may_close })), next)
@@ -334,8 +334,8 @@ fn tokens_try_add_strikethrough_marks(
   }
   let prev_char = @char.prev_char(s, first~, before=start)
   let next_char = @char.next_char(s, last~, after=run_last)
-  let may_open = @char.is_ascii_whitespace(next_char).not()
-  let may_close = @char.is_ascii_whitespace(prev_char).not()
+  let may_open = not(@char.is_ascii_whitespace(next_char))
+  let may_close = not(@char.is_ascii_whitespace(prev_char))
   (toks.add(StrikethroughMarks({ start, may_open, may_close })), next)
 }
 
@@ -357,10 +357,10 @@ fn tokens_try_add_math_span_marks(
   if count == 1 {
     let prev_char = @char.prev_char(s, first~, before=start)
     let next_char = @char.next_char(s, last~, after=run_last)
-    may_open = @char.is_ascii_whitespace(next_char).not()
-    may_close = @char.is_ascii_whitespace(prev_char).not()
+    may_open = not(@char.is_ascii_whitespace(next_char))
+    may_close = not(@char.is_ascii_whitespace(prev_char))
   }
-  if may_open.not() && may_close.not() {
+  if not(may_open) && not(may_close) {
     return (toks, next)
   }
   (toks.add(MathSpanMarks({ start, count, may_open, may_close })), next)
@@ -387,7 +387,7 @@ fn tokenize(
         }
       }
       let (acc, next) = match (s[k], prev_bslash, exts) {
-        ('\\', _, _) => continue lines, line, prev_bslash.not(), acc, k + 1
+        ('\\', _, _) => continue lines, line, not(prev_bslash), acc, k + 1
         ('`', _, _) => tokens_add_backtick(acc, s, line, prev_bslash~, start=k)
         (_, true, _) => (acc, k + 1)
         ('*' | '_', _, _) => tokens_try_add_emphasis(acc, s, line, start=k)
@@ -599,7 +599,7 @@ fn Parser::try_code(
   escaped~ : Bool
 ) -> (List[Token], LineSpan, Token)? {
   let cstart = start
-  if escaped || has_backticks(count~, after=cstart, self.cidx).not() {
+  if escaped || not(has_backticks(count~, after=cstart, self.cidx)) {
     return None
   }
   let first = cstart + count
@@ -923,7 +923,7 @@ fn Parser::find_link_text_tokens(
     line,
     nest,
     acc => {
-      if may_open.not() {
+      if not(may_open) {
         continue toks, line, nest, acc
       }
       match self.try_math_span(toks, line, start~, count~) {
@@ -1014,7 +1014,7 @@ fn Parser::try_link_def(
     image~,
     link,
   )
-  let had_link = image.not() && self.nested_links.not()
+  let had_link = not(image) && not(self.nested_links)
   Some((toks, endline, t, had_link))
 }
 
@@ -1051,7 +1051,7 @@ fn Parser::try_link(
       { ..start_line, first, last }
     },
   )
-  if had_link && image.not() {
+  if had_link && not(image) {
     return None
   }
   self.try_link_def(
@@ -1084,7 +1084,7 @@ fn Parser::first_pass(
     line,
     had_link,
     acc => {
-      if may_open.not() {
+      if not(may_open) {
         continue toks, line, had_link, acc
       }
       match self.try_math_span(toks, line, start~, count~) {
@@ -1128,7 +1128,7 @@ fn Parser::find_emphasis_text(
   fn marks_match(marks : TokenEmphasisMarks, opener : TokenEmphasisMarks) {
     opener.char == marks.char &&
     (
-      (marks.may_open || opener.may_close).not() ||
+      (marks.may_open || not(opener.may_close)) ||
       marks.count % 3 == 0 ||
       (opener.count + marks.count) % 3 != 0
     )

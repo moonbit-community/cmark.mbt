@@ -471,7 +471,7 @@ fn math_span(c : Context, ms : @cmark.InlineMathSpan) -> Unit {
   }
 
   let tex = ms.tex_layout
-  guard tex.is_empty().not() else { return }
+  guard not(tex.is_empty()) else { return }
   let (lb, rb) = if ms.display { ("\\[", "\\]") } else { ("\\(", "\\)") }
   c.b.write_string(lb)
   tex_lines(c, tex)
@@ -521,7 +521,7 @@ fn code_block(c : Context, cb : @cmark.CodeBlock) -> Unit {
   match lang {
     Some((lang, _env)) =>
       if backend_blocks(c) && lang[0] == '=' {
-        if lang == "=html" && safe(c).not() {
+        if lang == "=html" && not(safe(c)) {
           block_lines(c, cb.code)
         }
         return
@@ -879,7 +879,7 @@ fn doc!(c : Context, d : Doc) -> Bool {
   match c.state {
     Some(fs) => {
       guard let EState({ footnotes: fs, .. }) = fs
-      if fs.is_empty().not() {
+      if not(fs.is_empty()) {
         footnotes!(c, fs)
       }
     }

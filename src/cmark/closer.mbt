@@ -41,5 +41,5 @@ fn CloserIndex::pos(self : CloserIndex, key : Closer, after~ : Int) -> Int? {
 
 ///|
 fn CloserIndex::exists(self : CloserIndex, key : Closer, after~ : Int) -> Bool {
-  self.pos(key, after~).is_empty().not()
+  not(self.pos(key, after~).is_empty())
 }

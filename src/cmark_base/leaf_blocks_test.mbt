@@ -31,7 +31,6 @@ test "setext_heading_underline empty string" {
 }
 
 test "setext_heading_underline invalid start char" {
-  // Tests line 182: if "-=".contains_char(s[start]).not()
   let s = "abc"
   inspect!(
     LineType::setext_heading_underline(s, last=2, start=0),
@@ -40,7 +39,6 @@ test "setext_heading_underline invalid start char" {
 }
 
 test "setext_heading_underline with non-marker char" {
-  // Tests line 169: if " \t".contains_char(s[k]).not()
   let s = "=x"
   inspect!(
     LineType::setext_heading_underline(s, last=1, start=0),

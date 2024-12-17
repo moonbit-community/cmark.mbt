@@ -103,7 +103,7 @@ pub fn link_title[A](
             let prev_bslash = false
             continue next_line, s, lines, newline, prev_bslash, start, acc, start
           }
-          if prev_bslash.not() {
+          if not(prev_bslash) {
             if s[k] == '(' {
               break None
             }
@@ -111,7 +111,7 @@ pub fn link_title[A](
               break Some((lines, line, push_span(line~, start, k - 1, acc), k))
             }
           }
-          let prev_bslash = s[k] == '\\' && prev_bslash.not()
+          let prev_bslash = s[k] == '\\' && not(prev_bslash)
           continue next_line, s, lines, line, prev_bslash, start, acc, k + 1
         }
       }
@@ -149,7 +149,7 @@ pub fn link_label[A](
         }
         let acc = push_span(line~, start, line.last, acc)
         let start = first_non_blank_in_span(s, newline)
-        if b.to_string().is_empty().not() { // TODO: Use StringBuilder::is_empty()
+        if not(b.to_string().is_empty()) { // TODO: Use StringBuilder::is_empty()
           b.write_char(' ')
         }
         let prev = '\x00'
@@ -198,7 +198,7 @@ pub fn link_label[A](
         _ => ()
       }
       // Collapse non initial whitespace
-      if @char.is_ascii_blank(prev) && b.to_string().is_empty().not() { // TODO: Use StringBuilder::is_empty()
+      if @char.is_ascii_blank(prev) && not(b.to_string().is_empty()) { // TODO: Use StringBuilder::is_empty()
         b.write_char(' ')
       }
       let mut u = @char.at(s, k)

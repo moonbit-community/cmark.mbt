@@ -1222,7 +1222,7 @@ fn Parser::try_add_to_list_item(
     let item = list.items.unsafe_head()
     let items = list.items.tail()
     return if list.last_blank &&
-      last_blank.not() &&
+      not(last_blank) &&
       item.blocks.all(is_blank_line) {
       // Item can only start with a single blank line, 
       // if we are here it's not a new item so the list ends
@@ -1685,7 +1685,7 @@ fn Parser::block_struct_to_list(self : Parser, list : ListBlockStruct) -> Block 
   let items = list.items
   let (last, tight) = self.block_struct_to_list_item(items.unsafe_head())
   let (tight, items) = loop
-    list.loose.not() && tight,
+    not(list.loose) && tight,
     List::of([last]),
     items.tail() {
     tight, acc, Nil => (tight, acc)
