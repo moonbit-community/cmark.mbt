@@ -230,149 +230,165 @@ fn _utf_16_clean_unesc_unref(
 
   // https://spec.commonmark.org/current/#hexadecimal-numeric-character-references
   fn try_entity_hex(last, start, num_start, k, u) {
-    if k > last || k > num_start + 6 {
-      return resolve(last, start, k)
-    }
-    match s[k] {
-      ';' => {
-        let next = k + 1
-        if k == num_start {
-          return resolve(last, start, next)
+    loop last, start, num_start, k, u {
+      last, start, num_start, k, u => {
+        if k > last || k > num_start + 6 {
+          return resolve(last, start, k)
         }
-        let u = match from_int_checked(u) {
-          Some('\x00') | None => rep
-          Some(u) => u
+        match s[k] {
+          ';' => {
+            let next = k + 1
+            if k == num_start {
+              return resolve(last, start, next)
+            }
+            let u = match from_int_checked(u) {
+              Some('\x00') | None => rep
+              Some(u) => u
+            }
+            flush(last, start, num_start - 3) // Chop off `&#x` or `&#X`
+            buf.write_char(u)
+            resolve(last, next, next)
+          }
+          c => {
+            guard is_ascii_hexdigit(c) else { return resolve(last, start, k) }
+            let u = u * 16 + ascii_hexdigit_to_int(c)
+            continue last, start, num_start, k + 1, u
+          }
         }
-        flush(last, start, num_start - 3) // Chop off `&#x` or `&#X`
-        buf.write_char(u)
-        resolve(last, next, next)
-      }
-      c => {
-        guard is_ascii_hexdigit(c) else { return resolve(last, start, k) }
-        let u = u * 16 + ascii_hexdigit_to_int(c)
-        try_entity_hex(last, start, num_start, k + 1, u)
       }
     }
   }
 
   fn try_entity_dec(last, start, num_start, k, u) {
-    if k > last || k > num_start + 7 {
-      return resolve(last, start, k)
-    }
-    match s[k] {
-      ';' => {
-        let next = k + 1
-        if k == num_start {
-          return resolve(last, start, next)
+    loop last, start, num_start, k, u {
+      last, start, num_start, k, u => {
+        if k > last || k > num_start + 7 {
+          return resolve(last, start, k)
         }
-        let u = match from_int_checked(u) {
-          Some('\x00') | None => rep
-          Some(u) => u
+        match s[k] {
+          ';' => {
+            let next = k + 1
+            if k == num_start {
+              return resolve(last, start, next)
+            }
+            let u = match from_int_checked(u) {
+              Some('\x00') | None => rep
+              Some(u) => u
+            }
+            flush(last, start, num_start - 2) // Chop off `&#`
+            buf.write_char(u)
+            resolve(last, next, next)
+          }
+          c => {
+            guard is_ascii_digit(c) else { return resolve(last, start, k) }
+            let u = u * 10 + ascii_digit_to_int(c)
+            continue last, start, num_start, k + 1, u
+          }
         }
-        flush(last, start, num_start - 2) // Chop off `&#`
-        buf.write_char(u)
-        resolve(last, next, next)
-      }
-      c => {
-        guard is_ascii_digit(c) else { return resolve(last, start, k) }
-        let u = u * 10 + ascii_digit_to_int(c)
-        try_entity_dec(last, start, num_start, k + 1, u)
       }
     }
   }
 
   // https://spec.commonmark.org/current/#entity-and-numeric-character-references 
   fn try_entity_named(last, start, name_start, k) {
-    if k > last {
-      return resolve(last, start, k)
-    }
-    match s[k] {
-      ';' => {
-        let name = s.substring(start=name_start, end=k)
-        match html_named_entity(name) {
-          None => resolve(last, start, k + 1)
-          Some(e) => {
-            let next = k + 1
-            flush(last, start, name_start - 1) // Chop off `&`
-            buf.write_string(e)
-            resolve(last, next, next)
+    loop last, start, name_start, k {
+      last, start, name_start, k => {
+        if k > last {
+          return resolve(last, start, k)
+        }
+        match s[k] {
+          ';' => {
+            let name = s.substring(start=name_start, end=k)
+            match html_named_entity(name) {
+              None => resolve(last, start, k + 1)
+              Some(e) => {
+                let next = k + 1
+                flush(last, start, name_start - 1) // Chop off `&`
+                buf.write_string(e)
+                resolve(last, next, next)
+              }
+            }
+          }
+          c => {
+            guard is_ascii_alphanum(c) else { return resolve(last, start, k) }
+            continue last, start, name_start, k + 1
           }
         }
-      }
-      c => {
-        guard is_ascii_alphanum(c) else { return resolve(last, start, k) }
-        try_entity_named(last, start, name_start, k + 1)
       }
     }
   }
 
   fn resolve(last, start, k) {
-    if k > last {
-      flush(last, start, k)
-      return buf.to_string()
-    }
-    let next = k + 1
-    match (s[k], do_unesc) {
-      ('\x00', _) => {
-        flush(last, start, k)
-        buf.write_char(rep)
-        resolve(last, next, next)
-      }
-      ('\\', true) => {
-        if next > last {
-          return resolve(last, start, next)
+    loop last, start, k {
+      last, start, k => {
+        if k > last {
+          flush(last, start, k)
+          return buf.to_string()
         }
-        let nc = s[next]
-        if not(is_ascii_punctuation(nc)) {
-          return resolve(last, start, next)
-        }
-        let next1 = next + 1
-        flush(last, start, k)
-        buf.write_char(nc)
-        resolve(last, next1, next1)
-      }
-      ('&', _) => {
-        if k + 2 > last {
-          return resolve(last, start, next)
-        }
-        match s[next] {
-          '#' => {
-            let next = next + 1
-            match s[next] {
-              'x' | 'X' => {
-                let next = next + 1
-                try_entity_hex(last, start, next, next, 0)
-              }
-              c => {
-                if is_ascii_digit(c) {
-                  return try_entity_dec(last, start, next, next, 0)
-                }
-                resolve(last, start, next)
-              }
-            }
-          }
-          c => {
-            if is_ascii_alpha(c) {
-              return try_entity_named(last, start, next, next)
-            }
-            resolve(last, start, next)
-          }
-        }
-      }
-      (b, _) => {
-        if is_ascii(b) {
-          return resolve(last, start, next)
-        }
-        match at_checked(s, k) {
-          Ok(d) => {
-            let next = k + length_utf16(d)
-            resolve(last, start, next)
-          }
-          Err(d) => {
-            let next = k + length_utf16(d)
+        let next = k + 1
+        match (s[k], do_unesc) {
+          ('\x00', _) => {
             flush(last, start, k)
             buf.write_char(rep)
-            resolve(last, next, next)
+            continue last, next, next
+          }
+          ('\\', true) => {
+            if next > last {
+              continue last, start, next
+            }
+            let nc = s[next]
+            if not(is_ascii_punctuation(nc)) {
+              continue last, start, next
+            }
+            let next1 = next + 1
+            flush(last, start, k)
+            buf.write_char(nc)
+            continue last, next1, next1
+          }
+          ('&', _) => {
+            if k + 2 > last {
+              continue last, start, next
+            }
+            match s[next] {
+              '#' => {
+                let next = next + 1
+                match s[next] {
+                  'x' | 'X' => {
+                    let next = next + 1
+                    try_entity_hex(last, start, next, next, 0)
+                  }
+                  c => {
+                    if is_ascii_digit(c) {
+                      return try_entity_dec(last, start, next, next, 0)
+                    }
+                    continue last, start, next
+                  }
+                }
+              }
+              c => {
+                if is_ascii_alpha(c) {
+                  return try_entity_named(last, start, next, next)
+                }
+                continue last, start, next
+              }
+            }
+          }
+          (b, _) => {
+            if is_ascii(b) {
+              continue last, start, next
+            }
+            match at_checked(s, k) {
+              Ok(d) => {
+                let next = k + length_utf16(d)
+                continue last, start, next
+              }
+              Err(d) => {
+                let next = k + length_utf16(d)
+                flush(last, start, k)
+                buf.write_char(rep)
+                continue last, next, next
+              }
+            }
           }
         }
       }
