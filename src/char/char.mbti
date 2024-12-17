@@ -61,11 +61,11 @@ fn to_ascii_lower(Char) -> Char
 
 fn to_ascii_upper(Char) -> Char
 
-fn utf_16_clean_raw(pad~ : Int = .., @moonbitlang/core/buffer.T, String, first~ : Int, last~ : Int) -> String
+fn utf_16_clean_raw(pad~ : Int = .., StringBuilder, String, first~ : Int, last~ : Int) -> String
 
-fn utf_16_clean_unesc_unref(@moonbitlang/core/buffer.T, String, first~ : Int, last~ : Int) -> String
+fn utf_16_clean_unesc_unref(StringBuilder, String, first~ : Int, last~ : Int) -> String
 
-fn utf_16_clean_unref(@moonbitlang/core/buffer.T, String, first~ : Int, last~ : Int) -> String
+fn utf_16_clean_unref(StringBuilder, String, first~ : Int, last~ : Int) -> String
 
 // Types and methods
 

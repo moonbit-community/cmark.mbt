@@ -5,18 +5,17 @@ package rami3l/cmark/cmark_renderer
 // Types and methods
 pub(all) struct Context {
   renderer : Renderer
-  state : Map[String, Json]
-  b : @moonbitlang/core/buffer.T
+  state : Error?
+  b : StringBuilder
   doc : @rami3l/cmark/cmark.Doc
 }
 impl Context {
   block(Self, @rami3l/cmark/cmark.Block) -> Unit!
-  byte(Self, Byte) -> Unit
   char(Self, Char) -> Unit
   doc(Self, @rami3l/cmark/cmark.Doc) -> Unit!
   init(Self, @rami3l/cmark/cmark.Doc) -> Unit
   inline(Self, @rami3l/cmark/cmark.Inline) -> Unit!
-  new(Renderer, @moonbitlang/core/buffer.T) -> Self
+  new(Renderer, StringBuilder) -> Self
   string(Self, String) -> Unit
 }
 
@@ -30,7 +29,7 @@ pub(all) struct Renderer {
   doc : (Context, @rami3l/cmark/cmark.Doc) -> Bool!
 }
 impl Renderer {
-  buffer_add_doc(Self, @moonbitlang/core/buffer.T, @rami3l/cmark/cmark.Doc) -> Unit!
+  buffer_add_doc(Self, StringBuilder, @rami3l/cmark/cmark.Doc) -> Unit!
   compose(Self, Self) -> Self
   doc_to_string(Self, @rami3l/cmark/cmark.Doc) -> String!
   new(init_context~ : (Context, @rami3l/cmark/cmark.Doc) -> Unit = .., inline~ : (Context, @rami3l/cmark/cmark.Inline) -> Bool! = .., block~ : (Context, @rami3l/cmark/cmark.Block) -> Bool! = .., doc~ : (Context, @rami3l/cmark/cmark.Doc) -> Bool! = ..) -> Self
