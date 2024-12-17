@@ -112,7 +112,7 @@ pub fn utf_16_clean_raw(
   fn clean(last, first, dirty) {
     let flush = fn(last, start, k) {
       if start <= last {
-        buf.write_string(s.substring(start~, end=k))
+        buf.write_substring(s, start, k - start)
       }
     }
     flush(last, first, dirty)
@@ -214,7 +214,7 @@ pub fn utf_16_clean_unref(
 ///|
 fn flush(buf : Buffer, s : String, last : Int, start : Int, k : Int) -> Unit {
   if start <= last {
-    buf.write_string(s.substring(start~, end=k))
+    buf.write_substring(s, start, k - start)
   }
 }
 

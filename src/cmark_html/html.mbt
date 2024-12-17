@@ -132,7 +132,7 @@ pub fn buffer_add_html_escaped_string(b : Buffer, s : String) -> Unit {
   let max_idx = len - 1
   fn flush(b : Buffer, start : Int, i : Int) {
     if start < len {
-      b.write_string(s.substring(start~, end=i))
+      b.write_substring(s, start, i - start)
     }
   }
 
@@ -192,7 +192,7 @@ pub fn buffer_add_pct_encoded_string(b : Buffer, s : String) -> Unit { // Percen
   }
   let flush = fn(b : Buffer, max : Int, start : Int, i : Int) -> Unit {
     if start <= max {
-      b.write_string(s.substring(start~, end=i))
+      b.write_substring(s, start, i - start)
     }
   }
   loop b, s, s.length() - 1, 0, 0 {
@@ -866,8 +866,7 @@ fn footnotes!(c : Context, fs : LabelMap[HtmlRenderFootnote]) -> Unit {
       }
       c.b.write_string("</a>")
     }
-    c.b.write_string("</span>")
-    c.b.write_string("</li>")
+    c.b.write_string("</span></li>")
   }
   c.b.write_string("</ol></section>\n")
 }
