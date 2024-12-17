@@ -26,10 +26,11 @@ fn CloserIndex::new() -> CloserIndex {
 
 ///|
 fn CloserIndex::add(self : CloserIndex, key : Closer, pos : Int) -> CloserIndex {
-  let value = self._[key].map_or_else(
-    fn() { PosSet::new().add(pos) },
-    fn(occs) { occs.add(pos) },
-  )
+  let value = self._[key].map_or_else(fn() { PosSet::new().add(pos) }, fn(
+    occs
+  ) {
+    occs.add(pos)
+  })
   self._.add(key, value)
 }
 

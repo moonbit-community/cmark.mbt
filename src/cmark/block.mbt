@@ -81,10 +81,9 @@ pub fn Block::defs(
     LinkRefDefinition(bl) =>
       bl.v.defined_label.map_or(init, fn(it) { init.add(it.key, LinkDef(bl)) })
     ExtFootnoteDefinition(footnote) =>
-      footnote.v.defined_label.map_or(
-        init,
-        fn(it) { init.add(it.key, FootnoteDef(footnote)) },
-      )
+      footnote.v.defined_label.map_or(init, fn(it) {
+        init.add(it.key, FootnoteDef(footnote))
+      })
     _ => init
   }
 }

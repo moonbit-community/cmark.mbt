@@ -203,14 +203,12 @@ fn tokens_rev_and_shorten_last_line(
 ///|
 fn tokens_drop_stop_after_right_brack(toks : List[Token]) -> List[Token] {
   toks
-  .drop_while(
-    fn(t) {
-      match t {
-        RightBrack(_) => false
-        _ => true
-      }
-    },
-  )
+  .drop_while(fn(t) {
+    match t {
+      RightBrack(_) => false
+      _ => true
+    }
+  })
   .tail()
 }
 
@@ -757,19 +755,15 @@ fn Parser::try_full_reflink_remainder(
     toks,
     line~,
     start~,
-  ).map(
-    fn {
-      (toks, line, rev_spans, last, key) => {
-        let ref_ = self.label_of_rev_spans(key~, rev_spans)
-        let toks = tokens_drop_stop_after_right_brack(toks)
-        self
-        .find_def_for_ref(image~, ref_)
-        .map(
-          fn(def) { (toks, line, ReferenceKind::Ref(Full, ref_, def), last) },
-        )
-      }
-    },
-  )
+  ).map(fn {
+    (toks, line, rev_spans, last, key) => {
+      let ref_ = self.label_of_rev_spans(key~, rev_spans)
+      let toks = tokens_drop_stop_after_right_brack(toks)
+      self
+      .find_def_for_ref(image~, ref_)
+      .map(fn(def) { (toks, line, ReferenceKind::Ref(Full, ref_, def), last) })
+    }
+  })
 }
 
 ///| https://spec.commonmark.org/current/#shortcut-reference-link
@@ -1398,9 +1392,10 @@ fn Parser::strip_paragraph(
     let { first, last: start, .. } = line
     let non_blank = @cmark_base.last_non_blank(self.i, first~, start~)
     let last = { ..line, last: non_blank }
-    let trailing_blanks = self.layout_clean_raw_span1(
-      { ..line, first: non_blank + 1 },
-    )
+    let trailing_blanks = self.layout_clean_raw_span1({
+      ..line,
+      first: non_blank + 1,
+    })
     (last, trailing_blanks)
   }
   let lines = lines.tail().add(last).rev()
@@ -1483,9 +1478,7 @@ fn Parser::find_pipe(
     return Err(text(k, n - 1))
   }
   let nb = @cmark_base.last_non_blank(self.i, first=k, start=n - 1)
-  let after = self.layout_clean_raw_span1(
-    { ..line, first: nb + 1, last: n - 1 },
-  )
+  let after = self.layout_clean_raw_span1({ ..line, first: nb + 1, last: n - 1 })
   let text = if nb < k { None } else { Some(text(k, nb)) }
   Ok((text, after, n + 1))
 }
@@ -1504,12 +1497,10 @@ fn Parser::start_col(
   match self.find_pipe(line, before~, k) {
     Err(text) => Start(bbefore, List::of([text]))
     Ok((text, bafter, k)) => {
-      let text = text.or_else(
-        fn() {
-          let l = self.text_loc_of_span({ ..line, first: k, last: k - 1 })
-          Inlines({ v: Nil, meta: self.meta(l) })
-        },
-      )
+      let text = text.or_else(fn() {
+        let l = self.text_loc_of_span({ ..line, first: k, last: k - 1 })
+        Inlines({ v: Nil, meta: self.meta(l) })
+      })
       Col((text, (bbefore, bafter)), k)
     }
   }

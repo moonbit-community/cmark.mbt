@@ -12,13 +12,11 @@ test "fold_block with blank line" {
 test "fold_block with paragraph" {
   let folder = Folder::new()
   let block = Block::Paragraph(
-    Node::new(
-      {
-        leading_indent: 0,
-        inline: Inline::Text(Node::new("test")),
-        trailing_blanks: "",
-      },
-    ),
+    Node::new({
+      leading_indent: 0,
+      inline: Inline::Text(Node::new("test")),
+      trailing_blanks: "",
+    }),
   )
   inspect!(folder.fold_block!(0, block), content="0")
 }
@@ -26,14 +24,12 @@ test "fold_block with paragraph" {
 test "fold_block with heading" {
   let folder = Folder::new()
   let heading = Block::Heading(
-    Node::new(
-      {
-        inline: Inline::Text(Node::new("test")),
-        level: 1,
-        layout: BlockHeadingLayout::Atx(BlockHeadingAtxLayout::default()),
-        id: None,
-      },
-    ),
+    Node::new({
+      inline: Inline::Text(Node::new("test")),
+      level: 1,
+      layout: BlockHeadingLayout::Atx(BlockHeadingAtxLayout::default()),
+      id: None,
+    }),
   )
   inspect!(folder.fold_block!(0, heading), content="0")
 }
@@ -41,20 +37,16 @@ test "fold_block with heading" {
 test "fold_block with blockquote" {
   let folder = Folder::new()
   let quote = Block::BlockQuote(
-    Node::new(
-      {
-        indent: 0,
-        block: Block::Paragraph(
-          Node::new(
-            {
-              leading_indent: 0,
-              inline: Inline::Text(Node::new("test")),
-              trailing_blanks: "",
-            },
-          ),
-        ),
-      },
-    ),
+    Node::new({
+      indent: 0,
+      block: Block::Paragraph(
+        Node::new({
+          leading_indent: 0,
+          inline: Inline::Text(Node::new("test")),
+          trailing_blanks: "",
+        }),
+      ),
+    }),
   )
   inspect!(folder.fold_block!(0, quote), content="0")
 }
@@ -63,28 +55,22 @@ test "fold_block with blocks" {
   let folder = Folder::new()
   let blocks = Block::Blocks(
     Node::new(
-      @immut/list.of(
-        [
-          Block::Paragraph(
-            Node::new(
-              {
-                leading_indent: 0,
-                inline: Inline::Text(Node::new("test1")),
-                trailing_blanks: "",
-              },
-            ),
-          ),
-          Block::Paragraph(
-            Node::new(
-              {
-                leading_indent: 0,
-                inline: Inline::Text(Node::new("test2")),
-                trailing_blanks: "",
-              },
-            ),
-          ),
-        ],
-      ),
+      @immut/list.of([
+        Block::Paragraph(
+          Node::new({
+            leading_indent: 0,
+            inline: Inline::Text(Node::new("test1")),
+            trailing_blanks: "",
+          }),
+        ),
+        Block::Paragraph(
+          Node::new({
+            leading_indent: 0,
+            inline: Inline::Text(Node::new("test2")),
+            trailing_blanks: "",
+          }),
+        ),
+      ]),
     ),
   )
   inspect!(folder.fold_block!(0, blocks), content="0")
@@ -107,42 +93,36 @@ test "fold_doc with simple paragraph" {
 test "folder block with table" {
   let folder = Folder::new()
   let table = Block::ExtTable(
-    Node::new(
-      {
-        indent: 0,
-        col_count: 2,
-        rows: @immut/list.of(
-          [
-            (
-              Node::new(
-                TableRow::Header(
-                  @immut/list.of(
-                    [(Inline::Text(Node::new("Header")), ("", ""))],
-                  ),
-                ),
-              ),
-              "",
+    Node::new({
+      indent: 0,
+      col_count: 2,
+      rows: @immut/list.of([
+        (
+          Node::new(
+            TableRow::Header(
+              @immut/list.of([(Inline::Text(Node::new("Header")), ("", ""))]),
             ),
-            (
-              Node::new(
-                TableRow::Sep(
-                  @immut/list.of([Node::new((Some(TableAlign::Left), 3))]),
-                ),
-              ),
-              "",
-            ),
-            (
-              Node::new(
-                TableRow::Data(
-                  @immut/list.of([(Inline::Text(Node::new("Data")), ("", ""))]),
-                ),
-              ),
-              "",
-            ),
-          ],
+          ),
+          "",
         ),
-      },
-    ),
+        (
+          Node::new(
+            TableRow::Sep(
+              @immut/list.of([Node::new((Some(TableAlign::Left), 3))]),
+            ),
+          ),
+          "",
+        ),
+        (
+          Node::new(
+            TableRow::Data(
+              @immut/list.of([(Inline::Text(Node::new("Data")), ("", ""))]),
+            ),
+          ),
+          "",
+        ),
+      ]),
+    }),
   )
   let result = folder.fold_block!(0, table)
   inspect!(result, content="0")
@@ -151,18 +131,16 @@ test "folder block with table" {
 test "folder block with footnote definition" {
   let folder = Folder::new()
   let footnote = Block::ExtFootnoteDefinition(
-    Node::new(
-      {
-        indent: 0,
-        label: {
-          meta: @rami3l/cmark/cmark_base.Meta::none(),
-          key: "1",
-          text: @immut/list.of([]),
-        },
-        defined_label: None,
-        block: Block::empty(),
+    Node::new({
+      indent: 0,
+      label: {
+        meta: @rami3l/cmark/cmark_base.Meta::none(),
+        key: "1",
+        text: @immut/list.of([]),
       },
-    ),
+      defined_label: None,
+      block: Block::empty(),
+    }),
   )
   let result = folder.fold_block!(0, footnote)
   inspect!(result, content="0")

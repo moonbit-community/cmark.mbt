@@ -54,16 +54,12 @@ pub fn TextLoc::after(self : TextLoc) -> TextLoc {
 
 ///|
 pub fn TextLoc::span(self : TextLoc, other : TextLoc) -> TextLoc {
-  let { first_byte, first_line, .. } = min_by_key(
-    self,
-    other,
-    fn(it) { it.first_byte },
-  )
-  let { file, last_byte, last_line, .. } = max_by_key(
-    self,
-    other,
-    fn(it) { it.last_byte },
-  )
+  let { first_byte, first_line, .. } = min_by_key(self, other, fn(it) {
+    it.first_byte
+  })
+  let { file, last_byte, last_line, .. } = max_by_key(self, other, fn(it) {
+    it.last_byte
+  })
   { file, first_byte, last_byte, first_line, last_line }
 }
 
