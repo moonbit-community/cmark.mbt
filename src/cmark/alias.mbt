@@ -32,9 +32,6 @@ typealias Span = @cmark_base.Span
 typealias LineSpan = @cmark_base.LineSpan
 
 ///|
-pub(all) typealias RevSpans = List[Span]
-
-///|
 pub(all) typealias RevTokens = Array[Token]
 
 ///|
