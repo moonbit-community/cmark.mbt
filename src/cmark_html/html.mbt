@@ -367,8 +367,7 @@ fn image(c : Context, i : @cmark.InlineLink, close~ : String = " >") -> Unit {
     Some(LinkDef({ v: ld, .. })) => {
       let plain_text = fn(i : @cmark.Inline) -> String {
         let lines = i.to_plain_text(break_on_soft=false)
-        lines.map(fn(l) { String::concat(l.to_array()) }).to_array()
-        |> String::concat(separator="\n")
+        lines.map(fn(l) { String::concat(l) }) |> String::concat(separator="\n")
       }
       let (link, title) = link_dest_and_title(c, ld)
       c.b.write_string("<img src=\"")
