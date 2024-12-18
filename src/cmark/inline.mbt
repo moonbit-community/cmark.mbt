@@ -115,34 +115,38 @@ pub fn Inline::normalize(self : Inline) -> Inline {
 pub fn Inline::to_plain_text(
   self : Inline,
   break_on_soft~ : Bool
-) -> List[List[String]] {
-  let push = fn(s, acc : List[List[_]]) {
-    acc.tail().add(acc.unsafe_head().add(s))
+) -> Array[Array[String]] {
+  let acc = [[]]
+  let push = fn(s) { acc[acc.length() - 1].push(s) }
+  let newline = fn() { acc.push([]) }
+  let st = [self]
+  while true {
+    guard let Some(curr) = st.pop() else { _ => break }
+    match curr {
+      Autolink(a) => push("<\{a.v.link.v}>")
+      Break({ v: { ty: Hard, .. }, .. }) => newline()
+      Break({ v: { ty: Soft, .. }, .. }) =>
+        if break_on_soft {
+          newline()
+        } else {
+          push(" ")
+        }
+      CodeSpan(cs) => push(cs.v.code())
+      Emphasis({ v: { inline, .. }, .. })
+      | StrongEmphasis({ v: { inline, .. }, .. }) => st.push(inline)
+      Inlines({ v: is1, .. }) =>
+        for i in is1.rev() {
+          st.push(i)
+        }
+      Link(l) => st.push(l.v.text)
+      RawHtml(_) => ()
+      Text(t) => push(t.v)
+      ExtStrikethrough(i) => st.push(i.v._)
+      ExtMathSpan(m) => push(m.v.tex())
+      i => st.push(i)
+    }
   }
-  let newline = fn(acc : List[List[_]]) {
-    acc.tail().add(acc.unsafe_head().rev()).add(Nil)
-  }
-  loop List::of([List::Nil]), List::of([self]) {
-    acc, Cons(Autolink(a), is_) => continue push("<\{a.v.link.v}>", acc), is_
-    acc, Cons(Break({ v: { ty: Hard, .. }, .. }), is_) =>
-      continue newline(acc), is_
-    acc, Cons(Break({ v: { ty: Soft, .. }, .. }), is_) =>
-      continue if break_on_soft { newline(acc) } else { push(" ", acc) }, is_
-    acc, Cons(CodeSpan(cs), is_) => continue push(cs.v.code(), acc), is_
-    acc,
-    Cons(Emphasis({ v: { inline, .. }, .. }), is_)
-    | Cons(StrongEmphasis({ v: { inline, .. }, .. }), is_) =>
-      continue acc, Cons(inline, is_)
-    acc, Cons(Inlines({ v: is1, .. }), is_) =>
-      continue acc, is1.rev().rev_concat(is_)
-    acc, Cons(Link(l), is_) => continue acc, Cons(l.v.text, is_)
-    acc, Cons(RawHtml(_), is_) => continue acc, is_
-    acc, Cons(Text(t), is_) => continue push(t.v, acc), is_
-    acc, Cons(ExtStrikethrough(i), is_) => continue acc, Cons(i.v._, is_)
-    acc, Cons(ExtMathSpan(m), is_) => continue push(m.v.tex(), acc), is_
-    acc, Cons(i, is_) => continue acc, Cons(i, is_)
-    acc, Nil => acc.tail().add(acc.unsafe_head().rev()).rev()
-  }
+  acc
 }
 
 ///|
@@ -151,7 +155,7 @@ pub fn Inline::id(
   buf~ : Buffer = Buffer::new(size_hint=256)
 ) -> String {
   let text = self.to_plain_text(break_on_soft=false)
-  let s = text.map(fn(it) { String::concat(it.to_array()) }).to_array()
+  let s = text.map(fn(l) { String::concat(l) })
     |> String::concat(separator="\n")
   // Collapses non initial white 
   let collapse_blanks = fn(prev) {

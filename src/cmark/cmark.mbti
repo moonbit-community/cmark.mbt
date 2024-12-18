@@ -288,7 +288,7 @@ impl Inline {
   is_empty(Self) -> Bool
   meta(Self) -> @rami3l/cmark/cmark_base.Meta
   normalize(Self) -> Self
-  to_plain_text(Self, break_on_soft~ : Bool) -> @moonbitlang/core/immut/list.T[@moonbitlang/core/immut/list.T[String]]
+  to_plain_text(Self, break_on_soft~ : Bool) -> Array[Array[String]]
 }
 impl Eq for Inline
 impl Show for Inline
