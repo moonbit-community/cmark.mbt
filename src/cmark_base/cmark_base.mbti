@@ -29,11 +29,11 @@ let line_pos_none : (Int, Int)
 
 fn link_destination(String, last~ : Int, start~ : Int) -> (Bool, Int, Int)?
 
-fn link_label[A](StringBuilder, next_line~ : (A) -> (A, LineSpan)?, String, A, line~ : LineSpan, start~ : Int) -> (A, LineSpan, @moonbitlang/core/immut/list.T[Span], Int, String)?
+fn link_label[A](StringBuilder, next_line~ : (A) -> (A, LineSpan)?, String, A, line~ : LineSpan, start~ : Int) -> (A, LineSpan, Array[Span], Int, String)?
 
-fn link_title[A](next_line~ : (A) -> (A, LineSpan)?, String, A, line~ : LineSpan, start~ : Int) -> (A, LineSpan, @moonbitlang/core/immut/list.T[Span], Int)?
+fn link_title[A](next_line~ : (A) -> (A, LineSpan)?, String, A, line~ : LineSpan, start~ : Int) -> (A, LineSpan, Array[Span], Int)?
 
-fn raw_html[A : Show](next_line~ : (A) -> (A, LineSpan)?, String, A, line~ : LineSpan, start~ : Int) -> (A, LineSpan, @moonbitlang/core/immut/list.T[Span], Int)?
+fn raw_html[A : Show](next_line~ : (A) -> (A, LineSpan)?, String, A, line~ : LineSpan, start~ : Int) -> (A, LineSpan, Array[Span], Int)?
 
 fn rev_drop_spaces(String, first~ : Int, start~ : Int) -> Int
 
@@ -85,7 +85,7 @@ pub(all) enum LineType {
   SetextUnderlineLine(Int, Int)
   ThematicBreakLine(Int)
   ExtTableRow(Int)
-  ExtFootnoteLabel(@moonbitlang/core/immut/list.T[Span], Int, String)
+  ExtFootnoteLabel(Array[Span], Int, String)
   Nomatch
 }
 impl LineType {
@@ -190,8 +190,6 @@ pub typealias LinePos = (Int, Int)
 pub typealias Next = Int
 
 pub typealias NextLineFn[A] = (A) -> (A, LineSpan)?
-
-pub typealias RevSpans = @moonbitlang/core/immut/list.T[Span]
 
 // Traits
 

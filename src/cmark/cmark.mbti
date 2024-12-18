@@ -669,6 +669,8 @@ pub typealias MapFn[A] = (Mapper, A) -> A?!MapperError
 
 pub typealias MapperFn[A] = (Mapper, A) -> MapperResult[A]
 
+pub typealias RevSpans = @moonbitlang/core/immut/list.T[@rami3l/cmark/cmark_base.Span]
+
 pub typealias StringNode = Node[String]
 
 pub typealias TableCellLayout = (String, String)

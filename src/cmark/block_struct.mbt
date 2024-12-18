@@ -405,11 +405,13 @@ fn Parser::parse_link_ref_definition(
     let (lines, line, label, start) = match
       @cmark_base.link_label(self.buf, next_line~, self.i, lines, line~, start~) {
       None => raise @cmark_base.Exit
-      Some((lines, line, rev_spans, last, key)) => {
+      Some((lines, line, spans, last, key)) => {
         let colon = last + 1
         if colon > line.last || self.i[colon] != ':' {
           raise @cmark_base.Exit
         }
+        // TODO: Replace this with arrays.
+        let rev_spans = List::from_array(spans.rev())
         let label = label_of_rev_spans(self, key~, rev_spans)
         (lines, line, label, colon + 1)
       }
@@ -450,7 +452,7 @@ fn Parser::parse_link_ref_definition(
             } else {
               (lines, Nil, '"', None, Nil, meta_last)
             }
-          Some((lines1, line1, rev_spans, last)) => {
+          Some((lines1, line1, spans, last)) => {
             let after_title = {
               let last = line1.last
               let start = last + 1
@@ -473,6 +475,8 @@ fn Parser::parse_link_ref_definition(
                   (lines, Nil, '"', None, Nil, meta_last)
                 }
               Some(after_title) => {
+                // TODO: Replace this with arrays.
+                let rev_spans = List::from_array(spans.rev())
                 let t = self.tight_block_lines(rev_spans~)
                 (
                   lines1,
@@ -830,8 +834,10 @@ fn Parser::add_open_blocks_with_line_class(
     HtmlBlockLine(end_cond) => bs.add(self.html_block(end_cond~, indent_start~))
     ParagraphLine => bs.add(self.paragraph(start=indent_start))
     ExtTableRow(last) => bs.add(self.table(indent~, last~))
-    ExtFootnoteLabel(rev_spans, last, key) =>
+    ExtFootnoteLabel(spans, last, key) => { // TODO: Replace this with arrays.
+      let rev_spans = List::from_array(spans.rev())
       bs.add(self.footnote(indent~, last~, rev_spans~, key~))
+    }
     _ => abort("unimplemented")
   }
 }
