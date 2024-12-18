@@ -274,7 +274,7 @@ pub(all) enum Inline {
   CodeSpan(Node[InlineCodeSpan])
   Emphasis(Node[InlineEmphasis])
   Image(Node[InlineLink])
-  Inlines(Node[@moonbitlang/core/immut/list.T[Inline]])
+  Inlines(Node[Array[Inline]])
   Link(Node[InlineLink])
   RawHtml(Node[InlineRawHtml])
   StrongEmphasis(Node[InlineEmphasis])
@@ -329,12 +329,12 @@ impl @moonbitlang/core/json.FromJson for InlineBreakType
 
 pub(all) struct InlineCodeSpan {
   backticks : Int
-  code_layout : @moonbitlang/core/immut/list.T[Tight]
+  code_layout : Array[Tight]
 }
 impl InlineCodeSpan {
   code(Self) -> String
   from_string(meta~ : @rami3l/cmark/cmark_base.Meta = .., String) -> Self
-  new(backticks~ : Int, @moonbitlang/core/immut/list.T[Tight]) -> Self
+  new(backticks~ : Int, Array[Tight]) -> Self
 }
 impl Eq for InlineCodeSpan
 impl Show for InlineCodeSpan
@@ -367,7 +367,7 @@ impl ToJson for InlineLink
 
 pub(all) struct InlineMathSpan {
   display : Bool
-  tex_layout : @moonbitlang/core/immut/list.T[Tight]
+  tex_layout : Array[Tight]
 }
 impl InlineMathSpan {
   tex(Self) -> String
@@ -376,7 +376,7 @@ impl Eq for InlineMathSpan
 impl Show for InlineMathSpan
 impl ToJson for InlineMathSpan
 
-pub(all) type InlineRawHtml @moonbitlang/core/immut/list.T[Tight]
+pub(all) type InlineRawHtml Array[Tight]
 impl Eq for InlineRawHtml
 impl Show for InlineRawHtml
 impl ToJson for InlineRawHtml
@@ -389,11 +389,11 @@ impl ToJson for InlineStrikethrough
 pub(all) struct Label {
   meta : @rami3l/cmark/cmark_base.Meta
   key : String
-  text : @moonbitlang/core/immut/list.T[Tight]
+  text : Array[Tight]
 }
 impl Label {
   compare(Self, Self) -> Int
-  new(meta~ : @rami3l/cmark/cmark_base.Meta = .., key~ : String, @moonbitlang/core/immut/list.T[Tight]) -> Self
+  new(meta~ : @rami3l/cmark/cmark_base.Meta = .., key~ : String, Array[Tight]) -> Self
   op_equal(Self, Self) -> Bool
   text_loc(Self) -> @rami3l/cmark/cmark_base.TextLoc
 }
@@ -420,10 +420,10 @@ pub(all) struct LinkDefinition {
   label : Label?
   defined_label : Label?
   dest : Node[String]?
-  title : @moonbitlang/core/immut/list.T[Tight]?
+  title : Array[Tight]?
 }
 impl LinkDefinition {
-  new(layout~ : LinkDefinitionLayout = .., label~ : Label? = .., defined_label~ : Label? = .., dest~ : Node[String]? = .., title~ : @moonbitlang/core/immut/list.T[Tight]? = ..) -> Self
+  new(layout~ : LinkDefinitionLayout = .., label~ : Label? = .., defined_label~ : Label? = .., dest~ : Node[String]? = .., title~ : Array[Tight]? = ..) -> Self
 }
 impl Eq for LinkDefinition
 impl Show for LinkDefinition
@@ -593,7 +593,7 @@ pub(all) struct Tight {
 }
 impl Tight {
   empty(meta~ : @rami3l/cmark/cmark_base.Meta = ..) -> Self
-  list_text_loc(@moonbitlang/core/immut/list.T[Self]) -> @rami3l/cmark/cmark_base.TextLoc
+  list_text_loc(Array[Self]) -> @rami3l/cmark/cmark_base.TextLoc
   to_string(Self) -> String
 }
 impl Eq for Tight
@@ -670,6 +670,10 @@ pub typealias MapFn[A] = (Mapper, A) -> A?!MapperError
 pub typealias MapperFn[A] = (Mapper, A) -> MapperResult[A]
 
 pub typealias RevSpans = @moonbitlang/core/immut/list.T[@rami3l/cmark/cmark_base.Span]
+
+pub typealias RevTokens = Array[Token]
+
+pub typealias RevTokensView = ArrayView[Token]
 
 pub typealias StringNode = Node[String]
 

@@ -49,14 +49,11 @@ pub fn Tight::to_string(self : Tight) -> String {
 }
 
 ///|
-pub fn Tight::list_text_loc(ls : List[Tight]) -> TextLoc {
+pub fn Tight::list_text_loc(ls : Array[Tight]) -> TextLoc {
   match ls {
-    Nil => TextLoc::none()
-    Cons(head, Nil) => head.node.meta.loc
-    Cons(head, tail) => {
-      let last = tail.unsafe_last()
-      head.node.meta.loc.reloc(last.node.meta.loc)
-    }
+    [] => TextLoc::none()
+    [head] => head.node.meta.loc
+    [head,  ..,  last] => head.node.meta.loc.reloc(last.node.meta.loc)
   }
 }
 
@@ -77,21 +74,23 @@ fn BlockLine::flush_tight(
   s : String,
   start : Int,
   last : Int,
-  acc : List[Tight]
-) -> List[Tight] {
+  acc : Array[Tight]
+) -> Unit {
   // If [s] has newlines, blanks after newlines are layout
   if start > last {
-    return acc.add(Tight::empty(meta~))
+    acc.push(Tight::empty(meta~))
+    return
   }
   // On the first line the blanks are legit 
   if acc.is_empty() {
-    return acc.add({
+    acc.push({
       blanks: "",
       node: { meta, v: s.substring(start~, end=last + 1) },
     })
+    return
   }
   let nb = @cmark_base.first_non_blank(s, last~, start~)
-  acc.add({
+  acc.push({
     blanks: s.substring(start~, end=nb),
     node: { meta, v: s.substring(start=nb, end=last + 1) },
   })

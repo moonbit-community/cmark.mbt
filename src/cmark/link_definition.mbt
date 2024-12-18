@@ -8,7 +8,7 @@ pub(all) struct LinkDefinition {
   label : Label?
   defined_label : Label?
   dest : StringNode?
-  title : List[Tight]?
+  title : Array[Tight]?
 } derive(Eq, Show, ToJson)
 
 ///|
@@ -17,7 +17,7 @@ pub fn LinkDefinition::new(
   label~ : Label? = None,
   defined_label~ : Label? = None,
   dest~ : StringNode? = None,
-  title~ : List[Tight]? = None
+  title~ : Array[Tight]? = None
 ) -> LinkDefinition {
   { layout, label, defined_label, dest, title }
 }

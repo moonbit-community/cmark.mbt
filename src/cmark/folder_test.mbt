@@ -133,11 +133,7 @@ test "folder block with footnote definition" {
   let footnote = Block::ExtFootnoteDefinition(
     Node::new({
       indent: 0,
-      label: {
-        meta: @rami3l/cmark/cmark_base.Meta::none(),
-        key: "1",
-        text: @immut/list.of([]),
-      },
+      label: { meta: @rami3l/cmark/cmark_base.Meta::none(), key: "1", text: [] },
       defined_label: None,
       block: Block::empty(),
     }),

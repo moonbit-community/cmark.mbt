@@ -35,6 +35,12 @@ typealias LineSpan = @cmark_base.LineSpan
 pub(all) typealias RevSpans = List[Span]
 
 ///|
+pub(all) typealias RevTokens = Array[Token]
+
+///|
+pub(all) typealias RevTokensView = ArrayView[Token]
+
+///|
 typealias HeadingLevel = @cmark_base.HeadingLevel
 
 ///|

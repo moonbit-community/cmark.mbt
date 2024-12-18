@@ -8,7 +8,7 @@
 pub(all) struct Label {
   meta : Meta
   key : LabelKey
-  text : List[Tight]
+  text : Array[Tight]
 } derive(Show, ToJson)
 
 ///| The type for label keys. These are
@@ -23,7 +23,7 @@ pub(all) typealias LabelMap[V] = Map[LabelKey, V]
 pub fn Label::new(
   meta~ : Meta = Meta::none(),
   key~ : String,
-  text : List[Tight]
+  text : Array[Tight]
 ) -> Label {
   { meta, key, text }
 }

@@ -107,9 +107,8 @@ pub fn Mapper::map_inline(self : Mapper, i : Inline) -> FilterMap[Inline] {
       Some(StrongEmphasis({ v: { ..v, inline, }, meta }))
     }
     Inlines({ v, meta }) => {
-      guard let Cons(_, _) as v = v.filter_map(fn(x) { self.map_inline(x) }) else {
-        _ => None
-      }
+      let v = v.map_option(fn(x) { self.map_inline(x) })
+      guard not(v.is_empty()) else { None }
       Some(Inlines({ v, meta }))
     }
     ExtStrikethrough({ v, meta }) => {
@@ -133,7 +132,7 @@ pub fn Mapper::map_block(self : Mapper, b : Block) -> FilterMap[Block] {
     Heading({ v, meta }) => {
       let inline = self
         .map_inline(v.inline)
-        .or(Inlines({ v: Nil, meta: Meta::none() }))
+        .or(Inlines({ v: [], meta: Meta::none() }))
       Some(Heading({ v: { ..v, inline, }, meta }))
     }
     BlockQuote({ v, meta }) => {
