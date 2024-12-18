@@ -8,7 +8,7 @@ pub(all) enum Inline {
   CodeSpan(Node[InlineCodeSpan])
   Emphasis(Node[InlineEmphasis])
   Image(Node[InlineLink])
-  Inlines(Node[List[Inline]])
+  Inlines(Node[Array[Inline]])
   Link(Node[InlineLink])
   RawHtml(Node[InlineRawHtml])
   StrongEmphasis(Node[InlineEmphasis])
@@ -19,7 +19,7 @@ pub(all) enum Inline {
 
 ///|
 pub fn Inline::empty() -> Inline {
-  Inlines({ v: Nil, meta: Meta::none() })
+  Inlines({ v: [], meta: Meta::none() })
 }
 
 ///|
@@ -69,7 +69,7 @@ pub fn Inline::normalize(self : Inline) -> Inline {
     | CodeSpan(_)
     | RawHtml(_)
     | Text(_)
-    | Inlines({ v: Nil, .. })
+    | Inlines({ v: [], .. })
     | ExtMathSpan(_) as i => i
     Image({ v: raw, meta }) =>
       Image({ v: { ..raw, text: raw.text.normalize() }, meta })
@@ -81,27 +81,31 @@ pub fn Inline::normalize(self : Inline) -> Inline {
       StrongEmphasis({ v: { ..raw, inline: raw.inline.normalize() }, meta })
     ExtStrikethrough({ v: raw, meta }) =>
       ExtStrikethrough({ v: raw._.normalize(), meta })
-    Inlines({ v: Cons(i, Nil), .. }) => i
-    Inlines({ v: Cons(i, is_), meta }) => {
-      let is_ = loop List::of([i.normalize()]), is_ {
-        acc, Cons(Inlines({ v: is1, .. }), is_) =>
-          continue acc, is1.rev().rev_concat(is_)
-        acc, Cons(Text({ v: t1, meta: meta1 }) as i1, is_) =>
-          match acc {
-            Cons(Text({ v: t, meta }), acc) => {
-              let i = Text({
-                v: t + t1,
-                meta: { ..meta, loc: meta.loc.span(meta1.loc) },
-              })
-              continue acc.add(i), is_
+    Inlines({ v: [i], .. }) => i
+    Inlines({ v: [i, .. as is_], meta }) => {
+      let acc = [i.normalize()]
+      let is_ = Array::from_iter(is_.iter())
+      while true {
+        guard let Some(curr) = is_.pop() else { _ => break }
+        match curr {
+          Inlines({ v: is1, .. }) =>
+            for i1 in is1.rev() {
+              is_.push(i1)
             }
-            _ => continue acc.add(i1.normalize()), is_
-          }
-        acc, Cons(i, is_) => continue acc.add(i.normalize()), is_
-        acc, Nil => break acc.rev()
+          Text({ v: t1, meta: meta1 }) as i1 =>
+            match acc {
+              [.., Text({ v: t, meta })] =>
+                acc[acc.length() - 1] = Text({
+                  v: t + t1,
+                  meta: { ..meta, loc: meta.loc.span(meta1.loc) },
+                })
+              _ => acc.push(i1.normalize())
+            }
+          i => acc.push(i.normalize())
+        }
       }
-      match is_ {
-        Cons(i, Nil) => i
+      match acc {
+        [i] => i
         is_ => Inlines({ v: is_, meta })
       }
     }
@@ -236,23 +240,25 @@ pub(all) enum InlineBreakType {
 ///| The type for [code spans](https://spec.commonmark.org/0.30/#code-spans).
 pub(all) struct InlineCodeSpan {
   backticks : Count
-  code_layout : List[Tight]
+  code_layout : Array[Tight]
 } derive(Eq, Show, ToJson)
 
 ///|
 pub fn InlineCodeSpan::new(
   backticks~ : Count,
-  code_layout : List[Tight]
+  code_layout : Array[Tight]
 ) -> InlineCodeSpan {
   { backticks, code_layout }
 }
 
 ///|
-fn InlineCodeSpan::min_backticks(min~ : Count, counts : List[Count]) -> Count {
-  loop min, counts.sort() {
-    min, Nil => min
-    min, Cons(c, cs) => if min != c { break min } else { continue c + 1, cs }
+fn InlineCodeSpan::min_backticks(min~ : Count, counts : Array[Count]) -> Count {
+  let mut min = min
+  for c in counts..sort() {
+    guard min == c else { return min }
+    min = c + 1
   }
+  min
 }
 
 ///| `from_string(s)` is a code span for `s`. `s` can start with or
@@ -267,32 +273,33 @@ pub fn InlineCodeSpan::from_string(
   s : String
 ) -> InlineCodeSpan {
   if s.is_empty() {
-    return { backticks: 1, code_layout: List::of([Tight::empty(meta~)]) }
+    return { backticks: 1, code_layout: [Tight::empty(meta~)] }
   }
   // This finds out the needed backtick count, whether spaces are needed,
   // and treats blanks after newline as layout 
   let max = s.length() - 1
   let need_sp = s[0] == '`' || s[max] == '`'
   let s = if need_sp { " \{s} " } else { s }
-  let (bt_counts, code_layout) = loop List::Nil, List::Nil, max, 0, 0, 0 {
+  let (bt_counts, code_layout) = loop [], [], max, 0, 0, 0 {
     bt_counts, acc, max, btc, start, k => {
       if k > max {
         // assert (btc = 0) because of [need_sp]
         let layout = if acc.is_empty() {
-          List::of([{ blanks: "", node: { v: s, meta } }])
+          [{ blanks: "", node: { v: s, meta } }]
         } else {
           BlockLine::flush_tight(meta~, s, start, max, acc)
+          acc
         }
         break (bt_counts, layout)
       }
       if s[k] == '`' {
         continue bt_counts, acc, max, btc + 1, start, k + 1
       }
-      let bt_counts = if btc > 0 { bt_counts.add(btc) } else { bt_counts }
+      let bt_counts = if btc > 0 { bt_counts..push(btc) } else { bt_counts }
       if not(s[k] == '\n' || s[k] == '\r') {
         continue bt_counts, acc, max, 0, start, k + 1
       }
-      let acc = BlockLine::flush_tight(meta~, s, start, k - 1, acc)
+      BlockLine::flush_tight(meta~, s, start, k - 1, acc)
       let start = if k + 1 <= max && s[k] == '\r' && s[k + 1] == '\n' {
         k + 2
       } else {
@@ -416,7 +423,7 @@ pub fn InlineLink::is_unsafe(l : String) -> Bool {
 }
 
 ///| The type for [inline raw HTML](https://spec.commonmark.org/0.30/#raw-html) (can span multiple lines).
-pub(all) type InlineRawHtml List[Tight] derive(Eq, Show, ToJson)
+pub(all) type InlineRawHtml Array[Tight] derive(Eq, Show, ToJson)
 
 ///| The type for [textual content](https://spec.commonmark.org/0.30/#textual-content).
 ///
@@ -433,11 +440,10 @@ pub(all) type InlineStrikethrough Inline derive(Eq, Show, ToJson)
 ///|
 pub(all) struct InlineMathSpan {
   display : Bool
-  tex_layout : List[Tight]
+  tex_layout : Array[Tight]
 } derive(Eq, Show, ToJson)
 
 ///|
 pub fn tex(self : InlineMathSpan) -> String {
-  self.tex_layout.map(Tight::to_string).to_array()
-  |> String::concat(separator=" ")
+  self.tex_layout.map(Tight::to_string) |> String::concat(separator=" ")
 }

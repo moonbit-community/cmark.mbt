@@ -410,9 +410,7 @@ fn Parser::parse_link_ref_definition(
         if colon > line.last || self.i[colon] != ':' {
           raise @cmark_base.Exit
         }
-        // TODO: Replace this with arrays.
-        let rev_spans = List::from_array(spans.rev())
-        let label = label_of_rev_spans(self, key~, rev_spans)
+        let label = label_of_spans(self, key~, spans[:])
         (lines, line, label, colon + 1)
       }
     }
@@ -475,9 +473,7 @@ fn Parser::parse_link_ref_definition(
                   (lines, Nil, '"', None, Nil, meta_last)
                 }
               Some(after_title) => {
-                // TODO: Replace this with arrays.
-                let rev_spans = List::from_array(spans.rev())
-                let t = self.tight_block_lines(rev_spans~)
+                let t = self.tight_block_lines(spans=spans[:])
                 (
                   lines1,
                   after_dest,
@@ -834,10 +830,8 @@ fn Parser::add_open_blocks_with_line_class(
     HtmlBlockLine(end_cond) => bs.add(self.html_block(end_cond~, indent_start~))
     ParagraphLine => bs.add(self.paragraph(start=indent_start))
     ExtTableRow(last) => bs.add(self.table(indent~, last~))
-    ExtFootnoteLabel(spans, last, key) => { // TODO: Replace this with arrays.
-      let rev_spans = List::from_array(spans.rev())
-      bs.add(self.footnote(indent~, last~, rev_spans~, key~))
-    }
+    ExtFootnoteLabel(spans, last, key) =>
+      bs.add(self.footnote(indent~, last~, spans=spans[:], key~))
     _ => abort("unimplemented")
   }
 }
@@ -862,10 +856,10 @@ fn Parser::footnote(
   self : Parser,
   indent~ : Indent,
   last~ : BytePos,
-  rev_spans~ : RevSpans,
+  spans~ : ArrayView[Span],
   key~ : String
 ) -> BlockStruct {
-  let label = label_of_rev_spans(self, key~, rev_spans)
+  let label = label_of_spans(self, key~, spans)
   let defined_label = self.def_label(label)
   for def in defined_label {
     self.set_label_def(def, Label::stub(label, defined_label))
@@ -1539,7 +1533,7 @@ fn Parser::block_struct_to_table(
     col_count, last_was_sep, acc, Cons((row, blanks), rs) => {
       let meta = self.meta(self.text_loc_of_span(row))
       let row1 = { ..row, first: row.first + 1, last: row.last }
-      let cols = self.parse_table_row(row1)
+      let cols = self.parse_table_row(row1) |> List::from_array()
       let col_count = @math.maximum(col_count, cols.length())
       let (r, last_was_sep) = match Table::parse_sep_row(cols) {
         Some(seps) => ({ v: Sep(seps), meta }, true)

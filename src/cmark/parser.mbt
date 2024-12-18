@@ -279,17 +279,17 @@ fn Parser::layout_clean_raw_span1(
 ///|
 fn Parser::tight_block_lines(
   self : Parser,
-  rev_spans~ : RevSpans
-) -> List[Tight] {
-  self._tight_block_lines(Parser::clean_unesc_unref_span, rev_spans~)
+  spans~ : ArrayView[Span]
+) -> Array[Tight] {
+  self._tight_block_lines(Parser::clean_unesc_unref_span, spans~)
 }
 
 ///|
 fn Parser::raw_tight_block_lines(
   self : Parser,
-  rev_spans~ : RevSpans
-) -> List[Tight] {
-  self._tight_block_lines(fn(p, s) { p.clean_raw_span(s) }, rev_spans~)
+  spans~ : ArrayView[Span]
+) -> Array[Tight] {
+  self._tight_block_lines(fn(p, s) { p.clean_raw_span(s) }, spans~)
 }
 
 ///|
@@ -299,26 +299,29 @@ typealias ParserCleanSpanFn = (Parser, LineSpan) -> StringNode
 fn Parser::_tight_block_lines(
   self : Parser,
   f : ParserCleanSpanFn,
-  rev_spans~ : RevSpans
-) -> List[Tight] {
-  loop List::Nil, rev_spans {
-    acc, Nil => acc
-    acc, Cons({ span: fst_ln, .. }, Nil) =>
-      acc.add({ blanks: "", node: f(self, fst_ln) })
-    acc, Cons({ start: line_start, span }, spans) => {
-      let layout = if self.no_layouts || span.first <= line_start {
-        ""
-      } else {
-        @char.utf_16_clean_raw(
-          self.buf,
-          self.i,
-          first=line_start,
-          last=span.first - 1,
-        )
+  spans~ : ArrayView[Span]
+) -> Array[Tight] {
+  let acc = []
+  for i, span in spans {
+    match (span, i) {
+      ({ span: fst_ln, .. }, 0) =>
+        acc.push({ blanks: "", node: f(self, fst_ln) })
+      ({ start: line_start, span }, _) => {
+        let layout = if self.no_layouts || span.first <= line_start {
+          ""
+        } else {
+          @char.utf_16_clean_raw(
+            self.buf,
+            self.i,
+            first=line_start,
+            last=span.first - 1,
+          )
+        }
+        acc.push({ blanks: layout, node: f(self, span) })
       }
-      continue acc.add({ blanks: layout, node: f(self, span) }), spans
     }
   }
+  acc
 }
 
 ///|

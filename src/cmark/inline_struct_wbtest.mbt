@@ -806,6 +806,98 @@ test "should tokenize nested strikethroughs and emphases" {
   ])
 }
 
+test "should parse strikethroughs" {
+  @json.inspect!(
+    parse_only(
+      strict=false,
+      #|Nesting the nest ~~*emph2* ~~stroke~~ *emph3 **emph4  ~~strikeagain~~***~~
+      ,
+    ),
+    content=[
+      [0, ""],
+      {
+        "$tag": "Inlines",
+        "0": [
+          [
+            { "$tag": "Text", "0": ["Nesting the nest "] },
+            {
+              "$tag": "ExtStrikethrough",
+              "0": [
+                {
+                  "$tag": "Inlines",
+                  "0": [
+                    [
+                      {
+                        "$tag": "Emphasis",
+                        "0": [
+                          {
+                            "delim": "*",
+                            "inline": { "$tag": "Text", "0": ["emph2"] },
+                          },
+                        ],
+                      },
+                      { "$tag": "Text", "0": [" "] },
+                      {
+                        "$tag": "ExtStrikethrough",
+                        "0": [{ "$tag": "Text", "0": ["stroke"] }],
+                      },
+                      { "$tag": "Text", "0": [" "] },
+                      {
+                        "$tag": "Emphasis",
+                        "0": [
+                          {
+                            "delim": "*",
+                            "inline": {
+                              "$tag": "Inlines",
+                              "0": [
+                                [
+                                  { "$tag": "Text", "0": ["emph3 "] },
+                                  {
+                                    "$tag": "StrongEmphasis",
+                                    "0": [
+                                      {
+                                        "delim": "*",
+                                        "inline": {
+                                          "$tag": "Inlines",
+                                          "0": [
+                                            [
+                                              {
+                                                "$tag": "Text",
+                                                "0": ["emph4  "],
+                                              },
+                                              {
+                                                "$tag": "ExtStrikethrough",
+                                                "0": [
+                                                  {
+                                                    "$tag": "Text",
+                                                    "0": ["strikeagain"],
+                                                  },
+                                                ],
+                                              },
+                                            ],
+                                          ],
+                                        },
+                                      },
+                                    ],
+                                  },
+                                ],
+                              ],
+                            },
+                          },
+                        ],
+                      },
+                    ],
+                  ],
+                },
+              ],
+            },
+          ],
+        ],
+      },
+    ],
+  )
+}
+
 test "should tokenize inline math" {
   @json.inspect!(
     tokenize_only(

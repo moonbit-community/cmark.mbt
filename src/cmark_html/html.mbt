@@ -449,8 +449,8 @@ fn raw_html(c : Context, h : @cmark.InlineRawHtml) -> Unit {
   if h._.is_empty() {
     return
   }
-  c.b.write_string(h._.unsafe_head().node.v)
-  for x in h._.tail() {
+  c.b.write_string(h._[0].node.v)
+  for x in h._[1:] {
     c.b.write_char('\n')
     c.b.write_string(x.node.v)
   }
@@ -469,10 +469,11 @@ fn math_span(c : Context, ms : @cmark.InlineMathSpan) -> Unit {
     html_escaped_string(c, l.to_string())
   }
 
-  fn tex_lines(c : Context, ls : List[@cmark.Tight]) {
-    guard let Some(head) = ls.head() else { _ => return }
+  fn tex_lines(c : Context, ls : ArrayView[@cmark.Tight]) {
+    guard ls.length() != 0 else { return }
+    let head = ls[0]
     tex_line(c, head)
-    for l in ls.tail() {
+    for l in ls[1:] {
       c.b.write_char('\n')
       tex_line(c, l)
     }
@@ -482,7 +483,7 @@ fn math_span(c : Context, ms : @cmark.InlineMathSpan) -> Unit {
   guard not(tex.is_empty()) else { return }
   let (lb, rb) = if ms.display { ("\\[", "\\]") } else { ("\\(", "\\)") }
   c.b.write_string(lb)
-  tex_lines(c, tex)
+  tex_lines(c, tex[:])
   c.b.write_string(rb)
 }
 

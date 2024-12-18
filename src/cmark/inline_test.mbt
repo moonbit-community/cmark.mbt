@@ -49,7 +49,7 @@ test "inline id with text containing backticks" {
   let inline = Inline::CodeSpan(
     Node::new({
       backticks: 1,
-      code_layout: @immut/list.T::of([{ blanks: "", node: Node::new("`text`") }]),
+      code_layout: [{ blanks: "", node: Node::new("`text`") }],
     }),
   )
   inspect!(inline.id(), content="text")

@@ -164,14 +164,16 @@ pub fn CodeBlock::make_fence(self : CodeBlock) -> (Char, Count) {
     Some(info) => if info.v.contains_char('`') { '~' } else { '`' }
     _ => '`'
   }
-  let counts = loop ch, List::Nil, self.code {
+  let counts = loop ch, [], self.code {
     _, counts, Nil => counts
     ch, counts, Cons({ v: c, .. }, cs) => {
       let mut k = 0
       while k < c.length() && c[k] == ch {
         k += 1
       }
-      let counts = if k != 0 { counts.add(k) } else { counts }
+      if k != 0 {
+        counts.push(k)
+      }
       continue ch, counts, cs
     }
   }
