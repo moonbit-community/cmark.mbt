@@ -19,13 +19,11 @@ pub fn first_non_blank(
   last~ : BytePos,
   start~ : BytePos
 ) -> BytePos {
-  if start > last {
-    return last + 1
+  for k in start..=last {
+    guard @char.is_ascii_blank(s[k]) else { return k }
+
   }
-  match s[start] {
-    ' ' | '\t' => first_non_blank(s, last~, start=start + 1)
-    _ => start
-  }
+  last + 1
 }
 
 ///| `first_non_blank_in_span(s, span)` is `first_non_blank(s, last=span.last, start=span.first)`.
@@ -70,19 +68,23 @@ fn push_span(
   line~ : LineSpan,
   first : BytePos,
   last : BytePos,
-  spans : List[Span]
-) -> List[Span] {
+  spans : Array[Span]
+) -> Unit {
   let first1 = first
   let last1 = last
   match spans {
     // Merge if on the same line
-    Cons({ start, span: { pos, first, .. } }, acc) =>
+    [.., { start, span: { pos, first, .. } }] =>
       if line.pos.0 == pos.0 {
-        return acc.add({ start, span: { ..line, first, last: last1 } })
+        spans[spans.length() - 1] = {
+          start,
+          span: { ..line, first, last: last1 },
+        }
+        return
       }
     _ => ()
   }
-  spans.add({ start: line.first, span: { ..line, first: first1, last: last1 } })
+  spans.push({ start: line.first, span: { ..line, first: first1, last: last1 } })
 }
 
 ///| Includes final `char` in spans.
@@ -92,24 +94,24 @@ fn accept_to[A](
   s : String,
   lines : A,
   line~ : LineSpan,
-  spans : List[Span],
+  spans : Array[Span],
   after~ : BytePos
-) -> (A, LineSpan, List[Span], Int)? {
-  loop lines, line, after, spans, after + 1 {
-    lines, line, start, acc, k => {
+) -> (A, LineSpan, Int)? {
+  loop lines, line, after, after + 1 {
+    lines, line, start, k => {
       if k > line.last {
         guard let Some((lines, new_line)) = next_line(lines) else {
           _ => break None
         }
-        let acc = push_span(line~, start, line.last, acc)
+        push_span(line~, start, line.last, spans)
         let start = first_non_blank_in_span(s, new_line)
-        continue lines, new_line, start, acc, start
+        continue lines, new_line, start, start
       }
       if s[k] == char {
-        let acc = push_span(line~, start, k, acc)
-        break Some((lines, line, acc, k))
+        push_span(line~, start, k, spans)
+        break Some((lines, line, k))
       }
-      continue lines, line, start, acc, k + 1
+      continue lines, line, start, k + 1
     }
   }
 }
@@ -121,9 +123,9 @@ fn accept_upto[A](
   s : String,
   lines : A,
   line~ : LineSpan,
-  spans : List[Span],
+  spans : Array[Span],
   after~ : BytePos
-) -> (A, LineSpan, List[Span], Int)? {
+) -> (A, LineSpan, Int)? {
   let start = after + 1
   loop char, next_line, s, lines, line, false, start, spans, start {
     char, next_line, s, lines, line, prev_bslash, start, acc, k =>
@@ -134,14 +136,14 @@ fn accept_upto[A](
         if newline.first > newline.last { // Empty
           break None
         }
-        let acc = push_span(line~, start, line.last, acc)
+        push_span(line~, start, line.last, acc)
         let start = first_non_blank_in_span(s, newline)
         let prev_bslash = false
         continue char, next_line, s, lines, newline, prev_bslash, start, acc, start
       } else {
         if s[k] == char && not(prev_bslash) {
-          let acc = push_span(line~, start, k - 1, acc)
-          break Some((lines, line, acc, k))
+          push_span(line~, start, k - 1, acc)
+          break Some((lines, line, k))
         }
         let prev_bslash = s[k] == '\\' && not(prev_bslash)
         continue char, next_line, s, lines, line, prev_bslash, start, acc, k + 1
@@ -177,20 +179,20 @@ fn first_non_blank_over_nl1[A](
   s : String,
   lines : A,
   line~ : LineSpan,
-  spans : List[Span],
+  spans : Array[Span],
   start~ : BytePos
-) -> (A, LineSpan, List[Span], BytePos)? {
+) -> (A, LineSpan, BytePos)? {
   match first_non_blank_over_nl(next_line~, s, lines, line~, start~) {
     None => None
     Some(ThisLine(nb)) => {
       let line = { ..line, first: start } // No layout
-      let spans = push_span(line~, start, nb - 1, spans)
-      Some((lines, line, spans, nb - 1))
+      push_span(line~, start, nb - 1, spans)
+      Some((lines, line, nb - 1))
     }
     Some(NextLine(lines, new_line, nb)) => {
       let line = { ..line, first: start } // No layout
-      let spans = push_span(line~, start, line.last, spans)
-      Some((lines, new_line, spans, nb - 1))
+      push_span(line~, start, line.last, spans)
+      Some((lines, new_line, nb - 1))
     }
   }
 }

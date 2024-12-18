@@ -717,7 +717,9 @@ fn Parser::try_autolink_or_html(
   }
   let first = start
   let first_line = line
-  let t = self.raw_html_token(first~, last~, first_line~, last_line~, spans)
+  // TODO: Replace this with arrays.
+  let rev_spans = List::from_array(spans.rev())
+  let t = self.raw_html_token(first~, last~, first_line~, last_line~, rev_spans)
   let toks = tokens_drop_until(start=last + 1, toks)
   Some((toks, last_line, t))
 }
@@ -756,7 +758,9 @@ fn Parser::try_full_reflink_remainder(
     line~,
     start~,
   ).map(fn {
-    (toks, line, rev_spans, last, key) => {
+    (toks, line, spans, last, key) => {
+      // TODO: Replace this with arrays.
+      let rev_spans = List::from_array(spans.rev())
       let ref_ = self.label_of_rev_spans(key~, rev_spans)
       let toks = tokens_drop_stop_after_right_brack(toks)
       self
@@ -775,7 +779,7 @@ fn Parser::try_shortcut_reflink(
   start~ : BytePos
 ) -> (List[Token], LineSpan, ReferenceKind, BytePos)? {
   let start = start + image.to_int() // [
-  guard let Some((toks, line, rev_spans, last, key)) = @cmark_base.link_label(
+  guard let Some((toks, line, spans, last, key)) = @cmark_base.link_label(
     self.buf,
     next_line=tokens_next_line,
     self.i,
@@ -785,6 +789,8 @@ fn Parser::try_shortcut_reflink(
   ) else {
     _ => return None
   }
+  // TODO: Replace this with arrays.
+  let rev_spans = List::from_array(spans.rev())
   let ref_ = self.label_of_rev_spans(key~, rev_spans)
   let toks = tokens_drop_stop_after_right_brack(toks)
   self
@@ -801,7 +807,7 @@ fn Parser::try_collapsed_reflink(
   start~ : BytePos
 ) -> (List[Token], LineSpan, ReferenceKind, BytePos)? {
   let start = start + image.to_int() // [
-  guard let Some((toks, line, rev_spans, last, key)) = @cmark_base.link_label(
+  guard let Some((toks, line, spans, last, key)) = @cmark_base.link_label(
     self.buf,
     next_line=tokens_next_line,
     self.i,
@@ -811,6 +817,8 @@ fn Parser::try_collapsed_reflink(
   ) else {
     _ => return None
   }
+  // TODO: Replace this with arrays.
+  let rev_spans = List::from_array(spans.rev())
   let ref_ = self.label_of_rev_spans(key~, rev_spans)
   let last = last + 2 // ][]
   let toks = tokens_drop_stop_after_right_brack(toks)
@@ -865,7 +873,9 @@ fn Parser::try_inline_link_remainder(
             start~,
           ) {
           None => (toks, line, after_dest, '"', None, start)
-          Some((toks, line, rev_spans, last)) => {
+          Some((toks, line, spans, last)) => {
+            // TODO: Replace this with arrays.
+            let rev_spans = List::from_array(spans.rev())
             let title = self.tight_block_lines(rev_spans~)
             (toks, line, after_dest, self.i[start], Some(title), last + 1)
           }

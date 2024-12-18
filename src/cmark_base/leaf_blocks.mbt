@@ -39,7 +39,7 @@ pub(all) enum LineType {
   SetextUnderlineLine(HeadingLevel, Last)
   ThematicBreakLine(Last)
   ExtTableRow(Last)
-  ExtFootnoteLabel(RevSpans, Last, String)
+  ExtFootnoteLabel(Array[Span], Last, String)
   Nomatch
 } derive(Show, ToJson, Eq)
 
@@ -544,7 +544,7 @@ pub fn LineType::ext_footnote_label(
   }
   // Get the normalized label
   let line = { pos: line_pos, first: start, last }
-  guard let Some((_, _, rev_spans, _, key)) = link_label(
+  guard let Some((_, _, spans, _, key)) = link_label(
     buf,
     next_line=fn(_x) { None },
     s,
@@ -554,7 +554,7 @@ pub fn LineType::ext_footnote_label(
   ) else {
     _ => Nomatch
   }
-  ExtFootnoteLabel(rev_spans, colon, key)
+  ExtFootnoteLabel(spans, colon, key)
 }
 
 // https://spec.commonmark.org/current/#link-reference-definition

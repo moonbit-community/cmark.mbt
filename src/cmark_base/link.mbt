@@ -82,37 +82,43 @@ pub fn link_title[A](
   lines : A,
   line~ : LineSpan,
   start~ : BytePos
-) -> (A, LineSpan, List[Span], Last)? {
+) -> (A, LineSpan, Array[Span], Last)? {
   if start > line.last {
     return None
   }
   match s[start] {
-    '"' | '\'' as char =>
-      accept_upto(char~, next_line~, s, lines, line~, Nil, after=start)
+    '"' | '\'' as char => {
+      let spans = []
+      accept_upto(char~, next_line~, s, lines, line~, spans, after=start).map(fn {
+        (lines, span, last) => (lines, span, spans, last)
+      })
+    }
     '(' => {
       let start = start + 1
-      loop next_line, s, lines, line, false, start, List::Nil, start {
-        next_line, s, lines, line, prev_bslash, start, acc, k => {
+      let acc = []
+      loop next_line, s, lines, line, false, start, start {
+        next_line, s, lines, line, prev_bslash, start, k => {
           if k > line.last {
             guard let Some((lines, newline)) = next_line(lines) else {
               _ => break None
             }
             guard newline.first <= newline.last else { break None }
-            let acc = push_span(line~, start, line.last, acc)
+            push_span(line~, start, line.last, acc)
             let start = first_non_blank_in_span(s, newline)
             let prev_bslash = false
-            continue next_line, s, lines, newline, prev_bslash, start, acc, start
+            continue next_line, s, lines, newline, prev_bslash, start, start
           }
           if not(prev_bslash) {
             if s[k] == '(' {
               break None
             }
             if s[k] == ')' {
-              break Some((lines, line, push_span(line~, start, k - 1, acc), k))
+              push_span(line~, start, k - 1, acc)
+              break Some((lines, line, acc, k))
             }
           }
           let prev_bslash = s[k] == '\\' && not(prev_bslash)
-          continue next_line, s, lines, line, prev_bslash, start, acc, k + 1
+          continue next_line, s, lines, line, prev_bslash, start, k + 1
         }
       }
     }
@@ -132,14 +138,15 @@ pub fn link_label[A](
   lines : A,
   line~ : LineSpan,
   start~ : BytePos
-) -> (A, LineSpan, List[Span], Last, String)? {
+) -> (A, LineSpan, Array[Span], Last, String)? {
   if start > line.last || s[start] != '[' {
     return None
   }
   let start = start + 1
   buf.reset()
-  loop buf, next_line, s, lines, line, '\x00', start, List::Nil, 0, start {
-    b, next_line, s, lines, line, prev, start, acc, count, k => {
+  let acc = []
+  loop buf, next_line, s, lines, line, '\x00', start, 0, start {
+    b, next_line, s, lines, line, prev, start, count, k => {
       if k > line.last {
         guard let Some((lines, newline)) = next_line(lines) else {
           _ => break None
@@ -147,13 +154,13 @@ pub fn link_label[A](
         if newline.first == newline.last {
           break None
         }
-        let acc = push_span(line~, start, line.last, acc)
+        push_span(line~, start, line.last, acc)
         let start = first_non_blank_in_span(s, newline)
         if not(b.to_string().is_empty()) { // TODO: Use StringBuilder::is_empty()
           b.write_char(' ')
         }
         let prev = '\x00'
-        continue b, next_line, s, lines, newline, prev, start, acc, count, start
+        continue b, next_line, s, lines, newline, prev, start, count, start
       }
       if count > 999 {
         break None
@@ -162,16 +169,7 @@ pub fn link_label[A](
         ('\\', '\\') => {
           b.write_char('\\')
           let prev = '\x00'
-          continue b,
-            next_line,
-            s,
-            lines,
-            line,
-            prev,
-            start,
-            acc,
-            count + 1,
-            k + 1
+          continue b, next_line, s, lines, line, prev, start, count + 1, k + 1
         }
         (']', '\\') => ()
         (']', _) => {
@@ -179,22 +177,13 @@ pub fn link_label[A](
           if key.iter().all(@char.is_ascii_whitespace) {
             break None
           }
-          let acc = push_span(line~, start, k - 1, acc)
+          push_span(line~, start, k - 1, acc)
           break Some((lines, line, acc, k, key))
         }
         ('[', '\\') => ()
         ('[', _) => break None
         (' ' | '\t' as prev, _) =>
-          continue b,
-            next_line,
-            s,
-            lines,
-            line,
-            prev,
-            start,
-            acc,
-            count + 1,
-            k + 1
+          continue b, next_line, s, lines, line, prev, start, count + 1, k + 1
         _ => ()
       }
       // Collapse non initial whitespace
@@ -206,12 +195,9 @@ pub fn link_label[A](
         u = @char.rep
       }
       let k1 = k + @char.length_utf8(u)
-      // match Cmarkit_data.unicode_case_fold u with
-      // | None -> Buffer.add_utf_8_uchar b u
-      // | Some fold -> Buffer.add_string b fold
       b.write_char(@char.to_ascii_lower(u))
       let prev = s[k]
-      continue b, next_line, s, lines, line, prev, start, acc, count + 1, k1
+      continue b, next_line, s, lines, line, prev, start, count + 1, k1
     }
   }
 }

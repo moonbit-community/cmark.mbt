@@ -32,7 +32,7 @@ typealias Span = @cmark_base.Span
 typealias LineSpan = @cmark_base.LineSpan
 
 ///|
-typealias RevSpans = @cmark_base.RevSpans
+pub(all) typealias RevSpans = List[Span]
 
 ///|
 typealias HeadingLevel = @cmark_base.HeadingLevel
