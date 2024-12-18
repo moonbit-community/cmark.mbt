@@ -225,12 +225,22 @@ fn tokens_pop_until(start~ : Int, rev_toks : RevTokens) -> Unit {
 }
 
 ///|
-fn tokens_next_line(rev_toks : RevTokensView) -> (RevTokensView, LineSpan)? {
-  loop rev_toks {
-    [] => None
-    [.. as rev_toks, Newline({ newline, .. })] =>
-      return Some((rev_toks, newline))
-    [.. as rev_toks, _] => continue rev_toks
+fn tokens_next_line(rev_toks : RevTokens) -> LineSpan? {
+  let acc = []
+  loop rev_toks.pop() {
+    None =>
+      loop acc.pop() {
+        None => None
+        Some(t) => {
+          rev_toks.push(t)
+          continue acc.pop()
+        }
+      }
+    Some(Newline({ newline, .. })) => Some(newline)
+    Some(t) => {
+      acc.push(t)
+      continue rev_toks.pop()
+    }
   }
 }
 
@@ -723,10 +733,10 @@ fn Parser::try_autolink_or_html(
       return Some((line, t))
     }
   }
-  guard let Some((rev_toks_, last_line, spans, last)) = @cmark_base.raw_html(
+  guard let Some((last_line, spans, last)) = @cmark_base.raw_html(
     next_line=tokens_next_line,
     self.i,
-    rev_toks.val[:],
+    rev_toks.val,
     line~,
     start~,
   ) else {
@@ -735,7 +745,6 @@ fn Parser::try_autolink_or_html(
   let first = start
   let first_line = line
   let t = self.raw_html_token(first~, last~, first_line~, last_line~, spans[:])
-  rev_toks.val = rev_toks_.iter().to_array() // TODO: Maybe truncating is enough?
   tokens_pop_until(start=last + 1, rev_toks.val)
   Some((last_line, t))
 }
@@ -764,11 +773,11 @@ fn Parser::try_full_reflink_remainder(
   image~ : Bool,
   start~ : BytePos
 ) -> (LineSpan, ReferenceKind, BytePos)?? {
-  guard let Some((rev_toks_, line, spans, last, key)) = @cmark_base.link_label(
+  guard let Some((line, spans, last, key)) = @cmark_base.link_label(
     self.buf,
     next_line=tokens_next_line,
     self.i,
-    rev_toks.val[:],
+    rev_toks.val,
     line~,
     start~,
   ) else {
@@ -778,7 +787,6 @@ fn Parser::try_full_reflink_remainder(
   guard let Some(def) = self.find_def_for_ref(image~, ref_) else {
     _ => Some(None)
   }
-  rev_toks.val = rev_toks_.iter().to_array() // TODO: Maybe truncating is enough?
   tokens_drop_stop_after_right_brack(rev_toks.val)
   Some(Some((line, ReferenceKind::Ref(Full, ref_, def), last)))
 }
@@ -793,11 +801,11 @@ fn Parser::try_shortcut_reflink(
   start~ : BytePos
 ) -> (LineSpan, ReferenceKind, BytePos)? {
   let start = start + image.to_int() // [
-  guard let Some((rev_toks_, line, spans, last, key)) = @cmark_base.link_label(
+  guard let Some((line, spans, last, key)) = @cmark_base.link_label(
     self.buf,
     next_line=tokens_next_line,
     self.i,
-    rev_toks.val[:],
+    rev_toks.val,
     line~,
     start~,
   ) else {
@@ -805,7 +813,6 @@ fn Parser::try_shortcut_reflink(
   }
   let ref_ = self.label_of_spans(key~, spans[:])
   guard let Some(def) = self.find_def_for_ref(image~, ref_) else { _ => None }
-  rev_toks.val = rev_toks_.iter().to_array() // TODO: Maybe truncating is enough?
   tokens_drop_stop_after_right_brack(rev_toks.val)
   Some((line, ReferenceKind::Ref(Shortcut, ref_, def), last))
 }
@@ -820,11 +827,11 @@ fn Parser::try_collapsed_reflink(
   start~ : BytePos
 ) -> (LineSpan, ReferenceKind, BytePos)? {
   let start = start + image.to_int() // [
-  guard let Some((rev_toks_, line, spans, last, key)) = @cmark_base.link_label(
+  guard let Some((line, spans, last, key)) = @cmark_base.link_label(
     self.buf,
     next_line=tokens_next_line,
     self.i,
-    rev_toks.val[:],
+    rev_toks.val,
     line~,
     start~,
   ) else {
@@ -833,7 +840,6 @@ fn Parser::try_collapsed_reflink(
   let ref_ = self.label_of_spans(key~, spans[:])
   let last = last + 2 // ][]
   guard let Some(def) = self.find_def_for_ref(image~, ref_) else { _ => None }
-  rev_toks.val = rev_toks_.iter().to_array() // TODO: Maybe truncating is enough?
   tokens_drop_stop_after_right_brack(rev_toks.val)
   tokens_drop_stop_after_right_brack(rev_toks.val)
   Some((line, ReferenceKind::Ref(Collapsed, ref_, def), last))
@@ -853,7 +859,7 @@ fn Parser::try_inline_link_remainder(
   guard self.cidx.has_right_paren(after=st) else { None }
   guard let Some((rev_toks_, line, before_dest, start)) = self.first_non_blank_over_nl(
     next_line=tokens_next_line,
-    rev_toks.val[:],
+    rev_toks.val,
     start_line,
     start=st + 1,
   ) else {

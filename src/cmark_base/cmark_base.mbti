@@ -17,7 +17,7 @@ fn first_non_blank(String, last~ : Int, start~ : Int) -> Int
 
 fn first_non_blank_in_span(String, LineSpan) -> Int
 
-fn first_non_blank_over_nl[A](next_line~ : (A) -> (A, LineSpan)?, String, A, line~ : LineSpan, start~ : Int) -> NextLineResult[A]?
+fn first_non_blank_over_nl[A](next_line~ : (A) -> LineSpan?, String, A, line~ : LineSpan, start~ : Int) -> NextLineResult[A]?
 
 fn first_non_escaped_char(Char, String, last~ : Int, start~ : Int) -> Int
 
@@ -29,11 +29,11 @@ let line_pos_none : (Int, Int)
 
 fn link_destination(String, last~ : Int, start~ : Int) -> (Bool, Int, Int)?
 
-fn link_label[A](StringBuilder, next_line~ : (A) -> (A, LineSpan)?, String, A, line~ : LineSpan, start~ : Int) -> (A, LineSpan, Array[Span], Int, String)?
+fn link_label[A](StringBuilder, next_line~ : (A) -> LineSpan?, String, A, line~ : LineSpan, start~ : Int) -> (LineSpan, Array[Span], Int, String)?
 
-fn link_title[A](next_line~ : (A) -> (A, LineSpan)?, String, A, line~ : LineSpan, start~ : Int) -> (A, LineSpan, Array[Span], Int)?
+fn link_title[A](next_line~ : (A) -> LineSpan?, String, A, line~ : LineSpan, start~ : Int) -> (A, LineSpan, Array[Span], Int)?
 
-fn raw_html[A : Show](next_line~ : (A) -> (A, LineSpan)?, String, A, line~ : LineSpan, start~ : Int) -> (A, LineSpan, Array[Span], Int)?
+fn raw_html[A : Show](next_line~ : (A) -> LineSpan?, String, A, line~ : LineSpan, start~ : Int) -> (LineSpan, Array[Span], Int)?
 
 fn rev_drop_spaces(String, first~ : Int, start~ : Int) -> Int
 
@@ -189,7 +189,7 @@ pub typealias LinePos = (Int, Int)
 
 pub typealias Next = Int
 
-pub typealias NextLineFn[A] = (A) -> (A, LineSpan)?
+pub typealias NextLineFn[A] = (A) -> LineSpan?
 
 // Traits
 
