@@ -111,7 +111,7 @@ pub(all) struct Span {
 } derive(Show, ToJson, Eq, Compare)
 
 ///|
-pub(all) typealias NextLineFn[A] = (A) -> (A, LineSpan)?
+pub(all) typealias NextLineFn[A] = (A) -> LineSpan?
 
 ///|
 pub(all) enum NextLineResult[A] {

@@ -99,9 +99,7 @@ pub fn link_title[A](
       loop next_line, s, lines, line, false, start, start {
         next_line, s, lines, line, prev_bslash, start, k => {
           if k > line.last {
-            guard let Some((lines, newline)) = next_line(lines) else {
-              _ => break None
-            }
+            guard let Some(newline) = next_line(lines) else { _ => break None }
             guard newline.first <= newline.last else { break None }
             push_span(line~, start, line.last, acc)
             let start = first_non_blank_in_span(s, newline)
@@ -138,7 +136,7 @@ pub fn link_label[A](
   lines : A,
   line~ : LineSpan,
   start~ : BytePos
-) -> (A, LineSpan, Array[Span], Last, String)? {
+) -> (LineSpan, Array[Span], Last, String)? {
   if start > line.last || s[start] != '[' {
     return None
   }
@@ -148,15 +146,13 @@ pub fn link_label[A](
   loop buf, next_line, s, lines, line, '\x00', start, 0, start {
     b, next_line, s, lines, line, prev, start, count, k => {
       if k > line.last {
-        guard let Some((lines, newline)) = next_line(lines) else {
-          _ => break None
-        }
+        guard let Some(newline) = next_line(lines) else { _ => break None }
         if newline.first == newline.last {
           break None
         }
         push_span(line~, start, line.last, acc)
         let start = first_non_blank_in_span(s, newline)
-        if not(b.to_string().is_empty()) { // TODO: Use StringBuilder::is_empty()
+        if not(b.is_empty()) {
           b.write_char(' ')
         }
         let prev = '\x00'
@@ -178,7 +174,7 @@ pub fn link_label[A](
             break None
           }
           push_span(line~, start, k - 1, acc)
-          break Some((lines, line, acc, k, key))
+          break Some((line, acc, k, key))
         }
         ('[', '\\') => ()
         ('[', _) => break None
@@ -187,7 +183,7 @@ pub fn link_label[A](
         _ => ()
       }
       // Collapse non initial whitespace
-      if @char.is_ascii_blank(prev) && not(b.to_string().is_empty()) { // TODO: Use StringBuilder::is_empty()
+      if @char.is_ascii_blank(prev) && not(b.is_empty()) {
         b.write_char(' ')
       }
       let mut u = @char.at(s, k)

@@ -387,25 +387,24 @@ fn Parser::parse_link_ref_definition(
   self : Parser,
   lines : List[LineSpan]
 ) -> (Node[LinkDefinition], List[LineSpan])? {
-  fn next_line(l : List[LineSpan]) {
-    match l {
-      Nil => None
-      Cons(line, lines) => Some((lines, line))
-    }
+  let lines_arr = lines.to_array()
+  fn next_line(i : Ref[Int]) {
+    guard i.val < lines_arr.length() else { None }
+    let res = Some(lines_arr[i.val])
+    i.val += 1
+    res
   }
 
+  let lines = Ref::new(0)
   try {
-    let (lines, line) = match next_line(lines) {
-      Some(v) => v
-      None => raise @cmark_base.Exit
-    }
+    guard let Some(line) = next_line(lines) else { _ => raise @cmark_base.Exit }
     let start = self.first_non_blank_in_span(line)
     let indent = start - line.first
     let meta_first = { ..line, first: start }
     let (lines, line, label, start) = match
       @cmark_base.link_label(self.buf, next_line~, self.i, lines, line~, start~) {
       None => raise @cmark_base.Exit
-      Some((lines, line, spans, last, key)) => {
+      Some((line, spans, last, key)) => {
         let colon = last + 1
         if colon > line.last || self.i[colon] != ':' {
           raise @cmark_base.Exit
@@ -503,7 +502,7 @@ fn Parser::parse_link_ref_definition(
     for def in defined_label {
       self.set_label_def(def, LinkDef(ld))
     }
-    Some((ld, lines))
+    Some((ld, List::from_iter(lines_arr[lines.val:].iter())))
   } catch {
     @cmark_base.Exit => None
   }

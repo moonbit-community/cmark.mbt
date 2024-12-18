@@ -51,7 +51,7 @@ fn attribute_value[A](
   line~ : LineSpan,
   spans : Array[Span],
   start~ : Int
-) -> (A, LineSpan, Int)? {
+) -> (LineSpan, Int)? {
   if start > line.last {
     return None
   }
@@ -76,7 +76,7 @@ fn attribute_value[A](
       }
       let last = k - 1
       push_span(line~, start, last, spans)
-      Some((lines, line, last))
+      Some((line, last))
     }
   }
 }
@@ -90,7 +90,7 @@ fn attribute[A](
   line~ : LineSpan,
   spans : Ref[Array[Span]],
   start~ : Int
-) -> (A, LineSpan, Last)? {
+) -> (LineSpan, Last)? {
   guard let Some(end_name) = attribute_name(s, last=line.last, start~) else {
     _ => return None
   }
@@ -109,7 +109,7 @@ fn attribute[A](
   }
   let nb = last_blank + 1
   if s[nb] != '=' {
-    return Some((lines, line, end_name)) // No value
+    return Some((line, end_name)) // No value
   }
   spans.val = spans1
   push_span(line=line1, nb, nb, spans.val)
@@ -135,7 +135,7 @@ fn open_tag[A](
   lines : A,
   line~ : LineSpan,
   start~ : BytePos
-) -> (A, LineSpan, Array[Span], BytePos)? {
+) -> (LineSpan, Array[Span], BytePos)? {
   let tag_start = start
   guard let Some(tag_name_end) = tag_name(
     s,
@@ -163,7 +163,7 @@ fn open_tag[A](
       match s[next] {
         '>' => {
           push_span(line~, next, next, spans.val)
-          Some((lines, line, spans.val, next))
+          Some((line, spans.val, next))
         }
         '/' => {
           let last = next + 1
@@ -171,13 +171,13 @@ fn open_tag[A](
             break None
           }
           push_span(line~, next, last, spans.val)
-          Some((lines, line, spans.val, last))
+          Some((line, spans.val, last))
         }
         _c => {
           if next == start {
             break None
           }
-          guard let Some((lines, line, last)) = attribute(
+          guard let Some((line, last)) = attribute(
             next_line~,
             s,
             lines,
@@ -202,7 +202,7 @@ fn closing_tag[A](
   lines : A,
   line~ : LineSpan,
   start~ : BytePos
-) -> (A, LineSpan, Array[Span], BytePos)? {
+) -> (LineSpan, Array[Span], BytePos)? {
   let tag_start = start
   guard let Some(tag_name_end) = tag_name(s, last=line.last, start=start + 2) else {
     _ => return None
@@ -210,7 +210,7 @@ fn closing_tag[A](
   let span = { ..line, first: start, last: tag_name_end }
   let spans = Ref::new([{ start: tag_start, span }])
   let start = tag_name_end + 1
-  guard let Some((lines, line, last_blank)) = first_non_blank_over_nl1(
+  guard let Some((_lines, line, last_blank)) = first_non_blank_over_nl1(
     next_line~,
     s,
     lines,
@@ -225,7 +225,7 @@ fn closing_tag[A](
     return None
   }
   push_span(line~, last, last, spans.val)
-  Some((lines, line, spans.val, last))
+  Some((line, spans.val, last))
 }
 
 ///| Start is on `<!{letter}`.
@@ -236,10 +236,10 @@ fn declaration[A](
   lines : A,
   line~ : LineSpan,
   start~ : BytePos
-) -> (A, LineSpan, Array[Span], BytePos)? {
+) -> (LineSpan, Array[Span], BytePos)? {
   let spans = []
   accept_to(char='>', next_line~, s, lines, line~, spans, after=start).map(fn {
-    (lines, line, k) => (lines, line, spans, k)
+    (line, k) => (line, spans, k)
   })
 }
 
@@ -250,14 +250,12 @@ fn processing_instruction[A](
   lines : A,
   line~ : LineSpan,
   start~ : BytePos
-) -> (A, LineSpan, Array[Span], BytePos)? {
+) -> (LineSpan, Array[Span], BytePos)? {
   let acc = []
   loop lines, line, start, start + 2 {
     lines, line, start, k => {
       if k > line.last {
-        guard let Some((lines, new_line)) = next_line(lines) else {
-          _ => break None
-        }
+        guard let Some(new_line) = next_line(lines) else { _ => break None }
         push_span(line~, start, line.last, acc)
         let start = first_non_blank_in_span(s, new_line)
         continue lines, new_line, start, start
@@ -268,7 +266,7 @@ fn processing_instruction[A](
       let last = k + 1
       if last <= line.last && s[last] == '>' { // ?>
         push_span(line~, start, last, acc)
-        break Some((lines, line, acc, last))
+        break Some((line, acc, last))
       }
       continue lines, line, start, last
     }
@@ -283,7 +281,7 @@ fn html_comment[A](
   lines : A,
   line~ : LineSpan,
   start~ : BytePos
-) -> (A, LineSpan, Array[Span], BytePos)? {
+) -> (LineSpan, Array[Span], BytePos)? {
   // Check we have at least <!-- and not <!--> or <!--->.
   if start + 3 > line.last || s[start + 3] != '-' {
     return None
@@ -298,9 +296,7 @@ fn html_comment[A](
   loop lines, line, start, start + 4 {
     lines, line, start, k => {
       if k > line.last {
-        guard let Some((lines, new_line)) = next_line(lines) else {
-          _ => break None
-        }
+        guard let Some(new_line) = next_line(lines) else { _ => break None }
         push_span(line~, start, line.last, acc)
         let start = first_non_blank_in_span(s, new_line)
         continue lines, new_line, start, start
@@ -310,7 +306,7 @@ fn html_comment[A](
         if last <= line.last && s[k + 1] == '-' {
           break if s[last] == '>' { // And we do not end with - 
             push_span(line~, start, last, acc)
-            Some((lines, line, acc, last))
+            Some((line, acc, last))
           } else {
             None // In the input
           }
@@ -329,7 +325,7 @@ fn cdata_section[A](
   lines : A,
   line~ : LineSpan,
   start~ : BytePos
-) -> (A, LineSpan, Array[Span], BytePos)? {
+) -> (LineSpan, Array[Span], BytePos)? {
   if start + 8 > line.last {
     return None
   }
@@ -340,9 +336,7 @@ fn cdata_section[A](
   loop lines, line, start, start + 9 {
     lines, line, start, k => {
       if k > line.last {
-        guard let Some((lines, new_line)) = next_line(lines) else {
-          _ => break None
-        }
+        guard let Some(new_line) = next_line(lines) else { _ => break None }
         push_span(line~, start, line.last, acc)
         let start = first_non_blank_in_span(s, new_line)
         continue lines, new_line, start, start
@@ -353,7 +347,7 @@ fn cdata_section[A](
       let last = k + 2
       if last <= line.last && s[k + 1] == ']' && s[last] == '>' { // ]>
         push_span(line~, start, last, acc)
-        break Some((lines, line, acc, last))
+        break Some((line, acc, last))
       }
       continue lines, line, start, k + 1
     }
@@ -367,7 +361,7 @@ pub fn raw_html[A : Show](
   lines : A,
   line~ : LineSpan,
   start~ : BytePos
-) -> (A, LineSpan, Array[Span], BytePos)? {
+) -> (LineSpan, Array[Span], BytePos)? {
   let next = start + 1
   let { last, .. } = line
   guard next <= last && s[start] == '<' else { None }
