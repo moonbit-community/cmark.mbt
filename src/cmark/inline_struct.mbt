@@ -383,17 +383,17 @@ fn tokens_try_add_math_span_marks(
 fn tokenize(
   exts~ : Bool,
   s : String,
-  lines : List[LineSpan]
+  lines : Array[LineSpan]
 ) -> (CloserIndex, Array[Token], LineSpan) {
-  guard let Cons(line, lines) = lines else {
+  guard let [line, .. as lines] = lines else {
     _ => abort("expected at least one line")
   }
   let (cidx, toks) = loop lines, line, false, [], line.first {
     lines, line, prev_bslash, acc, k => {
       if k > line.last {
         match lines {
-          Nil => break make_closer_index(acc[:])
-          Cons(newline, lines) => {
+          [] => break make_closer_index(acc[:])
+          [newline, .. as lines] => {
             let t = Token::newline(s, line, newline)
             continue lines, newline, false, acc..push(t), newline.first
           }
@@ -1484,10 +1484,10 @@ fn Parser::parse_tokens(
 ///|
 fn Parser::strip_paragraph(
   self : Parser,
-  lines : List[LineSpan]
-) -> ((Col, String), Meta, List[LineSpan]) {
+  lines : Array[LineSpan]
+) -> ((Col, String), Meta, Array[LineSpan]) {
   let (last, trailing_blanks) = {
-    let line = lines.unsafe_head()
+    guard let Some(line) = lines.pop()
     let { first, last: start, .. } = line
     let non_blank = @cmark_base.last_non_blank(self.i, first~, start~)
     let last = { ..line, last: non_blank }
@@ -1497,23 +1497,22 @@ fn Parser::strip_paragraph(
     })
     (last, trailing_blanks)
   }
-  let lines = lines.tail().add(last).rev()
+  let lines = lines..push(last)
   let (first, leading_indent) = {
-    let line = lines.unsafe_head()
+    let line = lines[0]
     let non_blank = self.first_non_blank_in_span(line)
     let first = { ..line, first: non_blank }
     let leading_indent = non_blank - line.first
     (first, leading_indent)
   }
-  let lines = lines.tail().add(first)
+  lines[0] = first
   ((leading_indent, trailing_blanks), self.meta_of_spans(first~, last~), lines)
 }
 
 ///|
 fn Parser::parse_inline(
   self : Parser,
-  // NOTE: The `lines` here are in reverse order.
-  lines : List[LineSpan]
+  lines : Array[LineSpan]
 ) -> ((Col, String), Inline) {
   let (layout, meta, lines) = self.strip_paragraph(lines)
   let (cidx, toks, first_line) = tokenize(self.i, lines, exts=self.exts)
@@ -1690,11 +1689,7 @@ fn Parser::parse_table_row(
   self : Parser,
   line : LineSpan
 ) -> Array[(Inline, TableCellLayout)] {
-  let (cidx, toks, first_line) = tokenize(
-    self.i,
-    List::of([line]),
-    exts=self.exts,
-  )
+  let (cidx, toks, first_line) = tokenize(self.i, [line], exts=self.exts)
   self.cidx = cidx
   let (toks, _had_link) = self.first_pass(toks[:], first_line)
   let toks = self.second_pass(toks, first_line)
