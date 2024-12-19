@@ -151,14 +151,14 @@ pub fn CodeBlockFencedLayout::default() -> CodeBlockFencedLayout {
 pub fn CodeBlock::new(
   layout~ : CodeBlockLayout = Fenced(CodeBlockFencedLayout::default()),
   info_string~ : StringNode? = None,
-  code : List[StringNode]
+  code : Array[StringNode]
 ) -> CodeBlock {
   let layout = match (info_string, layout) {
     (Some(_), Indented) =>
       CodeBlockLayout::Fenced(CodeBlockFencedLayout::default())
     (_, layout) => layout
   }
-  { layout, info_string, code: code.to_array() }
+  { layout, info_string, code }
 }
 
 ///| [make_fence cb] is a fence character and count suitable for [cb].
@@ -321,7 +321,7 @@ pub fn ListTaskStatus::from_marker(marker : Char) -> ListTaskStatus {
 pub(all) struct BlockList {
   ty : ListType
   tight : Bool
-  items : List[Node[ListItem]]
+  items : Array[Node[ListItem]]
 } derive(Show, ToJson)
 
 ///|

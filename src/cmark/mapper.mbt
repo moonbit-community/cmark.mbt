@@ -153,8 +153,8 @@ pub fn Mapper::map_block(self : Mapper, b : Block) -> FilterMap[Block] {
         Some({ v: { ..v, block, }, meta })
       }
 
-      match v.items.filter_map(map_list_item) {
-        Nil => None
+      match v.items.map_option(map_list_item) {
+        [] => None
         items => Some(List({ v: { ..v, items, }, meta }))
       }
     }

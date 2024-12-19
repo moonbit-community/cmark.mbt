@@ -1746,10 +1746,7 @@ fn Parser::block_struct_to_list(self : Parser, list : ListBlockStruct) -> Block 
     first=first.meta,
     last=items.last().unwrap().meta,
   )
-  List({
-    v: { ty: list.list_type, tight, items: List::from_array(items) },
-    meta,
-  })
+  List({ v: { ty: list.list_type, tight, items }, meta })
 }
 
 ///|

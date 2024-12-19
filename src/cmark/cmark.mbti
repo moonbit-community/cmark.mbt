@@ -95,7 +95,7 @@ impl BlockLine {
 pub(all) struct BlockList {
   ty : @rami3l/cmark/cmark_base.ListType
   tight : Bool
-  items : @moonbitlang/core/immut/list.T[Node[ListItem]]
+  items : Array[Node[ListItem]]
 }
 impl BlockList {
   map_items(Self, (ListItem) -> ListItem) -> Self
@@ -161,7 +161,7 @@ pub(all) struct CodeBlock {
 impl CodeBlock {
   language_of_info_string(String) -> (String, String)?
   make_fence(Self) -> (Char, Int)
-  new(layout~ : CodeBlockLayout = .., info_string~ : Node[String]? = .., @moonbitlang/core/immut/list.T[Node[String]]) -> Self
+  new(layout~ : CodeBlockLayout = .., info_string~ : Node[String]? = .., Array[Node[String]]) -> Self
 }
 impl Show for CodeBlock
 impl ToJson for CodeBlock
