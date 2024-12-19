@@ -8,9 +8,9 @@ fn parse_only(
   let lines = txt.split("\n")
   let mut byte_pos = 0
   let mut ln_num = 1
-  let mut lines1 : List[LineSpan] = Nil
+  let lines1 : Array[LineSpan] = []
   for ln in lines.iter() {
-    lines1 = lines1.add({
+    lines1.push({
       pos: (ln_num, 0),
       first: byte_pos,
       last: byte_pos + ln.length() - 1,
@@ -30,9 +30,9 @@ fn tokenize_only(
   let lines = txt.split("\n")
   let mut byte_pos = 0
   let mut ln_num = 1
-  let mut lines1 : List[LineSpan] = Nil
+  let lines1 : Array[LineSpan] = []
   for ln in lines.iter() {
-    lines1 = lines1.add({
+    lines1.push({
       pos: (ln_num, 0),
       first: byte_pos,
       last: byte_pos + ln.length() - 1,
