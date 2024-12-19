@@ -1624,20 +1624,16 @@ fn Parser::block_struct_to_footnote_definition(
   indent : Indent,
   label : Label,
   defined_label : Label?,
-  bs : List[BlockStruct]
+  bs : Array[BlockStruct]
 ) -> Block {
-  let add_block = fn(acc : List[_], b) {
-    acc.add(self.block_struct_to_block(b))
-  }
-  let last = self.block_struct_to_block(bs.unsafe_head())
-  let block = bs.tail().fold(add_block, init=List::of([last]))
-  let last = last.meta()
+  let block = bs.map(fn(b) { self.block_struct_to_block(b) })
+  let last = block.last().unwrap().meta()
   let block = match block {
-    Cons(b, Nil) => b
+    [b] => b
     blocks => {
-      let first = blocks.unsafe_head().meta()
+      let first = blocks[0].meta()
       let meta = self.meta_of_metas(first~, last~)
-      Blocks({ v: blocks.to_array(), meta })
+      Blocks({ v: blocks, meta })
     }
   }
   let loc = {
@@ -1651,9 +1647,8 @@ fn Parser::block_struct_to_footnote_definition(
     v: { indent, label, defined_label, block },
     meta: self.meta(loc),
   }
-  match defined_label {
-    None => ()
-    Some(def) => self.set_label_def(def, FootnoteDef(footnote))
+  for def in defined_label {
+    self.set_label_def(def, FootnoteDef(footnote))
   }
   ExtFootnoteDefinition(footnote)
 }
@@ -1757,12 +1752,7 @@ fn Parser::block_struct_to_block(self : Parser, b : BlockStruct) -> Block {
     LinkRefDef(r) => LinkRefDefinition(r)
     ExtTable(i, rows) => self.block_struct_to_table(i, rows)
     ExtFootnote(i, (lb, dlb), bs) =>
-      self.block_struct_to_footnote_definition(
-        i,
-        lb,
-        dlb,
-        List::from_array(bs).rev(),
-      )
+      self.block_struct_to_footnote_definition(i, lb, dlb, bs)
   }
 }
 
