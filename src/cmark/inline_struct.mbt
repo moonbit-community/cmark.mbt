@@ -150,33 +150,28 @@ fn CloserIndex::has_math_span(
 }
 
 ///|
-fn tokens_rev_and_make_closer_index(
-  toks : List[Token]
-) -> (CloserIndex, List[Token]) {
-  loop CloserIndex::new(), List::Nil, toks {
-    cidx, acc, Cons(Backticks(t1) as t, toks) =>
-      continue cidx.add(Backticks(t1.count), t1.start), acc.add(t), toks
-    cidx, acc, Cons(RightBrack(t1) as t, toks) =>
-      continue cidx.add(RightBrack, t1.start), acc.add(t), toks
-    cidx, acc, Cons(RightParen(t1), toks) =>
-      continue cidx.add(RightParen, t1.start),
-        // Discard the token since it's not used for parsing
-        acc,
-        toks
+fn make_closer_index(toks : ArrayView[Token]) -> (CloserIndex, Array[Token]) {
+  loop CloserIndex::new(), [], toks {
+    cidx, acc, [Backticks(t1) as t, .. as toks] =>
+      continue cidx.add(Backticks(t1.count), t1.start), acc..push(t), toks
+    cidx, acc, [RightBrack(t1) as t, .. as toks] =>
+      continue cidx.add(RightBrack, t1.start), acc..push(t), toks
+    cidx, acc, [RightParen(t1), .. as toks] => // Discard the token since it's not used for parsing
+      continue cidx.add(RightParen, t1.start), acc, toks
     cidx,
     acc,
-    Cons(EmphasisMarks({ char, start, may_close: true, .. }) as t, toks) =>
-      continue cidx.add(EmphasisMarks(char), start), acc.add(t), toks
+    [EmphasisMarks({ char, start, may_close: true, .. }) as t, .. as toks] =>
+      continue cidx.add(EmphasisMarks(char), start), acc..push(t), toks
     cidx,
     acc,
-    Cons(StrikethroughMarks({ start, may_close: true, .. }) as t, toks) =>
-      continue cidx.add(StrikethroughMarks, start), acc.add(t), toks
+    [StrikethroughMarks({ start, may_close: true, .. }) as t, .. as toks] =>
+      continue cidx.add(StrikethroughMarks, start), acc..push(t), toks
     cidx,
     acc,
-    Cons(MathSpanMarks({ count, start, may_close: true, .. }) as t, toks) =>
-      continue cidx.add(MathSpanMarks(count), start), acc.add(t), toks
-    cidx, acc, Cons(t, toks) => continue cidx, acc.add(t), toks
-    cidx, acc, Nil => (cidx, acc)
+    [MathSpanMarks({ count, start, may_close: true, .. }) as t, .. as toks] =>
+      continue cidx.add(MathSpanMarks(count), start), acc..push(t), toks
+    cidx, acc, [t, .. as toks] => continue cidx, acc..push(t), toks
+    cidx, acc, [] => (cidx, acc)
   }
 }
 
@@ -267,38 +262,38 @@ fn Token::newline(
 
 ///|
 fn tokens_add_backtick(
-  toks : List[Token],
+  toks : Array[Token],
   s : String,
   line : LineSpan,
   prev_bslash~ : Bool,
   start~ : Int
-) -> (List[Token], Int) {
+) -> (Array[Token], Int) {
   let last = @cmark_base.run_of(char='`', s, last=line.last, start=start + 1)
   let count = last - start + 1
-  (toks.add(Backticks({ start, count, escaped: prev_bslash })), last + 1)
+  (toks..push(Backticks({ start, count, escaped: prev_bslash })), last + 1)
 }
 
 ///|
 fn tokens_try_add_image_link_start(
-  toks : List[Token],
+  toks : Array[Token],
   s : String,
   line : LineSpan,
   start~ : Int
-) -> (List[Token], Int) {
+) -> (Array[Token], Int) {
   let next = start + 1
   if next > line.last || s[next] != '[' {
     return (toks, next)
   }
-  (toks.add(LinkStart({ start, image: true })), next + 1)
+  (toks..push(LinkStart({ start, image: true })), next + 1)
 }
 
 ///|
 fn tokens_try_add_emphasis(
-  toks : List[Token],
+  toks : Array[Token],
   s : String,
   line : LineSpan,
   start~ : Int
-) -> (List[Token], Int) {
+) -> (Array[Token], Int) {
   let { first, last, .. } = line
   let char = s[start]
   let run_last = @cmark_base.run_of(char~, last~, s, start=start + 1)
@@ -332,16 +327,16 @@ fn tokens_try_add_emphasis(
   if not(may_open) && not(may_close) {
     return (toks, next)
   }
-  (toks.add(EmphasisMarks({ start, char, count, may_open, may_close })), next)
+  (toks..push(EmphasisMarks({ start, char, count, may_open, may_close })), next)
 }
 
 ///|
 fn tokens_try_add_strikethrough_marks(
-  toks : List[Token],
+  toks : Array[Token],
   s : String,
   line : LineSpan,
   start~ : Int
-) -> (List[Token], Int) {
+) -> (Array[Token], Int) {
   let { first, last, .. } = line
   let char = s[start]
   let run_last = @cmark_base.run_of(char~, s, last~, start=start + 1)
@@ -354,16 +349,16 @@ fn tokens_try_add_strikethrough_marks(
   let next_char = @char.next_char(s, last~, after=run_last)
   let may_open = not(@char.is_ascii_whitespace(next_char))
   let may_close = not(@char.is_ascii_whitespace(prev_char))
-  (toks.add(StrikethroughMarks({ start, may_open, may_close })), next)
+  (toks..push(StrikethroughMarks({ start, may_open, may_close })), next)
 }
 
 ///|
 fn tokens_try_add_math_span_marks(
-  toks : List[Token],
+  toks : Array[Token],
   s : String,
   line : LineSpan,
   start~ : Int
-) -> (List[Token], Int) {
+) -> (Array[Token], Int) {
   let { first, last, .. } = line
   let char = s[start]
   let run_last = @cmark_base.run_of(char~, s, last~, start=start + 1)
@@ -381,7 +376,7 @@ fn tokens_try_add_math_span_marks(
   if not(may_open) && not(may_close) {
     return (toks, next)
   }
-  (toks.add(MathSpanMarks({ start, count, may_open, may_close })), next)
+  (toks..push(MathSpanMarks({ start, count, may_open, may_close })), next)
 }
 
 ///|
@@ -389,18 +384,18 @@ fn tokenize(
   exts~ : Bool,
   s : String,
   lines : List[LineSpan]
-) -> (CloserIndex, List[Token], LineSpan) {
+) -> (CloserIndex, Array[Token], LineSpan) {
   guard let Cons(line, lines) = lines else {
     _ => abort("expected at least one line")
   }
-  let (cidx, toks) = loop lines, line, false, List::Nil, line.first {
+  let (cidx, toks) = loop lines, line, false, [], line.first {
     lines, line, prev_bslash, acc, k => {
       if k > line.last {
         match lines {
-          Nil => break tokens_rev_and_make_closer_index(acc)
+          Nil => break make_closer_index(acc[:])
           Cons(newline, lines) => {
             let t = Token::newline(s, line, newline)
-            continue lines, newline, false, acc.add(t), newline.first
+            continue lines, newline, false, acc..push(t), newline.first
           }
         }
       }
@@ -409,11 +404,11 @@ fn tokenize(
         ('`', _, _) => tokens_add_backtick(acc, s, line, prev_bslash~, start=k)
         (_, true, _) => (acc, k + 1)
         ('*' | '_', _, _) => tokens_try_add_emphasis(acc, s, line, start=k)
-        (']', _, _) => (acc.add(RightBrack({ start: k })), k + 1)
-        ('[', _, _) => (acc.add(LinkStart({ start: k, image: false })), k + 1)
+        (']', _, _) => (acc..push(RightBrack({ start: k })), k + 1)
+        ('[', _, _) => (acc..push(LinkStart({ start: k, image: false })), k + 1)
         ('!', _, _) => tokens_try_add_image_link_start(acc, s, line, start=k)
-        ('<', _, _) => (acc.add(AutolinkOrHtmlStart({ start: k })), k + 1)
-        (')', _, _) => (acc.add(RightParen({ start: k })), k + 1)
+        ('<', _, _) => (acc..push(AutolinkOrHtmlStart({ start: k })), k + 1)
+        (')', _, _) => (acc..push(RightParen({ start: k })), k + 1)
         ('~', _, true) =>
           tokens_try_add_strikethrough_marks(acc, s, line, start=k)
         ('$', _, true) => tokens_try_add_math_span_marks(acc, s, line, start=k)
@@ -1523,7 +1518,7 @@ fn Parser::parse_inline(
   let (layout, meta, lines) = self.strip_paragraph(lines)
   let (cidx, toks, first_line) = tokenize(self.i, lines, exts=self.exts)
   self.cidx = cidx
-  let (is_, _) = self.parse_tokens(toks.to_array(), first_line)
+  let (is_, _) = self.parse_tokens(toks, first_line)
   let inline = match is_ {
     [i] => i
     _ => Inlines({ v: is_, meta })
@@ -1701,7 +1696,7 @@ fn Parser::parse_table_row(
     exts=self.exts,
   )
   self.cidx = cidx
-  let (toks, _had_link) = self.first_pass(toks.to_array()[:], first_line)
+  let (toks, _had_link) = self.first_pass(toks[:], first_line)
   let toks = self.second_pass(toks, first_line)
   // We now have modified last pass, inner inlines will have gone through
   // the regular `last_pass` which is fine since we are only interested

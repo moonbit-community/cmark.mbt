@@ -25,7 +25,7 @@ fn parse_only(
 fn tokenize_only(
   txt : String,
   strict~ : Bool = true
-) -> (CloserIndex, List[Token], LineSpan) {
+) -> (CloserIndex, Array[Token], LineSpan) {
   let p = Parser::new(txt, strict~)
   let lines = txt.split("\n")
   let mut byte_pos = 0
