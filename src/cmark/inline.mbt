@@ -163,7 +163,7 @@ pub fn Inline::id(
     |> String::concat(separator="\n")
   // Collapses non initial white 
   let collapse_blanks = fn(prev) {
-    if @char.is_ascii_blank(prev) && not(buf.to_string().is_empty()) { // TODO: Replace with StringBuilder::is_empty()
+    if @char.is_ascii_blank(prev) && not(buf.is_empty()) {
       buf.write_char('-')
     }
   }

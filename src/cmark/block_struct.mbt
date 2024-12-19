@@ -640,7 +640,6 @@ fn Parser::end_doc_close_fenced_code_block(
   let _ = self
   let { code, .. } = fenced
   guard code.is_empty() else {
-    let code = code.copy() // TODO: Is this copy necessary?
     guard let Some((_, { first, last, .. } as l)) = code.pop()
     if first > last { // Empty line
       bs..push(BlankLine(0, l)).push(CodeBlock(Fenced({ ..fenced, code, })))
@@ -659,7 +658,6 @@ fn Parser::end_doc_close_html(
   let _ = self
   let { html, .. } = h
   guard html.is_empty() else {
-    let html = html.copy() // TODO: Is this copy necessary?
     guard let Some({ first, last, .. } as l) = html.pop()
     if first > last { // Empty line
       bs..push(HtmlBlock({ end_cond: None, html })).push(BlankLine(0, l))
