@@ -114,7 +114,7 @@ pub(all) struct Span {
 pub(all) typealias NextLineFn[A] = (A) -> LineSpan?
 
 ///|
-pub(all) enum NextLineResult[A] {
+pub(all) enum NextLineResult {
   ThisLine(BytePos)
-  NextLine(A, LineSpan, BytePos)
+  NextLine(LineSpan, BytePos)
 } derive(Show, ToJson)

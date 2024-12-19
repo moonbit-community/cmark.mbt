@@ -156,7 +156,7 @@ impl ToJson for CloserIndex
 pub(all) struct CodeBlock {
   layout : CodeBlockLayout
   info_string : Node[String]?
-  code : @moonbitlang/core/immut/list.T[Node[String]]
+  code : Array[Node[String]]
 }
 impl CodeBlock {
   language_of_info_string(String) -> (String, String)?
@@ -256,7 +256,7 @@ type Heading
 impl Show for Heading
 impl ToJson for Heading
 
-pub(all) type HtmlBlock @moonbitlang/core/immut/list.T[Node[String]]
+pub(all) type HtmlBlock Array[Node[String]]
 impl Show for HtmlBlock
 impl ToJson for HtmlBlock
 
@@ -432,10 +432,10 @@ impl ToJson for LinkDefinition
 pub(all) struct LinkDefinitionLayout {
   indent : Int
   angled_dest : Bool
-  before_dest : @moonbitlang/core/immut/list.T[Node[String]]
-  after_dest : @moonbitlang/core/immut/list.T[Node[String]]
+  before_dest : Array[Node[String]]
+  after_dest : Array[Node[String]]
   title_open_delim : Char
-  after_title : @moonbitlang/core/immut/list.T[Node[String]]
+  after_title : Array[Node[String]]
 }
 impl LinkDefinitionLayout {
   default() -> Self

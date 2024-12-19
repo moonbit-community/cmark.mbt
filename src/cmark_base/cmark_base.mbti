@@ -17,7 +17,7 @@ fn first_non_blank(String, last~ : Int, start~ : Int) -> Int
 
 fn first_non_blank_in_span(String, LineSpan) -> Int
 
-fn first_non_blank_over_nl[A](next_line~ : (A) -> LineSpan?, String, A, line~ : LineSpan, start~ : Int) -> NextLineResult[A]?
+fn first_non_blank_over_nl[A](next_line~ : (A) -> LineSpan?, String, A, line~ : LineSpan, start~ : Int) -> NextLineResult?
 
 fn first_non_escaped_char(Char, String, last~ : Int, start~ : Int) -> Int
 
@@ -31,7 +31,7 @@ fn link_destination(String, last~ : Int, start~ : Int) -> (Bool, Int, Int)?
 
 fn link_label[A](StringBuilder, next_line~ : (A) -> LineSpan?, String, A, line~ : LineSpan, start~ : Int) -> (LineSpan, Array[Span], Int, String)?
 
-fn link_title[A](next_line~ : (A) -> LineSpan?, String, A, line~ : LineSpan, start~ : Int) -> (A, LineSpan, Array[Span], Int)?
+fn link_title[A](next_line~ : (A) -> LineSpan?, String, A, line~ : LineSpan, start~ : Int) -> (LineSpan, Array[Span], Int)?
 
 fn raw_html[A : Show](next_line~ : (A) -> LineSpan?, String, A, line~ : LineSpan, start~ : Int) -> (LineSpan, Array[Span], Int)?
 
@@ -133,10 +133,10 @@ impl ToJson for Meta
 
 pub(all) enum NextLineResult {
   ThisLine(Int)
-  NextLine(A, LineSpan, Int)
+  NextLine(LineSpan, Int)
 }
-impl[A : Show] Show for NextLineResult[A]
-impl[A : ToJson] ToJson for NextLineResult[A]
+impl Show for NextLineResult
+impl ToJson for NextLineResult
 
 pub(all) struct Span {
   start : Int

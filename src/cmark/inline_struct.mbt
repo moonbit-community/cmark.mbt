@@ -857,7 +857,7 @@ fn Parser::try_inline_link_remainder(
   let _ = image
   let st = start
   guard self.cidx.has_right_paren(after=st) else { None }
-  guard let Some((rev_toks_, line, before_dest, start)) = self.first_non_blank_over_nl(
+  guard let Some((line, before_dest, start)) = self.first_non_blank_over_nl(
     next_line=tokens_next_line,
     rev_toks.val,
     start_line,
@@ -865,52 +865,52 @@ fn Parser::try_inline_link_remainder(
   ) else {
     _ => None
   }
-  let (rev_toks_, line, angled_dest, dest, start) = match
+  let (line, angled_dest, dest, start) = match
     @cmark_base.link_destination(self.i, last=line.last, start~) {
-    None => (rev_toks_, line, false, None, start)
+    None => (line, false, None, start)
     Some((angled, first, last)) => {
       let dest = self.clean_unesc_unref_span({ ..line, first, last })
       let next = last + 1 + angled.to_int()
-      (rev_toks_, line, angled, Some(dest), next)
+      (line, angled, Some(dest), next)
     }
   }
-  let (rev_toks_, line, after_dest, title_open_delim, title, start) = match
+  let (line, after_dest, title_open_delim, title, start) = match
     self.first_non_blank_over_nl(
       next_line=tokens_next_line,
-      rev_toks_,
+      rev_toks.val,
       line,
       start~,
     ) {
-    None => (rev_toks_, line, List::Nil, '"', None, start)
-    Some((rev_toks_, line, after_dest, start1)) =>
+    None => (line, [], '"', None, start)
+    Some((line, after_dest, start1)) =>
       if start1 == start {
-        (rev_toks_, line, List::Nil, '"', None, start)
+        (line, [], '"', None, start)
       } else {
         let start = start1
         match
           @cmark_base.link_title(
             next_line=tokens_next_line,
             self.i,
-            rev_toks_,
+            rev_toks.val,
             line~,
             start~,
           ) {
-          None => (rev_toks_, line, after_dest, '"', None, start)
-          Some((toks, line, spans, last)) => {
+          None => (line, after_dest, '"', None, start)
+          Some((line, spans, last)) => {
             let title = self.tight_block_lines(spans=spans[:])
-            (toks, line, after_dest, self.i[start], Some(title), last + 1)
+            (line, after_dest, self.i[start], Some(title), last + 1)
           }
         }
       }
   }
-  let (rev_toks_, line, after_title, last) = self
+  let (line, after_title, last) = self
     .first_non_blank_over_nl(
       next_line=tokens_next_line,
-      rev_toks_,
+      rev_toks.val,
       line,
       start~,
     )
-    .or((rev_toks_, line, List::Nil, start))
+    .or((line, [], start))
   if last > line.last || self.i[last] != ')' {
     return None
   }
@@ -932,7 +932,6 @@ fn Parser::try_inline_link_remainder(
     last_line=line,
   )
   let ld = { v: ld, meta: self.meta(textloc) }
-  rev_toks.val = rev_toks_.iter().to_array() // TODO: Maybe truncating is enough?
   tokens_pop_until(start=last + 1, rev_toks.val)
   Some((line, Inline(ld), last))
 }

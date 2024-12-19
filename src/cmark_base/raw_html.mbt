@@ -97,7 +97,7 @@ fn attribute[A](
   push_span(line~, start, end_name, spans.val)
   let start = end_name + 1
   let spans1 = spans.val.copy()
-  guard let Some((lines1, line1, last_blank)) = first_non_blank_over_nl1(
+  guard let Some((line1, last_blank)) = first_non_blank_over_nl1(
     next_line~,
     s,
     lines,
@@ -114,10 +114,10 @@ fn attribute[A](
   spans.val = spans1
   push_span(line=line1, nb, nb, spans.val)
   let start = nb + 1
-  guard let Some((lines, line, last_blank)) = first_non_blank_over_nl1(
+  guard let Some((line, last_blank)) = first_non_blank_over_nl1(
     next_line~,
     s,
-    lines1,
+    lines,
     line=line1,
     spans.val,
     start~,
@@ -149,7 +149,7 @@ fn open_tag[A](
   let spans = Ref::new([{ start: tag_start, span }])
   loop lines, line, start {
     lines, line, start => {
-      guard let Some((lines, line, last_blank)) = first_non_blank_over_nl1(
+      guard let Some((line, last_blank)) = first_non_blank_over_nl1(
         next_line~,
         s,
         lines,
@@ -210,7 +210,7 @@ fn closing_tag[A](
   let span = { ..line, first: start, last: tag_name_end }
   let spans = Ref::new([{ start: tag_start, span }])
   let start = tag_name_end + 1
-  guard let Some((_lines, line, last_blank)) = first_non_blank_over_nl1(
+  guard let Some((line, last_blank)) = first_non_blank_over_nl1(
     next_line~,
     s,
     lines,

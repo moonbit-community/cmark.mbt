@@ -336,7 +336,7 @@ fn Parser::first_non_blank_over_nl[A](
   lines : A,
   line : LineSpan,
   start~ : BytePos
-) -> (A, LineSpan, List[StringNode], Int)? {
+) -> (LineSpan, Array[StringNode], Int)? {
   match
     @cmark_base.first_non_blank_over_nl(
       next_line~,
@@ -348,17 +348,17 @@ fn Parser::first_non_blank_over_nl[A](
     None => None
     Some(ThisLine(nb)) => {
       let layout = if nb == start {
-        List::Nil
+        []
       } else {
-        List::of([self.clean_raw_span({ ..line, first: start, last: nb - 1 })])
+        [self.clean_raw_span({ ..line, first: start, last: nb - 1 })]
       }
-      Some((lines, line, layout, nb))
+      Some((line, layout, nb))
     }
-    Some(NextLine(lines, newline, nb)) => {
+    Some(NextLine(newline, nb)) => {
       let first_layout = self.clean_raw_span({ ..line, first: start })
       let next_layout = self.clean_raw_span({ ..newline, last: nb - 1 })
-      let layout = List::of([first_layout, next_layout])
-      Some((lines, newline, layout, nb))
+      let layout = [first_layout, next_layout]
+      Some((newline, layout, nb))
     }
   }
 }

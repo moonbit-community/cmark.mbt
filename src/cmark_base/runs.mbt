@@ -123,7 +123,7 @@ fn accept_upto[A](
   line~ : LineSpan,
   spans : Array[Span],
   after~ : BytePos
-) -> (A, LineSpan, Int)? {
+) -> (LineSpan, Int)? {
   let start = after + 1
   loop char, next_line, s, lines, line, false, start, spans, start {
     char, next_line, s, lines, line, prev_bslash, start, acc, k =>
@@ -139,7 +139,7 @@ fn accept_upto[A](
       } else {
         if s[k] == char && not(prev_bslash) {
           push_span(line~, start, k - 1, acc)
-          break Some((lines, line, k))
+          break Some((line, k))
         }
         let prev_bslash = s[k] == '\\' && not(prev_bslash)
         continue char, next_line, s, lines, line, prev_bslash, start, acc, k + 1
@@ -156,7 +156,7 @@ pub fn first_non_blank_over_nl[A](
   lines : A,
   line~ : LineSpan,
   start~ : BytePos
-) -> NextLineResult[A]? {
+) -> NextLineResult? {
   let nb = first_non_blank(s, last=line.last, start~)
   if nb <= line.last {
     return Some(ThisLine(nb))
@@ -166,7 +166,7 @@ pub fn first_non_blank_over_nl[A](
   if nb > new_line.last {
     return None
   }
-  Some(NextLine(lines, new_line, nb))
+  Some(NextLine(new_line, nb))
 }
 
 ///| Same as `first_non_blank_over_nl()` but pushes skipped data on `spans`.
@@ -177,18 +177,18 @@ fn first_non_blank_over_nl1[A](
   line~ : LineSpan,
   spans : Array[Span],
   start~ : BytePos
-) -> (A, LineSpan, BytePos)? {
+) -> (LineSpan, BytePos)? {
   match first_non_blank_over_nl(next_line~, s, lines, line~, start~) {
     None => None
     Some(ThisLine(nb)) => {
       let line = { ..line, first: start } // No layout
       push_span(line~, start, nb - 1, spans)
-      Some((lines, line, nb - 1))
+      Some((line, nb - 1))
     }
-    Some(NextLine(lines, new_line, nb)) => {
+    Some(NextLine(new_line, nb)) => {
       let line = { ..line, first: start } // No layout
       push_span(line~, start, line.last, spans)
-      Some((lines, new_line, nb - 1))
+      Some((new_line, nb - 1))
     }
   }
 }

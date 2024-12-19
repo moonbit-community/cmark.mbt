@@ -82,7 +82,7 @@ pub fn link_title[A](
   lines : A,
   line~ : LineSpan,
   start~ : BytePos
-) -> (A, LineSpan, Array[Span], Last)? {
+) -> (LineSpan, Array[Span], Last)? {
   if start > line.last {
     return None
   }
@@ -90,7 +90,7 @@ pub fn link_title[A](
     '"' | '\'' as char => {
       let spans = []
       accept_upto(char~, next_line~, s, lines, line~, spans, after=start).map(fn {
-        (lines, span, last) => (lines, span, spans, last)
+        (span, last) => (span, spans, last)
       })
     }
     '(' => {
@@ -112,7 +112,7 @@ pub fn link_title[A](
             }
             if s[k] == ')' {
               push_span(line~, start, k - 1, acc)
-              break Some((lines, line, acc, k))
+              break Some((line, acc, k))
             }
           }
           let prev_bslash = s[k] == '\\' && not(prev_bslash)

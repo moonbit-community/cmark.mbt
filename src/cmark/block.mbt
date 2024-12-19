@@ -123,7 +123,7 @@ pub fn BlockQuote::normalize_block(self : BlockQuote) -> BlockQuote {
 pub(all) struct CodeBlock {
   layout : CodeBlockLayout
   info_string : StringNode?
-  code : List[StringNode]
+  code : Array[StringNode]
 } derive(Show, ToJson)
 
 ///|
@@ -155,7 +155,7 @@ pub fn CodeBlock::new(
       CodeBlockLayout::Fenced(CodeBlockFencedLayout::default())
     (_, layout) => layout
   }
-  { layout, info_string, code }
+  { layout, info_string, code: code.to_array() }
 }
 
 ///| [make_fence cb] is a fence character and count suitable for [cb].
@@ -164,17 +164,16 @@ pub fn CodeBlock::make_fence(self : CodeBlock) -> (Char, Count) {
     Some(info) => if info.v.contains_char('`') { '~' } else { '`' }
     _ => '`'
   }
-  let counts = loop ch, [], self.code {
-    _, counts, Nil => counts
-    ch, counts, Cons({ v: c, .. }, cs) => {
-      let mut k = 0
-      while k < c.length() && c[k] == ch {
-        k += 1
-      }
-      if k != 0 {
-        counts.push(k)
-      }
-      continue ch, counts, cs
+  let counts = []
+  for n in self.code {
+    let c = n.v
+    let k = for k = 0; k < c.length() && c[k] == ch; k = k + 1 {
+
+    } else {
+      k
+    }
+    if k != 0 {
+      counts.push(k)
     }
   }
   (ch, InlineCodeSpan::min_backticks(min=3, counts))
@@ -262,7 +261,7 @@ pub fn BlockHeading::new(
 }
 
 ///| The type for [HTML blocks](https://spec.commonmark.org/0.30/#html-blocks).
-pub(all) type HtmlBlock List[StringNode] derive(Show, ToJson)
+pub(all) type HtmlBlock Array[StringNode] derive(Show, ToJson)
 
 ///|
 pub(all) struct ListItem {

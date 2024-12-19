@@ -26,10 +26,10 @@ pub fn LinkDefinition::new(
 pub(all) struct LinkDefinitionLayout {
   indent : Indent
   angled_dest : Bool
-  before_dest : List[BlockLineBlank]
-  after_dest : List[BlockLineBlank]
+  before_dest : Array[BlockLineBlank]
+  after_dest : Array[BlockLineBlank]
   title_open_delim : Char
-  after_title : List[BlockLineBlank]
+  after_title : Array[BlockLineBlank]
 } derive(Eq, Show, ToJson)
 
 ///|
@@ -37,10 +37,10 @@ pub fn LinkDefinitionLayout::default() -> LinkDefinitionLayout {
   {
     indent: 0,
     angled_dest: false,
-    before_dest: Nil,
-    after_dest: Nil,
+    before_dest: [],
+    after_dest: [],
     title_open_delim: '"',
-    after_title: Nil,
+    after_title: [],
   }
 }
 

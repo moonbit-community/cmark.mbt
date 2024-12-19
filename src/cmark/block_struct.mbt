@@ -144,12 +144,12 @@ struct Fence {
 ///|
 struct FenceCodeBlockStruct {
   fence : Fence
-  code : List[(SpacePad, LineSpan)]
+  code : Array[(SpacePad, LineSpan)]
 } derive(Show, ToJson)
 
 ///|
 enum CodeBlockStruct {
-  Indented(List[IndentedCodeLine])
+  Indented(Array[IndentedCodeLine])
   Fenced(FenceCodeBlockStruct)
 } derive(Show, ToJson)
 
@@ -165,7 +165,7 @@ struct Atx {
 ///|
 struct Setext {
   level : HeadingLevel
-  heading_lines : List[LineSpan]
+  heading_lines : Array[LineSpan]
   /// Indent, underline char count, blanks
   underline : (Indent, LineSpan, LineSpan)
 } derive(Show, ToJson)
@@ -179,18 +179,18 @@ enum Heading {
 ///|
 struct HtmlBlockStruct {
   end_cond : HtmlBlockEndCond?
-  html : List[LineSpan]
+  html : Array[LineSpan]
 } derive(Show, ToJson)
 
 ///|
 struct Paragraph {
   maybe_ref : Bool
-  lines : List[LineSpan]
+  lines : Array[LineSpan]
 } derive(Show, ToJson)
 
 ///|
 enum BlockStruct {
-  BlockQuote(Indent, List[BlockStruct])
+  BlockQuote(Indent, Array[BlockStruct])
   BlankLine(SpacePad, LineSpan)
   CodeBlock(CodeBlockStruct)
   Heading(Heading)
@@ -199,8 +199,8 @@ enum BlockStruct {
   LinkRefDef(Node[LinkDefinition])
   Paragraph(Paragraph)
   ThematicBreak(Indent, LineSpan) // Including trailing blanks
-  ExtTable(Indent, List[(LineSpan, LineSpan)]) // The second `LineSpan` is for trailing blanks
-  ExtFootnote(Indent, (Label, Label?), List[BlockStruct])
+  ExtTable(Indent, Array[(LineSpan, LineSpan)]) // The second `LineSpan` is for trailing blanks
+  ExtFootnote(Indent, (Label, Label?), Array[BlockStruct])
 } derive(Show, ToJson)
 
 ///|
@@ -209,16 +209,16 @@ struct ListItemStruct {
   marker : LineSpan
   after_marker : Indent
   ext_task_marker : (Char, LineSpan)?
-  blocks : List[BlockStruct]
+  blocks : Array[BlockStruct]
 } derive(Show, ToJson)
 
 ///|
 struct ListBlockStruct {
-  last_blank : Bool // Last added line was blank and not first line of item
+  mut last_blank : Bool // Last added line was blank and not first line of item
   loose : Bool // Inter-item looseness, intra-item is computed later
   item_min_indent : Indent // Last item minimal indent
   list_type : ListType
-  items : List[ListItemStruct]
+  items : Array[ListItemStruct]
 } derive(Show, ToJson)
 
 ///|
@@ -271,7 +271,7 @@ fn Parser::atx_heading(
 fn Parser::setext_heading(
   self : Parser,
   level~ : HeadingLevel,
-  heading_lines : List[LineSpan],
+  heading_lines : Array[LineSpan],
   indent~ : Indent,
   last_underline~ : BytePos
 ) -> BlockStruct {
@@ -288,7 +288,7 @@ fn Parser::setext_heading(
 fn Parser::indented_code_block(self : Parser) -> BlockStruct {
   let (pad, first) = self.accept_code_indent(count=4)
   let code = self.curr_line_span(first~, last=self.curr_line_last_char)
-  CodeBlock(Indented(List::of([{ pad, code, is_blank: false }])))
+  CodeBlock(Indented([{ pad, code, is_blank: false }]))
 }
 
 ///|
@@ -306,7 +306,7 @@ fn Parser::fenced_code_block(
   let opening_fence = self.curr_line_span(first=fence_first, last=layout_last)
   let fence = (self.i[fence_first], fence_last - fence_first + 1)
   let fence = { indent, opening_fence, fence, info_string, closing_fence: None }
-  CodeBlock(Fenced({ fence, code: Nil }))
+  CodeBlock(Fenced({ fence, code: [] }))
 }
 
 ///|
@@ -328,7 +328,7 @@ fn Parser::html_block(
   } else {
     Some(end_cond)
   }
-  HtmlBlock({ end_cond, html: List::of([self.curr_line_span(first~, last~)]) })
+  HtmlBlock({ end_cond, html: [self.curr_line_span(first~, last~)] })
 }
 
 ///|
@@ -339,7 +339,7 @@ fn Parser::paragraph(self : Parser, start~ : BytePos) -> BlockStruct {
     last~,
     start~,
   )
-  let lines = List::of([self.curr_line_span(first=start, last~)])
+  let lines = [self.curr_line_span(first=start, last~)]
   Paragraph({ maybe_ref, lines })
 }
 
@@ -348,12 +348,13 @@ fn Parser::add_paragraph_line(
   self : Parser,
   indent_start~ : Indent,
   par~ : Paragraph,
-  bs~ : List[BlockStruct]
-) -> List[BlockStruct] {
+  bs~ : Array[BlockStruct]
+) -> Unit {
   let first = indent_start
   let last = self.curr_line_last_char
-  let lines = par.lines.add(self.curr_line_span(first~, last~))
-  bs.add(Paragraph({ ..par, lines, }))
+  let lines = par.lines
+  lines.push(self.curr_line_span(first~, last~))
+  bs.push(Paragraph({ ..par, lines, }))
 }
 
 ///|
@@ -375,7 +376,7 @@ fn Parser::table(
   last~ : BytePos
 ) -> BlockStruct {
   let row = self.table_row(first=self.curr_char, last~)
-  ExtTable(indent, List::of([row]))
+  ExtTable(indent, [row])
 }
 
 // Link reference definition parsing
@@ -385,9 +386,9 @@ fn Parser::table(
 /// https://spec.commonmark.org/current/#link-reference-definitions
 fn Parser::parse_link_ref_definition(
   self : Parser,
-  lines : List[LineSpan]
-) -> (Node[LinkDefinition], List[LineSpan])? {
-  let lines_arr = lines.to_array()
+  lines : Array[LineSpan]
+) -> Node[LinkDefinition]? {
+  let lines_arr = lines
   fn next_line(i : Ref[Int]) {
     guard i.val < lines_arr.length() else { None }
     let res = Some(lines_arr[i.val])
@@ -413,7 +414,7 @@ fn Parser::parse_link_ref_definition(
         (lines, line, label, colon + 1)
       }
     }
-    let (lines, line, before_dest, start) = match
+    let (line, before_dest, start) = match
       self.first_non_blank_over_nl(next_line~, lines, line, start~) {
       None => raise @cmark_base.Exit
       Some(v) => v
@@ -429,8 +430,8 @@ fn Parser::parse_link_ref_definition(
     }
     let (lines, after_dest, title_open_delim, title, after_title, meta_last) = match
       self.first_non_blank_over_nl(next_line~, lines, line, start~) {
-      None => (lines, List::Nil, '"', None, List::Nil, meta_last)
-      Some((lines1, line1, after_dest, start1)) => {
+      None => (lines, [], '"', None, [], meta_last)
+      Some((line1, after_dest, start1)) => {
         if start1 == start {
           raise @cmark_base.Exit
         }
@@ -438,7 +439,7 @@ fn Parser::parse_link_ref_definition(
         let title = @cmark_base.link_title(
           next_line~,
           self.i,
-          lines1,
+          lines,
           line=line1,
           start=start1,
         )
@@ -447,9 +448,9 @@ fn Parser::parse_link_ref_definition(
             if no_newline {
               raise @cmark_base.Exit
             } else {
-              (lines, Nil, '"', None, Nil, meta_last)
+              (lines, [], '"', None, [], meta_last)
             }
-          Some((lines1, line1, spans, last)) => {
+          Some((line1, spans, last)) => {
             let after_title = {
               let last = line1.last
               let start = last + 1
@@ -457,11 +458,7 @@ fn Parser::parse_link_ref_definition(
               if nb <= line1.last {
                 None
               } else {
-                Some(
-                  List::of([
-                    self.layout_clean_raw_span({ ..line1, first: start }),
-                  ]),
-                )
+                Some([self.layout_clean_raw_span({ ..line1, first: start })])
               }
             }
             match after_title {
@@ -469,12 +466,12 @@ fn Parser::parse_link_ref_definition(
                 if no_newline {
                   raise @cmark_base.Exit
                 } else {
-                  (lines, Nil, '"', None, Nil, meta_last)
+                  (lines, [], '"', None, [], meta_last)
                 }
               Some(after_title) => {
                 let t = self.tight_block_lines(spans=spans[:])
                 (
-                  lines1,
+                  lines,
                   after_dest,
                   self.i[start1],
                   Some(t),
@@ -502,7 +499,8 @@ fn Parser::parse_link_ref_definition(
     for def in defined_label {
       self.set_label_def(def, LinkDef(ld))
     }
-    Some((ld, List::from_iter(lines_arr[lines.val:].iter())))
+    let _ = lines_arr.drain(0, lines.val)
+    Some(ld)
   } catch {
     @cmark_base.Exit => None
   }
@@ -511,36 +509,43 @@ fn Parser::parse_link_ref_definition(
 ///|
 fn Parser::maybe_add_link_ref_definitions(
   self : Parser,
-  lines : List[LineSpan],
-  prevs : List[BlockStruct]
-) -> List[BlockStruct] {
-  loop prevs, lines.rev() {
-    prevs, Nil => prevs
-    prevs, ls =>
-      match self.parse_link_ref_definition(ls) {
-        //  Link defs can't interrupt a paragraph so we are good now.
-        None => prevs.add(Paragraph({ maybe_ref: false, lines: ls.rev() }))
-        Some((ld, ls)) => continue prevs.add(LinkRefDef(ld)), ls
+  lines : Array[LineSpan],
+  prevs : Array[BlockStruct]
+) -> Unit {
+  while not(lines.is_empty()) {
+    guard let Some(ld) = self.parse_link_ref_definition(lines) else {
+      //  Link defs can't interrupt a paragraph so we are good now.
+      _ => {
+        prevs.push(Paragraph({ maybe_ref: false, lines }))
+        break
       }
+    }
+    prevs.push(LinkRefDef(ld))
   }
 }
 
 ///|
 fn Parser::close_indented_code_block(
   self : Parser,
-  lines : List[IndentedCodeLine],
-  bs : List[BlockStruct]
-) -> List[BlockStruct] {
+  lines : Array[IndentedCodeLine],
+  bs : Array[BlockStruct]
+) -> Unit {
   let _ = self
-  loop List::Nil, lines, bs {
-    blanks, lines, bs =>
-      match lines {
-        Cons({ pad, code, is_blank: true }, lines) =>
-          continue blanks.add(BlockStruct::BlankLine(pad, code)), lines, bs
-        Nil => List::rev_concat(blanks, bs) // Likely `abort()`
-        Cons(_, _) as ls => blanks.rev_concat(bs.add(CodeBlock(Indented(ls))))
+  let blanks = []
+  while true {
+    match lines.last() {
+      Some({ is_blank: true, .. }) => {
+        guard let Some({ pad, code, .. }) = lines.pop()
+        blanks.push(BlockStruct::BlankLine(pad, code))
       }
+      None => break // Likely `abort()`
+      Some(_) => {
+        bs.push(CodeBlock(Indented(lines)))
+        break
+      }
+    }
   }
+  bs.push_iter(blanks.iter())
 }
 
 // Closing blocks and finishing the document.
@@ -549,23 +554,24 @@ fn Parser::close_indented_code_block(
 fn Parser::close_paragraph(
   self : Parser,
   par : Paragraph,
-  bs : List[BlockStruct]
-) -> List[BlockStruct] {
-  guard par.maybe_ref else { return bs.add(Paragraph(par)) }
+  bs : Array[BlockStruct]
+) -> Unit {
+  guard par.maybe_ref else {
+    bs.push(Paragraph(par))
+    return
+  }
   self.maybe_add_link_ref_definitions(par.lines, bs)
 }
 
 ///|
-fn Parser::close_last_block(
-  self : Parser,
-  bs : List[BlockStruct]
-) -> List[BlockStruct] {
-  match bs {
-    Cons(CodeBlock(Indented(ls)), bs) => self.close_indented_code_block(ls, bs)
-    Cons(Paragraph(par), bs) => self.close_paragraph(par, bs)
-    Cons(List(l), bs) => self.close_list(l, bs)
-    Cons(ExtFootnote(i, l, blocks), bs) => self.close_footnote(i, l, blocks, bs)
-    bs => bs
+fn Parser::close_last_block(self : Parser, bs : Array[BlockStruct]) -> Unit {
+  match bs.pop() {
+    Some(CodeBlock(Indented(ls))) => self.close_indented_code_block(ls, bs)
+    Some(Paragraph(par)) => self.close_paragraph(par, bs)
+    Some(List(l)) => self.close_list(l, bs)
+    Some(ExtFootnote(i, l, blocks)) => self.close_footnote(i, l, blocks, bs)
+    Some(t) => bs.push(t)
+    None => ()
   }
 }
 
@@ -573,20 +579,24 @@ fn Parser::close_last_block(
 fn Parser::close_list(
   self : Parser,
   l : ListBlockStruct,
-  bs : List[BlockStruct]
-) -> List[BlockStruct] {
-  let i = l.items.unsafe_head()
-  let blocks = self.close_last_block(i.blocks)
+  bs : Array[BlockStruct]
+) -> Unit {
+  guard let Some(i) = l.items.last()
+  let blocks = i.blocks
+  self.close_last_block(blocks)
   // The final blank line extraction of the list item entails less blank
   // line churn for CommonMark rendering but we don't do it on empty list items.
   match blocks {
-    Cons(BlankLine(_, _) as bl, Cons(_, _) as blocks) => {
-      let items = l.items.tail().add({ ..i, blocks, })
-      bs.add(List({ ..l, items, })).add(bl)
+    [.., _, BlankLine(_, _)] => {
+      guard let Some(bl) = blocks.pop()
+      let items = l.items
+      items[items.length() - 1] = { ..i, blocks, }
+      bs..push(List({ ..l, items, })).push(bl)
     }
-    blocks => {
-      let items = l.items.tail().add({ ..i, blocks, })
-      bs.add(List({ ..l, items, }))
+    _ => {
+      let items = l.items
+      items[items.length() - 1] = { ..i, blocks, }
+      bs.push(List({ ..l, items, }))
     }
   }
 }
@@ -596,78 +606,85 @@ fn Parser::close_footnote(
   self : Parser,
   indent : Indent,
   label : (Label, Label?),
-  blocks : List[BlockStruct],
-  bs : List[BlockStruct]
-) -> List[BlockStruct] {
-  let blocks = self.close_last_block(blocks)
+  blocks : Array[BlockStruct],
+  bs : Array[BlockStruct]
+) -> Unit {
+  self.close_last_block(blocks)
   // Like for lists above we do blank line extraction (except if blocks is only a blank line)
-  let (blanks, blocks) = loop List::Nil, blocks {
-    acc, Cons(BlankLine(_, _) as bl, Cons(_, _) as blocks) =>
-      continue acc.add(bl), blocks
-    acc, blocks => (acc, blocks)
+  let blanks = []
+  while true {
+    match blocks {
+      [.., _, BlankLine(_, _)] => {
+        guard let Some(bl) = blocks.pop()
+        blanks.push(bl)
+      }
+      _ => break
+    }
   }
-  blanks.rev_concat(bs.add(ExtFootnote(indent, label, blocks)))
+  bs.push(ExtFootnote(indent, label, blocks))
+  bs.push_iter(blanks.iter())
 }
 
 ///|
-fn Parser::close_last_list_item(
-  self : Parser,
-  l : ListBlockStruct
-) -> ListBlockStruct {
-  let item = l.items.unsafe_head()
-  let item = { ..item, blocks: self.close_last_block(item.blocks) }
-  { ..l, items: l.items.tail().add(item) }
+fn Parser::close_last_list_item(self : Parser, l : ListBlockStruct) -> Unit {
+  guard let Some(item) = l.items.last()
+  self.close_last_block(item.blocks)
 }
 
 ///|
 fn Parser::end_doc_close_fenced_code_block(
   self : Parser,
   fenced : FenceCodeBlockStruct,
-  bs : List[BlockStruct]
-) -> List[BlockStruct] {
+  bs : Array[BlockStruct]
+) -> Unit {
   let _ = self
-  match fenced.code {
-    Cons((_, l), code) =>
-      if l.first > l.last { // Empty line
-        let code = code.add((0, l))
-        return bs.add(CodeBlock(Fenced({ ..fenced, code, })))
-      }
-    _ => ()
+  let { code, .. } = fenced
+  guard code.is_empty() else {
+    let code = code.copy() // TODO: Is this copy necessary?
+    guard let Some((_, { first, last, .. } as l)) = code.pop()
+    if first > last { // Empty line
+      bs..push(BlankLine(0, l)).push(CodeBlock(Fenced({ ..fenced, code, })))
+      return
+    }
   }
-  bs.add(CodeBlock(Fenced(fenced)))
+  bs.push(CodeBlock(Fenced(fenced)))
 }
 
 ///|
 fn Parser::end_doc_close_html(
   self : Parser,
   h : HtmlBlockStruct,
-  bs : List[BlockStruct]
-) -> List[BlockStruct] {
+  bs : Array[BlockStruct]
+) -> Unit {
   let _ = self
-  match h.html {
-    Cons(l, html) =>
-      if l.first > l.last { // Empty line
-        return bs.add(HtmlBlock({ end_cond: None, html })).add(BlankLine(0, l))
-      }
-    _ => ()
+  let { html, .. } = h
+  guard html.is_empty() else {
+    let html = html.copy() // TODO: Is this copy necessary?
+    guard let Some({ first, last, .. } as l) = html.pop()
+    if first > last { // Empty line
+      bs..push(HtmlBlock({ end_cond: None, html })).push(BlankLine(0, l))
+      return
+    }
   }
-  bs.add(HtmlBlock({ ..h, end_cond: None }))
+  bs.push(HtmlBlock({ ..h, end_cond: None }))
 }
 
 ///|
-fn Parser::end_doc(self : Parser, bs : List[BlockStruct]) -> List[BlockStruct] {
-  match bs {
-    Cons(BlockQuote(indent, bq), bs) =>
-      bs.add(BlockQuote(indent, self.end_doc(bq)))
-    Cons(List(l), bs) => self.close_list(l, bs)
-    Cons(Paragraph(par), bs) => self.close_paragraph(par, bs)
-    Cons(CodeBlock(Indented(ls)), bs) => self.close_indented_code_block(ls, bs)
-    Cons(CodeBlock(Fenced(f)), bs) =>
-      self.end_doc_close_fenced_code_block(f, bs)
-    Cons(HtmlBlock(html), bs) => self.end_doc_close_html(html, bs)
-    Cons(ExtFootnote(indent, label, blocks), bs) =>
+fn Parser::end_doc(self : Parser, bs : Array[BlockStruct]) -> Unit {
+  match bs.pop() {
+    Some(BlockQuote(indent, bq)) => {
+      self.end_doc(bq)
+      bs.push(BlockQuote(indent, bq))
+    }
+    Some(List(l)) => self.close_list(l, bs)
+    Some(Paragraph(par)) => self.close_paragraph(par, bs)
+    Some(CodeBlock(Indented(ls))) => self.close_indented_code_block(ls, bs)
+    Some(CodeBlock(Fenced(f))) => self.end_doc_close_fenced_code_block(f, bs)
+    Some(HtmlBlock(html)) => self.end_doc_close_html(html, bs)
+    Some(ExtFootnote(indent, label, blocks)) =>
       self.close_footnote(indent, label, blocks, bs)
-    bs => bs
+    Some(b) => bs.push(b)
+    None => ()
   }
 }
 
@@ -804,18 +821,22 @@ fn Parser::add_open_blocks_with_line_class(
   self : Parser,
   indent_start~ : Indent,
   indent~ : Indent,
-  bs : List[BlockStruct],
+  bs : Array[BlockStruct],
   lt : LineType
-) -> List[BlockStruct] {
+) -> Unit {
   match lt {
-    BlankLine => bs.add(self.blank_line())
-    IndentedCodeBlockLine => bs.add(self.indented_code_block())
-    BlockQuoteLine => bs.add(BlockQuote(indent, self.add_open_blocks(Nil)))
-    ThematicBreakLine(last) => bs.add(self.thematic_break(indent~, last~))
+    BlankLine => bs.push(self.blank_line())
+    IndentedCodeBlockLine => bs.push(self.indented_code_block())
+    BlockQuoteLine => {
+      let bs1 = []
+      self.add_open_blocks(bs1)
+      bs.push(BlockQuote(indent, bs1))
+    }
+    ThematicBreakLine(last) => bs.push(self.thematic_break(indent~, last~))
     ListMarkerLine(marker, marker_last) =>
       self.list(indent~, marker, marker_last, bs)
     AtxHeadingLine(level, after_open, first_content, last_content) =>
-      bs.add(
+      bs.push(
         self.atx_heading(
           indent~,
           level~,
@@ -825,29 +846,23 @@ fn Parser::add_open_blocks_with_line_class(
         ),
       )
     FencedCodeBlockLine(fence_first, fence_last, info) =>
-      bs.add(self.fenced_code_block(indent~, fence_first~, fence_last~, info~))
-    HtmlBlockLine(end_cond) => bs.add(self.html_block(end_cond~, indent_start~))
-    ParagraphLine => bs.add(self.paragraph(start=indent_start))
-    ExtTableRow(last) => bs.add(self.table(indent~, last~))
+      bs.push(self.fenced_code_block(indent~, fence_first~, fence_last~, info~))
+    HtmlBlockLine(end_cond) =>
+      bs.push(self.html_block(end_cond~, indent_start~))
+    ParagraphLine => bs.push(self.paragraph(start=indent_start))
+    ExtTableRow(last) => bs.push(self.table(indent~, last~))
     ExtFootnoteLabel(spans, last, key) =>
-      bs.add(self.footnote(indent~, last~, spans=spans[:], key~))
+      bs.push(self.footnote(indent~, last~, spans=spans[:], key~))
     _ => abort("unimplemented")
   }
 }
 
 ///|
-fn Parser::add_open_blocks(
-  self : Parser,
-  bs : List[BlockStruct]
-) -> List[BlockStruct] {
+fn Parser::add_open_blocks(self : Parser, bs : Array[BlockStruct]) -> Unit {
   let indent_start = self.curr_char
   let indent = self.curr_indent()
-  self.add_open_blocks_with_line_class(
-    indent_start~,
-    indent~,
-    bs,
-    self.match_line_type(no_setext=true, indent~),
-  )
+  let line_type = self.match_line_type(no_setext=true, indent~)
+  self.add_open_blocks_with_line_class(indent_start~, indent~, bs, line_type)
 }
 
 ///|
@@ -864,7 +879,9 @@ fn Parser::footnote(
     self.set_label_def(def, Label::stub(label, defined_label))
   }
   self.accept_cols(count=last - self.curr_char + 1)
-  ExtFootnote(indent, (label, defined_label), self.add_open_blocks(Nil))
+  let blocks = []
+  self.add_open_blocks(blocks)
+  ExtFootnote(indent, (label, defined_label), blocks)
 }
 
 ///|
@@ -897,7 +914,8 @@ fn Parser::list_item(
     (None, 0)
   }
   let min = indent + marker_size + after_marker + ext_task_marker_size
-  let blocks = self.add_open_blocks(Nil)
+  let blocks = []
+  self.add_open_blocks(blocks)
   (min, { before_marker, marker, after_marker, ext_task_marker, blocks })
 }
 
@@ -907,13 +925,18 @@ fn Parser::list(
   indent~ : Indent,
   list_type : ListType,
   marker_last : BytePos,
-  bs : List[BlockStruct]
-) -> List[BlockStruct] {
+  bs : Array[BlockStruct]
+) -> Unit {
   let (item_min_indent, item) = self.list_item(indent~, list_type, marker_last)
-  let last_blank = false
-  let loose = false
-  let items = List::of([item])
-  bs.add(List({ last_blank, loose, item_min_indent, list_type, items }))
+  bs.push(
+    List({
+      last_blank: false,
+      loose: false,
+      item_min_indent,
+      list_type,
+      items: [item],
+    }),
+  )
 }
 
 ///|
@@ -923,29 +946,30 @@ fn Parser::try_add_to_list(
   list_type : ListType,
   marker_last : BytePos,
   list : ListBlockStruct,
-  bs : List[BlockStruct]
-) -> List[BlockStruct] {
+  bs : Array[BlockStruct]
+) -> Unit {
   let (item_min_indent, item) = self.list_item(indent~, list_type, marker_last)
   if list.list_type.is_same_type(list_type) {
-    let l = self.close_last_list_item(list)
-    bs.add(
+    let l = list
+    self.close_last_list_item(l)
+    bs.push(
       List({
         last_blank: false,
         loose: l.last_blank,
         item_min_indent,
         list_type: l.list_type,
-        items: l.items.add(item),
+        items: l.items..push(item),
       }),
     )
   } else {
-    let bs = self.close_list(list, bs)
-    bs.add(
+    self.close_list(list, bs)
+    bs.push(
       List({
         last_blank: false,
         loose: false,
         item_min_indent,
         list_type,
-        items: List::of([item]),
+        items: [item],
       }),
     )
   }
@@ -955,8 +979,8 @@ fn Parser::try_add_to_list(
 fn Parser::try_add_to_paragraph(
   self : Parser,
   par : Paragraph,
-  bs : List[BlockStruct]
-) -> List[BlockStruct] {
+  bs : Array[BlockStruct]
+) -> Unit {
   let indent_start = self.curr_char
   let indent = self.curr_indent()
   match self.match_line_type(no_setext=false, indent~) {
@@ -968,29 +992,41 @@ fn Parser::try_add_to_paragraph(
     | ParagraphLine => self.add_paragraph_line(indent_start~, par~, bs~)
     ListMarkerLine(marker, marker_last) =>
       if self.list_marker_can_interrupt_paragraph(marker, marker_last) {
-        self.list(indent~, marker, marker_last, self.close_paragraph(par, bs))
+        self.close_paragraph(par, bs)
+        self.list(indent~, marker, marker_last, bs)
       } else {
         self.add_paragraph_line(indent_start~, par~, bs~)
       }
-    BlankLine => self.close_paragraph(par, bs).add(self.blank_line())
-    BlockQuoteLine =>
-      self
-      .close_paragraph(par, bs)
-      .add(BlockQuote(indent, self.add_open_blocks(Nil)))
-    SetextUnderlineLine(level, last_underline) =>
-      match self.close_paragraph(par, bs) {
-        Cons(Paragraph(par), bs) =>
-          bs.add(
-            self.setext_heading(indent~, level~, last_underline~, par.lines),
+    BlankLine => {
+      self.close_paragraph(par, bs)
+      bs.push(self.blank_line())
+    }
+    BlockQuoteLine => {
+      self.close_paragraph(par, bs)
+      let blocks = []
+      self.add_open_blocks(blocks)
+      bs.push(BlockQuote(indent, blocks))
+    }
+    SetextUnderlineLine(level, last_underline) => {
+      self.close_paragraph(par, bs)
+      match bs {
+        [.., Paragraph(par)] =>
+          bs[bs.length() - 1] = self.setext_heading(
+            indent~,
+            level~,
+            last_underline~,
+            par.lines,
           )
-        bs => bs.add(self.paragraph(start=indent_start))
+        bs => bs.push(self.paragraph(start=indent_start))
       }
-    ThematicBreakLine(last) =>
-      self.close_paragraph(par, bs).add(self.thematic_break(indent~, last~))
-    AtxHeadingLine(level, after_open, first_content, last_content) =>
-      self
-      .close_paragraph(par, bs)
-      .add(
+    }
+    ThematicBreakLine(last) => {
+      self.close_paragraph(par, bs)
+      bs.push(self.thematic_break(indent~, last~))
+    }
+    AtxHeadingLine(level, after_open, first_content, last_content) => {
+      self.close_paragraph(par, bs)
+      bs.push(
         self.atx_heading(
           indent~,
           level~,
@@ -999,14 +1035,15 @@ fn Parser::try_add_to_paragraph(
           last_content~,
         ),
       )
-    FencedCodeBlockLine(fence_first, fence_last, info) =>
-      self
-      .close_paragraph(par, bs)
-      .add(self.fenced_code_block(indent~, fence_first~, fence_last~, info~))
-    HtmlBlockLine(end_cond) =>
-      self
-      .close_paragraph(par, bs)
-      .add(self.html_block(end_cond~, indent_start~))
+    }
+    FencedCodeBlockLine(fence_first, fence_last, info) => {
+      self.close_paragraph(par, bs)
+      bs.push(self.fenced_code_block(indent~, fence_first~, fence_last~, info~))
+    }
+    HtmlBlockLine(end_cond) => {
+      self.close_paragraph(par, bs)
+      bs.push(self.html_block(end_cond~, indent_start~))
+    }
     Nomatch => abort("unreachable")
   }
 }
@@ -1014,26 +1051,27 @@ fn Parser::try_add_to_paragraph(
 ///|
 fn Parser::try_add_to_indented_code_block(
   self : Parser,
-  ls : List[IndentedCodeLine],
-  bs : List[BlockStruct]
-) -> List[BlockStruct] {
+  ls : Array[IndentedCodeLine],
+  bs : Array[BlockStruct]
+) -> Unit {
   if self.curr_indent() < 4 {
     if self.has_next_non_blank() {
-      self.add_open_blocks(self.close_indented_code_block(ls, bs))
+      self.close_indented_code_block(ls, bs)
+      self.add_open_blocks(bs)
     } else {
       // Blank but white is not data, make an empty span
       let first = self.curr_line_last_char + 1
       let last = self.curr_line_last_char
       let code = self.curr_line_span(first~, last~)
       let l = { pad: 0, code, is_blank: true }
-      bs.add(CodeBlock(Indented(ls.add(l))))
+      bs.push(CodeBlock(Indented(ls..push(l))))
     }
   } else {
     let (pad, first) = self.accept_code_indent(count=4)
     let last = self.curr_line_last_char
     let is_blank = self.only_blanks()
     let l = { pad, code: self.curr_line_span(first~, last~), is_blank }
-    bs.add(CodeBlock(Indented(ls.add(l))))
+    bs.push(CodeBlock(Indented(ls..push(l))))
   }
 }
 
@@ -1041,11 +1079,11 @@ fn Parser::try_add_to_indented_code_block(
 fn Parser::try_add_to_fenced_code_block(
   self : Parser,
   f : FenceCodeBlockStruct,
-  bs : List[BlockStruct]
-) -> List[BlockStruct] {
+  bs : Array[BlockStruct]
+) -> Unit {
   match f {
     { fence: { closing_fence: Some(_), .. }, .. } => // Block is closed
-      self.add_open_blocks(bs.add(CodeBlock(Fenced(f))))
+      self.add_open_blocks(bs..push(CodeBlock(Fenced(f))))
     { fence: { indent, fence, .. }, code: ls } as b => {
       let start = self.curr_char
       let last = self.curr_line_last_char
@@ -1054,13 +1092,13 @@ fn Parser::try_add_to_fenced_code_block(
         Code => {
           let strip = @math.minimum(indent, self.curr_indent())
           let (pad, first) = self.accept_code_indent(count=strip)
-          let code = ls.add((pad, self.curr_line_span(first~, last~)))
-          bs.add(CodeBlock(Fenced({ ..b, code, })))
+          let code = ls..push((pad, self.curr_line_span(first~, last~)))
+          bs.push(CodeBlock(Fenced({ ..b, code, })))
         }
         Close(first, _fence_last) => {
           let close = self.curr_line_span(first~, last~) // With layout
           let fence = { ..b.fence, closing_fence: Some(close) }
-          bs.add(CodeBlock(Fenced({ ..b, fence, })))
+          bs.push(CodeBlock(Fenced({ ..b, fence, })))
         }
       }
     }
@@ -1071,10 +1109,10 @@ fn Parser::try_add_to_fenced_code_block(
 fn Parser::try_add_to_html_block(
   self : Parser,
   b : HtmlBlockStruct,
-  bs : List[BlockStruct]
-) -> List[BlockStruct] {
+  bs : Array[BlockStruct]
+) -> Unit {
   match b.end_cond {
-    None => self.add_open_blocks(bs.add(HtmlBlock({ ..b, end_cond: None })))
+    None => self.add_open_blocks(bs..push(HtmlBlock({ ..b, end_cond: None })))
     Some(end_cond) => {
       let start = self.curr_char
       let last = self.curr_line_last_char
@@ -1082,11 +1120,11 @@ fn Parser::try_add_to_html_block(
       if LineType::html_block_end(self.i, end_cond~, last~, start~) {
         match end_cond {
           EndBlank7 | EndBlank =>
-            bs.add(HtmlBlock({ ..b, end_cond: None })).add(self.blank_line())
-          _ => bs.add(HtmlBlock({ html: b.html.add(l), end_cond: None }))
+            bs..push(HtmlBlock({ ..b, end_cond: None })).push(self.blank_line())
+          _ => bs.push(HtmlBlock({ html: b.html..push(l), end_cond: None }))
         }
       } else {
-        bs.add(HtmlBlock({ ..b, html: b.html.add(l) }))
+        bs.push(HtmlBlock({ ..b, html: b.html..push(l) }))
       }
     }
   }
@@ -1096,25 +1134,24 @@ fn Parser::try_add_to_html_block(
 fn Parser::try_lazy_continuation(
   self : Parser,
   indent_start~ : Indent,
-  bs : List[BlockStruct]
-) -> List[BlockStruct]? {
-  match bs {
-    Cons(Paragraph(par), bs) =>
-      Some(self.add_paragraph_line(indent_start~, par~, bs~))
-    Cons(BlockQuote(indent, bq), bs) =>
-      self
-      .try_lazy_continuation(indent_start~, bq)
-      .map(fn(bq) { bs.add(BlockQuote(indent, bq)) })
-    Cons(List(l), bs) => {
-      let i = l.items.unsafe_head()
-      self
-      .try_lazy_continuation(indent_start~, i.blocks)
-      .map(fn(blocks) {
-        let items = l.items.tail().add({ ..i, blocks, })
-        bs.add(List({ ..l, items, last_blank: false }))
-      })
+  bs : Array[BlockStruct]
+) -> Bool {
+  match bs.last() {
+    Some(Paragraph(par)) => {
+      let _ = bs.pop()
+      self.add_paragraph_line(indent_start~, par~, bs~)
+      true
     }
-    _ => None
+    Some(BlockQuote(_, bq)) => self.try_lazy_continuation(indent_start~, bq)
+    Some(List(l)) => {
+      guard let Some(i) = l.items.last()
+      let res = self.try_lazy_continuation(indent_start~, i.blocks)
+      if res {
+        l.last_blank = false
+      }
+      res
+    }
+    _ => false
   }
 }
 
@@ -1122,18 +1159,18 @@ fn Parser::try_lazy_continuation(
 fn Parser::try_add_to_table(
   self : Parser,
   indent : Indent,
-  rows : List[(LineSpan, LineSpan)],
-  bs : List[BlockStruct]
-) -> List[BlockStruct] {
+  rows : Array[(LineSpan, LineSpan)],
+  bs : Array[BlockStruct]
+) -> Unit {
   let indent_start = self.curr_char
   let curr_indent = self.curr_indent()
   match self.match_line_type(no_setext=true, indent=curr_indent) {
     ExtTableRow(last) => {
       let row = self.table_row(first=self.curr_char, last~)
-      bs.add(ExtTable(indent, rows.add(row)))
+      bs.push(ExtTable(indent, rows..push(row)))
     }
     lt => {
-      let bs = bs.add(ExtTable(indent, rows))
+      bs.push(ExtTable(indent, rows))
       self.add_open_blocks_with_line_class(
         indent_start~,
         indent=curr_indent,
@@ -1148,28 +1185,27 @@ fn Parser::try_add_to_table(
 fn Parser::try_add_to_block_quote(
   self : Parser,
   indent_layout : Indent,
-  bq : List[BlockStruct],
-  bs : List[BlockStruct]
-) -> List[BlockStruct] {
+  bq : Array[BlockStruct],
+  bs : Array[BlockStruct]
+) -> Unit {
   let indent_start = self.curr_char
   let indent = self.curr_indent()
   match self.match_line_type(no_setext=true, indent~) {
-    BlockQuoteLine => bs.add(BlockQuote(indent_layout, self.add_line(bq)))
+    BlockQuoteLine => {
+      self.add_line(bq)
+      bs.push(BlockQuote(indent_layout, bq))
+    }
     IndentedCodeBlockLine | ParagraphLine as ltype =>
-      match self.try_lazy_continuation(indent_start~, bq) {
-        Some(bq) => bs.add(BlockQuote(indent_layout, bq))
-        None => {
-          let bs = bs.add(BlockQuote(indent_layout, self.close_last_block(bq)))
-          self.add_open_blocks_with_line_class(
-            indent_start~,
-            indent~,
-            bs,
-            ltype,
-          )
-        }
+      if self.try_lazy_continuation(indent_start~, bq) {
+        bs.push(BlockQuote(indent_layout, bq))
+      } else {
+        self.close_last_block(bq)
+        bs.push(BlockQuote(indent_layout, bq))
+        self.add_open_blocks_with_line_class(indent_start~, indent~, bs, ltype)
       }
     lt => {
-      let bs = bs.add(BlockQuote(indent_layout, self.close_last_block(bq)))
+      self.close_last_block(bq)
+      bs.push(BlockQuote(indent_layout, bq))
       self.add_open_blocks_with_line_class(indent_start~, indent~, bs, lt)
     }
   }
@@ -1180,31 +1216,34 @@ fn Parser::try_add_to_footnote(
   self : Parser,
   fn_indent : Indent,
   label : (Label, Label?),
-  blocks : List[BlockStruct],
-  bs : List[BlockStruct]
-) -> List[BlockStruct] {
+  blocks : Array[BlockStruct],
+  bs : Array[BlockStruct]
+) -> Unit {
   let indent_start = self.curr_char
   let indent = self.curr_indent()
   if indent < fn_indent + 1 { // Position of ^
     match self.match_line_type(no_setext=true, indent~) {
       IndentedCodeBlockLine | ParagraphLine as lt =>
-        match self.try_lazy_continuation(indent_start~, blocks) {
-          Some(blocks) => bs.add(ExtFootnote(fn_indent, label, blocks))
-          None => {
-            let blocks = self.close_last_block(blocks)
-            let bs = self.close_footnote(fn_indent, label, blocks, bs)
-            self.add_open_blocks_with_line_class(indent_start~, indent~, bs, lt)
-          }
+        if self.try_lazy_continuation(indent_start~, blocks) {
+          bs.push(ExtFootnote(fn_indent, label, blocks))
+        } else {
+          self.close_last_block(blocks)
+          self.close_footnote(fn_indent, label, blocks, bs)
+          self.add_open_blocks_with_line_class(indent_start~, indent~, bs, lt)
         }
-      BlankLine => bs.add(ExtFootnote(fn_indent, label, self.add_line(blocks)))
+      BlankLine => {
+        self.add_line(blocks)
+        bs.push(ExtFootnote(fn_indent, label, blocks))
+      }
       lt => {
-        let bs = self.close_footnote(fn_indent, label, blocks, bs)
+        self.close_footnote(fn_indent, label, blocks, bs)
         self.add_open_blocks_with_line_class(indent_start~, indent~, bs, lt)
       }
     }
   } else {
     self.accept_cols(count=fn_indent + 1)
-    bs.add(ExtFootnote(fn_indent, label, self.add_line(blocks)))
+    self.add_line(blocks)
+    bs.push(ExtFootnote(fn_indent, label, blocks))
   }
 }
 
@@ -1212,77 +1251,88 @@ fn Parser::try_add_to_footnote(
 fn Parser::try_add_to_list_item(
   self : Parser,
   list : ListBlockStruct,
-  bs : List[BlockStruct]
-) -> List[BlockStruct] {
+  bs : Array[BlockStruct]
+) -> Unit {
   let indent_start = self.curr_char
   let indent = self.curr_indent()
   if indent >= list.item_min_indent {
     let last_blank = self.only_blanks()
-    let item = list.items.unsafe_head()
-    let items = list.items.tail()
+    guard let Some(item) = list.items.last()
     return if list.last_blank &&
       not(last_blank) &&
-      item.blocks.all(is_blank_line) {
+      item.blocks.iter().all(is_blank_line) {
       // Item can only start with a single blank line, 
       // if we are here it's not a new item so the list ends
-      self.add_open_blocks(bs.add(List(list)))
+      self.add_open_blocks(bs..push(List(list)))
     } else {
       self.accept_cols(count=list.item_min_indent)
-      let item = { ..item, blocks: self.add_line(item.blocks) }
-      bs.add(List({ ..list, items: items.add(item), last_blank }))
+      self.add_line(item.blocks)
+      bs.push(List({ ..list, last_blank, }))
     }
   }
   match self.match_line_type(no_setext=true, indent~) {
     BlankLine => {
-      let item = list.items.unsafe_head()
-      let items = list.items.tail()
-      let item = { ..item, blocks: self.add_line(item.blocks) }
-      bs.add(List({ ..list, items: items.add(item), last_blank: true }))
+      let items = list.items
+      guard let Some(item) = items.last()
+      self.add_line(item.blocks)
+      bs.push(List({ ..list, items, last_blank: true }))
     }
     IndentedCodeBlockLine | ParagraphLine as ltype => {
-      let item = list.items.unsafe_head()
-      let items = list.items.tail()
-      match self.try_lazy_continuation(indent_start~, item.blocks) {
-        Some(blocks) => {
-          let items = items.add({ ..item, blocks, })
-          bs.add(List({ ..list, items, last_blank: false }))
-        }
-        None => {
-          let bs = self.close_list(list, bs)
-          self.add_open_blocks_with_line_class(
-            indent_start~,
-            indent~,
-            bs,
-            ltype,
-          )
-        }
+      let items = list.items
+      guard let Some(item) = items.last()
+      if self.try_lazy_continuation(indent_start~, item.blocks) {
+        bs.push(List({ ..list, items, last_blank: false }))
+      } else {
+        self.close_list(list, bs)
+        self.add_open_blocks_with_line_class(indent_start~, indent~, bs, ltype)
       }
     }
     ListMarkerLine(marker, marker_last) =>
       self.try_add_to_list(indent~, marker, marker_last, list, bs)
     lt => {
-      let bs = self.close_list(list, bs)
+      self.close_list(list, bs)
       self.add_open_blocks_with_line_class(indent_start~, indent~, bs, lt)
     }
   }
 }
 
 ///|
-fn Parser::add_line(self : Parser, bs : List[BlockStruct]) -> List[BlockStruct] {
-  match bs {
-    Cons(Paragraph(par), bs) => self.try_add_to_paragraph(par, bs)
-    Cons(ThematicBreak(_) | Heading(_) | BlankLine(_) | LinkRefDef(_), _)
-    | Nil => self.add_open_blocks(bs)
-    Cons(List(l), bs) => self.try_add_to_list_item(l, bs)
-    Cons(CodeBlock(Indented(ls)), bs) =>
+fn Parser::add_line(self : Parser, bs : Array[BlockStruct]) -> Unit {
+  match bs.last() {
+    Some(Paragraph(par)) => {
+      let _ = bs.pop()
+      self.try_add_to_paragraph(par, bs)
+    }
+    Some(ThematicBreak(_) | Heading(_) | BlankLine(_) | LinkRefDef(_)) | None =>
+      self.add_open_blocks(bs)
+    Some(List(l)) => {
+      let _ = bs.pop()
+      self.try_add_to_list_item(l, bs)
+    }
+    Some(CodeBlock(Indented(ls))) => {
+      let _ = bs.pop()
       self.try_add_to_indented_code_block(ls, bs)
-    Cons(CodeBlock(Fenced(f)), bs) => self.try_add_to_fenced_code_block(f, bs)
-    Cons(BlockQuote(indent, bq), bs) =>
+    }
+    Some(CodeBlock(Fenced(f))) => {
+      let _ = bs.pop()
+      self.try_add_to_fenced_code_block(f, bs)
+    }
+    Some(BlockQuote(indent, bq)) => {
+      let _ = bs.pop()
       self.try_add_to_block_quote(indent, bq, bs)
-    Cons(HtmlBlock(html), bs) => self.try_add_to_html_block(html, bs)
-    Cons(ExtTable(indent, rows), bs) => self.try_add_to_table(indent, rows, bs)
-    Cons(ExtFootnote(i, l, blocks), bs) =>
+    }
+    Some(HtmlBlock(html)) => {
+      let _ = bs.pop()
+      self.try_add_to_html_block(html, bs)
+    }
+    Some(ExtTable(indent, rows)) => {
+      let _ = bs.pop()
+      self.try_add_to_table(indent, rows, bs)
+    }
+    Some(ExtFootnote(i, l, blocks)) => {
+      let _ = bs.pop()
       self.try_add_to_footnote(i, l, blocks, bs)
+    }
   }
 }
 
@@ -1344,7 +1394,7 @@ fn Parser::get_next_line(self : Parser) -> Bool {
 }
 
 ///|
-fn Parser::parse_block(self : Parser) -> (String, Node[List[BlockStruct]]) {
+fn Parser::parse_block(self : Parser) -> (String, Node[Array[BlockStruct]]) {
   fn meta() {
     self.meta({
       file: self.file,
@@ -1356,13 +1406,14 @@ fn Parser::parse_block(self : Parser) -> (String, Node[List[BlockStruct]]) {
   }
 
   let nl = self.get_first_line()
-  let blocks = loop List::Nil {
+  let blocks = loop [] {
     bs => {
-      let bs = self.add_line(bs)
+      self.add_line(bs)
       if self.get_next_line() {
         continue bs
       }
-      { v: self.end_doc(bs), meta: meta() }
+      self.end_doc(bs)
+      { v: bs, meta: meta() }
     }
   }
   (nl, blocks)
@@ -1391,12 +1442,12 @@ fn Parser::block_struct_to_code_block(
       }
       let layout = CodeBlockLayout::Indented
       let info_string = None
-      let last = ls.unsafe_head().code
-      let code = ls.rev_map(line)
+      let last = ls.last().unwrap().code
+      let code = ls.map(line)
       let meta = {
         let last_line = last.pos
         let last_byte = last.last
-        let start = code.unsafe_head().meta.loc
+        let start = code[0].meta.loc
         self.meta({ ..start, last_byte, last_line })
       }
       CodeBlock({ v: { layout, info_string, code }, meta })
@@ -1412,15 +1463,15 @@ fn Parser::block_struct_to_code_block(
       let info_string = fence.info_string.map(fn(i) {
         self.clean_unesc_unref_span(i)
       })
-      let code = ls.rev_map(fn(i) { self.clean_raw_span(pad=i.0, i.1) })
+      let code = ls.map(fn(i) { self.clean_raw_span(pad=i.0, i.1) })
       let meta = {
         let first = fence.opening_fence
         let last = match fence.closing_fence {
           Some(last) => last
           None =>
-            match ls {
-              Cons((_, last), _) => last
-              Nil => first
+            match ls.last() {
+              Some((_, last)) => last
+              None => first
             }
         }
         self.meta_of_spans(first~, last~)
@@ -1458,7 +1509,7 @@ fn Parser::block_struct_to_heading(self : Parser, b : Heading) -> Block {
     }
     Setext({ level, heading_lines, underline }) => {
       let ((leading_indent, trailing_blanks), inline) = self.parse_inline(
-        heading_lines,
+        List::from_array(heading_lines).rev(),
       )
       let (underline_indent, u, blanks) = underline
       let underline_blanks = self.layout_clean_raw_span1(blanks)
@@ -1494,18 +1545,16 @@ fn Parser::block_struct_to_html_block(
   self : Parser,
   b : HtmlBlockStruct
 ) -> Block {
-  let last = b.html.unsafe_head()
-  let last_byte = last.last
-  let last_line = last.pos
-  let lines = b.html.rev_map(fn(i) { self.clean_raw_span(i) })
-  let start_loc = lines.unsafe_head().meta.loc
+  guard let Some({ last: last_byte, pos: last_line, .. }) = b.html.last()
+  let lines = b.html.map(fn(i) { self.clean_raw_span(i) })
+  let start_loc = lines.last().unwrap().meta.loc
   let meta = self.meta({ ..start_loc, last_byte, last_line })
   HtmlBlock({ v: lines, meta })
 }
 
 ///|
 fn Parser::block_struct_to_paragraph(self : Parser, par : Paragraph) -> Block {
-  let (layout, inline) = self.parse_inline(par.lines)
+  let (layout, inline) = self.parse_inline(List::from_array(par.lines).rev())
   let (leading_indent, trailing_blanks) = layout
   let meta = inline.meta()
   Paragraph({ v: { leading_indent, inline, trailing_blanks }, meta })
@@ -1527,6 +1576,7 @@ fn Parser::block_struct_to_table(
   indent : Indent,
   rows : List[(LineSpan, LineSpan)]
 ) -> Block {
+  let rows = rows.rev()
   let last = rows.unsafe_head().0
   let (first, col_count, rows) = loop 0, false, List::Nil, rows {
     col_count, last_was_sep, acc, Cons((row, blanks), rs) => {
@@ -1627,53 +1677,58 @@ fn Parser::block_struct_to_list_item(
   self : Parser,
   i : ListItemStruct
 ) -> (Node[ListItem], Bool) {
-  fn go(bstate : BState, tight, acc : List[_], bs : List[BlockStruct]) {
-    match bs {
-      Cons(BlankLine(_) as bl, bs) => {
+  fn go(bstate : BState, tight, acc : Array[_], bs : List[BlockStruct]) {
+    loop bstate, tight, acc, bs {
+      bstate, tight, acc, Cons(BlankLine(_) as bl, bs) => {
         let bstate = if bstate == TrailBlank { TrailBlank } else { Blank }
-        go(bstate, tight, acc.add(self.block_struct_to_block(bl)), bs)
+        continue bstate, tight, acc..push(self.block_struct_to_block(bl)), bs
       }
+      bstate,
+      _,
+      acc,
       Cons(
-        List({ items: Cons({ blocks: Cons(BlankLine(_), _), .. }, _), .. }) as l,
+        List({ items: [.., { blocks: [.., BlankLine(_)], .. }], .. }) as l,
         bs
-      ) => go(bstate, false, acc.add(self.block_struct_to_block(l)), bs)
-      Cons(b, bs) => {
+      ) => continue bstate, false, acc..push(self.block_struct_to_block(l)), bs
+      bstate, tight, acc, Cons(b, bs) => {
         let tight = tight && bstate != Blank
-        go(NonBlank, tight, acc.add(self.block_struct_to_block(b)), bs)
+        continue NonBlank, tight, acc..push(self.block_struct_to_block(b)), bs
       }
-      Nil => (tight, acc)
+      _, tight, acc, Nil => (tight, acc)
     }
   }
 
-  let (last_meta, (tight, blocks)) = match i.blocks {
+  let (last_meta, (tight, blocks)) = match List::from_array(i.blocks).rev() {
     Cons(BlankLine(_) as blank, Nil) => {
       let bl = self.block_struct_to_block(blank)
-      (bl.meta(), (true, List::of([bl])))
+      (bl.meta(), (true, [bl]))
     }
     Cons(BlankLine(_) as blank, bs) => {
       let bl = self.block_struct_to_block(blank)
-      (bl.meta(), go(TrailBlank, true, List::of([bl]), bs))
+      (bl.meta(), go(TrailBlank, true, [bl], bs))
     }
     Cons(b, bs) => {
       let b = self.block_struct_to_block(b)
-      (b.meta(), go(NonBlank, true, List::of([b]), bs))
+      (b.meta(), go(NonBlank, true, [b], bs))
     }
     Nil => abort("unreachable")
   }
   let block = match blocks {
-    Cons(i, Nil) => i
+    [i] => i
     blocks => {
-      let first = blocks.unsafe_head().meta()
-      Blocks({ v: blocks, meta: self.meta_of_metas(first~, last=last_meta) })
+      let first = blocks[0].meta()
+      Blocks({
+        v: List::from_array(blocks).rev(),
+        meta: self.meta_of_metas(first~, last=last_meta),
+      })
     }
   }
   let before_marker = i.before_marker
   let after_marker = i.after_marker
   let marker = self.clean_raw_span(i.marker)
-  let ext_task_marker = match i.ext_task_marker {
-    None => None
-    Some((v, span)) => Some({ v, meta: self.meta(self.text_loc_of_span(span)) })
-  }
+  let ext_task_marker = i.ext_task_marker.map(fn {
+    (v, span) => { v, meta: self.meta(self.text_loc_of_span(span)) }
+  })
   let v = { before_marker, marker, after_marker, block, ext_task_marker }
   let meta = self.meta_of_metas(first=marker.meta, last=last_meta)
   ({ v, meta }, tight)
@@ -1682,25 +1737,29 @@ fn Parser::block_struct_to_list_item(
 ///|
 fn Parser::block_struct_to_list(self : Parser, list : ListBlockStruct) -> Block {
   let items = list.items
-  let (last, tight) = self.block_struct_to_list_item(items.unsafe_head())
-  let (tight, items) = loop
-    not(list.loose) && tight,
-    List::of([last]),
-    items.tail() {
-    tight, acc, Nil => (tight, acc)
-    tight, acc, Cons(item, items) => {
+  let (first, tight) = self.block_struct_to_list_item(items[0])
+  let (tight, items) = loop not(list.loose) && tight, [first], items[1:] {
+    tight, acc, [] => (tight, acc)
+    tight, acc, [item, .. as items] => {
       let (item, item_tight) = self.block_struct_to_list_item(item)
-      continue tight && item_tight, acc.add(item), items
+      continue tight && item_tight, acc..push(item), items
     }
   }
-  let meta = self.meta_of_metas(first=items.unsafe_head().meta, last=last.meta)
-  List({ v: { ty: list.list_type, tight, items }, meta })
+  let meta = self.meta_of_metas(
+    first=first.meta,
+    last=items.last().unwrap().meta,
+  )
+  List({
+    v: { ty: list.list_type, tight, items: List::from_array(items) },
+    meta,
+  })
 }
 
 ///|
 fn Parser::block_struct_to_block(self : Parser, b : BlockStruct) -> Block {
   match b {
-    BlockQuote(indent, bs) => self.block_struct_to_block_quote(indent, bs)
+    BlockQuote(indent, bs) =>
+      self.block_struct_to_block_quote(indent, List::from_array(bs).rev())
     List(l) => self.block_struct_to_list(l)
     Paragraph(par) => self.block_struct_to_paragraph(par)
     ThematicBreak(indent, span) =>
@@ -1710,20 +1769,25 @@ fn Parser::block_struct_to_block(self : Parser, b : BlockStruct) -> Block {
     HtmlBlock(html) => self.block_struct_to_html_block(html)
     BlankLine(pad, span) => self.block_struct_to_blank_line(pad, span)
     LinkRefDef(r) => LinkRefDefinition(r)
-    ExtTable(i, rows) => self.block_struct_to_table(i, rows)
+    ExtTable(i, rows) => self.block_struct_to_table(i, List::from_array(rows))
     ExtFootnote(i, (lb, dlb), bs) =>
-      self.block_struct_to_footnote_definition(i, lb, dlb, bs)
+      self.block_struct_to_footnote_definition(
+        i,
+        lb,
+        dlb,
+        List::from_array(bs).rev(),
+      )
   }
 }
 
 ///|
 fn Parser::block_struct_to_doc(
   self : Parser,
-  doc : Node[List[BlockStruct]]
+  doc : Node[Array[BlockStruct]]
 ) -> Block {
   let { v: doc, meta } = doc
-  match doc.rev_map(fn(b) { self.block_struct_to_block(b) }) {
-    Cons(b, Nil) => b
-    bs => Blocks({ v: bs, meta })
+  match doc.map(fn(b) { self.block_struct_to_block(b) }) {
+    [b] => b
+    bs => Blocks({ v: List::from_array(bs), meta })
   }
 }

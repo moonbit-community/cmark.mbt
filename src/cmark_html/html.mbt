@@ -286,10 +286,10 @@ fn comment_footnote_image(c : Context, l : @cmark.InlineLink) -> Unit {
 }
 
 ///|
-fn block_lines(c : Context, ls : List[@cmark.StringNode]) -> Unit {
-  guard let Cons({ v, .. }, ls) = ls else { _ => return }
+fn block_lines(c : Context, ls : Array[@cmark.StringNode]) -> Unit {
+  guard let Some({ v, .. }) = ls.get(0) else { _ => return }
   c.b.write_string(v)
-  for l in ls {
+  for l in ls[1:] {
     c.b.write_char('\n')
     c.b.write_string(l.v)
   }
