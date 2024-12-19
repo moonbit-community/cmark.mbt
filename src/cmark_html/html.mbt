@@ -32,6 +32,12 @@ pub(all) type! EState State
 typealias StringSet = Set[String]
 
 ///|
+priv struct Joined[T] {
+  iter : Iter[T]
+  sep : String
+}
+
+///|
 pub fn safe(c : Context) -> Bool {
   guard let Some(EState({ safe, .. })) = c.state
   safe
@@ -117,6 +123,18 @@ fn make_footnote_ref_ids(
 }
 
 // Escaping
+
+///|
+fn joined_string(c : Context, join : Joined[String]) -> Unit {
+  let mut first = true
+  for s in join.iter {
+    if not(first) {
+      c.b.write_string(join.sep)
+    }
+    html_escaped_string(c, s)
+    first = false
+  }
+}
 
 ///|
 pub fn buffer_add_html_escaped_char(b : Buffer, ch : Char) -> Unit {
@@ -342,7 +360,7 @@ fn strong_emphasis!(c : Context, e : @cmark.InlineEmphasis) -> Unit {
 fn link_dest_and_title(
   c : Context,
   ld : @cmark.LinkDefinition
-) -> (String, String) {
+) -> (String, Joined[String]?) {
   let dest = match ld.dest {
     None => ""
     Some({ v, .. }) =>
@@ -352,12 +370,9 @@ fn link_dest_and_title(
         v
       }
   }
-  let title = match ld.title {
-    None => ""
-    Some(title) =>
-      title.iter().map(fn(t) { t.node.v }).to_array()
-      |> String::concat(separator="\n")
-  }
+  let title = ld.title.map(fn(title) {
+    { iter: title.iter().map(fn(t) { t.node.v }), sep: "\n" }
+  })
   (dest, title)
 }
 
@@ -365,19 +380,19 @@ fn link_dest_and_title(
 fn image(c : Context, i : @cmark.InlineLink, close~ : String = " >") -> Unit {
   match i.reference_definition(c.doc.defs) {
     Some(LinkDef({ v: ld, .. })) => {
-      let plain_text = fn(i : @cmark.Inline) -> String {
-        let lines = i.to_plain_text(break_on_soft=false)
-        lines.map(fn(l) { String::concat(l) }) |> String::concat(separator="\n")
-      }
       let (link, title) = link_dest_and_title(c, ld)
       c.b.write_string("<img src=\"")
       pct_encoded_string(c, link)
       c.b.write_string("\" alt=\"")
-      html_escaped_string(c, plain_text(i.text))
+      let lines = i.text.to_plain_text(break_on_soft=false)
+      for line in lines {
+        let joined = { iter: line.iter(), sep: "\n" }
+        joined_string(c, joined)
+      }
       c.b.write_char('"')
-      if title != "" {
+      for title in title {
         c.b.write_string(" title=\"")
-        html_escaped_string(c, title)
+        joined_string(c, title)
         c.b.write_char('"')
       }
       c.b.write_string(close)
@@ -426,9 +441,9 @@ fn link!(c : Context, l : @cmark.InlineLink) -> Unit {
       let (link, title) = link_dest_and_title(c, ld)
       c.b.write_string("<a href=\"")
       pct_encoded_string(c, link)
-      if title != "" {
+      for title in title {
         c.b.write_string("\" title=\"")
-        html_escaped_string(c, title)
+        joined_string(c, title)
       }
       c.b.write_string("\">")
       c.inline!(l.text)
