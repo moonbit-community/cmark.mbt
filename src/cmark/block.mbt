@@ -82,10 +82,10 @@ pub fn Block::defs(
     Blocks(bl) => bl.v.fold(init~, fn(init, b) { b.defs(init~) })
     List(bl) => bl.v.items.fold(init~, fn(init, it) { it.v.block.defs(init~) })
     LinkRefDefinition(bl) =>
-      bl.v.defined_label.map_or(init, fn(it) { init.add(it.key, LinkDef(bl)) })
+      bl.v.defined_label.map_or(init, fn(it) { init..set(it.key, LinkDef(bl)) })
     ExtFootnoteDefinition(footnote) =>
       footnote.v.defined_label.map_or(init, fn(it) {
-        init.add(it.key, FootnoteDef(footnote))
+        init..set(it.key, FootnoteDef(footnote))
       })
     _ => init
   }
