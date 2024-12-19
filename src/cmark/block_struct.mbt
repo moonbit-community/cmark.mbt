@@ -1575,7 +1575,7 @@ fn Parser::block_struct_to_table(
   rows : Array[(LineSpan, LineSpan)]
 ) -> Block {
   guard let Some((last, _)) = rows.last()
-  let (first, col_count, rows) = loop 0, false, List::Nil, rows[:] {
+  let (first, col_count, rows) = loop 0, false, [], rows[:] {
     col_count, last_was_sep, acc, [.. as rs, (row, blanks)] => {
       let meta = self.meta(self.text_loc_of_span(row))
       let row1 = { ..row, first: row.first + 1, last: row.last }
@@ -1588,33 +1588,31 @@ fn Parser::block_struct_to_table(
           ({ v, meta }, false)
         }
       }
-      let acc = acc.add((r, self.layout_clean_raw_span1(blanks)))
+      let acc = acc..push((r, self.layout_clean_raw_span1(blanks)))
       guard rs.length() != 0 else { break (row, col_count, acc) }
       continue col_count, last_was_sep, acc, rs
     }
     _, _, _, [] => abort("unreachable")
   }
+  rows.rev_inplace()
   let meta = self.meta_of_spans(first~, last~)
-  ExtTable({ v: { indent, col_count, rows: rows.to_array() }, meta })
+  ExtTable({ v: { indent, col_count, rows }, meta })
 }
 
 ///|
 fn Parser::block_struct_to_block_quote(
   self : Parser,
   indent : Indent,
-  bs : List[BlockStruct]
+  bs : Array[BlockStruct]
 ) -> Block {
-  let add_block = fn(acc : List[_], b) {
-    acc.add(self.block_struct_to_block(b))
-  }
-  let last = self.block_struct_to_block(bs.unsafe_head())
-  let block = match bs.tail().fold(add_block, init=List::of([last])) {
-    Cons(b, Nil) => b
+  let acc = bs.map(fn(b) { self.block_struct_to_block(b) })
+  let block = match acc {
+    [b] => b
     quote => {
-      let first = quote.unsafe_head().meta()
-      let last = last.meta()
+      let first = quote[0].meta()
+      let last = quote.last().unwrap().meta()
       let meta = self.meta_of_metas(first~, last~)
-      Blocks({ v: quote.to_array(), meta })
+      Blocks({ v: quote, meta })
     }
   }
   BlockQuote({ v: { indent, block }, meta: block.meta() })
@@ -1747,8 +1745,7 @@ fn Parser::block_struct_to_list(self : Parser, list : ListBlockStruct) -> Block 
 ///|
 fn Parser::block_struct_to_block(self : Parser, b : BlockStruct) -> Block {
   match b {
-    BlockQuote(indent, bs) =>
-      self.block_struct_to_block_quote(indent, List::from_array(bs).rev())
+    BlockQuote(indent, bs) => self.block_struct_to_block_quote(indent, bs)
     List(l) => self.block_struct_to_list(l)
     Paragraph(par) => self.block_struct_to_paragraph(par)
     ThematicBreak(indent, span) =>
