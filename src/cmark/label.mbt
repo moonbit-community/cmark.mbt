@@ -50,7 +50,7 @@ pub(all) enum LabelDef {
 } derive(Show, ToJson)
 
 ///|
-pub(all) typealias LabelDefs = @immut/sorted_map.T[LabelKey, LabelDef]
+pub(all) typealias LabelDefs = Map[LabelKey, LabelDef]
 
 ///| `context` is:
 /// - `Def (prev, current)` when we just hit a

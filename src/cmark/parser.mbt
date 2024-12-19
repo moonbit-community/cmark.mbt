@@ -21,7 +21,7 @@ struct Parser {
   /// Compute heading IDs.
   heading_auto_ids : Bool
   nested_links : Bool
-  mut defs : LabelDefs
+  defs : LabelDefs
   resolver : LabelResolverFn
 
   /// Current `CloserIndex`, for inline parsing.
@@ -88,7 +88,7 @@ fn Parser::find_label_defining_key(self : Parser, key : String) -> Label? {
 
 ///|
 fn Parser::set_label_def(self : Parser, l : Label, def : LabelDef) -> Unit {
-  self.defs = self.defs.add(l.key, def)
+  self.defs[l.key] = def
 }
 
 ///|

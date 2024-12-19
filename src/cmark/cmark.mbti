@@ -29,7 +29,7 @@ pub(all) enum Block {
   ExtFootnoteDefinition(Node[Footnote])
 }
 impl Block {
-  defs(Self, init~ : @moonbitlang/core/immut/sorted_map.T[String, LabelDef] = ..) -> @moonbitlang/core/immut/sorted_map.T[String, LabelDef]
+  defs(Self, init~ : Map[String, LabelDef] = ..) -> Map[String, LabelDef]
   empty() -> Self
   meta(Self) -> @rami3l/cmark/cmark_base.Meta
   normalize(Self) -> Self
@@ -191,12 +191,12 @@ impl ToJson for CodeBlockStruct
 pub(all) struct Doc {
   nl : String
   block : Block
-  defs : @moonbitlang/core/immut/sorted_map.T[String, LabelDef]
+  defs : Map[String, LabelDef]
 }
 impl Doc {
   empty() -> Self
-  from_string(defs~ : @moonbitlang/core/immut/sorted_map.T[String, LabelDef] = .., resolver~ : (LabelContext) -> Label? = .., nested_links~ : Bool = .., heading_auto_ids~ : Bool = .., layout~ : Bool = .., locs~ : Bool = .., file~ : String = .., strict~ : Bool = .., String) -> Self
-  new(nl~ : String = .., defs~ : @moonbitlang/core/immut/sorted_map.T[String, LabelDef] = .., Block) -> Self
+  from_string(defs~ : Map[String, LabelDef] = .., resolver~ : (LabelContext) -> Label? = .., nested_links~ : Bool = .., heading_auto_ids~ : Bool = .., layout~ : Bool = .., locs~ : Bool = .., file~ : String = .., strict~ : Bool = .., String) -> Self
+  new(nl~ : String = .., defs~ : Map[String, LabelDef] = .., Block) -> Self
 }
 impl Show for Doc
 impl ToJson for Doc
@@ -358,7 +358,7 @@ pub(all) struct InlineLink {
 impl InlineLink {
   is_unsafe(String) -> Bool
   new(Inline, ReferenceKind) -> Self
-  reference_definition(Self, @moonbitlang/core/immut/sorted_map.T[String, LabelDef]) -> LabelDef?
+  reference_definition(Self, Map[String, LabelDef]) -> LabelDef?
   referenced_label(Self) -> Label?
 }
 impl Eq for InlineLink
@@ -655,7 +655,7 @@ pub typealias FolderFn[A, B] = (Folder[B], B, A) -> FolderResult[B]
 
 pub typealias InlineText = String
 
-pub typealias LabelDefs = @moonbitlang/core/immut/sorted_map.T[String, LabelDef]
+pub typealias LabelDefs = Map[String, LabelDef]
 
 pub typealias LabelKey = String
 
