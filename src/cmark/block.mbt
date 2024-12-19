@@ -167,7 +167,7 @@ pub fn CodeBlock::make_fence(self : CodeBlock) -> (Char, Count) {
     Some(info) => if info.v.contains_char('`') { '~' } else { '`' }
     _ => '`'
   }
-  let counts = []
+  let counts = @sorted_set.new()
   for n in self.code {
     let c = n.v
     let k = for k = 0; k < c.length() && c[k] == ch; k = k + 1 {
@@ -176,7 +176,7 @@ pub fn CodeBlock::make_fence(self : CodeBlock) -> (Char, Count) {
       k
     }
     if k != 0 {
-      counts.push(k)
+      counts.add(k)
     }
   }
   (ch, InlineCodeSpan::min_backticks(min=3, counts))

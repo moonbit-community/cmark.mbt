@@ -252,9 +252,12 @@ pub fn InlineCodeSpan::new(
 }
 
 ///|
-fn InlineCodeSpan::min_backticks(min~ : Count, counts : Array[Count]) -> Count {
+fn InlineCodeSpan::min_backticks(
+  min~ : Count,
+  counts : @sorted_set.T[Count]
+) -> Count {
   let mut min = min
-  for c in counts..sort() {
+  for c in counts {
     guard min == c else { return min }
     min = c + 1
   }
@@ -280,7 +283,7 @@ pub fn InlineCodeSpan::from_string(
   let max = s.length() - 1
   let need_sp = s[0] == '`' || s[max] == '`'
   let s = if need_sp { " \{s} " } else { s }
-  let (bt_counts, code_layout) = loop [], [], max, 0, 0, 0 {
+  let (bt_counts, code_layout) = loop @sorted_set.new(), [], max, 0, 0, 0 {
     bt_counts, acc, max, btc, start, k => {
       if k > max {
         // assert (btc = 0) because of [need_sp]
@@ -295,7 +298,7 @@ pub fn InlineCodeSpan::from_string(
       if s[k] == '`' {
         continue bt_counts, acc, max, btc + 1, start, k + 1
       }
-      let bt_counts = if btc > 0 { bt_counts..push(btc) } else { bt_counts }
+      let bt_counts = if btc > 0 { bt_counts..add(btc) } else { bt_counts }
       if not(s[k] == '\n' || s[k] == '\r') {
         continue bt_counts, acc, max, 0, start, k + 1
       }
