@@ -409,7 +409,7 @@ fn Label::stub(label : Label, defined_label : Label?) -> LabelDef {
 pub(all) struct Table {
   indent : Indent
   col_count : Count
-  rows : List[(Node[TableRow], Blanks)]
+  rows : Array[(Node[TableRow], Blanks)]
 } derive(Show, ToJson)
 
 ///|
@@ -435,19 +435,17 @@ pub(all) typealias TableCellLayout = (Blanks, Blanks)
 ///|
 pub fn Table::new(
   indent~ : Indent = 0,
-  rows : List[(Node[TableRow], Blanks)]
+  rows : Array[(Node[TableRow], Blanks)]
 ) -> Table {
-  {
-    indent,
-    rows,
-    col_count: loop 0, rows {
-      c, Cons(({ v: Header(cols) | Data(cols), .. }, _), rs) =>
-        continue @math.maximum(cols.length(), c), rs
-      c, Cons(({ v: Sep(cols), .. }, _), rs) =>
-        continue @math.maximum(cols.length(), c), rs
-      c, Nil => c
-    },
+  let mut col_count = 0
+  for row in rows {
+    match row.0.v {
+      Header(cols) | Data(cols) =>
+        col_count = @math.maximum(col_count, cols.length())
+      Sep(cols) => col_count = @math.maximum(col_count, cols.length())
+    }
   }
+  { indent, rows, col_count }
 }
 
 ///|

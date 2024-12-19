@@ -774,28 +774,28 @@ fn table!(c : Context, t : @cmark.Table) -> Unit {
     c : Context,
     col_count,
     align : List[_],
-    rs : List[(@cmark.Node[@cmark.TableRow], _)]
+    rs : ArrayView[(@cmark.Node[@cmark.TableRow], _)]
   ) {
     match rs {
-      Cons(({ v: Header(cols), .. }, _), rs) => {
+      [({ v: Header(cols), .. }, _), .. as rs] => {
         let (align, rs) = match rs {
-          Cons(({ v: Sep(align), .. }, _), rs) => (align, rs)
+          [({ v: Sep(align), .. }, _), .. as rs] => (align, rs)
           _ => (align, rs)
         }
         header!(c, col_count, align, cols)
         rows!(c, col_count, align, rs)
       }
-      Cons(({ v: Data(cols), .. }, _), rs) => {
+      [({ v: Data(cols), .. }, _), .. as rs] => {
         data!(c, col_count, align, cols)
         rows!(c, col_count, align, rs)
       }
-      Cons(({ v: Sep(align), .. }, _), rs) => rows!(c, col_count, align, rs)
-      Nil => ()
+      [({ v: Sep(align), .. }, _), .. as rs] => rows!(c, col_count, align, rs)
+      [] => ()
     }
   }
 
   c.b.write_string("<div role=\"region\"><table>\n")
-  rows!(c, t.col_count, Nil, t.rows)
+  rows!(c, t.col_count, Nil, t.rows[:])
   c.b.write_string("</table></div>")
 }
 

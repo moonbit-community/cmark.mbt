@@ -561,10 +561,10 @@ impl ToJson for StartColResult
 pub(all) struct Table {
   indent : Int
   col_count : Int
-  rows : @moonbitlang/core/immut/list.T[(Node[TableRow], String)]
+  rows : Array[(Node[TableRow], String)]
 }
 impl Table {
-  new(indent~ : Int = .., @moonbitlang/core/immut/list.T[(Node[TableRow], String)]) -> Self
+  new(indent~ : Int = .., Array[(Node[TableRow], String)]) -> Self
   parse_sep_row(@moonbitlang/core/immut/list.T[(Inline, (String, String))]) -> @moonbitlang/core/immut/list.T[Node[(TableAlign?, Int)]]?
 }
 impl Show for Table

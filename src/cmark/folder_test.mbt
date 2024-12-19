@@ -94,7 +94,7 @@ test "folder block with table" {
     Node::new({
       indent: 0,
       col_count: 2,
-      rows: @immut/list.of([
+      rows: [
         (
           Node::new(
             TableRow::Header(
@@ -119,7 +119,7 @@ test "folder block with table" {
           ),
           "",
         ),
-      ]),
+      ],
     }),
   )
   let result = folder.fold_block!(0, table)

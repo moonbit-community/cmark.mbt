@@ -1600,7 +1600,7 @@ fn Parser::block_struct_to_table(
     _, _, _, Nil => abort("unreachable")
   }
   let meta = self.meta_of_spans(first~, last~)
-  ExtTable({ v: { indent, col_count, rows }, meta })
+  ExtTable({ v: { indent, col_count, rows: rows.to_array() }, meta })
 }
 
 ///|
