@@ -620,7 +620,6 @@ fn Parser::try_code(
   let mut line = { ..start_line, first, }
   let spans = []
   let mut k = first
-  let old_rev_toks = rev_toks.val.copy()
   while true {
     match rev_toks.val.pop() {
       None => break
@@ -650,7 +649,6 @@ fn Parser::try_code(
       Some(_) => continue
     }
   }
-  rev_toks.val = old_rev_toks
   None
 }
 
@@ -670,7 +668,6 @@ fn Parser::try_math_span(
   let mut line = { ..start_line, first, }
   let spans = []
   let mut k = first
-  let old_rev_toks = rev_toks.val.copy()
   while true {
     match rev_toks.val.pop() {
       None => break
@@ -700,7 +697,6 @@ fn Parser::try_math_span(
       Some(_) => continue
     }
   }
-  rev_toks.val = old_rev_toks
   None
 }
 
@@ -944,7 +940,6 @@ fn Parser::find_link_text_tokens(
   let mut line = start_line
   let mut nest = 0
   let acc : Array[Token] = []
-  let old_rev_toks = rev_toks.val.copy()
   while true {
     match (rev_toks.val.pop(), nest) {
       (Some(RightBrack({ start: last })), 0) => {
@@ -999,7 +994,6 @@ fn Parser::find_link_text_tokens(
       (None, _) => break
     }
   }
-  rev_toks.val = old_rev_toks
   None
 }
 
@@ -1018,7 +1012,6 @@ fn Parser::try_link_def(
   text : Array[Inline]
 ) -> (LineSpan, Token, Bool)? {
   let next = text_last + 1
-  let old_rev_toks = start_rev_toks.val.copy()
   let link = if next > line.last {
     self.try_shortcut_reflink(start_rev_toks, start_line, image~, start~)
   } else {
@@ -1062,12 +1055,7 @@ fn Parser::try_link_def(
       _ => self.try_shortcut_reflink(start_rev_toks, start_line, image~, start~)
     }
   }
-  guard let Some((endline, reference, last)) = link else {
-    _ => {
-      start_rev_toks.val = old_rev_toks
-      return None
-    }
-  }
+  guard let Some((endline, reference, last)) = link else { _ => return None }
   let first = start
   let text = self.inlines_inline(
     first~,
@@ -1104,17 +1092,14 @@ fn Parser::try_link(
   image~ : Bool,
   start~ : BytePos
 ) -> (LineSpan, Token, Bool)? {
-  guard self.cidx.has_right_brack(after=start) else { return None }
   let old_rev_toks = start_rev_toks.val.copy()
+  guard self.cidx.has_right_brack(after=start) else { return None }
   guard let Some((line, text_toks, text_last)) = self.find_link_text_tokens( // text_last with ] delim
     start_rev_toks,
     start_line,
     start~,
   ) else {
-    _ => {
-      start_rev_toks.val = old_rev_toks
-      return None
-    }
+    _ => return None
   }
   let (text, had_link) = self.parse_tokens(
     text_toks,
@@ -1129,7 +1114,6 @@ fn Parser::try_link(
     },
   )
   if had_link && not(image) {
-    start_rev_toks.val = old_rev_toks
     return None
   }
   self.try_link_def(

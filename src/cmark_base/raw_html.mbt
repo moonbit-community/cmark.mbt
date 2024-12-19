@@ -96,13 +96,12 @@ fn attribute[A](
   }
   push_span(line~, start, end_name, spans.val)
   let start = end_name + 1
-  let spans1 = spans.val.copy()
   guard let Some((line1, last_blank)) = first_non_blank_over_nl1(
     next_line~,
     s,
     lines,
     line~,
-    spans1,
+    spans.val,
     start~,
   ) else {
     _ => return None
@@ -111,7 +110,6 @@ fn attribute[A](
   if s[nb] != '=' {
     return Some((line, end_name)) // No value
   }
-  spans.val = spans1
   push_span(line=line1, nb, nb, spans.val)
   let start = nb + 1
   guard let Some((line, last_blank)) = first_non_blank_over_nl1(
