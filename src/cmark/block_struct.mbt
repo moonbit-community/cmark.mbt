@@ -1665,41 +1665,41 @@ fn Parser::block_struct_to_list_item(
   self : Parser,
   i : ListItemStruct
 ) -> (Node[ListItem], Bool) {
-  fn go(bstate : BState, tight, acc : Array[_], bs : List[BlockStruct]) {
+  fn go(bstate : BState, tight, acc : Array[_], bs : ArrayView[BlockStruct]) {
     loop bstate, tight, acc, bs {
-      bstate, tight, acc, Cons(BlankLine(_) as bl, bs) => {
+      bstate, tight, acc, [.. as bs, BlankLine(_) as bl] => {
         let bstate = if bstate == TrailBlank { TrailBlank } else { Blank }
         continue bstate, tight, acc..push(self.block_struct_to_block(bl)), bs
       }
       bstate,
       _,
       acc,
-      Cons(
+      [
+        .. as bs,
         List({ items: [.., { blocks: [.., BlankLine(_)], .. }], .. }) as l,
-        bs
-      ) => continue bstate, false, acc..push(self.block_struct_to_block(l)), bs
-      bstate, tight, acc, Cons(b, bs) => {
+      ] => continue bstate, false, acc..push(self.block_struct_to_block(l)), bs
+      bstate, tight, acc, [.. as bs, b] => {
         let tight = tight && bstate != Blank
         continue NonBlank, tight, acc..push(self.block_struct_to_block(b)), bs
       }
-      _, tight, acc, Nil => (tight, acc)
+      _, tight, acc, [] => (tight, acc)
     }
   }
 
-  let (last_meta, (tight, blocks)) = match List::from_array(i.blocks).rev() {
-    Cons(BlankLine(_) as blank, Nil) => {
+  let (last_meta, (tight, blocks)) = match i.blocks[:] {
+    [BlankLine(_) as blank] => {
       let bl = self.block_struct_to_block(blank)
       (bl.meta(), (true, [bl]))
     }
-    Cons(BlankLine(_) as blank, bs) => {
+    [.. as bs, BlankLine(_) as blank] => {
       let bl = self.block_struct_to_block(blank)
       (bl.meta(), go(TrailBlank, true, [bl], bs))
     }
-    Cons(b, bs) => {
+    [.. as bs, b] => {
       let b = self.block_struct_to_block(b)
       (b.meta(), go(NonBlank, true, [b], bs))
     }
-    Nil => abort("unreachable")
+    [] => abort("unreachable")
   }
   let block = match blocks {
     [i] => i
