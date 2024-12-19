@@ -310,12 +310,12 @@ pub fn FencedCodeBlockContinue::new(
 }
 
 ///|
-let html_start_cond_1_set : @immut/hashset.T[String] = @immut/hashset.of([
+let html_start_cond_1_set : Set[String] = Set::of([
   "pre", "script", "style", "textarea",
 ])
 
 ///|
-let html_start_cond_6_set : @immut/hashset.T[String] = @immut/hashset.of([
+let html_start_cond_6_set : Set[String] = Set::of([
   "address", "article", "aside", "base", "basefont", "blockquote", "body", "caption",
   "center", "col", "colgroup", "dd", "details", "dialog", "dir", "div", "dl", "dt",
   "fieldset", "figcaption", "figure", "footer", "form", "frame", "frameset", "h1",
