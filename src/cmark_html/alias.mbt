@@ -1,7 +1,4 @@
 ///|
-typealias List[A] = @immut/list.T[A]
-
-///|
 typealias Context = @cmark_renderer.Context
 
 ///|

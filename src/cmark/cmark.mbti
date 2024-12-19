@@ -88,7 +88,7 @@ impl ToJson for BlockHeadingSetextLayout
 
 pub(all) type BlockLine Node[String]
 impl BlockLine {
-  list_text_loc(@moonbitlang/core/immut/list.T[Self]) -> @rami3l/cmark/cmark_base.TextLoc
+  list_text_loc(Array[Self]) -> @rami3l/cmark/cmark_base.TextLoc
   to_string(Self) -> String
 }
 
@@ -565,7 +565,7 @@ pub(all) struct Table {
 }
 impl Table {
   new(indent~ : Int = .., Array[(Node[TableRow], String)]) -> Self
-  parse_sep_row(@moonbitlang/core/immut/list.T[(Inline, (String, String))]) -> @moonbitlang/core/immut/list.T[Node[(TableAlign?, Int)]]?
+  parse_sep_row(ArrayView[(Inline, (String, String))]) -> Array[Node[(TableAlign?, Int)]]?
 }
 impl Show for Table
 impl ToJson for Table
@@ -580,9 +580,9 @@ impl ToJson for TableAlign
 impl @moonbitlang/core/json.FromJson for TableAlign
 
 pub(all) enum TableRow {
-  Header(@moonbitlang/core/immut/list.T[(Inline, (String, String))])
-  Sep(@moonbitlang/core/immut/list.T[Node[(TableAlign?, Int)]])
-  Data(@moonbitlang/core/immut/list.T[(Inline, (String, String))])
+  Header(Array[(Inline, (String, String))])
+  Sep(Array[Node[(TableAlign?, Int)]])
+  Data(Array[(Inline, (String, String))])
 }
 impl Show for TableRow
 impl ToJson for TableRow

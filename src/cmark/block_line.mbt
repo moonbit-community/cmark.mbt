@@ -16,14 +16,11 @@ pub fn BlockLine::to_string(self : BlockLine) -> String {
 }
 
 ///|
-pub fn BlockLine::list_text_loc(ls : List[BlockLine]) -> TextLoc {
+pub fn BlockLine::list_text_loc(ls : Array[BlockLine]) -> TextLoc {
   match ls {
-    Nil => TextLoc::none()
-    Cons(head, Nil) => head.meta.loc
-    Cons(head, tail) => {
-      let last = tail.unsafe_last()
-      head.meta.loc.reloc(last.meta.loc)
-    }
+    [] => TextLoc::none()
+    [head] => head.meta.loc
+    [head,  ..,  last] => head.meta.loc.reloc(last.meta.loc)
   }
 }
 
@@ -63,9 +60,9 @@ fn BlockLine::flush(
   s : String,
   start : Int,
   last : Int,
-  acc : List[StringNode]
-) -> List[StringNode] {
-  acc.add({ meta, v: s.substring(start~, end=last + 1) })
+  acc : Array[StringNode]
+) -> Unit {
+  acc.push({ meta, v: s.substring(start~, end=last + 1) })
 }
 
 ///|
@@ -97,19 +94,20 @@ fn BlockLine::flush_tight(
 }
 
 ///|
-typealias FlushFn[A] = (String, Int, Int, List[A]) -> List[A]
+typealias FlushFn[A] = (String, Int, Int, Array[A]) -> Unit
 
 ///|
-fn _list_of_string[A](flush : FlushFn[A], s : String) -> List[A] {
-  loop s, List::Nil, s.length() - 1, 0, 0 {
+fn _list_of_string[A](flush : FlushFn[A], s : String) -> Array[A] {
+  loop s, [], s.length() - 1, 0, 0 {
     s, acc, max, start, k => {
       if k > max {
-        break flush(s, start, max, acc).rev()
+        flush(s, start, max, acc)
+        break acc
       }
       if not(s[k] == '\n' || s[k] == '\r') {
         continue s, acc, max, start, k + 1
       }
-      let acc = flush(s, start, k - 1, acc)
+      flush(s, start, k - 1, acc)
       let next = k + 1
       let start = if s[k] == '\r' && next <= max && s[next] == '\n' {
         next + 1

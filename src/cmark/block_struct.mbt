@@ -1582,9 +1582,9 @@ fn Parser::block_struct_to_table(
     col_count, last_was_sep, acc, Cons((row, blanks), rs) => {
       let meta = self.meta(self.text_loc_of_span(row))
       let row1 = { ..row, first: row.first + 1, last: row.last }
-      let cols = self.parse_table_row(row1) |> List::from_array()
+      let cols = self.parse_table_row(row1)
       let col_count = @math.maximum(col_count, cols.length())
-      let (r, last_was_sep) = match Table::parse_sep_row(cols) {
+      let (r, last_was_sep) = match Table::parse_sep_row(cols[:]) {
         Some(seps) => ({ v: Sep(seps), meta }, true)
         None => {
           let v = if last_was_sep { Header(cols) } else { Data(cols) }

@@ -97,25 +97,14 @@ test "folder block with table" {
       rows: [
         (
           Node::new(
-            TableRow::Header(
-              @immut/list.of([(Inline::Text(Node::new("Header")), ("", ""))]),
-            ),
+            TableRow::Header([(Inline::Text(Node::new("Header")), ("", ""))]),
           ),
           "",
         ),
+        (Node::new(TableRow::Sep([Node::new((Some(TableAlign::Left), 3))])), ""),
         (
           Node::new(
-            TableRow::Sep(
-              @immut/list.of([Node::new((Some(TableAlign::Left), 3))]),
-            ),
-          ),
-          "",
-        ),
-        (
-          Node::new(
-            TableRow::Data(
-              @immut/list.of([(Inline::Text(Node::new("Data")), ("", ""))]),
-            ),
+            TableRow::Data([(Inline::Text(Node::new("Data")), ("", ""))]),
           ),
           "",
         ),

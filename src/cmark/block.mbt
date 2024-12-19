@@ -421,9 +421,9 @@ pub(all) enum TableAlign {
 
 ///|
 pub(all) enum TableRow {
-  Header(List[(Inline, TableCellLayout)])
-  Sep(List[Node[TableSep]])
-  Data(List[(Inline, TableCellLayout)])
+  Header(Array[(Inline, TableCellLayout)])
+  Sep(Array[Node[TableSep]])
+  Data(Array[(Inline, TableCellLayout)])
 } derive(Show, ToJson)
 
 ///|
@@ -450,11 +450,11 @@ pub fn Table::new(
 
 ///|
 pub fn Table::parse_sep_row(
-  cs : List[(Inline, TableCellLayout)]
-) -> List[Node[TableSep]]? {
-  loop List::Nil, cs {
-    acc, Nil => Some(acc.rev())
-    acc, Cons((Text({ v, meta }), ("", "")), cs) => {
+  cs : ArrayView[(Inline, TableCellLayout)]
+) -> Array[Node[TableSep]]? {
+  loop [], cs {
+    acc, [] => Some(acc)
+    acc, [(Text({ v, meta }), ("", "")), .. as cs] => {
       guard not(v.is_empty()) else { None }
       let max = v.length() - 1
       let first_colon = v[0] == ':'
@@ -472,7 +472,7 @@ pub fn Table::parse_sep_row(
           (true, false) => Some(Left)
           (false, true) => Some(Right)
         }
-        continue acc.add({ v: (sep, count), meta }), cs
+        continue acc..push({ v: (sep, count), meta }), cs
       }
     }
     _, _ => None

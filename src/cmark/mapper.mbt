@@ -177,12 +177,12 @@ pub fn Mapper::map_block(self : Mapper, b : Block) -> FilterMap[Block] {
         let ({ v, meta }, blanks) = row
         match v {
           Header(is_) => {
-            let is_ = is_.filter_map(fn(i) { map_col(i.0, i.1) })
+            let is_ = is_.map_option(fn(i) { map_col(i.0, i.1) })
             ({ v: Header(is_), meta }, blanks)
           }
           Sep(_) => row
           Data(is_) => {
-            let is_ = is_.filter_map(fn(i) { map_col(i.0, i.1) })
+            let is_ = is_.map_option(fn(i) { map_col(i.0, i.1) })
             ({ v: Data(is_), meta }, blanks)
           }
         }

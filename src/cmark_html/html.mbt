@@ -726,29 +726,29 @@ fn table!(c : Context, t : @cmark.Table) -> Unit {
   fn cols!(
     c : Context,
     tag,
-    align : List[@cmark.Node[(_, _)]],
+    align : ArrayView[@cmark.Node[(_, _)]],
     count,
-    cs : List[(_, _)]
+    cs : ArrayView[(_, _)]
   ) {
     match (align, cs) {
-      (Cons({ v, .. }, align), Cons((col, _), cs)) => {
+      ([{ v, .. }, .. as align], [(col, _), .. as cs]) => {
         start(c, v.0, tag)
         c.inline!(col)
         close(c, tag)
         cols!(c, tag, align, count - 1, cs)
       }
-      (Cons({ v, .. }, align), Nil) => {
+      ([{ v, .. }, .. as align], []) => {
         start(c, v.0, tag)
         close(c, tag)
-        cols!(c, tag, align, count - 1, Nil)
+        cols!(c, tag, align, count - 1, [][:])
       }
-      (Nil, Cons((col, _), cs)) => {
+      ([], [(col, _), .. as cs]) => {
         start(c, None, tag)
         c.inline!(col)
         close(c, tag)
-        cols!(c, tag, Nil, count - 1, cs)
+        cols!(c, tag, [][:], count - 1, cs)
       }
-      (Nil, Nil) =>
+      ([], []) =>
         for i in 0..<count {
           start(c, None, tag)
           close(c, tag)
@@ -756,7 +756,7 @@ fn table!(c : Context, t : @cmark.Table) -> Unit {
     }
   }
 
-  fn row!(c : Context, tag, align : List[_], count, cs : List[_]) {
+  fn row!(c : Context, tag, align, count, cs) {
     c.b.write_string("<tr>\n")
     cols!(c, tag, align, count, cs)
     c.b.write_string("</tr>\n")
@@ -773,29 +773,30 @@ fn table!(c : Context, t : @cmark.Table) -> Unit {
   fn rows!(
     c : Context,
     col_count,
-    align : List[_],
+    align : ArrayView[_],
     rs : ArrayView[(@cmark.Node[@cmark.TableRow], _)]
   ) {
     match rs {
       [({ v: Header(cols), .. }, _), .. as rs] => {
         let (align, rs) = match rs {
-          [({ v: Sep(align), .. }, _), .. as rs] => (align, rs)
+          [({ v: Sep(align), .. }, _), .. as rs] => (align[:], rs)
           _ => (align, rs)
         }
-        header!(c, col_count, align, cols)
+        header!(c, col_count, align, cols[:])
         rows!(c, col_count, align, rs)
       }
       [({ v: Data(cols), .. }, _), .. as rs] => {
-        data!(c, col_count, align, cols)
+        data!(c, col_count, align, cols[:])
         rows!(c, col_count, align, rs)
       }
-      [({ v: Sep(align), .. }, _), .. as rs] => rows!(c, col_count, align, rs)
+      [({ v: Sep(align), .. }, _), .. as rs] =>
+        rows!(c, col_count, align[:], rs)
       [] => ()
     }
   }
 
   c.b.write_string("<div role=\"region\"><table>\n")
-  rows!(c, t.col_count, Nil, t.rows[:])
+  rows!(c, t.col_count, [][:], t.rows[:])
   c.b.write_string("</table></div>")
 }
 
