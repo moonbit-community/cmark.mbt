@@ -1572,12 +1572,11 @@ fn Parser::block_struct_to_thematic_break(
 fn Parser::block_struct_to_table(
   self : Parser,
   indent : Indent,
-  rows : List[(LineSpan, LineSpan)]
+  rows : Array[(LineSpan, LineSpan)]
 ) -> Block {
-  let rows = rows.rev()
-  let last = rows.unsafe_head().0
-  let (first, col_count, rows) = loop 0, false, List::Nil, rows {
-    col_count, last_was_sep, acc, Cons((row, blanks), rs) => {
+  guard let Some((last, _)) = rows.last()
+  let (first, col_count, rows) = loop 0, false, List::Nil, rows[:] {
+    col_count, last_was_sep, acc, [.. as rs, (row, blanks)] => {
       let meta = self.meta(self.text_loc_of_span(row))
       let row1 = { ..row, first: row.first + 1, last: row.last }
       let cols = self.parse_table_row(row1)
@@ -1590,12 +1589,10 @@ fn Parser::block_struct_to_table(
         }
       }
       let acc = acc.add((r, self.layout_clean_raw_span1(blanks)))
-      if rs.is_empty() {
-        break (row, col_count, acc)
-      }
+      guard rs.length() != 0 else { break (row, col_count, acc) }
       continue col_count, last_was_sep, acc, rs
     }
-    _, _, _, Nil => abort("unreachable")
+    _, _, _, [] => abort("unreachable")
   }
   let meta = self.meta_of_spans(first~, last~)
   ExtTable({ v: { indent, col_count, rows: rows.to_array() }, meta })
@@ -1761,7 +1758,7 @@ fn Parser::block_struct_to_block(self : Parser, b : BlockStruct) -> Block {
     HtmlBlock(html) => self.block_struct_to_html_block(html)
     BlankLine(pad, span) => self.block_struct_to_blank_line(pad, span)
     LinkRefDef(r) => LinkRefDefinition(r)
-    ExtTable(i, rows) => self.block_struct_to_table(i, List::from_array(rows))
+    ExtTable(i, rows) => self.block_struct_to_table(i, rows)
     ExtFootnote(i, (lb, dlb), bs) =>
       self.block_struct_to_footnote_definition(
         i,
