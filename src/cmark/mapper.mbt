@@ -138,12 +138,12 @@ pub fn Mapper::map_block(self : Mapper, b : Block) -> FilterMap[Block] {
     BlockQuote({ v, meta }) => {
       let block = self
         .map_block(v.block)
-        .or(Blocks({ v: Nil, meta: Meta::none() }))
+        .or(Blocks({ v: [], meta: Meta::none() }))
       Some(BlockQuote({ v: { ..v, block, }, meta }))
     }
     Blocks({ v, meta }) =>
-      match v.filter_map(fn(x) { self.map_block(x) }) {
-        Nil => None
+      match v.map_option(fn(x) { self.map_block(x) }) {
+        [] => None
         v => Some(Blocks({ v, meta }))
       }
     List({ v, meta }) => {
@@ -165,7 +165,7 @@ pub fn Mapper::map_block(self : Mapper, b : Block) -> FilterMap[Block] {
     ExtFootnoteDefinition({ v, meta }) => {
       let block = self
         .map_block(v.block)
-        .or_else(fn() { Blocks(Node::new(Nil)) }) // Can be empty
+        .or_else(fn() { Blocks(Node::new([])) }) // Can be empty
       Some(ExtFootnoteDefinition({ v: { ..v, block, }, meta }))
     }
     ExtTable({ v, meta }) => {

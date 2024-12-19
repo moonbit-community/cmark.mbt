@@ -54,24 +54,22 @@ test "fold_block with blockquote" {
 test "fold_block with blocks" {
   let folder = Folder::new()
   let blocks = Block::Blocks(
-    Node::new(
-      @immut/list.of([
-        Block::Paragraph(
-          Node::new({
-            leading_indent: 0,
-            inline: Inline::Text(Node::new("test1")),
-            trailing_blanks: "",
-          }),
-        ),
-        Block::Paragraph(
-          Node::new({
-            leading_indent: 0,
-            inline: Inline::Text(Node::new("test2")),
-            trailing_blanks: "",
-          }),
-        ),
-      ]),
-    ),
+    Node::new([
+      Block::Paragraph(
+        Node::new({
+          leading_indent: 0,
+          inline: Inline::Text(Node::new("test1")),
+          trailing_blanks: "",
+        }),
+      ),
+      Block::Paragraph(
+        Node::new({
+          leading_indent: 0,
+          inline: Inline::Text(Node::new("test2")),
+          trailing_blanks: "",
+        }),
+      ),
+    ]),
   )
   inspect!(folder.fold_block!(0, blocks), content="0")
 }

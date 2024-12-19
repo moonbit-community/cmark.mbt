@@ -2,7 +2,7 @@
 pub(all) enum Block {
   BlankLine(Node[BlockBlankLine])
   BlockQuote(Node[BlockQuote])
-  Blocks(Node[List[Block]])
+  Blocks(Node[Array[Block]])
   CodeBlock(Node[CodeBlock])
   Heading(Node[BlockHeading])
   HtmlBlock(Node[HtmlBlock])
@@ -17,7 +17,7 @@ pub(all) enum Block {
 
 ///|
 pub fn Block::empty() -> Block {
-  Blocks({ v: Nil, meta: Meta::none() })
+  Blocks({ v: [], meta: Meta::none() })
 }
 
 ///|
@@ -50,15 +50,18 @@ pub fn Block::normalize(self : Block) -> Block {
   match self {
     BlockQuote(bl) => BlockQuote(bl.map(BlockQuote::normalize_block))
     List(bl) => List(bl.map(BlockList::normalize_items))
-    Blocks({ v: Cons(b, bs), meta }) => {
-      let bs = loop List::Nil.add(b.normalize()), bs {
-        acc, Cons(Blocks({ v: bs1, .. }), bs) =>
-          continue acc, bs1.rev().rev_concat(bs)
-        acc, Cons(b, bs) => continue acc.add(b.normalize()), bs
-        acc, Nil => acc.rev()
+    Blocks({ v: [.., _] as bs, meta }) => {
+      let mut bs = bs
+      let acc = [bs.pop().unwrap().normalize()]
+      while true {
+        match bs.pop() {
+          Some(Blocks({ v: bs1, .. })) => bs += bs1
+          Some(b) => acc.push(b.normalize())
+          None => break
+        }
       }
-      match bs {
-        Cons(b, Nil) => b
+      match acc {
+        [b] => b
         _ => Blocks({ v: bs, meta })
       }
     }

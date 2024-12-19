@@ -1619,7 +1619,7 @@ fn Parser::block_struct_to_block_quote(
       let first = quote.unsafe_head().meta()
       let last = last.meta()
       let meta = self.meta_of_metas(first~, last~)
-      Blocks({ v: quote, meta })
+      Blocks({ v: quote.to_array(), meta })
     }
   }
   BlockQuote({ v: { indent, block }, meta: block.meta() })
@@ -1644,7 +1644,7 @@ fn Parser::block_struct_to_footnote_definition(
     blocks => {
       let first = blocks.unsafe_head().meta()
       let meta = self.meta_of_metas(first~, last~)
-      Blocks({ v: blocks, meta })
+      Blocks({ v: blocks.to_array(), meta })
     }
   }
   let loc = {
@@ -1717,10 +1717,7 @@ fn Parser::block_struct_to_list_item(
     [i] => i
     blocks => {
       let first = blocks[0].meta()
-      Blocks({
-        v: List::from_array(blocks).rev(),
-        meta: self.meta_of_metas(first~, last=last_meta),
-      })
+      Blocks({ v: blocks, meta: self.meta_of_metas(first~, last=last_meta) })
     }
   }
   let before_marker = i.before_marker
@@ -1788,6 +1785,6 @@ fn Parser::block_struct_to_doc(
   let { v: doc, meta } = doc
   match doc.map(fn(b) { self.block_struct_to_block(b) }) {
     [b] => b
-    bs => Blocks({ v: List::from_array(bs), meta })
+    bs => Blocks({ v: bs, meta })
   }
 }

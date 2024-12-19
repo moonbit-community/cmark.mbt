@@ -587,14 +587,14 @@ fn item_block!(tight~ : Bool, c : Context, b : @cmark.Block) -> Unit {
     (BlankLine(_), _) => ()
     (Paragraph({ v, .. }), true) => c.inline!(v.inline)
     (Blocks({ v, .. }), _) =>
-      loop c, true, v, tight {
-        c, add_nl, Cons(BlankLine(_), bs), tight =>
+      loop c, true, v[:], tight {
+        c, add_nl, [BlankLine(_), .. as bs], tight =>
           continue c, add_nl, bs, tight
-        c, _, Cons(Paragraph({ v, .. }), bs), true as tight => {
+        c, _, [Paragraph({ v, .. }), .. as bs], true as tight => {
           c.inline!(v.inline)
           continue c, true, bs, tight
         }
-        c, add_nl, Cons(b, bs), tight => {
+        c, add_nl, [b, .. as bs], tight => {
           if add_nl {
             c.b.write_char('\n')
           }

@@ -16,7 +16,7 @@ impl Eq for BState
 pub(all) enum Block {
   BlankLine(Node[String])
   BlockQuote(Node[BlockQuote])
-  Blocks(Node[@moonbitlang/core/immut/list.T[Block]])
+  Blocks(Node[Array[Block]])
   CodeBlock(Node[CodeBlock])
   Heading(Node[BlockHeading])
   HtmlBlock(Node[HtmlBlock])

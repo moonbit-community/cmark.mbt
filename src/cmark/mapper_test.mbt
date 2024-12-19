@@ -18,7 +18,7 @@ test "mapper_none" {
 test "map_block blocks" {
   // Test blocks mapping
   let mapper = Mapper::new()
-  let blocks = Block::Blocks(Node::new(@immut/list.Nil))
+  let blocks = Block::Blocks(Node::new([]))
   inspect!(mapper.map_block(blocks), content="None")
 }
 
@@ -39,7 +39,7 @@ test "map_doc with empty document" {
   let mapper = Mapper::new()
   let doc = Doc::empty()
   let result = mapper.map_doc(doc)
-  inspect!(result.block, content="Blocks(Node::new(@list.of([])))")
+  inspect!(result.block, content="Blocks(Node::new([]))")
 }
 
 test "map_block with default case" {
@@ -51,13 +51,13 @@ test "map_block with default case" {
 
 test "map_block with blocks" {
   let mapper = Mapper::new()
-  let block = Block::Blocks(
-    Node::new(@immut/list.of([Block::BlankLine(Node::new(""))])),
-  )
+  let block = Block::Blocks(Node::new([Block::BlankLine(Node::new(""))]))
   let result = mapper.map_block(block)
   inspect!(
     result,
-    content="Some(Blocks(Node::new(@list.of([BlankLine(Node::new(\"\"))]))))",
+    content=
+      #|Some(Blocks(Node::new([BlankLine(Node::new(""))])))
+    ,
   )
 }
 
