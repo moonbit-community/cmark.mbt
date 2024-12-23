@@ -267,10 +267,11 @@ fn tokens_add_backtick(
   line : LineSpan,
   prev_bslash~ : Bool,
   start~ : Int
-) -> (Array[Token], Int) {
+) -> Int {
   let last = @cmark_base.run_of(char='`', s, last=line.last, start=start + 1)
   let count = last - start + 1
-  (toks..push(Backticks({ start, count, escaped: prev_bslash })), last + 1)
+  toks.push(Backticks({ start, count, escaped: prev_bslash }))
+  last + 1
 }
 
 ///|
@@ -279,12 +280,11 @@ fn tokens_try_add_image_link_start(
   s : String,
   line : LineSpan,
   start~ : Int
-) -> (Array[Token], Int) {
+) -> Int {
   let next = start + 1
-  if next > line.last || s[next] != '[' {
-    return (toks, next)
-  }
-  (toks..push(LinkStart({ start, image: true })), next + 1)
+  guard next <= line.last && s[next] == '[' else { next }
+  toks.push(LinkStart({ start, image: true }))
+  next + 1
 }
 
 ///|
@@ -293,7 +293,7 @@ fn tokens_try_add_emphasis(
   s : String,
   line : LineSpan,
   start~ : Int
-) -> (Array[Token], Int) {
+) -> Int {
   let { first, last, .. } = line
   let char = s[start]
   let run_last = @cmark_base.run_of(char~, last~, s, start=start + 1)
@@ -309,9 +309,7 @@ fn tokens_try_add_emphasis(
   let is_right_flanking = not(is_prev_white) &&
     (not(is_prev_punct) || is_next_white || is_next_punct)
   let next = run_last + 1
-  if not(is_left_flanking) && not(is_right_flanking) {
-    return (toks, next)
-  }
+  guard is_left_flanking || is_right_flanking else { next }
   let may_open = (char == '*' && is_left_flanking) ||
     (
       char == '_' &&
@@ -324,10 +322,9 @@ fn tokens_try_add_emphasis(
       is_right_flanking &&
       (not(is_left_flanking) || is_next_punct)
     )
-  if not(may_open) && not(may_close) {
-    return (toks, next)
-  }
-  (toks..push(EmphasisMarks({ start, char, count, may_open, may_close })), next)
+  guard may_open || may_close else { next }
+  toks.push(EmphasisMarks({ start, char, count, may_open, may_close }))
+  next
 }
 
 ///|
@@ -336,20 +333,19 @@ fn tokens_try_add_strikethrough_marks(
   s : String,
   line : LineSpan,
   start~ : Int
-) -> (Array[Token], Int) {
+) -> Int {
   let { first, last, .. } = line
   let char = s[start]
   let run_last = @cmark_base.run_of(char~, s, last~, start=start + 1)
   let count = run_last - start + 1
   let next = run_last + 1
-  if count != 2 {
-    return (toks, next)
-  }
+  guard count == 2 else { next }
   let prev_char = @char.prev_char(s, first~, before=start)
   let next_char = @char.next_char(s, last~, after=run_last)
   let may_open = not(@char.is_ascii_whitespace(next_char))
   let may_close = not(@char.is_ascii_whitespace(prev_char))
-  (toks..push(StrikethroughMarks({ start, may_open, may_close })), next)
+  toks.push(StrikethroughMarks({ start, may_open, may_close }))
+  next
 }
 
 ///|
@@ -358,13 +354,13 @@ fn tokens_try_add_math_span_marks(
   s : String,
   line : LineSpan,
   start~ : Int
-) -> (Array[Token], Int) {
+) -> Int {
   let { first, last, .. } = line
   let char = s[start]
   let run_last = @cmark_base.run_of(char~, s, last~, start=start + 1)
   let count = run_last - start + 1
   let next = run_last + 1
-  guard count <= 2 else { (toks, next) }
+  guard count <= 2 else { next }
   let mut may_open = true
   let mut may_close = true
   if count == 1 {
@@ -373,10 +369,9 @@ fn tokens_try_add_math_span_marks(
     may_open = not(@char.is_ascii_whitespace(next_char))
     may_close = not(@char.is_ascii_whitespace(prev_char))
   }
-  if not(may_open) && not(may_close) {
-    return (toks, next)
-  }
-  (toks..push(MathSpanMarks({ start, count, may_open, may_close })), next)
+  guard may_open || may_close else { next }
+  toks.push(MathSpanMarks({ start, count, may_open, may_close }))
+  next
 }
 
 ///|
@@ -399,20 +394,32 @@ fn tokenize(
           }
         }
       }
-      let (acc, next) = match (s[k], prev_bslash, exts) {
+      let next = match (s[k], prev_bslash, exts) {
         ('\\', _, _) => continue lines, line, not(prev_bslash), acc, k + 1
         ('`', _, _) => tokens_add_backtick(acc, s, line, prev_bslash~, start=k)
-        (_, true, _) => (acc, k + 1)
+        (_, true, _) => k + 1
         ('*' | '_', _, _) => tokens_try_add_emphasis(acc, s, line, start=k)
-        (']', _, _) => (acc..push(RightBrack({ start: k })), k + 1)
-        ('[', _, _) => (acc..push(LinkStart({ start: k, image: false })), k + 1)
+        (']', _, _) => {
+          acc.push(RightBrack({ start: k }))
+          k + 1
+        }
+        ('[', _, _) => {
+          acc.push(LinkStart({ start: k, image: false }))
+          k + 1
+        }
         ('!', _, _) => tokens_try_add_image_link_start(acc, s, line, start=k)
-        ('<', _, _) => (acc..push(AutolinkOrHtmlStart({ start: k })), k + 1)
-        (')', _, _) => (acc..push(RightParen({ start: k })), k + 1)
+        ('<', _, _) => {
+          acc.push(AutolinkOrHtmlStart({ start: k }))
+          k + 1
+        }
+        (')', _, _) => {
+          acc.push(RightParen({ start: k }))
+          k + 1
+        }
         ('~', _, true) =>
           tokens_try_add_strikethrough_marks(acc, s, line, start=k)
         ('$', _, true) => tokens_try_add_math_span_marks(acc, s, line, start=k)
-        _ => (acc, k + 1)
+        _ => k + 1
       }
       continue lines, line, false, acc, next
     }
