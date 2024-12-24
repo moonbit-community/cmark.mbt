@@ -1139,13 +1139,13 @@ fn Parser::try_link(
 /// Links are parsed here otherwise link reference data gets parsed as atoms.
 fn Parser::first_pass(
   self : Parser,
-  toks : ArrayView[Token],
+  toks : Ref[Tokens],
   line : LineSpan
-) -> (Array[Token], Bool) {
-  let acc = []
+) -> Bool {
+  let acc : Tokens = Deque::new()
   let mut had_link = false
   let mut line = line
-  let rev_toks : Ref[RevTokens] = Ref::new(Deque::from_iter(toks.iter())) // TODO: Remove conversions
+  let rev_toks : Ref[RevTokens] = Ref::new(toks.val._)
   for {
     match rev_toks.val.pop() {
       None => break
@@ -1192,7 +1192,8 @@ fn Parser::first_pass(
       Some(t) => acc.push(t)
     }
   }
-  (acc, had_link)
+  toks.val = acc
+  had_link
 }
 
 // Second pass
@@ -1471,11 +1472,8 @@ fn Parser::parse_tokens(
   toks : Tokens,
   first_line : LineSpan
 ) -> (Array[Inline], Bool) {
-  let (toks, had_link) = self.first_pass(
-    toks._.iter().to_array()[:],
-    first_line,
-  )
-  let toks : Ref[Tokens] = Ref::new(Deque::from_array(toks)) // TODO: Remove conversions
+  let toks = Ref::new(toks)
+  let had_link = self.first_pass(toks, first_line)
   self.second_pass(toks, first_line)
   let inlines = self.last_pass(toks.val._.iter().to_array()[:], first_line) // TODO: Remove conversions
   (inlines, had_link)
@@ -1691,8 +1689,8 @@ fn Parser::parse_table_row(
 ) -> Array[(Inline, TableCellLayout)] {
   let (cidx, toks, first_line) = tokenize(self.i, [line], exts=self.exts)
   self.cidx = cidx
-  let (toks, _had_link) = self.first_pass(toks[:], first_line)
   let toks : Ref[Tokens] = Ref::new(Deque::from_array(toks)) // TODO: Remove conversions
+  let _ = self.first_pass(toks, first_line)
   self.second_pass(toks, first_line)
   // We now have modified last pass, inner inlines will have gone through
   // the regular `last_pass` which is fine since we are only interested
