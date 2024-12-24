@@ -669,10 +669,6 @@ pub typealias MapFn[A] = (Mapper, A) -> A?!MapperError
 
 pub typealias MapperFn[A] = (Mapper, A) -> MapperResult[A]
 
-pub typealias RevTokens = Array[Token]
-
-pub typealias RevTokensView = ArrayView[Token]
-
 pub typealias StringNode = Node[String]
 
 pub typealias TableCellLayout = (String, String)
