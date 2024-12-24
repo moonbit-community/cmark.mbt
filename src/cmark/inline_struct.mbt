@@ -176,16 +176,16 @@ fn make_closer_index(toks : ArrayView[Token]) -> (CloserIndex, Array[Token]) {
 }
 
 ///| Used to make the text delimitation precise for nested inlines.
-fn tokens_shorten_last_line(to_last~ : Int, toks : Array[Token]) -> Unit {
+fn tokens_shorten_last_line(to_last~ : Int, toks : Tokens) -> Unit {
   let last = to_last
-  for i = toks.length() - 1; i >= 0; i = i - 1 {
-    match toks[i] {
+  for i = toks._.length() - 1; i >= 0; i = i - 1 {
+    match toks._[i] {
       Newline({ newline, .. } as nl) => {
-        toks[i] = Newline({ ..nl, newline: { ..newline, last, } })
+        toks._[i] = Newline({ ..nl, newline: { ..newline, last, } })
         break
       }
       Inline({ endline, .. } as il) => {
-        toks[i] = Inline({ ..il, endline: { ..endline, last, } })
+        toks._[i] = Inline({ ..il, endline: { ..endline, last, } })
         break
       }
       _ => ()
@@ -942,11 +942,11 @@ fn Parser::find_link_text_tokens(
   rev_toks : Ref[RevTokens],
   start_line : LineSpan,
   start~ : BytePos
-) -> (LineSpan, Array[Token], BytePos)? {
+) -> (LineSpan, Tokens, BytePos)? {
   let _ = start
   let mut line = start_line
   let mut nest = 0
-  let acc : Array[Token] = []
+  let acc : Tokens = Deque::new()
   for {
     match (rev_toks.val.pop(), nest) {
       (Some(RightBrack({ start: last })), 0) => {
@@ -1109,7 +1109,7 @@ fn Parser::try_link(
     _ => return None
   }
   let (text, had_link) = self.parse_tokens(
-    text_toks,
+    text_toks._,
     {
       let first = start + 1 + image.to_int()
       let last = if start_line == line {
@@ -1200,10 +1200,10 @@ fn Parser::first_pass(
 ///|
 fn Parser::find_emphasis_text(
   self : Parser,
-  rev_toks : Ref[Array[Token]],
+  rev_toks : Ref[RevTokens],
   line : LineSpan,
   opener~ : TokenEmphasisMarks
-) -> (LineSpan, Int, Array[Token], TokenEmphasisMarks)? {
+) -> (LineSpan, Int, Tokens, TokenEmphasisMarks)? {
   fn marks_match(marks : TokenEmphasisMarks, opener : TokenEmphasisMarks) {
     opener.char == marks.char &&
     (
@@ -1227,7 +1227,7 @@ fn Parser::find_emphasis_text(
   }
 
   let mut line = line
-  let acc = []
+  let acc : Tokens = Deque::new()
   for {
     match rev_toks.val.pop() {
       None => break
@@ -1255,7 +1255,9 @@ fn Parser::find_emphasis_text(
       Some(t) => acc.push(t)
     }
   }
-  rev_toks.val += acc..rev_inplace()
+  for i = acc._.length() - 1; i >= 0; i = i - 1 {
+    rev_toks.val.push(acc._[i])
+  }
   None
 }
 
@@ -1264,7 +1266,7 @@ fn Parser::find_emphasis_text(
 /// If this function returns `Some(line_span)`, it means the stack has been modified.
 fn Parser::try_emphasis(
   self : Parser,
-  rev_toks : Ref[Array[Token]],
+  rev_toks : Ref[RevTokens],
   start_line : LineSpan,
   opener~ : TokenEmphasisMarks
 ) -> LineSpan? {
@@ -1286,7 +1288,7 @@ fn Parser::try_emphasis(
   let emph = {
     let last = if start_line == line { text_last } else { start_line.last }
     let text_start = { ..start_line, first: text_first, last }
-    let emph_toks = self.second_pass(emph_toks, text_start)
+    let emph_toks = self.second_pass(emph_toks._.iter().to_array(), text_start) // TODO: Remove conversions
     let text = self.last_pass(emph_toks[:], text_start)
     self.inlines_inline(first~, last=text_last, first_line~, last_line~, text)
   }
@@ -1315,10 +1317,10 @@ fn Parser::try_emphasis(
 /// If this function returns `Some((line_span, stricken_toks, closer))`, it means the stack has been modified.
 fn Parser::find_strikethrough_text(
   self : Parser,
-  rev_toks : Ref[Array[Token]],
+  rev_toks : Ref[RevTokens],
   start_line : LineSpan
-) -> (LineSpan, Array[Token], TokenStrikethroughMarks)? {
-  let acc = []
+) -> (LineSpan, Tokens, TokenStrikethroughMarks)? {
+  let acc : Tokens = Deque::new()
   let mut line = start_line
   for {
     match rev_toks.val.pop() {
@@ -1342,7 +1344,9 @@ fn Parser::find_strikethrough_text(
       Some(t) => acc.push(t)
     }
   }
-  rev_toks.val = acc..rev_inplace()
+  for i = acc._.length() - 1; i >= 0; i = i - 1 {
+    rev_toks.val.push(acc._[i])
+  }
   None
 }
 
@@ -1351,7 +1355,7 @@ fn Parser::find_strikethrough_text(
 /// If this function returns `Some(line_span)`, it means the stack has been modified.
 fn Parser::try_strikethrough(
   self : Parser,
-  rev_toks : Ref[Array[Token]],
+  rev_toks : Ref[RevTokens],
   start_line : LineSpan,
   opener~ : TokenStrikethroughMarks
 ) -> LineSpan? {
@@ -1371,7 +1375,10 @@ fn Parser::try_strikethrough(
       let last = if start_line == line { last } else { start_line.last }
       { ..start_line, first, last }
     }
-    let emph_toks = self.second_pass(stricken_toks, text_start)
+    let emph_toks = self.second_pass(
+      stricken_toks._.iter().to_array(),
+      text_start,
+    ) // TODO: Remove conversions
     let text = self.last_pass(emph_toks[:], text_start)
     self.inlines_inline(first~, last~, first_line~, last_line~, text)
   }
@@ -1394,7 +1401,7 @@ fn Parser::second_pass(
   toks : Array[Token],
   line : LineSpan
 ) -> Array[Token] {
-  let rev_toks = Ref::new(toks..rev_inplace())
+  let rev_toks : Ref[RevTokens] = Ref::new(Deque::from_array(toks))
   let acc = []
   let mut line = line
   for {
@@ -1463,10 +1470,13 @@ fn Parser::last_pass(
 ///|
 fn Parser::parse_tokens(
   self : Parser,
-  toks : Array[Token],
+  toks : Tokens,
   first_line : LineSpan
 ) -> (Array[Inline], Bool) {
-  let (toks, had_link) = self.first_pass(toks[:], first_line)
+  let (toks, had_link) = self.first_pass(
+    toks._.iter().to_array()[:],
+    first_line,
+  )
   let toks = self.second_pass(toks, first_line)
   let inlines = self.last_pass(toks[:], first_line)
   (inlines, had_link)
@@ -1508,7 +1518,7 @@ fn Parser::parse_inline(
   let (layout, meta, lines) = self.strip_paragraph(lines)
   let (cidx, toks, first_line) = tokenize(self.i, lines, exts=self.exts)
   self.cidx = cidx
-  let (is_, _) = self.parse_tokens(toks, first_line)
+  let (is_, _) = self.parse_tokens(Deque::from_array(toks), first_line) // TODO: Remove conversions
   let inline = match is_ {
     [i] => i
     _ => Inlines({ v: is_, meta })
