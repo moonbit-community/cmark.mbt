@@ -150,21 +150,19 @@ fn CloserIndex::has_math_span(
 }
 
 ///|
-fn make_closer_index(toks : Array[Token]) -> CloserIndex {
+fn make_closer_index(toks : Tokens) -> CloserIndex {
   let mut cidx = CloserIndex::new()
-  guard not(toks.is_empty()) else { cidx }
+  guard not(toks._.is_empty()) else { cidx }
 
   // TODO: Ideally we need something like `retain_mut`.
   fn rotate() {
-    // guard let Some(t) = toks._.pop_front()
-    let t = toks.remove(0)
+    guard let Some(t) = toks._.pop_front()
     toks.push(t)
   }
 
-  let len = toks.length()
+  let len = toks._.length()
   for _ in 0..<len {
-    // guard let Some(curr) = toks.remove(0) else { _ => break }
-    let curr = toks[0]
+    guard let Some(curr) = toks._.front()
     match curr {
       Backticks({ count, start, .. }) => {
         cidx = cidx.add(Backticks(count), start) // TODO: Consider using mutable collections here
@@ -176,8 +174,7 @@ fn make_closer_index(toks : Array[Token]) -> CloserIndex {
       }
       RightParen({ start, .. }) => {
         cidx = cidx.add(RightParen, start)
-        let _ = toks.remove(0)
-
+        toks._.unsafe_pop_front()
       }
       // Discard the token since it's not used for parsing
       EmphasisMarks({ char, start, may_close: true, .. }) => {
@@ -285,7 +282,7 @@ fn Token::newline(
 
 ///|
 fn tokens_add_backtick(
-  toks : Array[Token],
+  toks : Tokens,
   s : String,
   line : LineSpan,
   prev_bslash~ : Bool,
@@ -299,7 +296,7 @@ fn tokens_add_backtick(
 
 ///|
 fn tokens_try_add_image_link_start(
-  toks : Array[Token],
+  toks : Tokens,
   s : String,
   line : LineSpan,
   start~ : Int
@@ -312,7 +309,7 @@ fn tokens_try_add_image_link_start(
 
 ///|
 fn tokens_try_add_emphasis(
-  toks : Array[Token],
+  toks : Tokens,
   s : String,
   line : LineSpan,
   start~ : Int
@@ -352,7 +349,7 @@ fn tokens_try_add_emphasis(
 
 ///|
 fn tokens_try_add_strikethrough_marks(
-  toks : Array[Token],
+  toks : Tokens,
   s : String,
   line : LineSpan,
   start~ : Int
@@ -373,7 +370,7 @@ fn tokens_try_add_strikethrough_marks(
 
 ///|
 fn tokens_try_add_math_span_marks(
-  toks : Array[Token],
+  toks : Tokens,
   s : String,
   line : LineSpan,
   start~ : Int
@@ -402,11 +399,11 @@ fn tokenize(
   exts~ : Bool,
   s : String,
   lines : Array[LineSpan]
-) -> (CloserIndex, Array[Token], LineSpan) {
+) -> (CloserIndex, Tokens, LineSpan) {
   guard let [line, .. as lines] = lines else {
     _ => abort("expected at least one line")
   }
-  let toks = []
+  let toks : Tokens = Deque::new()
   let cidx = loop lines, line, false, line.first {
     lines, line, prev_bslash, k => {
       if k > line.last {
@@ -1540,7 +1537,7 @@ fn Parser::parse_inline(
   let (layout, meta, lines) = self.strip_paragraph(lines)
   let (cidx, toks, first_line) = tokenize(self.i, lines, exts=self.exts)
   self.cidx = cidx
-  let (is_, _) = self.parse_tokens(Deque::from_array(toks), first_line) // TODO: Remove conversions
+  let (is_, _) = self.parse_tokens(toks, first_line)
   let inline = match is_ {
     [i] => i
     _ => Inlines({ v: is_, meta })
@@ -1714,7 +1711,7 @@ fn Parser::parse_table_row(
 ) -> Array[(Inline, TableCellLayout)] {
   let (cidx, toks, first_line) = tokenize(self.i, [line], exts=self.exts)
   self.cidx = cidx
-  let toks : Ref[Tokens] = Ref::new(Deque::from_array(toks)) // TODO: Remove conversions
+  let toks : Ref[Tokens] = Ref::new(toks)
   let _ = self.first_pass(toks, first_line)
   self.second_pass(toks, first_line)
   // We now have modified last pass, inner inlines will have gone through
