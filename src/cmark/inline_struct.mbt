@@ -150,29 +150,35 @@ fn CloserIndex::has_math_span(
 }
 
 ///|
-fn make_closer_index(toks : ArrayView[Token]) -> (CloserIndex, Array[Token]) {
-  loop CloserIndex::new(), [], toks {
-    cidx, acc, [Backticks(t1) as t, .. as toks] =>
-      continue cidx.add(Backticks(t1.count), t1.start), acc..push(t), toks
-    cidx, acc, [RightBrack(t1) as t, .. as toks] =>
-      continue cidx.add(RightBrack, t1.start), acc..push(t), toks
-    cidx, acc, [RightParen(t1), .. as toks] => // Discard the token since it's not used for parsing
-      continue cidx.add(RightParen, t1.start), acc, toks
-    cidx,
-    acc,
-    [EmphasisMarks({ char, start, may_close: true, .. }) as t, .. as toks] =>
-      continue cidx.add(EmphasisMarks(char), start), acc..push(t), toks
-    cidx,
-    acc,
-    [StrikethroughMarks({ start, may_close: true, .. }) as t, .. as toks] =>
-      continue cidx.add(StrikethroughMarks, start), acc..push(t), toks
-    cidx,
-    acc,
-    [MathSpanMarks({ count, start, may_close: true, .. }) as t, .. as toks] =>
-      continue cidx.add(MathSpanMarks(count), start), acc..push(t), toks
-    cidx, acc, [t, .. as toks] => continue cidx, acc..push(t), toks
-    cidx, acc, [] => (cidx, acc)
+fn make_closer_index(toks : Array[Token]) -> CloserIndex {
+  let (cidx, acc) = {
+    let toks = toks[:]
+    loop CloserIndex::new(), [], toks {
+      cidx, acc, [Backticks(t1) as t, .. as toks] =>
+        continue cidx.add(Backticks(t1.count), t1.start), acc..push(t), toks
+      cidx, acc, [RightBrack(t1) as t, .. as toks] =>
+        continue cidx.add(RightBrack, t1.start), acc..push(t), toks
+      cidx, acc, [RightParen(t1), .. as toks] => // Discard the token since it's not used for parsing
+        continue cidx.add(RightParen, t1.start), acc, toks
+      cidx,
+      acc,
+      [EmphasisMarks({ char, start, may_close: true, .. }) as t, .. as toks] =>
+        continue cidx.add(EmphasisMarks(char), start), acc..push(t), toks
+      cidx,
+      acc,
+      [StrikethroughMarks({ start, may_close: true, .. }) as t, .. as toks] =>
+        continue cidx.add(StrikethroughMarks, start), acc..push(t), toks
+      cidx,
+      acc,
+      [MathSpanMarks({ count, start, may_close: true, .. }) as t, .. as toks] =>
+        continue cidx.add(MathSpanMarks(count), start), acc..push(t), toks
+      cidx, acc, [t, .. as toks] => continue cidx, acc..push(t), toks
+      cidx, acc, [] => (cidx, acc)
+    }
   }
+  toks.clear()
+  toks.push_iter(acc.iter())
+  cidx
 }
 
 ///| Used to make the text delimitation precise for nested inlines.
@@ -383,45 +389,47 @@ fn tokenize(
   guard let [line, .. as lines] = lines else {
     _ => abort("expected at least one line")
   }
-  let (cidx, toks) = loop lines, line, false, [], line.first {
-    lines, line, prev_bslash, acc, k => {
+  let toks = []
+  let cidx = loop lines, line, false, line.first {
+    lines, line, prev_bslash, k => {
       if k > line.last {
         match lines {
-          [] => break make_closer_index(acc[:])
+          [] => break make_closer_index(toks)
           [newline, .. as lines] => {
             let t = Token::newline(s, line, newline)
-            continue lines, newline, false, acc..push(t), newline.first
+            toks.push(t)
+            continue lines, newline, false, newline.first
           }
         }
       }
       let next = match (s[k], prev_bslash, exts) {
-        ('\\', _, _) => continue lines, line, not(prev_bslash), acc, k + 1
-        ('`', _, _) => tokens_add_backtick(acc, s, line, prev_bslash~, start=k)
+        ('\\', _, _) => continue lines, line, not(prev_bslash), k + 1
+        ('`', _, _) => tokens_add_backtick(toks, s, line, prev_bslash~, start=k)
         (_, true, _) => k + 1
-        ('*' | '_', _, _) => tokens_try_add_emphasis(acc, s, line, start=k)
+        ('*' | '_', _, _) => tokens_try_add_emphasis(toks, s, line, start=k)
         (']', _, _) => {
-          acc.push(RightBrack({ start: k }))
+          toks.push(RightBrack({ start: k }))
           k + 1
         }
         ('[', _, _) => {
-          acc.push(LinkStart({ start: k, image: false }))
+          toks.push(LinkStart({ start: k, image: false }))
           k + 1
         }
-        ('!', _, _) => tokens_try_add_image_link_start(acc, s, line, start=k)
+        ('!', _, _) => tokens_try_add_image_link_start(toks, s, line, start=k)
         ('<', _, _) => {
-          acc.push(AutolinkOrHtmlStart({ start: k }))
+          toks.push(AutolinkOrHtmlStart({ start: k }))
           k + 1
         }
         (')', _, _) => {
-          acc.push(RightParen({ start: k }))
+          toks.push(RightParen({ start: k }))
           k + 1
         }
         ('~', _, true) =>
-          tokens_try_add_strikethrough_marks(acc, s, line, start=k)
-        ('$', _, true) => tokens_try_add_math_span_marks(acc, s, line, start=k)
+          tokens_try_add_strikethrough_marks(toks, s, line, start=k)
+        ('$', _, true) => tokens_try_add_math_span_marks(toks, s, line, start=k)
         _ => k + 1
       }
-      continue lines, line, false, acc, next
+      continue lines, line, false, next
     }
   }
   (cidx, toks, line)
