@@ -1291,7 +1291,7 @@ fn Parser::try_emphasis(
     let text_start = { ..start_line, first: text_first, last }
     let emph_toks = Ref::new(emph_toks)
     self.second_pass(emph_toks, text_start)
-    let text = self.last_pass(emph_toks.val._.iter().to_array()[:], text_start) // TODO: Remove conversions
+    let text = self.last_pass(emph_toks.val, text_start)
     self.inlines_inline(first~, last=text_last, first_line~, last_line~, text)
   }
   let count = closer.count - used
@@ -1379,7 +1379,7 @@ fn Parser::try_strikethrough(
     }
     let emph_toks = Ref::new(stricken_toks)
     self.second_pass(emph_toks, text_start)
-    let text = self.last_pass(emph_toks.val._.iter().to_array()[:], text_start) // TODO: Remove conversions
+    let text = self.last_pass(emph_toks.val, text_start)
     self.inlines_inline(first~, last~, first_line~, last_line~, text)
   }
   rev_toks.val.push(
@@ -1435,13 +1435,13 @@ fn Parser::second_pass(
 /// are created for data between them.
 fn Parser::last_pass(
   self : Parser,
-  toks : ArrayView[Token],
+  toks : Tokens,
   line : LineSpan
 ) -> Array[Inline] {
   let acc = []
   let mut line = line
   let mut k = line.first
-  for tok in toks {
+  for tok in toks._ {
     match tok {
       Newline({ start, break_ty, newline }) => {
         self.try_add_text_inline(line, first=k, last=start - 1, acc)
@@ -1475,7 +1475,7 @@ fn Parser::parse_tokens(
   let toks = Ref::new(toks)
   let had_link = self.first_pass(toks, first_line)
   self.second_pass(toks, first_line)
-  let inlines = self.last_pass(toks.val._.iter().to_array()[:], first_line) // TODO: Remove conversions
+  let inlines = self.last_pass(toks.val, first_line)
   (inlines, had_link)
 }
 
