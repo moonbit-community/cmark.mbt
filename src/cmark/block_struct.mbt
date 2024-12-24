@@ -532,7 +532,7 @@ fn Parser::close_indented_code_block(
 ) -> Unit {
   let _ = self
   let blanks = []
-  while true {
+  for {
     match lines.last() {
       Some({ is_blank: true, .. }) => {
         guard let Some({ pad, code, .. }) = lines.pop()
@@ -612,7 +612,7 @@ fn Parser::close_footnote(
   self.close_last_block(blocks)
   // Like for lists above we do blank line extraction (except if blocks is only a blank line)
   let blanks = []
-  while true {
+  for {
     match blocks {
       [.., _, BlankLine(_, _)] => {
         guard let Some(bl) = blocks.pop()

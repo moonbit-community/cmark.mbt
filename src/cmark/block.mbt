@@ -53,7 +53,7 @@ pub fn Block::normalize(self : Block) -> Block {
     Blocks({ v: [.., _] as bs, meta }) => {
       let mut bs = bs
       let acc = [bs.pop().unwrap().normalize()]
-      while true {
+      for {
         match bs.pop() {
           Some(Blocks({ v: bs1, .. })) => bs += bs1
           Some(b) => acc.push(b.normalize())

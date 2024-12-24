@@ -195,7 +195,7 @@ fn tokens_shorten_last_line(to_last~ : Int, toks : Array[Token]) -> Unit {
 
 ///|
 fn tokens_drop_stop_after_right_brack(rev_toks : RevTokens) -> Unit {
-  while true {
+  for {
     match rev_toks.pop() {
       None | Some(RightBrack(_)) => break
       Some(_) => continue
@@ -205,7 +205,7 @@ fn tokens_drop_stop_after_right_brack(rev_toks : RevTokens) -> Unit {
 
 ///|
 fn tokens_pop_until(start~ : Int, rev_toks : RevTokens) -> Unit {
-  while true {
+  for {
     match rev_toks.pop() {
       None => break
       Some(t) => {
@@ -627,7 +627,7 @@ fn Parser::try_code(
   let mut line = { ..start_line, first, }
   let spans = []
   let mut k = first
-  while true {
+  for {
     match rev_toks.val.pop() {
       None => break
       Some(Backticks({ start, count: c, .. })) => {
@@ -675,7 +675,7 @@ fn Parser::try_math_span(
   let mut line = { ..start_line, first, }
   let spans = []
   let mut k = first
-  while true {
+  for {
     match rev_toks.val.pop() {
       None => break
       Some(MathSpanMarks({ start, count: c, may_close, .. })) => {
@@ -947,7 +947,7 @@ fn Parser::find_link_text_tokens(
   let mut line = start_line
   let mut nest = 0
   let acc : Array[Token] = []
-  while true {
+  for {
     match (rev_toks.val.pop(), nest) {
       (Some(RightBrack({ start: last })), 0) => {
         tokens_shorten_last_line(to_last=last - 1, acc)
@@ -1146,7 +1146,7 @@ fn Parser::first_pass(
   let mut had_link = false
   let mut line = line
   let rev_toks = Ref::new(toks.iter().to_array()..rev_inplace())
-  while true {
+  for {
     match rev_toks.val.pop() {
       None => break
       Some(Backticks({ start, count, escaped })) =>
@@ -1228,7 +1228,7 @@ fn Parser::find_emphasis_text(
 
   let mut line = line
   let acc = []
-  while true {
+  for {
     match rev_toks.val.pop() {
       None => break
       Some(EmphasisMarks(marks) as t) => {
@@ -1320,7 +1320,7 @@ fn Parser::find_strikethrough_text(
 ) -> (LineSpan, Array[Token], TokenStrikethroughMarks)? {
   let acc = []
   let mut line = start_line
-  while true {
+  for {
     match rev_toks.val.pop() {
       None => break
       Some(StrikethroughMarks(marks)) =>
@@ -1397,7 +1397,7 @@ fn Parser::second_pass(
   let rev_toks = Ref::new(toks..rev_inplace())
   let acc = []
   let mut line = line
-  while true {
+  for {
     match rev_toks.val.pop() {
       None => break
       Some(EmphasisMarks(opener)) =>
