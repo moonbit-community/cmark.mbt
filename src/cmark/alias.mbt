@@ -2,6 +2,9 @@
 typealias Buffer = StringBuilder
 
 ///|
+typealias Deque[A] = @deque.T[A]
+
+///|
 typealias Indent = @cmark_base.Indent
 
 ///|
@@ -29,10 +32,48 @@ typealias Span = @cmark_base.Span
 typealias LineSpan = @cmark_base.LineSpan
 
 ///|
-pub(all) typealias RevTokens = Array[Token]
+priv type Tokens Deque[Token]
 
 ///|
-pub(all) typealias RevTokensView = ArrayView[Token]
+impl Show for Tokens with output(self, logger) { logger.write_object(self._) }
+
+///|
+impl ToJson for Tokens with to_json(self) {
+  Array(Array::from_iter(self._.iter().map(ToJson::to_json)))
+}
+
+///|
+fn Tokens::push(self : Tokens, t : Token) -> Unit {
+  self._.push_back(t)
+}
+
+///|
+fn Tokens::pop(self : Tokens) -> Token? {
+  self._.pop_back()
+}
+
+///|
+priv type RevTokens Deque[Token]
+
+///|
+impl Show for RevTokens with output(self, logger) {
+  logger.write_object(self._)
+}
+
+///|
+impl ToJson for RevTokens with to_json(self) {
+  Array(Array::from_iter(self._.iter().map(ToJson::to_json)))
+}
+
+///|
+fn RevTokens::push(self : RevTokens, t : Token) -> Unit {
+  self._.push_front(t)
+}
+
+///|
+fn RevTokens::pop(self : RevTokens) -> Token? {
+  self._.pop_front()
+}
 
 ///|
 typealias HeadingLevel = @cmark_base.HeadingLevel

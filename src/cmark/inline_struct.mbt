@@ -1010,9 +1010,9 @@ fn Parser::find_link_text_tokens(
 fn Parser::try_link_def(
   self : Parser,
   start~ : BytePos,
-  start_rev_toks~ : Ref[Array[Token]],
+  start_rev_toks~ : Ref[RevTokens],
   start_line~ : LineSpan,
-  rev_toks~ : Ref[Array[Token]],
+  rev_toks~ : Ref[RevTokens],
   line~ : LineSpan,
   text_last~ : BytePos,
   image~ : Bool,
@@ -1099,7 +1099,7 @@ fn Parser::try_link(
   image~ : Bool,
   start~ : BytePos
 ) -> (LineSpan, Token, Bool)? {
-  let old_rev_toks = start_rev_toks.val.copy()
+  let old_rev_toks = start_rev_toks.val._.copy()
   guard self.cidx.has_right_brack(after=start) else { return None }
   guard let Some((line, text_toks, text_last)) = self.find_link_text_tokens( // text_last with ] delim
     start_rev_toks,
@@ -1145,7 +1145,7 @@ fn Parser::first_pass(
   let acc = []
   let mut had_link = false
   let mut line = line
-  let rev_toks = Ref::new(toks.iter().to_array()..rev_inplace())
+  let rev_toks : Ref[RevTokens] = Ref::new(Deque::from_iter(toks.iter())) // TODO: Remove conversions
   for {
     match rev_toks.val.pop() {
       None => break
