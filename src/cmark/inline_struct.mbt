@@ -151,33 +151,50 @@ fn CloserIndex::has_math_span(
 
 ///|
 fn make_closer_index(toks : Array[Token]) -> CloserIndex {
-  let (cidx, acc) = {
-    let toks = toks[:]
-    loop CloserIndex::new(), [], toks {
-      cidx, acc, [Backticks(t1) as t, .. as toks] =>
-        continue cidx.add(Backticks(t1.count), t1.start), acc..push(t), toks
-      cidx, acc, [RightBrack(t1) as t, .. as toks] =>
-        continue cidx.add(RightBrack, t1.start), acc..push(t), toks
-      cidx, acc, [RightParen(t1), .. as toks] => // Discard the token since it's not used for parsing
-        continue cidx.add(RightParen, t1.start), acc, toks
-      cidx,
-      acc,
-      [EmphasisMarks({ char, start, may_close: true, .. }) as t, .. as toks] =>
-        continue cidx.add(EmphasisMarks(char), start), acc..push(t), toks
-      cidx,
-      acc,
-      [StrikethroughMarks({ start, may_close: true, .. }) as t, .. as toks] =>
-        continue cidx.add(StrikethroughMarks, start), acc..push(t), toks
-      cidx,
-      acc,
-      [MathSpanMarks({ count, start, may_close: true, .. }) as t, .. as toks] =>
-        continue cidx.add(MathSpanMarks(count), start), acc..push(t), toks
-      cidx, acc, [t, .. as toks] => continue cidx, acc..push(t), toks
-      cidx, acc, [] => (cidx, acc)
+  let mut cidx = CloserIndex::new()
+  guard not(toks.is_empty()) else { cidx }
+
+  // TODO: Ideally we need something like `retain_mut`.
+  fn rotate() {
+    // guard let Some(t) = toks._.pop_front()
+    let t = toks.remove(0)
+    toks.push(t)
+  }
+
+  let len = toks.length()
+  for _ in 0..<len {
+    // guard let Some(curr) = toks.remove(0) else { _ => break }
+    let curr = toks[0]
+    match curr {
+      Backticks({ count, start, .. }) => {
+        cidx = cidx.add(Backticks(count), start) // TODO: Consider using mutable collections here
+        rotate()
+      }
+      RightBrack({ start, .. }) => {
+        cidx = cidx.add(RightBrack, start)
+        rotate()
+      }
+      RightParen({ start, .. }) => {
+        cidx = cidx.add(RightParen, start)
+        let _ = toks.remove(0)
+
+      }
+      // Discard the token since it's not used for parsing
+      EmphasisMarks({ char, start, may_close: true, .. }) => {
+        cidx = cidx.add(EmphasisMarks(char), start)
+        rotate()
+      }
+      StrikethroughMarks({ start, may_close: true, .. }) => {
+        cidx = cidx.add(StrikethroughMarks, start)
+        rotate()
+      }
+      MathSpanMarks({ count, start, may_close: true, .. }) => {
+        cidx = cidx.add(MathSpanMarks(count), start)
+        rotate()
+      }
+      _ => rotate()
     }
   }
-  toks.clear()
-  toks.push_iter(acc.iter())
   cidx
 }
 
