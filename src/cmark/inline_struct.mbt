@@ -1288,8 +1288,9 @@ fn Parser::try_emphasis(
   let emph = {
     let last = if start_line == line { text_last } else { start_line.last }
     let text_start = { ..start_line, first: text_first, last }
-    let emph_toks = self.second_pass(emph_toks._.iter().to_array(), text_start) // TODO: Remove conversions
-    let text = self.last_pass(emph_toks[:], text_start)
+    let emph_toks = Ref::new(emph_toks)
+    self.second_pass(emph_toks, text_start)
+    let text = self.last_pass(emph_toks.val._.iter().to_array()[:], text_start) // TODO: Remove conversions
     self.inlines_inline(first~, last=text_last, first_line~, last_line~, text)
   }
   let count = closer.count - used
@@ -1375,11 +1376,9 @@ fn Parser::try_strikethrough(
       let last = if start_line == line { last } else { start_line.last }
       { ..start_line, first, last }
     }
-    let emph_toks = self.second_pass(
-      stricken_toks._.iter().to_array(),
-      text_start,
-    ) // TODO: Remove conversions
-    let text = self.last_pass(emph_toks[:], text_start)
+    let emph_toks = Ref::new(stricken_toks)
+    self.second_pass(emph_toks, text_start)
+    let text = self.last_pass(emph_toks.val._.iter().to_array()[:], text_start) // TODO: Remove conversions
     self.inlines_inline(first~, last~, first_line~, last_line~, text)
   }
   rev_toks.val.push(
@@ -1397,12 +1396,12 @@ fn Parser::try_strikethrough(
 ///|
 fn Parser::second_pass(
   self : Parser,
-  /// consuming
-  toks : Array[Token],
+  toks : Ref[Tokens],
   line : LineSpan
-) -> Array[Token] {
-  let rev_toks : Ref[RevTokens] = Ref::new(Deque::from_array(toks))
-  let acc = []
+) -> Unit {
+  let rev_toks : Ref[RevTokens] = Ref::new(toks.val._)
+  let acc : Tokens = Deque::new()
+  toks.val = acc
   let mut line = line
   for {
     match rev_toks.val.pop() {
@@ -1426,7 +1425,6 @@ fn Parser::second_pass(
       Some(t) => acc.push(t)
     }
   }
-  acc
 }
 
 // Last pass
@@ -1477,8 +1475,9 @@ fn Parser::parse_tokens(
     toks._.iter().to_array()[:],
     first_line,
   )
-  let toks = self.second_pass(toks, first_line)
-  let inlines = self.last_pass(toks[:], first_line)
+  let toks : Ref[Tokens] = Ref::new(Deque::from_array(toks)) // TODO: Remove conversions
+  self.second_pass(toks, first_line)
+  let inlines = self.last_pass(toks.val._.iter().to_array()[:], first_line) // TODO: Remove conversions
   (inlines, had_link)
 }
 
@@ -1693,11 +1692,13 @@ fn Parser::parse_table_row(
   let (cidx, toks, first_line) = tokenize(self.i, [line], exts=self.exts)
   self.cidx = cidx
   let (toks, _had_link) = self.first_pass(toks[:], first_line)
-  let toks = self.second_pass(toks, first_line)
+  let toks : Ref[Tokens] = Ref::new(Deque::from_array(toks)) // TODO: Remove conversions
+  self.second_pass(toks, first_line)
   // We now have modified last pass, inner inlines will have gone through
   // the regular `last_pass` which is fine since we are only interested
   // in creating the toplevel text nodes further splited on (unescaped) `\`.
   let rows = []
+  let toks = toks.val._.iter().to_array()[:] // TODO: Remove conversions
   self.parse_cols(line, rows, toks[:], line.first)
   rows
 }
