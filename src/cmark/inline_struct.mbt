@@ -151,7 +151,7 @@ fn CloserIndex::has_math_span(
 
 ///|
 fn make_closer_index(toks : Tokens) -> CloserIndex {
-  let mut cidx = CloserIndex::new()
+  let cidx = CloserIndex::new()
   guard not(toks._.is_empty()) else { cidx }
 
   // TODO: Ideally we need something like `retain_mut`.
@@ -165,28 +165,28 @@ fn make_closer_index(toks : Tokens) -> CloserIndex {
     guard let Some(curr) = toks._.front()
     match curr {
       Backticks({ count, start, .. }) => {
-        cidx = cidx.add(Backticks(count), start) // TODO: Consider using mutable collections here
+        cidx.add(Backticks(count), start)
         rotate()
       }
       RightBrack({ start, .. }) => {
-        cidx = cidx.add(RightBrack, start)
+        cidx.add(RightBrack, start)
         rotate()
       }
       RightParen({ start, .. }) => {
-        cidx = cidx.add(RightParen, start)
+        cidx.add(RightParen, start)
         toks._.unsafe_pop_front()
       }
       // Discard the token since it's not used for parsing
       EmphasisMarks({ char, start, may_close: true, .. }) => {
-        cidx = cidx.add(EmphasisMarks(char), start)
+        cidx.add(EmphasisMarks(char), start)
         rotate()
       }
       StrikethroughMarks({ start, may_close: true, .. }) => {
-        cidx = cidx.add(StrikethroughMarks, start)
+        cidx.add(StrikethroughMarks, start)
         rotate()
       }
       MathSpanMarks({ count, start, may_close: true, .. }) => {
-        cidx = cidx.add(MathSpanMarks(count), start)
+        cidx.add(MathSpanMarks(count), start)
         rotate()
       }
       _ => rotate()

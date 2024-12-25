@@ -14,24 +14,26 @@ enum Closer {
 } derive(Eq, Compare, Hash, Show, ToJson)
 
 ///|
-typealias PosSet = @immut/sorted_set.T[Int]
+typealias PosSet = Set[Int]
 
 ///|
-type CloserIndex @immut/sorted_map.T[Closer, PosSet] derive(Show, ToJson)
+type CloserIndex Map[Closer, PosSet] derive(Show, ToJson)
 
 ///|
 fn CloserIndex::new() -> CloserIndex {
-  @immut/sorted_map.new()
+  Map::new()
 }
 
 ///|
-fn CloserIndex::add(self : CloserIndex, key : Closer, pos : Int) -> CloserIndex {
-  let value = self._[key].map_or_else(fn() { PosSet::new().add(pos) }, fn(
-    occs
-  ) {
-    occs.add(pos)
-  })
-  self._.add(key, value)
+fn CloserIndex::add(self : CloserIndex, key : Closer, pos : Int) -> Unit {
+  (match self._[key] {
+    Some(ps) => ps
+    None => {
+      let ps = PosSet::new()
+      self._[key] = ps
+      ps
+    }
+  }).add(pos)
 }
 
 ///|
