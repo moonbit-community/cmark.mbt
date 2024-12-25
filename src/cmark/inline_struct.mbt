@@ -1634,39 +1634,40 @@ fn Parser::finish_col(
   self : Parser,
   line : LineSpan,
   blanks_before : String,
-  is_ : ArrayView[Inline],
-  toks : ArrayView[Token],
+  is_ : Array[Inline],
+  toks : Tokens,
   k : BytePos
-) -> ((Inline, TableCellLayout), ArrayView[Token], BytePos) {
-  let is_ = is_.iter().to_array()
-  match toks {
-    [] => {
-      guard let Ok((text, after, k)) = self.find_pipe(
-        line,
-        before=line.last + 1,
-        k,
-      )
-      is_.push_iter(text.iter())
-      ((self.make_col(is_), (blanks_before, after)), [][:], k)
-    }
-    [Inline({ start, inline, next, .. }), .. as toks] as toks1 => {
+) -> ((Inline, TableCellLayout), BytePos) {
+  loop k {
+    k => {
+      if toks._.is_empty() {
+        guard let Ok((text, after, k)) = self.find_pipe(
+          line,
+          before=line.last + 1,
+          k,
+        )
+        is_.push_iter(text.iter())
+        break ((self.make_col(is_), (blanks_before, after)), k)
+      }
+      guard let Some(Inline({ start, inline, next, .. })) = toks._.front()
       if k >= start {
-        let is_ = is_ + [inline]
-        return self.finish_col(line, blanks_before, is_[:], toks, next)
+        toks._.unsafe_pop_front()
+        is_.push(inline)
+        continue k
       }
       match self.find_pipe(line, before=start, k) {
         Err(text) => {
           is_.push(text)
           is_.push(inline)
-          self.finish_col(line, blanks_before, is_[:], toks, next)
+          toks._.unsafe_pop_front()
+          continue next
         }
         Ok((text, after, k)) => {
           is_.push_iter(text.iter())
-          ((self.make_col(is_), (blanks_before, after)), toks1, k)
+          ((self.make_col(is_), (blanks_before, after)), k)
         }
       }
     }
-    _ => abort("unreachable")
   }
 }
 
@@ -1675,32 +1676,37 @@ fn Parser::parse_cols(
   self : Parser,
   line : LineSpan,
   acc : Array[(Inline, TableCellLayout)],
-  toks : ArrayView[Token],
+  toks : Tokens,
   k : BytePos
 ) -> Unit {
-  loop line, toks, k {
-    line, [], k => {
-      if k > line.last {
-        break
+  loop line, k {
+    line, k => {
+      if toks._.is_empty() {
+        guard k <= line.last else { break }
+        guard let Col(col, k) = self.start_col(line, before=line.last + 1, k)
+        acc.push(col)
+        continue line, k
       }
-      guard let Col(col, k) = self.start_col(line, before=line.last + 1, k)
-      acc.push(col)
-      continue line, [][:], k
-    }
-    line, [Inline({ start, inline, next, .. }), .. as toks] as toks1, k =>
+      guard let Some(Inline({ start, inline, next, .. })) = toks._.front()
       match self.start_col(line, before=start, k) {
         Col(col, k) => {
           acc.push(col)
-          continue line, toks1, k
+          continue line, k
         }
         Start(before, is_) => {
-          let is_ = is_ + [inline]
-          let (col, toks, k) = self.finish_col(line, before, is_[:], toks, next)
+          toks._.unsafe_pop_front()
+          let (col, k) = self.finish_col(
+            line,
+            before,
+            is_..push(inline),
+            toks,
+            next,
+          )
           acc.push(col)
-          continue line, toks, k
+          continue line, k
         }
       }
-    _, _, _ => abort("unreachable")
+    }
   }
 }
 
@@ -1718,7 +1724,6 @@ fn Parser::parse_table_row(
   // the regular `last_pass` which is fine since we are only interested
   // in creating the toplevel text nodes further splited on (unescaped) `\`.
   let rows = []
-  let toks = toks.val._.iter().to_array()[:] // TODO: Remove conversions
-  self.parse_cols(line, rows, toks[:], line.first)
+  self.parse_cols(line, rows, toks.val, line.first)
   rows
 }
