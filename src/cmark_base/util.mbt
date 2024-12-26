@@ -45,9 +45,3 @@ fn char_is_atext_plus_dot(c : Char) -> Bool {
     _ => false
   }
 }
-
-// /// @alert deprecated "`dbg()` should not be used in production"
-// fn dbg[T : Show](t : T, prefix~ : String = "", loc~ : SourceLoc = _) -> T {
-//   println("DBG: \{loc}: \{prefix}\{t}")
-//   t
-// }
