@@ -153,45 +153,24 @@ fn CloserIndex::has_math_span(
 fn make_closer_index(toks : Tokens) -> CloserIndex {
   let cidx = CloserIndex::new()
   guard not(toks._.is_empty()) else { cidx }
-
-  // TODO: Ideally we need something like `retain_mut`.
-  fn rotate() {
-    guard let Some(t) = toks._.pop_front()
-    toks.push(t)
-  }
-
-  let len = toks._.length()
-  for _ in 0..<len {
-    guard let Some(curr) = toks._.front()
+  toks._.retain(fn(curr) {
     match curr {
-      Backticks({ count, start, .. }) => {
-        cidx.add(Backticks(count), start)
-        rotate()
-      }
-      RightBrack({ start, .. }) => {
-        cidx.add(RightBrack, start)
-        rotate()
-      }
+      Backticks({ count, start, .. }) => cidx.add(Backticks(count), start)
+      RightBrack({ start, .. }) => cidx.add(RightBrack, start)
       RightParen({ start, .. }) => {
         cidx.add(RightParen, start)
-        toks._.unsafe_pop_front()
+        return false // Discard the token since it's not used for parsing
       }
-      // Discard the token since it's not used for parsing
-      EmphasisMarks({ char, start, may_close: true, .. }) => {
+      EmphasisMarks({ char, start, may_close: true, .. }) =>
         cidx.add(EmphasisMarks(char), start)
-        rotate()
-      }
-      StrikethroughMarks({ start, may_close: true, .. }) => {
+      StrikethroughMarks({ start, may_close: true, .. }) =>
         cidx.add(StrikethroughMarks, start)
-        rotate()
-      }
-      MathSpanMarks({ count, start, may_close: true, .. }) => {
+      MathSpanMarks({ count, start, may_close: true, .. }) =>
         cidx.add(MathSpanMarks(count), start)
-        rotate()
-      }
-      _ => rotate()
+      _ => ()
     }
-  }
+    true
+  })
   cidx
 }
 
