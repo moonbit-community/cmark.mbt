@@ -26,7 +26,7 @@ impl Compare for HtmlRenderFootnote with compare(self, other) {
 }
 
 ///|
-pub(all) type! EState State
+priv type! EState State
 
 ///|
 typealias StringSet = Set[String]
@@ -137,25 +137,25 @@ fn joined_string(c : Context, join : Joined[String]) -> Unit {
 }
 
 ///|
-pub fn buffer_add_html_escaped_char(b : Buffer, ch : Char) -> Unit {
-  match ch {
-    '\x00' => b.write_char(@char.rep)
-    '&' => b.write_string("&amp;")
-    '<' => b.write_string("&lt;")
-    '>' => b.write_string("&gt;")
-    // '\'' => b.write_string("&apos;")
-    '"' => b.write_string("&quot;")
-    _ => b.write_char(ch)
-  }
-}
+// fn buffer_add_html_escaped_char(b : Buffer, ch : Char) -> Unit {
+//   match ch {
+//     '\x00' => b.write_char(@char.rep)
+//     '&' => b.write_string("&amp;")
+//     '<' => b.write_string("&lt;")
+//     '>' => b.write_string("&gt;")
+//     // '\'' => b.write_string("&apos;")
+//     '"' => b.write_string("&quot;")
+//     _ => b.write_char(ch)
+//   }
+// }
 
 ///|
-pub fn html_escaped_char(c : Context, ch : Char) -> Unit {
-  buffer_add_html_escaped_char(c.b, ch)
-}
+// fn html_escaped_char(c : Context, ch : Char) -> Unit {
+//   buffer_add_html_escaped_char(c.b, ch)
+// }
 
 ///|
-pub fn buffer_add_html_escaped_string(b : Buffer, s : String) -> Unit {
+fn buffer_add_html_escaped_string(b : Buffer, s : String) -> Unit {
   let len = s.length()
   let max_idx = len - 1
   fn flush(b : Buffer, start : Int, i : Int) {
@@ -209,12 +209,12 @@ pub fn buffer_add_html_escaped_string(b : Buffer, s : String) -> Unit {
 }
 
 ///|
-pub fn html_escaped_string(c : Context, s : String) -> Unit {
+fn html_escaped_string(c : Context, s : String) -> Unit {
   buffer_add_html_escaped_string(c.b, s)
 }
 
 ///|
-pub fn buffer_add_pct_encoded_string(b : Buffer, s : String) -> Unit { // Percent encoded + HTML escaped
+fn buffer_add_pct_encoded_string(b : Buffer, s : String) -> Unit { // Percent encoded + HTML escaped
   let unsafe_hexdigit = fn(i : Int) {
     Char::from_int(if i < 10 { i + 0x30 } else { i + 0x37 })
   }
@@ -273,7 +273,7 @@ pub fn buffer_add_pct_encoded_string(b : Buffer, s : String) -> Unit { // Percen
 }
 
 ///|
-pub fn pct_encoded_string(c : Context, s : String) -> Unit {
+fn pct_encoded_string(c : Context, s : String) -> Unit {
   buffer_add_pct_encoded_string(c.b, s)
 }
 

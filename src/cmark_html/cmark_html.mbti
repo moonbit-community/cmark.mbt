@@ -1,19 +1,7 @@
 package rami3l/cmark/cmark_html
 
 // Values
-fn buffer_add_html_escaped_char(StringBuilder, Char) -> Unit
-
-fn buffer_add_html_escaped_string(StringBuilder, String) -> Unit
-
-fn buffer_add_pct_encoded_string(StringBuilder, String) -> Unit
-
 fn from_doc(backend_blocks~ : Bool = .., safe~ : Bool, @rami3l/cmark/cmark.Doc) -> String!
-
-fn html_escaped_char(@rami3l/cmark/cmark_renderer.Context, Char) -> Unit
-
-fn html_escaped_string(@rami3l/cmark/cmark_renderer.Context, String) -> Unit
-
-fn pct_encoded_string(@rami3l/cmark/cmark_renderer.Context, String) -> Unit
 
 fn renderer(backend_blocks~ : Bool = .., safe~ : Bool) -> @rami3l/cmark/cmark_renderer.Renderer
 
@@ -22,8 +10,6 @@ fn safe(@rami3l/cmark/cmark_renderer.Context) -> Bool
 fn xhtml_renderer(backend_blocks~ : Bool = .., safe~ : Bool) -> @rami3l/cmark/cmark_renderer.Renderer
 
 // Types and methods
-pub(all) type! EState State
-
 type HtmlRenderFootnote
 impl Show for HtmlRenderFootnote
 impl ToJson for HtmlRenderFootnote
