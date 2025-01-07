@@ -465,7 +465,7 @@ fn raw_html(c : Context, h : @cmark.InlineRawHtml) -> Unit {
     return
   }
   c.b.write_string(h._[0].node.v)
-  for x in h._[1:] {
+  for x in h._.to_array()[1:] {
     c.b.write_char('\n')
     c.b.write_string(x.node.v)
   }
@@ -498,7 +498,7 @@ fn math_span(c : Context, ms : @cmark.InlineMathSpan) -> Unit {
   guard not(tex.is_empty()) else { return }
   let (lb, rb) = if ms.display { ("\\[", "\\]") } else { ("\\(", "\\)") }
   c.b.write_string(lb)
-  tex_lines(c, tex[:])
+  tex_lines(c, tex.to_array()[:])
   c.b.write_string(rb)
 }
 
@@ -546,7 +546,7 @@ fn code_block(c : Context, cb : @cmark.CodeBlock) -> Unit {
     Some((lang, _env)) =>
       if backend_blocks(c) && lang[0] == '=' {
         if lang == "=html" && not(safe(c)) {
-          block_lines(c, cb.code)
+          block_lines(c, cb.code.to_array())
         }
         return
       }
@@ -602,7 +602,7 @@ fn item_block!(tight~ : Bool, c : Context, b : @cmark.Block) -> Unit {
     (BlankLine(_), _) => ()
     (Paragraph({ v, .. }), true) => c.inline!(v.inline)
     (Blocks({ v, .. }), _) =>
-      loop c, true, v[:], tight {
+      loop c, true, v.to_array()[:], tight {
         c, add_nl, [BlankLine(_), .. as bs], tight =>
           continue c, add_nl, bs, tight
         c, _, [Paragraph({ v, .. }), .. as bs], true as tight => {
@@ -794,24 +794,24 @@ fn table!(c : Context, t : @cmark.Table) -> Unit {
     match rs {
       [({ v: Header(cols), .. }, _), .. as rs] => {
         let (align, rs) = match rs {
-          [({ v: Sep(align), .. }, _), .. as rs] => (align[:], rs)
+          [({ v: Sep(align), .. }, _), .. as rs] => (align.to_array()[:], rs)
           _ => (align, rs)
         }
-        header!(c, col_count, align, cols[:])
+        header!(c, col_count, align, cols.to_array()[:])
         rows!(c, col_count, align, rs)
       }
       [({ v: Data(cols), .. }, _), .. as rs] => {
-        data!(c, col_count, align, cols[:])
+        data!(c, col_count, align, cols.to_array()[:])
         rows!(c, col_count, align, rs)
       }
       [({ v: Sep(align), .. }, _), .. as rs] =>
-        rows!(c, col_count, align[:], rs)
+        rows!(c, col_count, align.to_array()[:], rs)
       [] => ()
     }
   }
 
   c.b.write_string("<div role=\"region\"><table>\n")
-  rows!(c, t.col_count, [][:], t.rows[:])
+  rows!(c, t.col_count, [][:], t.rows.to_array()[:])
   c.b.write_string("</table></div>")
 }
 

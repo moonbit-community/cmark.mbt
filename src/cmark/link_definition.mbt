@@ -8,7 +8,7 @@ pub(all) struct LinkDefinition {
   label : Label?
   defined_label : Label?
   dest : StringNode?
-  title : Array[Tight]?
+  title : Seq[Tight]?
 } derive(Eq, Show, ToJson)
 
 ///|
@@ -17,7 +17,7 @@ pub fn LinkDefinition::new(
   label~ : Label? = None,
   defined_label~ : Label? = None,
   dest~ : StringNode? = None,
-  title~ : Array[Tight]? = None
+  title~ : Seq[Tight]? = None
 ) -> LinkDefinition {
   { layout, label, defined_label, dest, title }
 }
@@ -26,10 +26,10 @@ pub fn LinkDefinition::new(
 pub(all) struct LinkDefinitionLayout {
   indent : Indent
   angled_dest : Bool
-  before_dest : Array[BlockLineBlank]
-  after_dest : Array[BlockLineBlank]
+  before_dest : Seq[BlockLineBlank]
+  after_dest : Seq[BlockLineBlank]
   title_open_delim : Char
-  after_title : Array[BlockLineBlank]
+  after_title : Seq[BlockLineBlank]
 } derive(Eq, Show, ToJson)
 
 ///|

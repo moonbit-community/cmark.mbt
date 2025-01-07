@@ -469,7 +469,7 @@ fn Parser::parse_link_ref_definition(
                   (lines, [], '"', None, [], meta_last)
                 }
               Some(after_title) => {
-                let t = self.tight_block_lines(spans=spans[:])
+                let t : Seq[_] = self.tight_block_lines(spans=spans[:])
                 (
                   lines,
                   after_dest,
@@ -1547,7 +1547,7 @@ fn Parser::block_struct_to_html_block(
   let lines = b.html.map(fn(i) { self.clean_raw_span(i) })
   let start_loc = lines.last().unwrap().meta.loc
   let meta = self.meta({ ..start_loc, last_byte, last_line })
-  HtmlBlock({ v: lines, meta })
+  HtmlBlock({ v: Seq::from_array(lines), meta })
 }
 
 ///|
