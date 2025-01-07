@@ -550,6 +550,26 @@ impl Show for ReferenceLayout
 impl ToJson for ReferenceLayout
 impl @moonbitlang/core/json.FromJson for ReferenceLayout
 
+type Seq
+impl Seq {
+  empty[A]() -> Self[A]
+  fold[A, B](Self[A], init~ : B, (B, A) -> B) -> B
+  from_array[A](Array[A]) -> Self[A]
+  from_iter[A](Iter[A]) -> Self[A]
+  get[A](Self[A], Int) -> A?
+  is_empty[A](Self[A]) -> Bool
+  iter[A](Self[A]) -> Iter[A]
+  length[A](Self[A]) -> Int
+  map[A, B](Self[A], (A) -> B) -> Self[B]
+  op_get[A](Self[A], Int) -> A
+  op_set[A](Self[A], Int, A) -> Unit
+  rev_fold[A, B](Self[A], init~ : B, (B, A) -> B) -> B
+  to_array[A](Self[A]) -> Array[A]
+}
+impl[A : Eq] Eq for Seq[A]
+impl[A : Show] Show for Seq[A]
+impl[A : ToJson] ToJson for Seq[A]
+
 type Setext
 impl Show for Setext
 impl ToJson for Setext
