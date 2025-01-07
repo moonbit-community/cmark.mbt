@@ -2,7 +2,7 @@
 pub(all) enum Block {
   BlankLine(Node[BlockBlankLine])
   BlockQuote(Node[BlockQuote])
-  Blocks(Node[Array[Block]])
+  Blocks(Node[Seq[Block]])
   CodeBlock(Node[CodeBlock])
   Heading(Node[BlockHeading])
   HtmlBlock(Node[HtmlBlock])
@@ -50,12 +50,12 @@ pub fn Block::normalize(self : Block) -> Block {
   match self {
     BlockQuote(bl) => BlockQuote(bl.map(BlockQuote::normalize_block))
     List(bl) => List(bl.map(BlockList::normalize_items))
-    Blocks({ v: [.., _] as bs, meta }) => {
+    Blocks({ v: Seq([.., _] as bs), meta }) => {
       let mut bs = bs
       let acc = [bs.pop().unwrap().normalize()]
       for {
         match bs.pop() {
-          Some(Blocks({ v: bs1, .. })) => bs += bs1
+          Some(Blocks({ v: bs1, .. })) => bs += bs1._
           Some(b) => acc.push(b.normalize())
           None => break
         }
@@ -126,7 +126,7 @@ pub fn BlockQuote::normalize_block(self : BlockQuote) -> BlockQuote {
 pub(all) struct CodeBlock {
   layout : CodeBlockLayout
   info_string : StringNode?
-  code : Array[StringNode]
+  code : Seq[StringNode]
 } derive(Show, ToJson)
 
 ///|
@@ -151,7 +151,7 @@ pub fn CodeBlockFencedLayout::default() -> CodeBlockFencedLayout {
 pub fn CodeBlock::new(
   layout~ : CodeBlockLayout = Fenced(CodeBlockFencedLayout::default()),
   info_string~ : StringNode? = None,
-  code : Array[StringNode]
+  code : Seq[StringNode]
 ) -> CodeBlock {
   let layout = match (info_string, layout) {
     (Some(_), Indented) =>
@@ -264,7 +264,7 @@ pub fn BlockHeading::new(
 }
 
 ///| The type for [HTML blocks](https://spec.commonmark.org/0.30/#html-blocks).
-pub(all) type HtmlBlock Array[StringNode] derive(Show, ToJson)
+pub(all) type HtmlBlock Seq[StringNode] derive(Show, ToJson)
 
 ///|
 pub(all) struct ListItem {
@@ -321,7 +321,7 @@ pub fn ListTaskStatus::from_marker(marker : Char) -> ListTaskStatus {
 pub(all) struct BlockList {
   ty : ListType
   tight : Bool
-  items : Array[Node[ListItem]]
+  items : Seq[Node[ListItem]]
 } derive(Show, ToJson)
 
 ///|
@@ -409,7 +409,7 @@ fn Label::stub(label : Label, defined_label : Label?) -> LabelDef {
 pub(all) struct Table {
   indent : Indent
   col_count : Count
-  rows : Array[(Node[TableRow], Blanks)]
+  rows : Seq[(Node[TableRow], Blanks)]
 } derive(Show, ToJson)
 
 ///|
@@ -421,9 +421,9 @@ pub(all) enum TableAlign {
 
 ///|
 pub(all) enum TableRow {
-  Header(Array[(Inline, TableCellLayout)])
-  Sep(Array[Node[TableSep]])
-  Data(Array[(Inline, TableCellLayout)])
+  Header(Seq[(Inline, TableCellLayout)])
+  Sep(Seq[Node[TableSep]])
+  Data(Seq[(Inline, TableCellLayout)])
 } derive(Show, ToJson)
 
 ///|
@@ -435,7 +435,7 @@ pub(all) typealias TableCellLayout = (Blanks, Blanks)
 ///|
 pub fn Table::new(
   indent~ : Indent = 0,
-  rows : Array[(Node[TableRow], Blanks)]
+  rows : Seq[(Node[TableRow], Blanks)]
 ) -> Table {
   let mut col_count = 0
   for row in rows {
@@ -449,7 +449,7 @@ pub fn Table::new(
 }
 
 ///|
-pub fn Table::parse_sep_row(
+fn Table::parse_sep_row(
   cs : ArrayView[(Inline, TableCellLayout)]
 ) -> Array[Node[TableSep]]? {
   loop [], cs {

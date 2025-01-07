@@ -107,7 +107,7 @@ pub fn Mapper::map_inline(self : Mapper, i : Inline) -> FilterMap[Inline] {
       Some(StrongEmphasis({ v: { ..v, inline, }, meta }))
     }
     Inlines({ v, meta }) => {
-      let v = v.filter_map(fn(x) { self.map_inline(x) })
+      let v = v._.filter_map(fn(x) { self.map_inline(x) })
       guard not(v.is_empty()) else { None }
       Some(Inlines({ v, meta }))
     }
@@ -142,7 +142,7 @@ pub fn Mapper::map_block(self : Mapper, b : Block) -> FilterMap[Block] {
       Some(BlockQuote({ v: { ..v, block, }, meta }))
     }
     Blocks({ v, meta }) =>
-      match v.filter_map(fn(x) { self.map_block(x) }) {
+      match v._.filter_map(fn(x) { self.map_block(x) }) {
         [] => None
         v => Some(Blocks({ v, meta }))
       }
@@ -153,7 +153,7 @@ pub fn Mapper::map_block(self : Mapper, b : Block) -> FilterMap[Block] {
         Some({ v: { ..v, block, }, meta })
       }
 
-      match v.items.filter_map(map_list_item) {
+      match v.items._.filter_map(map_list_item) {
         [] => None
         items => Some(List({ v: { ..v, items, }, meta }))
       }
@@ -177,12 +177,12 @@ pub fn Mapper::map_block(self : Mapper, b : Block) -> FilterMap[Block] {
         let ({ v, meta }, blanks) = row
         match v {
           Header(is_) => {
-            let is_ = is_.filter_map(fn(i) { map_col(i.0, i.1) })
+            let is_ = is_._.filter_map(fn(i) { map_col(i.0, i.1) })
             ({ v: Header(is_), meta }, blanks)
           }
           Sep(_) => row
           Data(is_) => {
-            let is_ = is_.filter_map(fn(i) { map_col(i.0, i.1) })
+            let is_ = is_._.filter_map(fn(i) { map_col(i.0, i.1) })
             ({ v: Data(is_), meta }, blanks)
           }
         }

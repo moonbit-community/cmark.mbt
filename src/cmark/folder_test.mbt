@@ -54,22 +54,24 @@ test "fold_block with blockquote" {
 test "fold_block with blocks" {
   let folder = Folder::new()
   let blocks = Block::Blocks(
-    Node::new([
-      Block::Paragraph(
-        Node::new({
-          leading_indent: 0,
-          inline: Inline::Text(Node::new("test1")),
-          trailing_blanks: "",
-        }),
-      ),
-      Block::Paragraph(
-        Node::new({
-          leading_indent: 0,
-          inline: Inline::Text(Node::new("test2")),
-          trailing_blanks: "",
-        }),
-      ),
-    ]),
+    Node::new(
+      Seq::from_array([
+        Block::Paragraph(
+          Node::new({
+            leading_indent: 0,
+            inline: Inline::Text(Node::new("test1")),
+            trailing_blanks: "",
+          }),
+        ),
+        Block::Paragraph(
+          Node::new({
+            leading_indent: 0,
+            inline: Inline::Text(Node::new("test2")),
+            trailing_blanks: "",
+          }),
+        ),
+      ]),
+    ),
   )
   inspect!(folder.fold_block!(0, blocks), content="0")
 }
@@ -94,21 +96,28 @@ test "folder block with table" {
     Node::new({
       indent: 0,
       col_count: 2,
-      rows: [
+      rows: Seq::from_array([
         (
           Node::new(
-            TableRow::Header([(Inline::Text(Node::new("Header")), ("", ""))]),
+            Header(
+              Seq::from_array([(Inline::Text(Node::new("Header")), ("", ""))]),
+            ),
           ),
           "",
         ),
-        (Node::new(TableRow::Sep([Node::new((Some(TableAlign::Left), 3))])), ""),
         (
           Node::new(
-            TableRow::Data([(Inline::Text(Node::new("Data")), ("", ""))]),
+            Sep(Seq::from_array([Node::new((Some(TableAlign::Left), 3))])),
           ),
           "",
         ),
-      ],
+        (
+          Node::new(
+            Data(Seq::from_array([(Inline::Text(Node::new("Data")), ("", ""))])),
+          ),
+          "",
+        ),
+      ]),
     }),
   )
   let result = folder.fold_block!(0, table)
@@ -120,7 +129,7 @@ test "folder block with footnote definition" {
   let footnote = Block::ExtFootnoteDefinition(
     Node::new({
       indent: 0,
-      label: { meta: @rami3l/cmark/cmark_base.Meta::none(), key: "1", text: [] },
+      label: { meta: @cmark_base.Meta::none(), key: "1", text: Seq::empty() },
       defined_label: None,
       block: Block::empty(),
     }),

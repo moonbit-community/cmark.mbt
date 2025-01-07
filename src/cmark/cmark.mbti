@@ -16,7 +16,7 @@ impl Eq for BState
 pub(all) enum Block {
   BlankLine(Node[String])
   BlockQuote(Node[BlockQuote])
-  Blocks(Node[Array[Block]])
+  Blocks(Node[Seq[Block]])
   CodeBlock(Node[CodeBlock])
   Heading(Node[BlockHeading])
   HtmlBlock(Node[HtmlBlock])
@@ -88,14 +88,14 @@ impl ToJson for BlockHeadingSetextLayout
 
 pub(all) type BlockLine Node[String]
 impl BlockLine {
-  list_text_loc(Array[Self]) -> @rami3l/cmark/cmark_base.TextLoc
+  list_text_loc(Seq[Self]) -> @rami3l/cmark/cmark_base.TextLoc
   to_string(Self) -> String
 }
 
 pub(all) struct BlockList {
   ty : @rami3l/cmark/cmark_base.ListType
   tight : Bool
-  items : Array[Node[ListItem]]
+  items : Seq[Node[ListItem]]
 }
 impl BlockList {
   map_items(Self, (ListItem) -> ListItem) -> Self
@@ -156,12 +156,12 @@ impl ToJson for CloserIndex
 pub(all) struct CodeBlock {
   layout : CodeBlockLayout
   info_string : Node[String]?
-  code : Array[Node[String]]
+  code : Seq[Node[String]]
 }
 impl CodeBlock {
   language_of_info_string(String) -> (String, String)?
   make_fence(Self) -> (Char, Int)
-  new(layout~ : CodeBlockLayout = .., info_string~ : Node[String]? = .., Array[Node[String]]) -> Self
+  new(layout~ : CodeBlockLayout = .., info_string~ : Node[String]? = .., Seq[Node[String]]) -> Self
 }
 impl Show for CodeBlock
 impl ToJson for CodeBlock
@@ -256,7 +256,7 @@ type Heading
 impl Show for Heading
 impl ToJson for Heading
 
-pub(all) type HtmlBlock Array[Node[String]]
+pub(all) type HtmlBlock Seq[Node[String]]
 impl Show for HtmlBlock
 impl ToJson for HtmlBlock
 
@@ -274,7 +274,7 @@ pub(all) enum Inline {
   CodeSpan(Node[InlineCodeSpan])
   Emphasis(Node[InlineEmphasis])
   Image(Node[InlineLink])
-  Inlines(Node[Array[Inline]])
+  Inlines(Node[Seq[Inline]])
   Link(Node[InlineLink])
   RawHtml(Node[InlineRawHtml])
   StrongEmphasis(Node[InlineEmphasis])
@@ -288,7 +288,7 @@ impl Inline {
   is_empty(Self) -> Bool
   meta(Self) -> @rami3l/cmark/cmark_base.Meta
   normalize(Self) -> Self
-  to_plain_text(Self, break_on_soft~ : Bool) -> Array[Array[String]]
+  to_plain_text(Self, break_on_soft~ : Bool) -> Seq[Seq[String]]
 }
 impl Eq for Inline
 impl Show for Inline
@@ -329,12 +329,12 @@ impl @moonbitlang/core/json.FromJson for InlineBreakType
 
 pub(all) struct InlineCodeSpan {
   backticks : Int
-  code_layout : Array[Tight]
+  code_layout : Seq[Tight]
 }
 impl InlineCodeSpan {
   code(Self) -> String
   from_string(meta~ : @rami3l/cmark/cmark_base.Meta = .., String) -> Self
-  new(backticks~ : Int, Array[Tight]) -> Self
+  new(backticks~ : Int, Seq[Tight]) -> Self
 }
 impl Eq for InlineCodeSpan
 impl Show for InlineCodeSpan
@@ -367,7 +367,7 @@ impl ToJson for InlineLink
 
 pub(all) struct InlineMathSpan {
   display : Bool
-  tex_layout : Array[Tight]
+  tex_layout : Seq[Tight]
 }
 impl InlineMathSpan {
   tex(Self) -> String
@@ -376,7 +376,7 @@ impl Eq for InlineMathSpan
 impl Show for InlineMathSpan
 impl ToJson for InlineMathSpan
 
-pub(all) type InlineRawHtml Array[Tight]
+pub(all) type InlineRawHtml Seq[Tight]
 impl Eq for InlineRawHtml
 impl Show for InlineRawHtml
 impl ToJson for InlineRawHtml
@@ -389,11 +389,11 @@ impl ToJson for InlineStrikethrough
 pub(all) struct Label {
   meta : @rami3l/cmark/cmark_base.Meta
   key : String
-  text : Array[Tight]
+  text : Seq[Tight]
 }
 impl Label {
   compare(Self, Self) -> Int
-  new(meta~ : @rami3l/cmark/cmark_base.Meta = .., key~ : String, Array[Tight]) -> Self
+  new(meta~ : @rami3l/cmark/cmark_base.Meta = .., key~ : String, Seq[Tight]) -> Self
   op_equal(Self, Self) -> Bool
   text_loc(Self) -> @rami3l/cmark/cmark_base.TextLoc
 }
@@ -420,10 +420,10 @@ pub(all) struct LinkDefinition {
   label : Label?
   defined_label : Label?
   dest : Node[String]?
-  title : Array[Tight]?
+  title : Seq[Tight]?
 }
 impl LinkDefinition {
-  new(layout~ : LinkDefinitionLayout = .., label~ : Label? = .., defined_label~ : Label? = .., dest~ : Node[String]? = .., title~ : Array[Tight]? = ..) -> Self
+  new(layout~ : LinkDefinitionLayout = .., label~ : Label? = .., defined_label~ : Label? = .., dest~ : Node[String]? = .., title~ : Seq[Tight]? = ..) -> Self
 }
 impl Eq for LinkDefinition
 impl Show for LinkDefinition
@@ -432,10 +432,10 @@ impl ToJson for LinkDefinition
 pub(all) struct LinkDefinitionLayout {
   indent : Int
   angled_dest : Bool
-  before_dest : Array[Node[String]]
-  after_dest : Array[Node[String]]
+  before_dest : Seq[Node[String]]
+  after_dest : Seq[Node[String]]
   title_open_delim : Char
-  after_title : Array[Node[String]]
+  after_title : Seq[Node[String]]
 }
 impl LinkDefinitionLayout {
   default() -> Self
@@ -581,11 +581,10 @@ impl ToJson for StartColResult
 pub(all) struct Table {
   indent : Int
   col_count : Int
-  rows : Array[(Node[TableRow], String)]
+  rows : Seq[(Node[TableRow], String)]
 }
 impl Table {
-  new(indent~ : Int = .., Array[(Node[TableRow], String)]) -> Self
-  parse_sep_row(ArrayView[(Inline, (String, String))]) -> Array[Node[(TableAlign?, Int)]]?
+  new(indent~ : Int = .., Seq[(Node[TableRow], String)]) -> Self
 }
 impl Show for Table
 impl ToJson for Table
@@ -600,9 +599,9 @@ impl ToJson for TableAlign
 impl @moonbitlang/core/json.FromJson for TableAlign
 
 pub(all) enum TableRow {
-  Header(Array[(Inline, (String, String))])
-  Sep(Array[Node[(TableAlign?, Int)]])
-  Data(Array[(Inline, (String, String))])
+  Header(Seq[(Inline, (String, String))])
+  Sep(Seq[Node[(TableAlign?, Int)]])
+  Data(Seq[(Inline, (String, String))])
 }
 impl Show for TableRow
 impl ToJson for TableRow
@@ -613,7 +612,7 @@ pub(all) struct Tight {
 }
 impl Tight {
   empty(meta~ : @rami3l/cmark/cmark_base.Meta = ..) -> Self
-  list_text_loc(Array[Self]) -> @rami3l/cmark/cmark_base.TextLoc
+  list_text_loc(Seq[Self]) -> @rami3l/cmark/cmark_base.TextLoc
   to_string(Self) -> String
 }
 impl Eq for Tight

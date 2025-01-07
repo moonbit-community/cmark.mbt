@@ -8,7 +8,7 @@ pub(all) enum Inline {
   CodeSpan(Node[InlineCodeSpan])
   Emphasis(Node[InlineEmphasis])
   Image(Node[InlineLink])
-  Inlines(Node[Array[Inline]])
+  Inlines(Node[Seq[Inline]])
   Link(Node[InlineLink])
   RawHtml(Node[InlineRawHtml])
   StrongEmphasis(Node[InlineEmphasis])
@@ -69,7 +69,7 @@ pub fn Inline::normalize(self : Inline) -> Inline {
     | CodeSpan(_)
     | RawHtml(_)
     | Text(_)
-    | Inlines({ v: [], .. })
+    | Inlines({ v: Seq([]), .. })
     | ExtMathSpan(_) as i => i
     Image({ v: raw, meta }) =>
       Image({ v: { ..raw, text: raw.text.normalize() }, meta })
@@ -81,15 +81,15 @@ pub fn Inline::normalize(self : Inline) -> Inline {
       StrongEmphasis({ v: { ..raw, inline: raw.inline.normalize() }, meta })
     ExtStrikethrough({ v: raw, meta }) =>
       ExtStrikethrough({ v: raw._.normalize(), meta })
-    Inlines({ v: [i], .. }) => i
-    Inlines({ v: [i, .. as is_], meta }) => {
+    Inlines({ v: Seq([i]), .. }) => i
+    Inlines({ v: Seq([i, .. as is_]), meta }) => {
       let acc = [i.normalize()]
       let is_ = Array::from_iter(is_.iter())
       for {
         guard let Some(curr) = is_.pop() else { _ => break }
         match curr {
           Inlines({ v: is1, .. }) =>
-            for i1 in is1.rev() {
+            for i1 in is1._.rev() {
               is_.push(i1)
             }
           Text({ v: t1, meta: meta1 }) as i1 =>
@@ -119,10 +119,10 @@ pub fn Inline::normalize(self : Inline) -> Inline {
 pub fn Inline::to_plain_text(
   self : Inline,
   break_on_soft~ : Bool
-) -> Array[Array[String]] {
-  let acc = [[]]
-  let push = fn(s) { acc[acc.length() - 1].push(s) }
-  let newline = fn() { acc.push([]) }
+) -> Seq[Seq[String]] {
+  let acc = Seq::from_array([Seq::empty()])
+  let push = fn(s) { acc[acc.length() - 1]._.push(s) }
+  let newline = fn() { acc._.push([]) }
   let st = [self]
   for {
     guard let Some(curr) = st.pop() else { _ => break }
@@ -139,7 +139,7 @@ pub fn Inline::to_plain_text(
       Emphasis({ v: { inline, .. }, .. })
       | StrongEmphasis({ v: { inline, .. }, .. }) => st.push(inline)
       Inlines({ v: is1, .. }) =>
-        for i in is1.rev() {
+        for i in is1._.rev() {
           st.push(i)
         }
       Link(l) => st.push(l.v.text)
@@ -159,7 +159,7 @@ pub fn Inline::id(
   buf~ : Buffer = Buffer::new(size_hint=256)
 ) -> String {
   let text = self.to_plain_text(break_on_soft=false)
-  let s = text.map(fn(l) { String::concat(l) })
+  let s = text._.map(fn(l) { String::concat(l._) })
     |> String::concat(separator="\n")
   // Collapses non initial white 
   let collapse_blanks = fn(prev) {
@@ -240,13 +240,13 @@ pub(all) enum InlineBreakType {
 ///| The type for [code spans](https://spec.commonmark.org/0.30/#code-spans).
 pub(all) struct InlineCodeSpan {
   backticks : Count
-  code_layout : Array[Tight]
+  code_layout : Seq[Tight]
 } derive(Eq, Show, ToJson)
 
 ///|
 pub fn InlineCodeSpan::new(
   backticks~ : Count,
-  code_layout : Array[Tight]
+  code_layout : Seq[Tight]
 ) -> InlineCodeSpan {
   { backticks, code_layout }
 }
@@ -426,7 +426,7 @@ pub fn InlineLink::is_unsafe(l : String) -> Bool {
 }
 
 ///| The type for [inline raw HTML](https://spec.commonmark.org/0.30/#raw-html) (can span multiple lines).
-pub(all) type InlineRawHtml Array[Tight] derive(Eq, Show, ToJson)
+pub(all) type InlineRawHtml Seq[Tight] derive(Eq, Show, ToJson)
 
 ///| The type for [textual content](https://spec.commonmark.org/0.30/#textual-content).
 ///
@@ -443,10 +443,10 @@ pub(all) type InlineStrikethrough Inline derive(Eq, Show, ToJson)
 ///|
 pub(all) struct InlineMathSpan {
   display : Bool
-  tex_layout : Array[Tight]
+  tex_layout : Seq[Tight]
 } derive(Eq, Show, ToJson)
 
 ///|
 pub fn tex(self : InlineMathSpan) -> String {
-  self.tex_layout.map(Tight::to_string) |> String::concat(separator=" ")
+  self.tex_layout._.map(Tight::to_string) |> String::concat(separator=" ")
 }

@@ -532,7 +532,7 @@ fn Parser::raw_html_token(
   spans : ArrayView[Span]
 ) -> Token {
   let _ = first_line
-  let raw = self.raw_tight_block_lines(spans~)
+  let raw = Seq::from_array(self.raw_tight_block_lines(spans~))
   let text_loc = {
     let first = raw[0].node.meta.loc
     let { last: last_byte, pos: last_line, .. } = spans[spans.length() - 1].span
@@ -896,7 +896,7 @@ fn Parser::try_inline_link_remainder(
           ) {
           None => (line, after_dest, '"', None, start)
           Some((line, spans, last)) => {
-            let title = self.tight_block_lines(spans=spans[:])
+            let title : Seq[_] = self.tight_block_lines(spans=spans[:])
             (line, after_dest, self.i[start], Some(title), last + 1)
           }
         }

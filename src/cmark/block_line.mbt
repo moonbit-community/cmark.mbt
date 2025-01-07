@@ -16,8 +16,8 @@ pub fn BlockLine::to_string(self : BlockLine) -> String {
 }
 
 ///|
-pub fn BlockLine::list_text_loc(ls : Array[BlockLine]) -> TextLoc {
-  match ls {
+pub fn BlockLine::list_text_loc(ls : Seq[BlockLine]) -> TextLoc {
+  match ls._ {
     [] => TextLoc::none()
     [head] => head.meta.loc
     [head,  ..,  last] => head.meta.loc.reloc(last.meta.loc)
@@ -46,8 +46,8 @@ pub fn Tight::to_string(self : Tight) -> String {
 }
 
 ///|
-pub fn Tight::list_text_loc(ls : Array[Tight]) -> TextLoc {
-  match ls {
+pub fn Tight::list_text_loc(ls : Seq[Tight]) -> TextLoc {
+  match ls._ {
     [] => TextLoc::none()
     [head] => head.node.meta.loc
     [head,  ..,  last] => head.node.meta.loc.reloc(last.node.meta.loc)
