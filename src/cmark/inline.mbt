@@ -82,7 +82,7 @@ pub fn Inline::normalize(self : Inline) -> Inline {
     ExtStrikethrough({ v: raw, meta }) =>
       ExtStrikethrough({ v: raw._.normalize(), meta })
     Inlines({ v: Seq([i]), .. }) => i
-    Inlines({ v: Seq([i, .. as is_]), meta }) => {
+    Inlines({ v: Seq([i, .. is_]), meta }) => {
       let acc = [i.normalize()]
       let is_ = Array::from_iter(is_.iter())
       for {

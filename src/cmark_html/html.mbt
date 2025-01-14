@@ -603,13 +603,12 @@ fn item_block!(tight~ : Bool, c : Context, b : @cmark.Block) -> Unit {
     (Paragraph({ v, .. }), true) => c.inline!(v.inline)
     (Blocks({ v, .. }), _) =>
       loop c, true, v.to_array()[:], tight {
-        c, add_nl, [BlankLine(_), .. as bs], tight =>
-          continue c, add_nl, bs, tight
-        c, _, [Paragraph({ v, .. }), .. as bs], true as tight => {
+        c, add_nl, [BlankLine(_), .. bs], tight => continue c, add_nl, bs, tight
+        c, _, [Paragraph({ v, .. }), .. bs], true as tight => {
           c.inline!(v.inline)
           continue c, true, bs, tight
         }
-        c, add_nl, [b, .. as bs], tight => {
+        c, add_nl, [b, .. bs], tight => {
           if add_nl {
             c.b.write_char('\n')
           }
@@ -746,18 +745,18 @@ fn table!(c : Context, t : @cmark.Table) -> Unit {
     cs : ArrayView[(_, _)]
   ) {
     match (align, cs) {
-      ([{ v, .. }, .. as align], [(col, _), .. as cs]) => {
+      ([{ v, .. }, .. align], [(col, _), .. cs]) => {
         start(c, v.0, tag)
         c.inline!(col)
         close(c, tag)
         cols!(c, tag, align, count - 1, cs)
       }
-      ([{ v, .. }, .. as align], []) => {
+      ([{ v, .. }, .. align], []) => {
         start(c, v.0, tag)
         close(c, tag)
         cols!(c, tag, align, count - 1, [][:])
       }
-      ([], [(col, _), .. as cs]) => {
+      ([], [(col, _), .. cs]) => {
         start(c, None, tag)
         c.inline!(col)
         close(c, tag)
@@ -792,19 +791,19 @@ fn table!(c : Context, t : @cmark.Table) -> Unit {
     rs : ArrayView[(@cmark.Node[@cmark.TableRow], _)]
   ) {
     match rs {
-      [({ v: Header(cols), .. }, _), .. as rs] => {
+      [({ v: Header(cols), .. }, _), .. rs] => {
         let (align, rs) = match rs {
-          [({ v: Sep(align), .. }, _), .. as rs] => (align.to_array()[:], rs)
+          [({ v: Sep(align), .. }, _), .. rs] => (align.to_array()[:], rs)
           _ => (align, rs)
         }
         header!(c, col_count, align, cols.to_array()[:])
         rows!(c, col_count, align, rs)
       }
-      [({ v: Data(cols), .. }, _), .. as rs] => {
+      [({ v: Data(cols), .. }, _), .. rs] => {
         data!(c, col_count, align, cols.to_array()[:])
         rows!(c, col_count, align, rs)
       }
-      [({ v: Sep(align), .. }, _), .. as rs] =>
+      [({ v: Sep(align), .. }, _), .. rs] =>
         rows!(c, col_count, align.to_array()[:], rs)
       [] => ()
     }

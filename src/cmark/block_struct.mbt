@@ -1576,7 +1576,7 @@ fn Parser::block_struct_to_table(
 ) -> Block {
   guard let Some((last, _)) = rows.last()
   let (first, col_count, rows) = loop 0, false, [], rows[:] {
-    col_count, last_was_sep, acc, [.. as rs, (row, blanks)] => {
+    col_count, last_was_sep, acc, [.. rs, (row, blanks)] => {
       let meta = self.meta(self.text_loc_of_span(row))
       let row1 = { ..row, first: row.first + 1, last: row.last }
       let cols = self.parse_table_row(row1)
@@ -1667,7 +1667,7 @@ fn Parser::block_struct_to_list_item(
 ) -> (Node[ListItem], Bool) {
   fn go(bstate : BState, tight, acc : Array[_], bs : ArrayView[BlockStruct]) {
     loop bstate, tight, acc, bs {
-      bstate, tight, acc, [.. as bs, BlankLine(_) as bl] => {
+      bstate, tight, acc, [.. bs, BlankLine(_) as bl] => {
         let bstate = if bstate == TrailBlank { TrailBlank } else { Blank }
         continue bstate, tight, acc..push(self.block_struct_to_block(bl)), bs
       }
@@ -1675,10 +1675,10 @@ fn Parser::block_struct_to_list_item(
       _,
       acc,
       [
-        .. as bs,
+        .. bs,
         List({ items: [.., { blocks: [.., BlankLine(_)], .. }], .. }) as l,
       ] => continue bstate, false, acc..push(self.block_struct_to_block(l)), bs
-      bstate, tight, acc, [.. as bs, b] => {
+      bstate, tight, acc, [.. bs, b] => {
         let tight = tight && bstate != Blank
         continue NonBlank, tight, acc..push(self.block_struct_to_block(b)), bs
       }
@@ -1691,11 +1691,11 @@ fn Parser::block_struct_to_list_item(
       let bl = self.block_struct_to_block(blank)
       (bl.meta(), (true, [bl]))
     }
-    [.. as bs, BlankLine(_) as blank] => {
+    [.. bs, BlankLine(_) as blank] => {
       let bl = self.block_struct_to_block(blank)
       (bl.meta(), go(TrailBlank, true, [bl], bs))
     }
-    [.. as bs, b] => {
+    [.. bs, b] => {
       let b = self.block_struct_to_block(b)
       (b.meta(), go(NonBlank, true, [b], bs))
     }
@@ -1725,7 +1725,7 @@ fn Parser::block_struct_to_list(self : Parser, list : ListBlockStruct) -> Block 
   let (first, tight) = self.block_struct_to_list_item(items[0])
   let (tight, items) = loop not(list.loose) && tight, [first], items[1:] {
     tight, acc, [] => (tight, acc)
-    tight, acc, [item, .. as items] => {
+    tight, acc, [item, .. items] => {
       let (item, item_tight) = self.block_struct_to_list_item(item)
       continue tight && item_tight, acc..push(item), items
     }

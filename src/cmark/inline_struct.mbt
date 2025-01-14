@@ -379,7 +379,7 @@ fn tokenize(
   s : String,
   lines : Array[LineSpan]
 ) -> (CloserIndex, Tokens, LineSpan) {
-  guard let [line, .. as lines] = lines else {
+  guard let [line, .. lines] = lines else {
     _ => abort("expected at least one line")
   }
   let toks : Tokens = Deque::new()
@@ -388,7 +388,7 @@ fn tokenize(
       if k > line.last {
         match lines {
           [] => break make_closer_index(toks)
-          [newline, .. as lines] => {
+          [newline, .. lines] => {
             let t = Token::newline(s, line, newline)
             toks.push(t)
             continue lines, newline, false, newline.first
