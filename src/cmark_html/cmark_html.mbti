@@ -3,6 +3,8 @@ package rami3l/cmark/cmark_html
 // Values
 fn from_doc(backend_blocks~ : Bool = .., safe~ : Bool, @rami3l/cmark/cmark.Doc) -> String!
 
+fn render(backend_blocks~ : Bool = .., safe~ : Bool = .., strict~ : Bool = .., String) -> String!
+
 fn renderer(backend_blocks~ : Bool = .., safe~ : Bool) -> @rami3l/cmark/cmark_renderer.Renderer
 
 fn safe(@rami3l/cmark/cmark_renderer.Context) -> Bool

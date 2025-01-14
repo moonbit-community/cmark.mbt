@@ -32,7 +32,7 @@ test "should render task list" (it : @test.T) {
     #|* [ ]
     #|          Code
     #|         Not code
-  let rendered = from_doc!(safe=false, Doc::from_string(strict=false, doc))
+  let rendered = render!(safe=false, strict=false, doc)
   it.write(rendered)
   it.snapshot!(filename="task_list.html")
 }
@@ -50,7 +50,7 @@ test "should render strikethroughs" (it : @test.T) {
     #|
     #|* Here we have ~~stroken `code`~~.
     #|* Here we have ~~nested ~~stroken~~ ok~~
-  let rendered = from_doc!(safe=false, Doc::from_string(strict=false, doc))
+  let rendered = render!(safe=false, strict=false, doc)
   it.write(rendered)
   it.snapshot!(filename="strikethrough.html")
 }
@@ -94,7 +94,7 @@ test "should render footnotes" (it : @test.T) {
     #|Not a footnote [^]
     #|
     #|[^]: not a footnote.
-  let rendered = from_doc!(safe=false, Doc::from_string(strict=false, doc))
+  let rendered = render!(safe=false, strict=false, doc)
   it.write(rendered)
   it.snapshot!(filename="footnote.html")
 }
@@ -123,7 +123,7 @@ test "should render math" (it : @test.T) {
     #|
     #|But it can also be in $$ \left( \sum_{k=1}^n
     #|   a_k b_k \right)^2 < \Phi $$
-  let rendered = from_doc!(safe=false, Doc::from_string(strict=false, doc))
+  let rendered = render!(safe=false, strict=false, doc)
   it.write(rendered)
   it.snapshot!(filename="math.html")
 }
@@ -198,7 +198,7 @@ test "should render tables" (it : @test.T) {
     #|This is an empty table with three columns:
     #|
     #| | |||
-  let rendered = from_doc!(safe=false, Doc::from_string(strict=false, doc))
+  let rendered = render!(safe=false, strict=false, doc)
   it.write(rendered)
   it.snapshot!(filename="table.html")
 }
