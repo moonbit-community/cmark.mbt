@@ -948,3 +948,16 @@ pub fn from_doc!(
 ) -> String {
   renderer(backend_blocks~, safe~).doc_to_string!(doc)
 }
+
+///|
+/// Render CommonMark String to HTML with the default parsing preferences.
+///
+/// For more parsing options, call `@cmark.Doc::from_string()` and `from_doc()` manually.
+pub fn render!(
+  backend_blocks~ : Bool = false,
+  safe~ : Bool = false,
+  strict~ : Bool = true,
+  s : String
+) -> String {
+  from_doc!(backend_blocks~, safe~, @cmark.Doc::from_string(s, strict~))
+}
