@@ -3,9 +3,9 @@
   "version": "0.2.1",
   "deps": {},
   "readme": "README.md",
-  "repository": "",
+  "repository": "https://github.com/moonbit-community/cmark",
   "license": "Apache-2.0",
-  "keywords": [],
-  "description": "",
+  "keywords": ["commonmark", "markdown"],
+  "description": "A CommonMark toolkit for MoonBit",
   "source": "src"
 }
