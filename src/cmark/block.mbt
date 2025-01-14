@@ -454,7 +454,7 @@ fn Table::parse_sep_row(
 ) -> Array[Node[TableSep]]? {
   loop [], cs {
     acc, [] => Some(acc)
-    acc, [(Text({ v, meta }), ("", "")), .. as cs] => {
+    acc, [(Text({ v, meta }), ("", "")), .. cs] => {
       guard not(v.is_empty()) else { None }
       let max = v.length() - 1
       let first_colon = v[0] == ':'
