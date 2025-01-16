@@ -643,6 +643,64 @@ test "should parse links/images/refs" {
   )
 }
 
+test "should tokenize broken links across lines" {
+  @json.inspect!(
+    tokenize_only(
+      #|and the [end
+      #|condition], wow
+      ,
+    ),
+    content=[
+      { "RightBrack": [22] },
+      [
+        { "$tag": "LinkStart", "0": { "start": 8, "image": false } },
+        {
+          "$tag": "Newline",
+          "0": {
+            "start": 12,
+            "break_ty": { "$tag": "Soft" },
+            "newline": { "pos": [2, 0], "first": 13, "last": 27 },
+          },
+        },
+        { "$tag": "RightBrack", "0": { "start": 22 } },
+      ],
+      { "pos": [1, 0], "first": 0, "last": 11 },
+    ],
+  )
+}
+
+test "should parse broken links across lines" {
+  @json.inspect!(
+    parse_only(
+      #|and the [end
+      #|condition], wow
+      ,
+    ),
+    content=[
+      [0, ""],
+      {
+        "$tag": "Inlines",
+        "0": [
+          [
+            { "$tag": "Text", "0": ["and the [end"] },
+            {
+              "$tag": "Break",
+              "0": [
+                {
+                  "layout_before": [""],
+                  "ty": { "$tag": "Soft" },
+                  "layout_after": [""],
+                },
+              ],
+            },
+            { "$tag": "Text", "0": ["condition], wow"] },
+          ],
+        ],
+      },
+    ],
+  )
+}
+
 test "should parse raw HTML" {
   @json.inspect!(
     parse_only(
