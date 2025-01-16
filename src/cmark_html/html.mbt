@@ -232,7 +232,9 @@ fn buffer_add_pct_encoded_string(b : Buffer, s : String) -> Unit { // Percent en
       let next = i + 1
       let c = s[i]
       match c {
-        '-'
+        // See https://tools.ietf.org/html/rfc3986
+        '%'
+        | '-'
         | '.'
         | '_'
         | '~'
@@ -248,6 +250,7 @@ fn buffer_add_pct_encoded_string(b : Buffer, s : String) -> Unit { // Percent en
         | ':'
         | '/'
         | '?'
+        | '#'
         | '@' => continue b, s, max, start, next
         _ => if @char.is_ascii_alphanum(c) { continue b, s, max, start, next }
       }
