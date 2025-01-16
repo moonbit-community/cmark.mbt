@@ -204,7 +204,13 @@ test "should render tables" (it : @test.T) {
 }
 
 test "basic" (it : @test.T) {
-  let rendered = from_doc!(safe=false, Doc::from_string(test_base_md_str))
+  let rendered = from_doc!(safe=false, Doc::from_string(test_basic_md_str))
   it.write(rendered)
   it.snapshot!(filename="basic.html")
+}
+
+test "spec" (it : @test.T) {
+  let rendered = from_doc!(safe=false, Doc::from_string(test_spec_md_str))
+  it.write(rendered)
+  it.snapshot!(filename="spec.html")
 }

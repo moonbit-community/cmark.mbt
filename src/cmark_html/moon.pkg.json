@@ -9,8 +9,13 @@
   "pre-build": [
     {
       "input": "../data/test/basic.md",
-      "output": "test_data_test.mbt",
-      "command": ":embed -i $input -o $output --name test_base_md_str"
+      "output": "test_data_basic_test.mbt",
+      "command": ":embed -i $input -o $output --name test_basic_md_str"
+    },
+    {
+      "input": "../data/test/spec.md",
+      "output": "test_data_spec_test.mbt",
+      "command": ":embed -i $input -o $output --name test_spec_md_str"
     }
   ]
 }
