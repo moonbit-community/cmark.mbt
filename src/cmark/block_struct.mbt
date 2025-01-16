@@ -1667,7 +1667,7 @@ fn Parser::block_struct_to_list_item(
 ) -> (Node[ListItem], Bool) {
   fn go(bstate : BState, tight, acc : Array[_], bs : ArrayView[BlockStruct]) {
     loop bstate, tight, acc, bs {
-      bstate, tight, acc, [.. bs, BlankLine(_) as bl] => {
+      bstate, tight, acc, [BlankLine(_) as bl, .. bs] => {
         let bstate = if bstate == TrailBlank { TrailBlank } else { Blank }
         continue bstate, tight, acc..push(self.block_struct_to_block(bl)), bs
       }
@@ -1675,10 +1675,10 @@ fn Parser::block_struct_to_list_item(
       _,
       acc,
       [
-        .. bs,
         List({ items: [.., { blocks: [.., BlankLine(_)], .. }], .. }) as l,
+        .. bs,
       ] => continue bstate, false, acc..push(self.block_struct_to_block(l)), bs
-      bstate, tight, acc, [.. bs, b] => {
+      bstate, tight, acc, [b, .. bs] => {
         let tight = tight && bstate != Blank
         continue NonBlank, tight, acc..push(self.block_struct_to_block(b)), bs
       }
@@ -1691,11 +1691,11 @@ fn Parser::block_struct_to_list_item(
       let bl = self.block_struct_to_block(blank)
       (bl.meta(), (true, [bl]))
     }
-    [.. bs, BlankLine(_) as blank] => {
+    [BlankLine(_) as blank, .. bs] => {
       let bl = self.block_struct_to_block(blank)
       (bl.meta(), go(TrailBlank, true, [bl], bs))
     }
-    [.. bs, b] => {
+    [b, .. bs] => {
       let b = self.block_struct_to_block(b)
       (b.meta(), go(NonBlank, true, [b], bs))
     }

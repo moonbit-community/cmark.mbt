@@ -416,3 +416,241 @@ test "should parse quoted bullets" {
     "defs": {},
   })
 }
+
+test "should parse list item with multiple inlines" {
+  let doc =
+    #|4.  What is the exact rule for determining when list items get
+    #|    wrapped in `<p>` tags?  Can a list be partially "loose" and partially
+    #|    "tight"?  What should we do with a list like this?
+    #|
+    #|    ``` markdown
+    #|    1. one
+    #|
+    #|    2. two
+    #|    3. three
+    #|    ```
+    #|
+    #|    Or this?
+    #|
+    #|    ``` markdown
+    #|    1.  one
+    #|        - a
+    #|
+    #|        - b
+    #|    2.  two
+    #|    ```
+    #|
+    #|    (There are some relevant comments by John Gruber
+    #|    [here](https://web.archive.org/web/20170611172104/http://article.gmane.org/gmane.text.markdown.general/2554).)
+  @json.inspect!(Doc::from_string(doc), content={
+    "nl": "\\n",
+    "block": {
+      "$tag": "List",
+      "0": [
+        {
+          "ty": { "$tag": "Ordered", "0": 4, "1": "." },
+          "tight": false,
+          "items": [
+            [
+              {
+                "before_marker": 0,
+                "marker": ["4."],
+                "after_marker": 2,
+                "block": {
+                  "$tag": "Blocks",
+                  "0": [
+                    [
+                      {
+                        "$tag": "Paragraph",
+                        "0": [
+                          {
+                            "leading_indent": 0,
+                            "inline": {
+                              "$tag": "Inlines",
+                              "0": [
+                                [
+                                  {
+                                    "$tag": "Text",
+                                    "0": [
+                                      "What is the exact rule for determining when list items get",
+                                    ],
+                                  },
+                                  {
+                                    "$tag": "Break",
+                                    "0": [
+                                      {
+                                        "layout_before": [""],
+                                        "ty": { "$tag": "Soft" },
+                                        "layout_after": [""],
+                                      },
+                                    ],
+                                  },
+                                  { "$tag": "Text", "0": ["wrapped in "] },
+                                  {
+                                    "$tag": "CodeSpan",
+                                    "0": [
+                                      {
+                                        "backticks": 1,
+                                        "code_layout": [
+                                          { "blanks": "", "node": ["<p>"] },
+                                        ],
+                                      },
+                                    ],
+                                  },
+                                  {
+                                    "$tag": "Text",
+                                    "0": [
+                                      " tags?  Can a list be partially \"loose\" and partially",
+                                    ],
+                                  },
+                                  {
+                                    "$tag": "Break",
+                                    "0": [
+                                      {
+                                        "layout_before": [""],
+                                        "ty": { "$tag": "Soft" },
+                                        "layout_after": [""],
+                                      },
+                                    ],
+                                  },
+                                  {
+                                    "$tag": "Text",
+                                    "0": [
+                                      "\"tight\"?  What should we do with a list like this?",
+                                    ],
+                                  },
+                                ],
+                              ],
+                            },
+                            "trailing_blanks": "",
+                          },
+                        ],
+                      },
+                      { "$tag": "BlankLine", "0": [""] },
+                      {
+                        "$tag": "CodeBlock",
+                        "0": [
+                          {
+                            "layout": {
+                              "$tag": "Fenced",
+                              "0": {
+                                "indent": 0,
+                                "opening_fence": [""],
+                                "closing_fence": [""],
+                              },
+                            },
+                            "info_string": ["markdown"],
+                            "code": [["1. one"], [""], ["2. two"], ["3. three"]],
+                          },
+                        ],
+                      },
+                      { "$tag": "BlankLine", "0": [""] },
+                      {
+                        "$tag": "Paragraph",
+                        "0": [
+                          {
+                            "leading_indent": 0,
+                            "inline": { "$tag": "Text", "0": ["Or this?"] },
+                            "trailing_blanks": "",
+                          },
+                        ],
+                      },
+                      { "$tag": "BlankLine", "0": [""] },
+                      {
+                        "$tag": "CodeBlock",
+                        "0": [
+                          {
+                            "layout": {
+                              "$tag": "Fenced",
+                              "0": {
+                                "indent": 0,
+                                "opening_fence": [""],
+                                "closing_fence": [""],
+                              },
+                            },
+                            "info_string": ["markdown"],
+                            "code": [
+                              ["1.  one"],
+                              ["    - a"],
+                              [""],
+                              ["    - b"],
+                              ["2.  two"],
+                            ],
+                          },
+                        ],
+                      },
+                      { "$tag": "BlankLine", "0": [""] },
+                      {
+                        "$tag": "Paragraph",
+                        "0": [
+                          {
+                            "leading_indent": 0,
+                            "inline": {
+                              "$tag": "Inlines",
+                              "0": [
+                                [
+                                  {
+                                    "$tag": "Text",
+                                    "0": [
+                                      "(There are some relevant comments by John Gruber",
+                                    ],
+                                  },
+                                  {
+                                    "$tag": "Break",
+                                    "0": [
+                                      {
+                                        "layout_before": [""],
+                                        "ty": { "$tag": "Soft" },
+                                        "layout_after": [""],
+                                      },
+                                    ],
+                                  },
+                                  {
+                                    "$tag": "Link",
+                                    "0": [
+                                      {
+                                        "text": {
+                                          "$tag": "Text",
+                                          "0": ["here"],
+                                        },
+                                        "reference": {
+                                          "$tag": "Inline",
+                                          "0": [
+                                            {
+                                              "layout": {
+                                                "indent": 0,
+                                                "angled_dest": false,
+                                                "before_dest": [],
+                                                "after_dest": [],
+                                                "title_open_delim": "\"",
+                                                "after_title": [],
+                                              },
+                                              "dest": [
+                                                "https://web.archive.org/web/20170611172104/http://article.gmane.org/gmane.text.markdown.general/2554",
+                                              ],
+                                            },
+                                          ],
+                                        },
+                                      },
+                                    ],
+                                  },
+                                  { "$tag": "Text", "0": [".)"] },
+                                ],
+                              ],
+                            },
+                            "trailing_blanks": "",
+                          },
+                        ],
+                      },
+                    ],
+                  ],
+                },
+              },
+            ],
+          ],
+        },
+      ],
+    },
+    "defs": {},
+  })
+}
