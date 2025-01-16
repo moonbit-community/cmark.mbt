@@ -1103,7 +1103,7 @@ fn Parser::try_link_def(
 // First pass
 
 ///|
-/// Tries to push a link to the `rev_toks` stack.
+/// Tries to push a link to the `start_rev_toks` stack.
 /// If this function returns `Some((line_span, token))`, it means the stack has been modified.
 fn Parser::try_link(
   self : Parser,
@@ -1112,17 +1112,14 @@ fn Parser::try_link(
   image~ : Bool,
   start~ : BytePos
 ) -> (LineSpan, Token, Bool)? {
-  let old_rev_toks = start_rev_toks.val._.copy()
+  let rev_toks : Ref[RevTokens] = Ref::new(start_rev_toks.val._.copy())
   guard self.cidx.has_right_brack(after=start) else { return None }
   guard let Some((line, text_toks, text_last)) = self.find_link_text_tokens( // text_last with ] delim
-    start_rev_toks,
+    rev_toks,
     start_line,
     start~,
   ) else {
-    _ => {
-      start_rev_toks.val = old_rev_toks
-      return None
-    }
+    _ => return None
   }
   let (text, had_link) = self.parse_tokens(
     text_toks._,
@@ -1137,19 +1134,23 @@ fn Parser::try_link(
     },
   )
   if had_link && not(image) {
-    start_rev_toks.val = old_rev_toks
     return None
   }
-  self.try_link_def(
+  self
+  .try_link_def(
     start~,
-    start_rev_toks=Ref::new(old_rev_toks),
+    start_rev_toks~,
     start_line~,
-    rev_toks=start_rev_toks,
+    rev_toks~,
     line~,
     text_last~,
     image~,
     text,
   )
+  .map(fn(it) {
+    start_rev_toks.val = rev_toks.val
+    it
+  })
 }
 
 ///| Parse inline atoms and links.
