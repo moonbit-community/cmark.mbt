@@ -382,7 +382,7 @@ fn tokenize(
   guard let [line, .. lines] = lines else {
     _ => abort("expected at least one line")
   }
-  let toks : Tokens = Deque::new()
+  let toks : Tokens = @deque.new()
   let cidx = loop lines, line, false, line.first {
     lines, line, prev_bslash, k => {
       if k > line.last {
@@ -947,7 +947,7 @@ fn Parser::find_link_text_tokens(
   let _ = start
   let mut line = start_line
   let mut nest = 0
-  let acc : Tokens = Deque::new()
+  let acc : Tokens = @deque.new()
   for {
     match (rev_toks.val.pop(), nest) {
       (Some(RightBrack({ start: last })), 0) => {
@@ -1143,7 +1143,7 @@ fn Parser::first_pass(
   toks : Ref[Tokens],
   line : LineSpan
 ) -> Bool {
-  let acc : Tokens = Deque::new()
+  let acc : Tokens = @deque.new()
   let mut had_link = false
   let mut line = line
   let rev_toks : Ref[RevTokens] = Ref::new(toks.val._)
@@ -1229,7 +1229,7 @@ fn Parser::find_emphasis_text(
   }
 
   let mut line = line
-  let acc : Tokens = Deque::new()
+  let acc : Tokens = @deque.new()
   for {
     match rev_toks.val.pop() {
       None => break
@@ -1323,7 +1323,7 @@ fn Parser::find_strikethrough_text(
   rev_toks : Ref[RevTokens],
   start_line : LineSpan
 ) -> (LineSpan, Tokens, TokenStrikethroughMarks)? {
-  let acc : Tokens = Deque::new()
+  let acc : Tokens = @deque.new()
   let mut line = start_line
   for {
     match rev_toks.val.pop() {
@@ -1402,7 +1402,7 @@ fn Parser::second_pass(
   line : LineSpan
 ) -> Unit {
   let rev_toks : Ref[RevTokens] = Ref::new(toks.val._)
-  let acc : Tokens = Deque::new()
+  let acc : Tokens = @deque.new()
   toks.val = acc
   let mut line = line
   for {

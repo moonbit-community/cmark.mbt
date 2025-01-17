@@ -2,9 +2,6 @@
 typealias Buffer = StringBuilder
 
 ///|
-typealias Deque[A] = @deque.T[A]
-
-///|
 typealias Indent = @cmark_base.Indent
 
 ///|
@@ -32,7 +29,7 @@ typealias Span = @cmark_base.Span
 typealias LineSpan = @cmark_base.LineSpan
 
 ///|
-priv type Tokens Deque[Token]
+priv type Tokens @deque.T[Token]
 
 ///|
 impl Show for Tokens with output(self, logger) { logger.write_object(self._) }
@@ -53,7 +50,7 @@ fn Tokens::pop(self : Tokens) -> Token? {
 }
 
 ///|
-priv type RevTokens Deque[Token]
+priv type RevTokens @deque.T[Token]
 
 ///|
 impl Show for RevTokens with output(self, logger) {
