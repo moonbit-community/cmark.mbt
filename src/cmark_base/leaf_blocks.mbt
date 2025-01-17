@@ -419,8 +419,8 @@ pub fn LineType::html_block_start(
         return Nomatch
       }
       match s[next] {
-        '[' => html_block_start_5(s, last~, start~)
-        '-' => html_block_start_2(s, last~, start~)
+        '[' => LineType::html_block_start_5(s, last~, start~)
+        '-' => LineType::html_block_start_2(s, last~, start~)
         c =>
           if @char.is_ascii_alpha(c) {
             HtmlBlockLine(EndStr(">")) // 4
@@ -452,16 +452,16 @@ pub fn LineType::html_block_start(
         )
       if c != '/' {
         if html_start_cond_1_set.contains(tag) && is_open_end {
-          HtmlBlockLine(EndCond1) // 1
+          LineType::HtmlBlockLine(EndCond1) // 1
         } else if html_start_cond_6_set.contains(tag) && is_open_close_end {
-          HtmlBlockLine(EndBlank) // 6
+          LineType::HtmlBlockLine(EndBlank) // 6
         } else {
-          html_block_start_7_open_tag(s, last~, start~)
+          LineType::html_block_start_7_open_tag(s, last~, start~)
         }
       } else if html_start_cond_6_set.contains(tag) && is_open_close_end {
         HtmlBlockLine(EndBlank) // 6
       } else {
-        html_block_start_7_close_tag(s, last~, start~)
+        LineType::html_block_start_7_close_tag(s, last~, start~)
       }
     }
   }
@@ -508,7 +508,7 @@ pub fn LineType::html_block_end(
 ) -> Bool {
   match end_cond {
     EndStr(str) => @char.sub_includes(s, affix=str, first=start, last~)
-    EndCond1 => html_block_end_cond_1(s, last~, start~)
+    EndCond1 => LineType::html_block_end_cond_1(s, last~, start~)
     EndBlank | EndBlank7 => first_non_blank(s, last~, start~) == last + 1
   }
 }

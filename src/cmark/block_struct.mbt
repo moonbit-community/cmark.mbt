@@ -410,7 +410,7 @@ fn Parser::parse_link_ref_definition(
         if colon > line.last || self.i[colon] != ':' {
           raise @cmark_base.Exit
         }
-        let label = label_of_spans(self, key~, spans[:])
+        let label = Parser::label_of_spans(self, key~, spans[:])
         (lines, line, label, colon + 1)
       }
     }
@@ -423,7 +423,7 @@ fn Parser::parse_link_ref_definition(
       @cmark_base.link_destination(self.i, last=line.last, start~) {
       None => raise @cmark_base.Exit
       Some((angled, first, last)) => {
-        let dest = clean_unesc_unref_span(self, { ..line, first, last })
+        let dest = Parser::clean_unesc_unref_span(self, { ..line, first, last })
         let next = if angled { last + 2 } else { last + 1 }
         (angled, Some(dest), next, { ..line, last, })
       }
@@ -871,7 +871,7 @@ fn Parser::footnote(
   spans~ : ArrayView[Span],
   key~ : String
 ) -> BlockStruct {
-  let label = label_of_spans(self, key~, spans)
+  let label = Parser::label_of_spans(self, key~, spans)
   let defined_label = self.def_label(label)
   for def in defined_label {
     self.set_label_def(def, Label::stub(label, defined_label))
@@ -1258,7 +1258,7 @@ fn Parser::try_add_to_list_item(
     guard let Some(item) = list.items.last()
     return if list.last_blank &&
       not(last_blank) &&
-      item.blocks.iter().all(is_blank_line) {
+      item.blocks.iter().all(BlockStruct::is_blank_line) {
       // Item can only start with a single blank line, 
       // if we are here it's not a new item so the list ends
       self.add_open_blocks(bs..push(List(list)))

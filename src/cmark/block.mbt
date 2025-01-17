@@ -208,7 +208,7 @@ pub fn CodeBlock::language_of_info_string(s : String) -> (String, String)? {
 ///|
 fn CodeBlock::is_math_block(s : String?) -> Bool {
   guard let Some(s) = s else { _ => return false }
-  language_of_info_string(s).map(fn(i) { i.0 }) == Some("math")
+  CodeBlock::language_of_info_string(s).map(fn(i) { i.0 }) == Some("math")
 }
 
 ///| The type for [ATX](https://spec.commonmark.org/0.30/#atx-headings) 

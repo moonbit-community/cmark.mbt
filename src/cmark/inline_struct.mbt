@@ -621,7 +621,7 @@ fn Parser::try_code(
   escaped~ : Bool
 ) -> (LineSpan, Token)? {
   let cstart = start
-  guard not(escaped) && has_backticks(count~, after=cstart, self.cidx) else {
+  guard not(escaped) && self.cidx.has_backticks(count~, after=cstart) else {
     None
   }
   let first = cstart + count
