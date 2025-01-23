@@ -11,9 +11,9 @@ pub(all) struct Renderer {
 ///|
 pub fn Renderer::new(
   init_context~ : InitContextFn = fn(_c, _d) {  },
-  inline~ : InlineFn = fn!(_c, _i) { false },
-  block~ : BlockFn = fn!(_c, _b) { false },
-  doc~ : DocFn = fn!(_c, _d) { false }
+  inline~ : InlineFn = fn(_c, _i) { false },
+  block~ : BlockFn = fn(_c, _b) { false },
+  doc~ : DocFn = fn(_c, _d) { false }
 ) -> Renderer {
   { init_context, inline, block, doc }
 }
