@@ -1,5 +1,7 @@
 package rami3l/cmark/cmark_renderer
 
+alias @rami3l/cmark/cmark as @cmark
+
 // Values
 
 // Types and methods
@@ -7,14 +9,14 @@ pub(all) struct Context {
   renderer : Renderer
   state : Error?
   b : StringBuilder
-  doc : @rami3l/cmark/cmark.Doc
+  doc : @cmark.Doc
 }
 impl Context {
-  block(Self, @rami3l/cmark/cmark.Block) -> Unit!
+  block(Self, @cmark.Block) -> Unit!
   char(Self, Char) -> Unit
-  doc(Self, @rami3l/cmark/cmark.Doc) -> Unit!
-  init(Self, @rami3l/cmark/cmark.Doc) -> Unit
-  inline(Self, @rami3l/cmark/cmark.Inline) -> Unit!
+  doc(Self, @cmark.Doc) -> Unit!
+  init(Self, @cmark.Doc) -> Unit
+  inline(Self, @cmark.Inline) -> Unit!
   new(Renderer, StringBuilder) -> Self
   string(Self, String) -> Unit
 }
@@ -23,26 +25,26 @@ pub(all) type! RenderError String
 impl Show for RenderError
 
 pub(all) struct Renderer {
-  init_context : (Context, @rami3l/cmark/cmark.Doc) -> Unit
-  inline : (Context, @rami3l/cmark/cmark.Inline) -> Bool!
-  block : (Context, @rami3l/cmark/cmark.Block) -> Bool!
-  doc : (Context, @rami3l/cmark/cmark.Doc) -> Bool!
+  init_context : (Context, @cmark.Doc) -> Unit
+  inline : (Context, @cmark.Inline) -> Bool!
+  block : (Context, @cmark.Block) -> Bool!
+  doc : (Context, @cmark.Doc) -> Bool!
 }
 impl Renderer {
-  buffer_add_doc(Self, StringBuilder, @rami3l/cmark/cmark.Doc) -> Unit!
+  buffer_add_doc(Self, StringBuilder, @cmark.Doc) -> Unit!
   compose(Self, Self) -> Self
-  doc_to_string(Self, @rami3l/cmark/cmark.Doc) -> String!
-  new(init_context~ : (Context, @rami3l/cmark/cmark.Doc) -> Unit = .., inline~ : (Context, @rami3l/cmark/cmark.Inline) -> Bool! = .., block~ : (Context, @rami3l/cmark/cmark.Block) -> Bool! = .., doc~ : (Context, @rami3l/cmark/cmark.Doc) -> Bool! = ..) -> Self
+  doc_to_string(Self, @cmark.Doc) -> String!
+  new(init_context~ : (Context, @cmark.Doc) -> Unit = .., inline~ : (Context, @cmark.Inline) -> Bool! = .., block~ : (Context, @cmark.Block) -> Bool! = .., doc~ : (Context, @cmark.Doc) -> Bool! = ..) -> Self
 }
 
 // Type aliases
-pub typealias BlockFn = (Context, @rami3l/cmark/cmark.Block) -> Bool!
+pub typealias BlockFn = (Context, @cmark.Block) -> Bool!
 
-pub typealias DocFn = (Context, @rami3l/cmark/cmark.Doc) -> Bool!
+pub typealias DocFn = (Context, @cmark.Doc) -> Bool!
 
-pub typealias InitContextFn = (Context, @rami3l/cmark/cmark.Doc) -> Unit
+pub typealias InitContextFn = (Context, @cmark.Doc) -> Unit
 
-pub typealias InlineFn = (Context, @rami3l/cmark/cmark.Inline) -> Bool!
+pub typealias InlineFn = (Context, @cmark.Inline) -> Bool!
 
 // Traits
 
