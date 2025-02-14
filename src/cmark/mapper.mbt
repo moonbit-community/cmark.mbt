@@ -31,7 +31,9 @@ pub(all) enum MapperResult[A] {
 } derive(Eq, Show, ToJson)
 
 ///|
-pub impl[A] Default for MapperResult[A] with default() { Default }
+pub impl[A] Default for MapperResult[A] with default() {
+  Default
+}
 
 ///|
 pub(all) typealias FilterMap[A] = A?

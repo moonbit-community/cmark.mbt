@@ -32,7 +32,9 @@ typealias LineSpan = @cmark_base.LineSpan
 priv type Tokens @deque.T[Token]
 
 ///|
-impl Show for Tokens with output(self, logger) { logger.write_object(self._) }
+impl Show for Tokens with output(self, logger) {
+  logger.write_object(self._)
+}
 
 ///|
 impl ToJson for Tokens with to_json(self) {

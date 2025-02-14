@@ -1,6 +1,7 @@
 ///|
 typealias Doc = @cmark.Doc
 
+///|
 test "should render task list" (it : @test.T) {
   let doc =
     #|## List task items
@@ -37,6 +38,7 @@ test "should render task list" (it : @test.T) {
   it.snapshot!(filename="task_list.html")
 }
 
+///|
 test "should render strikethroughs" (it : @test.T) {
   let doc =
     #|## Strikethrough
@@ -55,6 +57,7 @@ test "should render strikethroughs" (it : @test.T) {
   it.snapshot!(filename="strikethrough.html")
 }
 
+///|
 test "should render footnotes" (it : @test.T) {
   let doc =
     #|## Footnotes
@@ -99,6 +102,7 @@ test "should render footnotes" (it : @test.T) {
   it.snapshot!(filename="footnote.html")
 }
 
+///|
 test "should render math" (it : @test.T) {
   let doc =
     #|## Math
@@ -128,6 +132,7 @@ test "should render math" (it : @test.T) {
   it.snapshot!(filename="math.html")
 }
 
+///|
 test "should render tables" (it : @test.T) {
   let doc =
     #|## Tables
@@ -203,12 +208,14 @@ test "should render tables" (it : @test.T) {
   it.snapshot!(filename="table.html")
 }
 
+///|
 test "basic" (it : @test.T) {
   let rendered = from_doc!(safe=false, Doc::from_string(test_basic_md_str))
   it.write(rendered)
   it.snapshot!(filename="basic.html")
 }
 
+///|
 test "spec" (it : @test.T) {
   let rendered = from_doc!(safe=false, Doc::from_string(test_spec_md_str))
   it.write(rendered)

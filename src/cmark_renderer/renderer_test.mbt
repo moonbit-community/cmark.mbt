@@ -1,3 +1,4 @@
+///|
 test "context char" {
   let b = StringBuilder::new(size_hint=0)
   let r = Renderer::new()
@@ -6,6 +7,7 @@ test "context char" {
   inspect!(b.to_string(), content="A")
 }
 
+///|
 test "context_string" {
   let buf = StringBuilder::new(size_hint=0)
   let renderer = Renderer::new()

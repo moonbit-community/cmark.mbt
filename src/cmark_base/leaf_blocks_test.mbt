@@ -1,3 +1,4 @@
+///|
 test "thematic break with empty input" {
   // Test case where start > last
   inspect!(
@@ -6,6 +7,7 @@ test "thematic break with empty input" {
   )
 }
 
+///|
 test "atx_heading empty" {
   inspect!(
     LineType::atx_heading("#", last=0, start=0),
@@ -13,14 +15,17 @@ test "atx_heading empty" {
   )
 }
 
+///|
 test "atx_heading too many hashes" {
   inspect!(LineType::atx_heading("#######", last=6, start=0), content="Nomatch")
 }
 
+///|
 test "atx_heading no blank after hash" {
   inspect!(LineType::atx_heading("#a", last=1, start=0), content="Nomatch")
 }
 
+///|
 test "setext_heading_underline empty string" {
   // Tests line 179: if start > last
   let s = ""
@@ -30,6 +35,7 @@ test "setext_heading_underline empty string" {
   )
 }
 
+///|
 test "setext_heading_underline invalid start char" {
   let s = "abc"
   inspect!(
@@ -38,6 +44,7 @@ test "setext_heading_underline invalid start char" {
   )
 }
 
+///|
 test "setext_heading_underline with non-marker char" {
   let s = "=x"
   inspect!(
@@ -46,6 +53,7 @@ test "setext_heading_underline with non-marker char" {
   )
 }
 
+///|
 test "setext_heading_underline with trailing blank" {
   // Tests line 173: if end_blank > last
   let s = "=== \t"
@@ -55,30 +63,35 @@ test "setext_heading_underline with trailing blank" {
   )
 }
 
+///|
 test "fenced_code_block_start empty input" {
   let s = ""
   let result = LineType::fenced_code_block_start(s, last=0, start=1)
   inspect!(result, content="Nomatch")
 }
 
+///|
 test "fenced_code_block_start with insufficient fence chars" {
   let s = "``"
   let result = LineType::fenced_code_block_start(s, last=1, start=0)
   inspect!(result, content="Nomatch")
 }
 
+///|
 test "fenced_code_block_start with indentation" {
   let s = "   ```"
   let result = LineType::fenced_code_block_start(s, last=5, start=0)
   inspect!(result, content="FencedCodeBlockLine(3, 5, None)")
 }
 
+///|
 test "fenced_code_block_start with non-fence char" {
   let s = "abc"
   let result = LineType::fenced_code_block_start(s, last=2, start=0)
   inspect!(result, content="Nomatch")
 }
 
+///|
 test "fenced code block continue - not enough fence chars" {
   // This test covers line 277 - raise Exit when not enough fence chars
   let fence = ('`', 3) // Requiring 3 backticks
@@ -89,6 +102,7 @@ test "fenced code block continue - not enough fence chars" {
   )
 }
 
+///|
 test "fenced code block continue - fence failure" {
   // This test covers line 300 - Exit => Code
   let fence = ('`', 3)
@@ -99,6 +113,7 @@ test "fenced code block continue - fence failure" {
   )
 }
 
+///|
 test "html block start negative cases" {
   // Test case for invalid '!' tag (lines 409, 418)
   inspect!(
@@ -117,6 +132,7 @@ test "html block start negative cases" {
   )
 }
 
+///|
 test "html block start with open tag" {
   // Test case for open tag (line 449)
   inspect!(
@@ -125,6 +141,7 @@ test "html block start with open tag" {
   )
 }
 
+///|
 test "html_block_end with EndStr" {
   let s = "Hello -->World"
   let end_cond = HtmlBlockEndCond::EndStr("-->")
@@ -139,6 +156,7 @@ test "html_block_end with EndStr" {
   )
 }
 
+///|
 test "html_block_end with EndCond1" {
   let s = "Hello </pre>World"
   let end_cond = HtmlBlockEndCond::EndCond1
@@ -153,37 +171,44 @@ test "html_block_end with EndCond1" {
   )
 }
 
+///|
 test "list_marker invalid bullet" {
   let s = "  hello"
   inspect!(LineType::list_marker(s, last=6, start=2), content="Nomatch")
 }
 
+///|
 test "list_marker bullet without space" {
   let s = "  -hello"
   inspect!(LineType::list_marker(s, last=7, start=2), content="Nomatch")
 }
 
+///|
 test "list_marker long ordered list" {
   let s = "  1234567890. "
   inspect!(LineType::list_marker(s, last=13, start=2), content="Nomatch")
 }
 
+///|
 test "list_marker ordered list without space" {
   let s = "  1.hello"
   inspect!(LineType::list_marker(s, last=8, start=2), content="Nomatch")
 }
 
+///|
 test "ext_task_marker returns None when start >= last" {
   inspect!(ext_task_marker("", last=0, start=1), content="None")
   inspect!(ext_task_marker("", last=0, start=0), content="None")
 }
 
+///|
 test "ext_task_marker returns None when input is invalid UTF-16" {
   // Create an invalid UTF-16 sequence by using a high surrogate without a low surrogate
   let s = "[\xD800]" // \xD800 is a high surrogate
   inspect!(ext_task_marker(s, last=s.length(), start=0), content="None")
 }
 
+///|
 test "atx_heading: empty heading" {
   inspect!(
     LineType::atx_heading("#     ", last=5, start=0),
@@ -191,6 +216,7 @@ test "atx_heading: empty heading" {
   )
 }
 
+///|
 test "atx_heading: heading with trailing hashes" {
   inspect!(
     LineType::atx_heading("# test #", last=7, start=0),
@@ -198,10 +224,12 @@ test "atx_heading: heading with trailing hashes" {
   )
 }
 
+///|
 test "atx_heading: invalid start" {
   inspect!(LineType::atx_heading("test", last=3, start=4), content="Nomatch")
 }
 
+///|
 test "html_block_start_5 with CDATA" {
   let s = "<![CDATA[foo]]>"
   inspect!(
@@ -210,6 +238,7 @@ test "html_block_start_5 with CDATA" {
   )
 }
 
+///|
 test "html_block_start_5 with incomplete CDATA" {
   let s = "<![CDA"
   inspect!(
@@ -218,6 +247,7 @@ test "html_block_start_5 with incomplete CDATA" {
   )
 }
 
+///|
 test "table row - no opening pipe" {
   inspect!(
     LineType::ext_table_row("a | b |", last=6, start=0),
@@ -225,6 +255,7 @@ test "table row - no opening pipe" {
   )
 }
 
+///|
 test "table row - no closing pipe" {
   inspect!(
     LineType::ext_table_row("| a | b ", last=6, start=0),
@@ -232,6 +263,7 @@ test "table row - no closing pipe" {
   )
 }
 
+///|
 test "table row - escaped closing pipe" {
   inspect!(
     LineType::ext_table_row("| a | b \\|", last=8, start=0),
@@ -239,14 +271,17 @@ test "table row - escaped closing pipe" {
   )
 }
 
+///|
 test "list_marker: empty string" {
   inspect!(LineType::list_marker("", last=0, start=1), content="Nomatch")
 }
 
+///|
 test "list_marker: ordered list with invalid marker" {
   inspect!(LineType::list_marker("123x", last=3, start=0), content="Nomatch")
 }
 
+///|
 test "html_block_start_7_open_tag - no match due to invalid open tag" {
   // Test case where open_tag returns None
   // This should trigger the uncovered line 361
@@ -257,6 +292,7 @@ test "html_block_start_7_open_tag - no match due to invalid open tag" {
   )
 }
 
+///|
 test "html block start nomatch" {
   inspect!(LineType::html_block_start("", last=0, start=0), content="Nomatch")
   inspect!(
@@ -265,6 +301,7 @@ test "html block start nomatch" {
   )
 }
 
+///|
 test "html block start type 3" {
   inspect!(
     LineType::html_block_start("<?xml", last=4, start=0),
@@ -272,6 +309,7 @@ test "html block start type 3" {
   )
 }
 
+///|
 test "html block start type 2" {
   inspect!(
     LineType::html_block_start("<!--", last=4, start=0),
@@ -279,6 +317,7 @@ test "html block start type 2" {
   )
 }
 
+///|
 test "html block start type 4" {
   inspect!(
     LineType::html_block_start("<!abc>", last=5, start=0),
@@ -286,6 +325,7 @@ test "html block start type 4" {
   )
 }
 
+///|
 test "ext_table_row with escaped pipe at the end" {
   // Test when there's a backslash before the closing pipe, should return Nomatch
   inspect!(
@@ -294,6 +334,7 @@ test "ext_table_row with escaped pipe at the end" {
   )
 }
 
+///|
 test "fenced code block with backtick in info string" {
   let s = "```rust`"
   // This should trigger line 197 by having a backtick in the info string
@@ -303,6 +344,7 @@ test "fenced code block with backtick in info string" {
   )
 }
 
+///|
 test "html_block_start_7_open_tag with non-blank after tag" {
   // Test case where there is content after the tag
   let s = "<tag>some content"
@@ -310,11 +352,13 @@ test "html_block_start_7_open_tag with non-blank after tag" {
   inspect!(result, content="Nomatch")
 }
 
+///|
 test "html_block_start empty after <!" {
   let s = "<!a"
   inspect!(LineType::html_block_start(s, last=1, start=0), content="Nomatch")
 }
 
+///|
 test "html_block_start with tags" {
   let s = "<pre>test</pre>"
   inspect!(
@@ -338,6 +382,7 @@ test "html_block_start with tags" {
   )
 }
 
+///|
 test "fenced code block continue - another short blank line" {
   let fence = ('`', 3)
   let s = " " // Single space string represents another short blank line
@@ -349,16 +394,19 @@ test "fenced code block continue - another short blank line" {
   )
 }
 
+///|
 test "could_be_link_ref_definition empty input" {
   let s = ""
   inspect!(could_be_link_ref_definition(s, last=0, start=1), content="false")
 }
 
+///|
 test "could_be_link_ref_definition exceed boundary" {
   let s = "   "
   inspect!(could_be_link_ref_definition(s, last=2, start=3), content="false")
 }
 
+///|
 test "html block start with closing tag that is not in cond 6 set - no whitespace" {
   let s = "</unknown>something"
   inspect!(
@@ -367,6 +415,7 @@ test "html block start with closing tag that is not in cond 6 set - no whitespac
   )
 }
 
+///|
 test "could_be_link_ref_definition no bracket" {
   inspect!(
     could_be_link_ref_definition("   ", last=2, start=0),
@@ -374,6 +423,7 @@ test "could_be_link_ref_definition no bracket" {
   )
 }
 
+///|
 test "html block start with closing tag that is not in cond 6 set" {
   let s = "</foo>"
   inspect!(
@@ -382,6 +432,7 @@ test "html block start with closing tag that is not in cond 6 set" {
   )
 }
 
+///|
 test "html block start with closing tag that is not in cond 6 set - longer" {
   let s = "</unknown> "
   inspect!(
@@ -390,6 +441,7 @@ test "html block start with closing tag that is not in cond 6 set - longer" {
   )
 }
 
+///|
 test "atx_heading with ending hashes" {
   // Test case where the heading ends with hashes preceded by a space
   inspect!(
@@ -416,6 +468,7 @@ test "atx_heading with ending hashes" {
   )
 }
 
+///|
 test "test LineType::fenced_code_block_start with uncovered section" {
   let s = "   ```"
   let last = 2

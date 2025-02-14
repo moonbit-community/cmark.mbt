@@ -1,3 +1,4 @@
+///|
 test "plain" {
   let doc =
     #|Basic tests
@@ -48,6 +49,7 @@ test "plain" {
   })
 }
 
+///|
 test "complex ref definitions" {
   let doc =
     #|  to [c    d][]
@@ -174,6 +176,7 @@ test "complex ref definitions" {
   })
 }
 
+///|
 test "HTML block" {
   let doc =
     #|<div>
@@ -206,6 +209,7 @@ test "HTML block" {
   })
 }
 
+///|
 test "should tokenize inline image across multiple lines" {
   let doc =
     #|This is an ![inline image](
@@ -237,6 +241,7 @@ test "should tokenize inline image across multiple lines" {
   ])
 }
 
+///|
 test "should parse indented code block" {
   let doc =
     #|The indented code block: 
@@ -289,6 +294,7 @@ test "should parse indented code block" {
   })
 }
 
+///|
 test "should parse quoted bullets" {
   let doc =
     #|> Quoted bullets
@@ -417,6 +423,7 @@ test "should parse quoted bullets" {
   })
 }
 
+///|
 test "should parse list item with multiple inlines" {
   let doc =
     #|4.  What is the exact rule for determining when list items get
