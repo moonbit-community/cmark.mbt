@@ -72,17 +72,15 @@ fn push_span(
 ) -> Unit {
   let first1 = first
   let last1 = last
-  match spans {
-    // Merge if on the same line
-    [.., { start, span: { pos, first, .. } }] =>
-      if line.pos.0 == pos.0 {
-        spans[spans.length() - 1] = {
-          start,
-          span: { ..line, first, last: last1 },
-        }
-        return
+  // Merge if on the same line
+  if spans is [.., { start, span: { pos, first, .. } }] {
+    if line.pos.0 == pos.0 {
+      spans[spans.length() - 1] = {
+        start,
+        span: { ..line, first, last: last1 },
       }
-    _ => ()
+      return
+    }
   }
   spans.push({ start: line.first, span: { ..line, first: first1, last: last1 } })
 }
