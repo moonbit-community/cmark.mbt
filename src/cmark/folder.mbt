@@ -71,7 +71,10 @@ pub fn Folder::fold_inline[A](
   acc : A,
   i : Inline
 ) -> A!FolderError {
-  guard let Default = (self.inline)(self, acc, i) else { Fold(acc) => acc }
+  match (self.inline)(self, acc, i) {
+    Default => ()
+    Fold(acc) => return acc
+  }
   match i {
     Autolink(_)
     | Break(_)
@@ -100,7 +103,10 @@ pub fn Folder::fold_block[A](
   acc : A,
   b : Block
 ) -> A!FolderError {
-  guard let Default = (self.block)(self, acc, b) else { Fold(acc) => acc }
+  match (self.block)(self, acc, b) {
+    Default => ()
+    Fold(acc) => return acc
+  }
   match b {
     BlankLine(_)
     | CodeBlock(_)

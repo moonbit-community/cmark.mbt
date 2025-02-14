@@ -39,13 +39,13 @@ priv struct Joined[T] {
 
 ///|
 pub fn safe(c : Context) -> Bool {
-  guard let Some(EState({ safe, .. })) = c.state
+  guard c.state is Some(EState({ safe, .. }))
   safe
 }
 
 ///|
 fn backend_blocks(c : Context) -> Bool {
-  guard let Some(EState({ backend_blocks, .. })) = c.state
+  guard c.state is Some(EState({ backend_blocks, .. }))
   backend_blocks
 }
 
@@ -68,7 +68,7 @@ fn init_context(
 
 ///|
 fn uid(c : Context, id : String) -> String {
-  guard let Some(EState({ ids, .. })) = c.state
+  guard c.state is Some(EState({ ids, .. }))
   loop ids, id, 0 {
     ids, id, c => {
       let id1 = if c == 0 { id } else { "\{id}-\{c}" }
@@ -107,16 +107,14 @@ fn make_footnote_ref_ids(
   label : String,
   f : @cmark.Footnote
 ) -> (String, String, String) {
-  guard let Some(EState({ footnotes, footnote_count, .. } as st)) = c.state
-  guard let Some({ text, id, .. } as rf) = footnotes[label] else {
-    None => {
-      let footnote_count = footnote_count + 1
-      st.footnote_count = footnote_count
-      let text = "[\{footnote_count}]"
-      let id = footnote_id(label)
-      footnotes[label] = { text, id, count: 1, footnote: f }
-      (text, id, footnote_ref_id(id, 1))
-    }
+  guard c.state is Some(EState({ footnotes, footnote_count, .. } as st))
+  guard footnotes[label] is Some({ text, id, .. } as rf) else {
+    let footnote_count = footnote_count + 1
+    st.footnote_count = footnote_count
+    let text = "[\{footnote_count}]"
+    let id = footnote_id(label)
+    footnotes[label] = { text, id, count: 1, footnote: f }
+    (text, id, footnote_ref_id(id, 1))
   }
   rf.count += 1
   (text, id, footnote_ref_id(id, rf.count))
@@ -291,24 +289,24 @@ fn comment(c : Context, s : String) -> Unit {
 
 ///|
 fn comment_undefined_label(c : Context, l : @cmark.InlineLink) -> Unit {
-  guard let Some(def) = l.referenced_label() else { _ => return }
+  guard l.referenced_label() is Some(def) else { return }
   comment(c, "Undefined label \{def.key}")
 }
 
 // fn comment_unknown_def_type(c : Context, l : @cmark.InlineLink) -> Unit {
-//   guard let Some(def) = l.referenced_label() else { _ => return  }
+//   guard l.referenced_label() is Some(def) else { return  }
 //   comment(c, "Unknown label definition type for \{def.key}")
 // }
 
 ///|
 fn comment_footnote_image(c : Context, l : @cmark.InlineLink) -> Unit {
-  guard let Some(def) = l.referenced_label() else { _ => return }
+  guard l.referenced_label() is Some(def) else { return }
   comment(c, "Footnote \{def.key} referenced as image")
 }
 
 ///|
 fn block_lines(c : Context, ls : Array[@cmark.StringNode]) -> Unit {
-  guard let Some({ v, .. }) = ls.get(0) else { _ => return }
+  guard ls.get(0) is Some({ v, .. }) else { return }
   c.b.write_string(v)
   for l in ls[1:] {
     c.b.write_char('\n')
@@ -634,12 +632,10 @@ fn list_item!(
   i : @cmark.Node[@cmark.ListItem]
 ) -> Unit {
   c.b.write_string("<li>")
-  guard let Some(mark) = i.v.ext_task_marker else {
-    _ => {
-      item_block!(tight~, c, i.v.block)
-      c.b.write_string("</li>\n")
-      return
-    }
+  guard i.v.ext_task_marker is Some(mark) else {
+    item_block!(tight~, c, i.v.block)
+    c.b.write_string("</li>\n")
+    return
   }
   let close = match @cmark.ListTaskStatus::from_marker(mark.v) {
     Unchecked => {
@@ -904,7 +900,7 @@ fn doc!(c : Context, d : Doc) -> Bool {
   let _ = c.block!(d.block)
   match c.state {
     Some(fs) => {
-      guard let EState({ footnotes: fs, .. }) = fs
+      guard fs is EState({ footnotes: fs, .. })
       if not(fs.is_empty()) {
         footnotes!(c, fs)
       }

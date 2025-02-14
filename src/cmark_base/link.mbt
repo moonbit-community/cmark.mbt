@@ -99,7 +99,7 @@ pub fn link_title[A](
       loop next_line, s, lines, line, false, start, start {
         next_line, s, lines, line, prev_bslash, start, k => {
           if k > line.last {
-            guard let Some(newline) = next_line(lines) else { _ => break None }
+            guard next_line(lines) is Some(newline) else { break None }
             guard newline.first <= newline.last else { break None }
             push_span(line~, start, line.last, acc)
             let start = first_non_blank_in_span(s, newline)
@@ -146,7 +146,7 @@ pub fn link_label[A](
   loop buf, next_line, s, lines, line, '\x00', start, 0, start {
     b, next_line, s, lines, line, prev, start, count, k => {
       if k > line.last {
-        guard let Some(newline) = next_line(lines) else { _ => break None }
+        guard next_line(lines) is Some(newline) else { break None }
         if newline.first == newline.last {
           break None
         }
