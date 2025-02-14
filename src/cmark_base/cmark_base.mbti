@@ -1,5 +1,7 @@
 package rami3l/cmark/cmark_base
 
+alias @moonbitlang/core/json as @json
+
 // Values
 fn autolink_email(String, last~ : Int = .., start~ : Int = ..) -> Int?
 
@@ -113,7 +115,7 @@ impl ListType {
 impl Eq for ListType
 impl Show for ListType
 impl ToJson for ListType
-impl @moonbitlang/core/json.FromJson for ListType
+impl @json.FromJson for ListType
 
 pub(all) struct Meta {
   id : Int
@@ -168,7 +170,7 @@ impl Compare for TextLoc
 impl Eq for TextLoc
 impl Show for TextLoc
 impl ToJson for TextLoc
-impl @moonbitlang/core/json.FromJson for TextLoc
+impl @json.FromJson for TextLoc
 
 // Type aliases
 pub typealias BytePos = Int

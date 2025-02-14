@@ -1,15 +1,18 @@
 package rami3l/cmark/cmark_html
 
+alias @rami3l/cmark/cmark as @cmark
+alias @rami3l/cmark/cmark_renderer as @cmark_renderer
+
 // Values
-fn from_doc(backend_blocks~ : Bool = .., safe~ : Bool, @rami3l/cmark/cmark.Doc) -> String!
+fn from_doc(backend_blocks~ : Bool = .., safe~ : Bool, @cmark.Doc) -> String!
 
 fn render(backend_blocks~ : Bool = .., safe~ : Bool = .., strict~ : Bool = .., String) -> String!
 
-fn renderer(backend_blocks~ : Bool = .., safe~ : Bool) -> @rami3l/cmark/cmark_renderer.Renderer
+fn renderer(backend_blocks~ : Bool = .., safe~ : Bool) -> @cmark_renderer.Renderer
 
-fn safe(@rami3l/cmark/cmark_renderer.Context) -> Bool
+fn safe(@cmark_renderer.Context) -> Bool
 
-fn xhtml_renderer(backend_blocks~ : Bool = .., safe~ : Bool) -> @rami3l/cmark/cmark_renderer.Renderer
+fn xhtml_renderer(backend_blocks~ : Bool = .., safe~ : Bool) -> @cmark_renderer.Renderer
 
 // Types and methods
 type HtmlRenderFootnote

@@ -1,9 +1,12 @@
 package rami3l/cmark/cmark
 
+alias @moonbitlang/core/json as @json
+alias @rami3l/cmark/cmark_base as @cmark_base
+
 // Values
 let layout_empty : Node[String]
 
-fn layout_of_string(meta~ : @rami3l/cmark/cmark_base.Meta = .., String) -> Node[String]
+fn layout_of_string(meta~ : @cmark_base.Meta = .., String) -> Node[String]
 
 // Types and methods
 type Atx
@@ -31,7 +34,7 @@ pub(all) enum Block {
 impl Block {
   defs(Self, init~ : Map[String, LabelDef] = ..) -> Map[String, LabelDef]
   empty() -> Self
-  meta(Self) -> @rami3l/cmark/cmark_base.Meta
+  meta(Self) -> @cmark_base.Meta
   normalize(Self) -> Self
 }
 impl Show for Block
@@ -59,7 +62,7 @@ impl BlockHeadingAtxLayout {
 }
 impl Show for BlockHeadingAtxLayout
 impl ToJson for BlockHeadingAtxLayout
-impl @moonbitlang/core/json.FromJson for BlockHeadingAtxLayout
+impl @json.FromJson for BlockHeadingAtxLayout
 
 pub(all) enum BlockHeadingId {
   Auto(String)
@@ -67,7 +70,7 @@ pub(all) enum BlockHeadingId {
 }
 impl Show for BlockHeadingId
 impl ToJson for BlockHeadingId
-impl @moonbitlang/core/json.FromJson for BlockHeadingId
+impl @json.FromJson for BlockHeadingId
 
 pub(all) enum BlockHeadingLayout {
   Atx(BlockHeadingAtxLayout)
@@ -88,12 +91,12 @@ impl ToJson for BlockHeadingSetextLayout
 
 pub(all) type BlockLine Node[String]
 impl BlockLine {
-  list_text_loc(Seq[Self]) -> @rami3l/cmark/cmark_base.TextLoc
+  list_text_loc(Seq[Self]) -> @cmark_base.TextLoc
   to_string(Self) -> String
 }
 
 pub(all) struct BlockList {
-  ty : @rami3l/cmark/cmark_base.ListType
+  ty : @cmark_base.ListType
   tight : Bool
   items : Seq[Node[ListItem]]
 }
@@ -140,7 +143,7 @@ impl BlockThematicBreak {
 }
 impl Show for BlockThematicBreak
 impl ToJson for BlockThematicBreak
-impl @moonbitlang/core/json.FromJson for BlockThematicBreak
+impl @json.FromJson for BlockThematicBreak
 
 type Closer
 impl Compare for Closer
@@ -209,7 +212,7 @@ type FenceCodeBlockStruct
 impl Show for FenceCodeBlockStruct
 impl ToJson for FenceCodeBlockStruct
 
-pub(all) struct Folder {
+pub(all) struct Folder[A] {
   inline_ext_default : (Folder[A], A, Inline) -> A!FolderError
   block_ext_default : (Folder[A], A, Block) -> A!FolderError
   inline : (Folder[A], A, Inline) -> FolderResult[A]
@@ -229,7 +232,7 @@ impl Folder {
 pub(all) type! FolderError String
 impl Show for FolderError
 
-pub(all) enum FolderResult {
+pub(all) enum FolderResult[A] {
   Default
   Fold(A)
 }
@@ -286,7 +289,7 @@ impl Inline {
   empty() -> Self
   id(Self, buf~ : StringBuilder = ..) -> String
   is_empty(Self) -> Bool
-  meta(Self) -> @rami3l/cmark/cmark_base.Meta
+  meta(Self) -> @cmark_base.Meta
   normalize(Self) -> Self
   to_plain_text(Self, break_on_soft~ : Bool) -> Seq[Seq[String]]
 }
@@ -325,7 +328,7 @@ impl Compare for InlineBreakType
 impl Eq for InlineBreakType
 impl Show for InlineBreakType
 impl ToJson for InlineBreakType
-impl @moonbitlang/core/json.FromJson for InlineBreakType
+impl @json.FromJson for InlineBreakType
 
 pub(all) struct InlineCodeSpan {
   backticks : Int
@@ -333,7 +336,7 @@ pub(all) struct InlineCodeSpan {
 }
 impl InlineCodeSpan {
   code(Self) -> String
-  from_string(meta~ : @rami3l/cmark/cmark_base.Meta = .., String) -> Self
+  from_string(meta~ : @cmark_base.Meta = .., String) -> Self
   new(backticks~ : Int, Seq[Tight]) -> Self
 }
 impl Eq for InlineCodeSpan
@@ -387,15 +390,15 @@ impl Show for InlineStrikethrough
 impl ToJson for InlineStrikethrough
 
 pub(all) struct Label {
-  meta : @rami3l/cmark/cmark_base.Meta
+  meta : @cmark_base.Meta
   key : String
   text : Seq[Tight]
 }
 impl Label {
   compare(Self, Self) -> Int
-  new(meta~ : @rami3l/cmark/cmark_base.Meta = .., key~ : String, Seq[Tight]) -> Self
+  new(meta~ : @cmark_base.Meta = .., key~ : String, Seq[Tight]) -> Self
   op_equal(Self, Self) -> Bool
-  text_loc(Self) -> @rami3l/cmark/cmark_base.TextLoc
+  text_loc(Self) -> @cmark_base.TextLoc
 }
 impl Show for Label
 impl ToJson for Label
@@ -504,7 +507,7 @@ impl Mapper {
 pub(all) type! MapperError String
 impl Show for MapperError
 
-pub(all) enum MapperResult {
+pub(all) enum MapperResult[A] {
   Default
   Map(A?)
 }
@@ -513,14 +516,14 @@ impl[A : Eq] Eq for MapperResult[A]
 impl[A : Show] Show for MapperResult[A]
 impl[A : ToJson] ToJson for MapperResult[A]
 
-pub(all) struct Node {
+pub(all) struct Node[A] {
   v : A
-  meta : @rami3l/cmark/cmark_base.Meta
+  meta : @cmark_base.Meta
 }
 impl Node {
-  empty(meta~ : @rami3l/cmark/cmark_base.Meta = ..) -> Self[String]
+  empty(meta~ : @cmark_base.Meta = ..) -> Self[String]
   map[A, B](Self[A], (A) -> B) -> Self[B]
-  new[A](A, meta~ : @rami3l/cmark/cmark_base.Meta = ..) -> Self[A]
+  new[A](A, meta~ : @cmark_base.Meta = ..) -> Self[A]
 }
 impl[A : Eq] Eq for Node[A]
 impl[A : Show] Show for Node[A]
@@ -548,9 +551,9 @@ pub(all) enum ReferenceLayout {
 impl Eq for ReferenceLayout
 impl Show for ReferenceLayout
 impl ToJson for ReferenceLayout
-impl @moonbitlang/core/json.FromJson for ReferenceLayout
+impl @json.FromJson for ReferenceLayout
 
-type Seq
+type Seq[A]
 impl Seq {
   empty[A]() -> Self[A]
   fold[A, B](Self[A], init~ : B, (B, A) -> B) -> B
@@ -596,7 +599,7 @@ pub(all) enum TableAlign {
 }
 impl Show for TableAlign
 impl ToJson for TableAlign
-impl @moonbitlang/core/json.FromJson for TableAlign
+impl @json.FromJson for TableAlign
 
 pub(all) enum TableRow {
   Header(Seq[(Inline, (String, String))])
@@ -611,8 +614,8 @@ pub(all) struct Tight {
   node : Node[String]
 }
 impl Tight {
-  empty(meta~ : @rami3l/cmark/cmark_base.Meta = ..) -> Self
-  list_text_loc(Seq[Self]) -> @rami3l/cmark/cmark_base.TextLoc
+  empty(meta~ : @cmark_base.Meta = ..) -> Self
+  list_text_loc(Seq[Self]) -> @cmark_base.TextLoc
   to_string(Self) -> String
 }
 impl Eq for Tight
