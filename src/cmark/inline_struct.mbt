@@ -957,12 +957,10 @@ fn Parser::find_link_text_tokens(
         return Some((line, acc, last))
       }
       (Some(Backticks({ start, count, escaped })), _) =>
-        match self.try_code(rev_toks, line, start~, count~, escaped~) {
-          None => ()
-          Some((line_, t)) => {
-            line = line_
-            acc.push(t)
-          }
+        if self.try_code(rev_toks, line, start~, count~, escaped~)
+          is Some((line_, t)) {
+          line = line_
+          acc.push(t)
         }
       (Some(MathSpanMarks({ start, count, may_open, .. })), _) => {
         guard may_open else { continue }
@@ -1157,39 +1155,30 @@ fn Parser::first_pass(
     match rev_toks.val.pop() {
       None => break
       Some(Backticks({ start, count, escaped })) =>
-        match self.try_code(rev_toks, line, start~, count~, escaped~) {
-          None => ()
-          Some((line_, t)) => {
-            line = line_
-            acc.push(t)
-          }
+        if self.try_code(rev_toks, line, start~, count~, escaped~)
+          is Some((line_, t)) {
+          line = line_
+          acc.push(t)
         }
       Some(MathSpanMarks({ start, count, may_open, .. })) => {
         guard may_open else { continue }
-        match self.try_math_span(rev_toks, line, start~, count~) {
-          None => ()
-          Some((line_, t)) => {
-            line = line_
-            acc.push(t)
-          }
+        if self.try_math_span(rev_toks, line, start~, count~)
+          is Some((line_, t)) {
+          line = line_
+          acc.push(t)
         }
       }
       Some(AutolinkOrHtmlStart({ start, .. })) =>
-        match self.try_autolink_or_html(rev_toks, line, start~) {
-          None => ()
-          Some((line_, t)) => {
-            line = line_
-            acc.push(t)
-          }
+        if self.try_autolink_or_html(rev_toks, line, start~) is Some((line_, t)) {
+          line = line_
+          acc.push(t)
         }
       Some(LinkStart({ start, image })) =>
-        match self.try_link(rev_toks, line, image~, start~) {
-          None => ()
-          Some((l, t, had_link_)) => {
-            acc.push(t)
-            line = l
-            had_link = had_link_
-          }
+        if self.try_link(rev_toks, line, image~, start~)
+          is Some((l, t, had_link_)) {
+          acc.push(t)
+          line = l
+          had_link = had_link_
         }
       Some(RightBrack(_)) => ()
       Some(Newline({ newline, .. }) as nl) => {

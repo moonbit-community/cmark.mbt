@@ -543,24 +543,19 @@ fn code_block(c : Context, cb : @cmark.CodeBlock) -> Unit {
     html_escaped_string(c, l.v)
     c.b.write_char('\n')
   }
-  match lang {
-    Some((lang, _env)) =>
-      if backend_blocks(c) && lang[0] == '=' {
-        if lang == "=html" && not(safe(c)) {
-          block_lines(c, cb.code.to_array())
-        }
-        return
+  if lang is Some((lang, _env)) {
+    if backend_blocks(c) && lang[0] == '=' {
+      if lang == "=html" && not(safe(c)) {
+        block_lines(c, cb.code.to_array())
       }
-    _ => ()
+      return
+    }
   }
   c.b.write_string("<pre><code")
-  match lang {
-    None => ()
-    Some((lang, _env)) => {
-      c.b.write_string(" class=\"language-")
-      html_escaped_string(c, lang)
-      c.b.write_char('"')
-    }
+  if lang is Some((lang, _env)) {
+    c.b.write_string(" class=\"language-")
+    html_escaped_string(c, lang)
+    c.b.write_char('"')
   }
   c.b.write_char('>')
   for l in cb.code {
@@ -898,14 +893,11 @@ fn footnotes!(c : Context, fs : LabelMap[HtmlRenderFootnote]) -> Unit {
 ///|
 fn doc!(c : Context, d : Doc) -> Bool {
   let _ = c.block!(d.block)
-  match c.state {
-    Some(fs) => {
-      guard fs is EState({ footnotes: fs, .. })
-      if not(fs.is_empty()) {
-        footnotes!(c, fs)
-      }
+  if c.state is Some(fs) {
+    guard fs is EState({ footnotes: fs, .. })
+    if not(fs.is_empty()) {
+      footnotes!(c, fs)
     }
-    None => ()
   }
   true
 }

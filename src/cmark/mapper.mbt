@@ -84,9 +84,8 @@ pub fn Mapper::new(
 
 ///|
 pub fn Mapper::map_inline(self : Mapper, i : Inline) -> FilterMap[Inline] {
-  match (self.inline)(self, i) {
-    Default => ()
-    Map(i) => return i
+  if (self.inline)(self, i) is Map(i) {
+    return i
   }
   match i {
     Autolink(_)
@@ -126,9 +125,8 @@ pub fn Mapper::map_inline(self : Mapper, i : Inline) -> FilterMap[Inline] {
 
 ///|
 pub fn Mapper::map_block(self : Mapper, b : Block) -> FilterMap[Block] {
-  match (self.block)(self, b) {
-    Default => ()
-    Map(b) => return b
+  if (self.block)(self, b) is Map(b) {
+    return b
   }
   match b {
     BlankLine(_)

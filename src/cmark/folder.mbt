@@ -71,9 +71,8 @@ pub fn Folder::fold_inline[A](
   acc : A,
   i : Inline
 ) -> A!FolderError {
-  match (self.inline)(self, acc, i) {
-    Default => ()
-    Fold(acc) => return acc
+  if (self.inline)(self, acc, i) is Fold(acc) {
+    return acc
   }
   match i {
     Autolink(_)
@@ -103,9 +102,8 @@ pub fn Folder::fold_block[A](
   acc : A,
   b : Block
 ) -> A!FolderError {
-  match (self.block)(self, acc, b) {
-    Default => ()
-    Fold(acc) => return acc
+  if (self.block)(self, acc, b) is Fold(acc) {
+    return acc
   }
   match b {
     BlankLine(_)
@@ -134,12 +132,10 @@ pub fn Folder::fold_block[A](
     ExtTable({ v, .. }) => {
       let mut acc = acc
       for x in v.rows {
-        match x.0.v {
-          Header(is_) | Data(is_) =>
-            for y in is_ {
-              acc = self.fold_inline!(acc, y.0)
-            }
-          Sep(_) => ()
+        if x.0.v is (Header(is_) | Data(is_)) {
+          for y in is_ {
+            acc = self.fold_inline!(acc, y.0)
+          }
         }
       }
       acc
