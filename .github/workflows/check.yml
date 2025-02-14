@@ -48,7 +48,7 @@ jobs:
 
       - name: moon info and moon fmt
         run: |
-          moon info --no-alias
+          moon info
           moon fmt
           git diff --exit-code
 
