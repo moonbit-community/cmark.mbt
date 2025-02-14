@@ -100,7 +100,7 @@ fn accept_to[A](
   loop lines, line, after, after + 1 {
     lines, line, start, k => {
       if k > line.last {
-        guard let Some(new_line) = next_line(lines) else { _ => break None }
+        guard next_line(lines) is Some(new_line) else { break None }
         push_span(line~, start, line.last, spans)
         let start = first_non_blank_in_span(s, new_line)
         continue lines, new_line, start, start
@@ -128,7 +128,7 @@ fn accept_upto[A](
   loop char, next_line, s, lines, line, false, start, spans, start {
     char, next_line, s, lines, line, prev_bslash, start, acc, k =>
       if k > line.last {
-        guard let Some(newline) = next_line(lines) else { _ => break None }
+        guard next_line(lines) is Some(newline) else { break None }
         if newline.first > newline.last { // Empty
           break None
         }
@@ -161,7 +161,7 @@ pub fn first_non_blank_over_nl[A](
   if nb <= line.last {
     return Some(ThisLine(nb))
   }
-  guard let Some(new_line) = next_line(lines) else { _ => return None }
+  guard next_line(lines) is Some(new_line) else { return None }
   let nb = first_non_blank_in_span(s, new_line)
   if nb > new_line.last {
     return None

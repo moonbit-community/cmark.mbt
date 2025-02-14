@@ -207,7 +207,7 @@ pub fn CodeBlock::language_of_info_string(s : String) -> (String, String)? {
 
 ///|
 fn CodeBlock::is_math_block(s : String?) -> Bool {
-  guard let Some(s) = s else { _ => return false }
+  guard s is Some(s) else { return false }
   CodeBlock::language_of_info_string(s).map(fn(i) { i.0 }) == Some("math")
 }
 

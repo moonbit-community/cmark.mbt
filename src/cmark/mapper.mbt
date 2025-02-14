@@ -84,7 +84,10 @@ pub fn Mapper::new(
 
 ///|
 pub fn Mapper::map_inline(self : Mapper, i : Inline) -> FilterMap[Inline] {
-  guard let Default = (self.inline)(self, i) else { Map(i) => i }
+  match (self.inline)(self, i) {
+    Default => ()
+    Map(i) => return i
+  }
   match i {
     Autolink(_)
     | Break(_)
@@ -97,15 +100,15 @@ pub fn Mapper::map_inline(self : Mapper, i : Inline) -> FilterMap[Inline] {
       Some(Image({ v: { ..v, text, }, meta }))
     }
     Link({ v, meta }) => {
-      guard let Some(text) = self.map_inline(v.text) else { _ => None }
+      guard self.map_inline(v.text) is Some(text) else { None }
       Some(Link({ v: { ..v, text, }, meta }))
     }
     Emphasis({ v, meta }) => {
-      guard let Some(inline) = self.map_inline(v.inline) else { _ => None }
+      guard self.map_inline(v.inline) is Some(inline) else { None }
       Some(Emphasis({ v: { ..v, inline, }, meta }))
     }
     StrongEmphasis({ v, meta }) => {
-      guard let Some(inline) = self.map_inline(v.inline) else { _ => None }
+      guard self.map_inline(v.inline) is Some(inline) else { None }
       Some(StrongEmphasis({ v: { ..v, inline, }, meta }))
     }
     Inlines({ v, meta }) => {
@@ -114,7 +117,7 @@ pub fn Mapper::map_inline(self : Mapper, i : Inline) -> FilterMap[Inline] {
       Some(Inlines({ v, meta }))
     }
     ExtStrikethrough({ v, meta }) => {
-      guard let Some(v) = self.map_inline(v._) else { _ => None }
+      guard self.map_inline(v._) is Some(v) else { None }
       Some(ExtStrikethrough({ v, meta }))
     }
     // ext => (self.inline_ext_default)(self, ext)
@@ -123,7 +126,10 @@ pub fn Mapper::map_inline(self : Mapper, i : Inline) -> FilterMap[Inline] {
 
 ///|
 pub fn Mapper::map_block(self : Mapper, b : Block) -> FilterMap[Block] {
-  guard let Default = (self.block)(self, b) else { Map(b) => b }
+  match (self.block)(self, b) {
+    Default => ()
+    Map(b) => return b
+  }
   match b {
     BlankLine(_)
     | CodeBlock(_)
@@ -151,7 +157,7 @@ pub fn Mapper::map_block(self : Mapper, b : Block) -> FilterMap[Block] {
     List({ v, meta }) => {
       fn map_list_item(i : Node[ListItem]) {
         let { v, meta } = i
-        guard let Some(block) = self.map_block(i.v.block) else { _ => None }
+        guard self.map_block(i.v.block) is Some(block) else { None }
         Some({ v: { ..v, block, }, meta })
       }
 
@@ -161,7 +167,7 @@ pub fn Mapper::map_block(self : Mapper, b : Block) -> FilterMap[Block] {
       }
     }
     Paragraph({ v, meta }) => {
-      guard let Some(inline) = self.map_inline(v.inline) else { _ => None }
+      guard self.map_inline(v.inline) is Some(inline) else { None }
       Some(Paragraph({ v: { ..v, inline, }, meta }))
     }
     ExtFootnoteDefinition({ v, meta }) => {
@@ -200,7 +206,7 @@ pub fn Mapper::map_block(self : Mapper, b : Block) -> FilterMap[Block] {
 pub fn Mapper::map_doc(self : Mapper, d : Doc) -> Doc {
   let map_block = fn(b) { self.map_block(b).or(Block::empty()) }
   let map_def = fn(b : LabelDef) {
-    guard let FootnoteDef({ v, meta }) = b else { b => b }
+    guard b is FootnoteDef({ v, meta }) else { b }
     let block = map_block(v.block)
     FootnoteDef({ v: { ..v, block, }, meta })
   }

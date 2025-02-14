@@ -379,9 +379,7 @@ fn tokenize(
   s : String,
   lines : Array[LineSpan]
 ) -> (CloserIndex, Tokens, LineSpan) {
-  guard let [line, .. lines] = lines else {
-    _ => abort("expected at least one line")
-  }
+  guard lines is [line, .. lines] else { abort("expected at least one line") }
   let toks : Tokens = @deque.new()
   let cidx = loop lines, line, false, line.first {
     lines, line, prev_bslash, k => {
@@ -722,28 +720,25 @@ fn Parser::try_autolink_or_html(
   start~ : BytePos
 ) -> (LineSpan, Token)? {
   // Weirdly, there's seemingly no `if let` in Moonbit.
-  guard let None = @cmark_base.autolink_uri(self.i, last=line.last, start~) else {
-    Some(last) => {
-      let t = self.autolink_token(line, first=start, last~, is_email=false)
-      tokens_pop_until(start=last + 1, rev_toks.val)
-      return Some((line, t))
-    }
+  if @cmark_base.autolink_uri(self.i, last=line.last, start~) is Some(last) {
+    let t = self.autolink_token(line, first=start, last~, is_email=false)
+    tokens_pop_until(start=last + 1, rev_toks.val)
+    return Some((line, t))
   }
-  guard let None = @cmark_base.autolink_email(self.i, last=line.last, start~) else {
-    Some(last) => {
-      let t = self.autolink_token(line, first=start, last~, is_email=true)
-      tokens_pop_until(start=last + 1, rev_toks.val)
-      return Some((line, t))
-    }
+  if @cmark_base.autolink_email(self.i, last=line.last, start~) is Some(last) {
+    let t = self.autolink_token(line, first=start, last~, is_email=true)
+    tokens_pop_until(start=last + 1, rev_toks.val)
+    return Some((line, t))
   }
-  guard let Some((last_line, spans, last)) = @cmark_base.raw_html(
-    next_line=tokens_next_line,
-    self.i,
-    rev_toks.val,
-    line~,
-    start~,
-  ) else {
-    _ => return None
+  guard @cmark_base.raw_html(
+      next_line=tokens_next_line,
+      self.i,
+      rev_toks.val,
+      line~,
+      start~,
+    )
+    is Some((last_line, spans, last)) else {
+    None
   }
   let first = start
   let first_line = line
@@ -776,20 +771,19 @@ fn Parser::try_full_reflink_remainder(
   image~ : Bool,
   start~ : BytePos
 ) -> (LineSpan, ReferenceKind, BytePos)?? {
-  guard let Some((line, spans, last, key)) = @cmark_base.link_label(
-    self.buf,
-    next_line=tokens_next_line,
-    self.i,
-    rev_toks.val,
-    line~,
-    start~,
-  ) else {
-    _ => None
+  guard @cmark_base.link_label(
+      self.buf,
+      next_line=tokens_next_line,
+      self.i,
+      rev_toks.val,
+      line~,
+      start~,
+    )
+    is Some((line, spans, last, key)) else {
+    None
   }
   let ref_ = self.label_of_spans(key~, spans[:])
-  guard let Some(def) = self.find_def_for_ref(image~, ref_) else {
-    _ => Some(None)
-  }
+  guard self.find_def_for_ref(image~, ref_) is Some(def) else { Some(None) }
   tokens_drop_stop_after_right_brack(rev_toks.val)
   Some(Some((line, ReferenceKind::Ref(Full, ref_, def), last)))
 }
@@ -804,18 +798,19 @@ fn Parser::try_shortcut_reflink(
   start~ : BytePos
 ) -> (LineSpan, ReferenceKind, BytePos)? {
   let start = start + image.to_int() // [
-  guard let Some((line, spans, last, key)) = @cmark_base.link_label(
-    self.buf,
-    next_line=tokens_next_line,
-    self.i,
-    rev_toks.val,
-    line~,
-    start~,
-  ) else {
-    _ => return None
+  guard @cmark_base.link_label(
+      self.buf,
+      next_line=tokens_next_line,
+      self.i,
+      rev_toks.val,
+      line~,
+      start~,
+    )
+    is Some((line, spans, last, key)) else {
+    None
   }
   let ref_ = self.label_of_spans(key~, spans[:])
-  guard let Some(def) = self.find_def_for_ref(image~, ref_) else { _ => None }
+  guard self.find_def_for_ref(image~, ref_) is Some(def) else { None }
   tokens_drop_stop_after_right_brack(rev_toks.val)
   Some((line, ReferenceKind::Ref(Shortcut, ref_, def), last))
 }
@@ -830,19 +825,20 @@ fn Parser::try_collapsed_reflink(
   start~ : BytePos
 ) -> (LineSpan, ReferenceKind, BytePos)? {
   let start = start + image.to_int() // [
-  guard let Some((line, spans, last, key)) = @cmark_base.link_label(
-    self.buf,
-    next_line=tokens_next_line,
-    self.i,
-    rev_toks.val,
-    line~,
-    start~,
-  ) else {
-    _ => return None
+  guard @cmark_base.link_label(
+      self.buf,
+      next_line=tokens_next_line,
+      self.i,
+      rev_toks.val,
+      line~,
+      start~,
+    )
+    is Some((line, spans, last, key)) else {
+    None
   }
   let ref_ = self.label_of_spans(key~, spans[:])
   let last = last + 2 // ][]
-  guard let Some(def) = self.find_def_for_ref(image~, ref_) else { _ => None }
+  guard self.find_def_for_ref(image~, ref_) is Some(def) else { None }
   tokens_drop_stop_after_right_brack(rev_toks.val)
   tokens_drop_stop_after_right_brack(rev_toks.val)
   Some((line, ReferenceKind::Ref(Collapsed, ref_, def), last))
@@ -860,13 +856,14 @@ fn Parser::try_inline_link_remainder(
   let _ = image
   let st = start
   guard self.cidx.has_right_paren(after=st) else { None }
-  guard let Some((line, before_dest, start)) = self.first_non_blank_over_nl(
-    next_line=tokens_next_line,
-    rev_toks.val,
-    start_line,
-    start=st + 1,
-  ) else {
-    _ => None
+  guard self.first_non_blank_over_nl(
+      next_line=tokens_next_line,
+      rev_toks.val,
+      start_line,
+      start=st + 1,
+    )
+    is Some((line, before_dest, start)) else {
+    None
   }
   let (line, angled_dest, dest, start) = match
     @cmark_base.link_destination(self.i, last=line.last, start~) {
@@ -969,24 +966,17 @@ fn Parser::find_link_text_tokens(
         }
       (Some(MathSpanMarks({ start, count, may_open, .. })), _) => {
         guard may_open else { continue }
-        guard let Some((line_, t)) = self.try_math_span(
-          rev_toks,
-          line,
-          start~,
-          count~,
-        ) else {
-          _ => continue
+        guard self.try_math_span(rev_toks, line, start~, count~)
+          is Some((line_, t)) else {
+          continue
         }
         line = line_
         acc.push(t)
       }
       (Some(AutolinkOrHtmlStart({ start })), _) => {
-        guard let Some((line_, t)) = self.try_autolink_or_html(
-          rev_toks,
-          line,
-          start~,
-        ) else {
-          _ => continue
+        guard self.try_autolink_or_html(rev_toks, line, start~)
+          is Some((line_, t)) else {
+          continue
         }
         line = line_
         acc.push(t)
@@ -1070,11 +1060,9 @@ fn Parser::try_link_def(
       _ => self.try_shortcut_reflink(start_rev_toks, start_line, image~, start~)
     }
   }
-  guard let Some((endline, reference, last)) = link else {
-    _ => {
-      start_rev_toks.val = old_rev_toks
-      return None
-    }
+  guard link is Some((endline, reference, last)) else {
+    start_rev_toks.val = old_rev_toks
+    return None
   }
   let first = start
   let text = self.inlines_inline(
@@ -1114,12 +1102,13 @@ fn Parser::try_link(
 ) -> (LineSpan, Token, Bool)? {
   let rev_toks : Ref[RevTokens] = Ref::new(start_rev_toks.val._.copy())
   guard self.cidx.has_right_brack(after=start) else { return None }
-  guard let Some((line, text_toks, text_last)) = self.find_link_text_tokens( // text_last with ] delim
-    rev_toks,
-    start_line,
-    start~,
-  ) else {
-    _ => return None
+  guard self.find_link_text_tokens( // text_last with ] delim 
+      rev_toks,
+      start_line,
+      start~,
+    )
+    is Some((line, text_toks, text_last)) else {
+    None
   }
   let (text, had_link) = self.parse_tokens(
     text_toks._,
@@ -1291,12 +1280,9 @@ fn Parser::try_emphasis(
 ) -> LineSpan? {
   let start = opener.start
   guard self.cidx.has_emphasis(char=opener.char, after=start) else { None }
-  guard let Some((line, used, emph_toks, closer)) = self.find_emphasis_text(
-    rev_toks,
-    start_line,
-    opener~,
-  ) else {
-    _ => None
+  guard self.find_emphasis_text(rev_toks, start_line, opener~)
+    is Some((line, used, emph_toks, closer)) else {
+    None
   }
   let text_first = start + opener.count
   let text_last = closer.start - 1
@@ -1381,10 +1367,9 @@ fn Parser::try_strikethrough(
 ) -> LineSpan? {
   let start = opener.start
   guard self.cidx.has_strikethrough(after=start) else { None }
-  guard let Some((line, stricken_toks, closer)) = self.find_strikethrough_text(
-    rev_toks, start_line,
-  ) else {
-    _ => None
+  guard self.find_strikethrough_text(rev_toks, start_line)
+    is Some((line, stricken_toks, closer)) else {
+    None
   }
   let first_line = start_line
   let last_line = line
@@ -1503,7 +1488,7 @@ fn Parser::strip_paragraph(
   lines : Array[LineSpan]
 ) -> ((Col, String), Meta, Array[LineSpan]) {
   let (last, trailing_blanks) = {
-    guard let Some(line) = lines.pop()
+    guard lines.pop() is Some(line)
     let { first, last: start, .. } = line
     let non_blank = @cmark_base.last_non_blank(self.i, first~, start~)
     let last = { ..line, last: non_blank }
@@ -1637,15 +1622,12 @@ fn Parser::finish_col(
   loop k {
     k => {
       if toks._.is_empty() {
-        guard let Ok((text, after, k)) = self.find_pipe(
-          line,
-          before=line.last + 1,
-          k,
-        )
+        guard self.find_pipe(line, before=line.last + 1, k)
+          is Ok((text, after, k))
         is_.push_iter(text.iter())
         break ((self.make_col(is_), (blanks_before, after)), k)
       }
-      guard let Some(Inline({ start, inline, next, .. })) = toks._.front()
+      guard toks._.front() is Some(Inline({ start, inline, next, .. }))
       if k >= start {
         toks._.unsafe_pop_front()
         is_.push(inline)
@@ -1679,11 +1661,11 @@ fn Parser::parse_cols(
     line, k => {
       if toks._.is_empty() {
         guard k <= line.last else { break }
-        guard let Col(col, k) = self.start_col(line, before=line.last + 1, k)
+        guard self.start_col(line, before=line.last + 1, k) is Col(col, k)
         acc.push(col)
         continue line, k
       }
-      guard let Some(Inline({ start, inline, next, .. })) = toks._.front()
+      guard toks._.front() is Some(Inline({ start, inline, next, .. }))
       match self.start_col(line, before=start, k) {
         Col(col, k) => {
           acc.push(col)

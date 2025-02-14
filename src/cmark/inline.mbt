@@ -86,7 +86,7 @@ pub fn Inline::normalize(self : Inline) -> Inline {
       let acc = [i.normalize()]
       let is_ = Array::from_iter(is_.iter())
       for {
-        guard let Some(curr) = is_.pop() else { _ => break }
+        guard is_.pop() is Some(curr) else { break }
         match curr {
           Inlines({ v: is1, .. }) =>
             for i1 in is1._.rev() {
@@ -125,7 +125,7 @@ pub fn Inline::to_plain_text(
   let newline = fn() { acc._.push([]) }
   let st = [self]
   for {
-    guard let Some(curr) = st.pop() else { _ => break }
+    guard st.pop() is Some(curr) else { break }
     match curr {
       Autolink(a) => push("<\{a.v.link.v}>")
       Break({ v: { ty: Hard, .. }, .. }) => newline()

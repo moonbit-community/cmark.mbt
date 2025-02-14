@@ -223,7 +223,7 @@ struct ListBlockStruct {
 
 ///|
 fn BlockStruct::is_blank_line(self : BlockStruct) -> Bool {
-  guard let BlockStruct::BlankLine(_, _) = self else { _ => return false }
+  guard self is BlockStruct::BlankLine(_, _) else { return false }
   true
 }
 
@@ -398,7 +398,7 @@ fn Parser::parse_link_ref_definition(
 
   let lines = Ref::new(0)
   try {
-    guard let Some(line) = next_line(lines) else { _ => raise @cmark_base.Exit }
+    guard next_line(lines) is Some(line) else { raise @cmark_base.Exit }
     let start = self.first_non_blank_in_span(line)
     let indent = start - line.first
     let meta_first = { ..line, first: start }
@@ -513,12 +513,10 @@ fn Parser::maybe_add_link_ref_definitions(
   prevs : Array[BlockStruct]
 ) -> Unit {
   while not(lines.is_empty()) {
-    guard let Some(ld) = self.parse_link_ref_definition(lines) else {
+    guard self.parse_link_ref_definition(lines) is Some(ld) else {
       //  Link defs can't interrupt a paragraph so we are good now.
-      _ => {
-        prevs.push(Paragraph({ maybe_ref: false, lines }))
-        break
-      }
+      prevs.push(Paragraph({ maybe_ref: false, lines }))
+      break
     }
     prevs.push(LinkRefDef(ld))
   }
@@ -535,7 +533,7 @@ fn Parser::close_indented_code_block(
   for {
     match lines.last() {
       Some({ is_blank: true, .. }) => {
-        guard let Some({ pad, code, .. }) = lines.pop()
+        guard lines.pop() is Some({ pad, code, .. })
         blanks.push(BlockStruct::BlankLine(pad, code))
       }
       None => break // Likely `abort()`
@@ -581,14 +579,14 @@ fn Parser::close_list(
   l : ListBlockStruct,
   bs : Array[BlockStruct]
 ) -> Unit {
-  guard let Some(i) = l.items.last()
+  guard l.items.last() is Some(i)
   let blocks = i.blocks
   self.close_last_block(blocks)
   // The final blank line extraction of the list item entails less blank
   // line churn for CommonMark rendering but we don't do it on empty list items.
   match blocks {
     [.., _, BlankLine(_, _)] => {
-      guard let Some(bl) = blocks.pop()
+      guard blocks.pop() is Some(bl)
       let items = l.items
       items[items.length() - 1] = { ..i, blocks, }
       bs..push(List({ ..l, items, })).push(bl)
@@ -615,7 +613,7 @@ fn Parser::close_footnote(
   for {
     match blocks {
       [.., _, BlankLine(_, _)] => {
-        guard let Some(bl) = blocks.pop()
+        guard blocks.pop() is Some(bl)
         blanks.push(bl)
       }
       _ => break
@@ -627,7 +625,7 @@ fn Parser::close_footnote(
 
 ///|
 fn Parser::close_last_list_item(self : Parser, l : ListBlockStruct) -> Unit {
-  guard let Some(item) = l.items.last()
+  guard l.items.last() is Some(item)
   self.close_last_block(item.blocks)
 }
 
@@ -640,7 +638,7 @@ fn Parser::end_doc_close_fenced_code_block(
   let _ = self
   let { code, .. } = fenced
   guard code.is_empty() else {
-    guard let Some((_, { first, last, .. } as l)) = code.pop()
+    guard code.pop() is Some((_, { first, last, .. } as l))
     if first > last { // Empty line
       bs..push(BlankLine(0, l)).push(CodeBlock(Fenced({ ..fenced, code, })))
       return
@@ -658,7 +656,7 @@ fn Parser::end_doc_close_html(
   let _ = self
   let { html, .. } = h
   guard html.is_empty() else {
-    guard let Some({ first, last, .. } as l) = html.pop()
+    guard html.pop() is Some({ first, last, .. } as l)
     if first > last { // Empty line
       bs..push(HtmlBlock({ end_cond: None, html })).push(BlankLine(0, l))
       return
@@ -716,83 +714,64 @@ fn Parser::match_line_type(
       ParagraphLine
     }
     ('=', false, _) => {
-      guard let Nomatch = LineType::setext_heading_underline(
-        self.i,
-        last~,
-        start~,
-      ) else {
-        r => return r
-      }
+      let r = LineType::setext_heading_underline(self.i, last~, start~)
+      guard r is Nomatch else { return r }
       ParagraphLine
     }
     ('-', no_setext, _) => {
-      guard let Nomatch = (if no_setext {
+      let r = if no_setext {
         LineType::Nomatch
       } else {
         LineType::setext_heading_underline(self.i, last~, start~)
-      }) else {
-        r => return r
       }
-      guard let Nomatch = LineType::thematic_break(self.i, last~, start~) else {
-        r => return r
-      }
-      guard let Nomatch = LineType::list_marker(self.i, last~, start~) else {
-        r => return r
-      }
+      guard r is Nomatch else { return r }
+      let r = LineType::thematic_break(self.i, last~, start~)
+      guard r is Nomatch else { return r }
+      let r = LineType::list_marker(self.i, last~, start~)
+      guard r is Nomatch else { return r }
       ParagraphLine
     }
     ('#', _, _) => {
-      guard let Nomatch = LineType::atx_heading(self.i, last~, start~) else {
-        r => return r
-      }
+      let r = LineType::atx_heading(self.i, last~, start~)
+      guard r is Nomatch else { return r }
       ParagraphLine
     }
     ('+' | '*' | '0'..='9', _, _) => {
-      guard let Nomatch = LineType::thematic_break(self.i, last~, start~) else {
-        r => return r
-      }
+      let r = LineType::thematic_break(self.i, last~, start~)
+      guard r is Nomatch else { return r }
       let r = LineType::list_marker(self.i, last~, start~)
-      guard let Nomatch = r else { r => return r }
+      guard r is Nomatch else { return r }
       ParagraphLine
     }
     ('_', _, _) => {
-      guard let Nomatch = LineType::thematic_break(self.i, last~, start~) else {
-        r => return r
-      }
+      let r = LineType::thematic_break(self.i, last~, start~)
+      guard r is Nomatch else { return r }
       ParagraphLine
     }
     ('~' | '`', _, _) => {
-      guard let Nomatch = LineType::fenced_code_block_start(
-        self.i,
-        last~,
-        start~,
-      ) else {
-        r => return r
-      }
+      let r = LineType::fenced_code_block_start(self.i, last~, start~)
+      guard r is Nomatch else { return r }
       ParagraphLine
     }
     ('<', _, _) => {
-      guard let Nomatch = LineType::html_block_start(self.i, last~, start~) else {
-        r => return r
-      }
+      let r = LineType::html_block_start(self.i, last~, start~)
+      guard r is Nomatch else { return r }
       ParagraphLine
     }
     ('|', _, true) => {
-      guard let Nomatch = LineType::ext_table_row(self.i, last~, start~) else {
-        r => return r
-      }
+      let r = LineType::ext_table_row(self.i, last~, start~)
+      guard r is Nomatch else { return r }
       ParagraphLine
     }
     ('[', _, true) => {
-      guard let Nomatch = LineType::ext_footnote_label(
+      let r = LineType::ext_footnote_label(
         self.buf,
         self.i,
         line_pos=self.curr_line_pos,
         last~,
         start~,
-      ) else {
-        r => return r
-      }
+      )
+      guard r is Nomatch else { return r }
       ParagraphLine
     }
     _ => ParagraphLine
@@ -805,7 +784,7 @@ fn Parser::list_marker_can_interrupt_paragraph(
   marker : ListType,
   marker_last : BytePos
 ) -> Bool {
-  guard let Ordered(1, _) | Unordered(_) = marker else { _ => return false }
+  guard marker is (Ordered(1, _) | Unordered(_)) else { return false }
   let non_blank = @cmark_base.first_non_blank(
     self.i,
     last=self.curr_line_last_char,
@@ -1142,7 +1121,7 @@ fn Parser::try_lazy_continuation(
     }
     Some(BlockQuote(_, bq)) => self.try_lazy_continuation(indent_start~, bq)
     Some(List(l)) => {
-      guard let Some(i) = l.items.last()
+      guard l.items.last() is Some(i)
       let res = self.try_lazy_continuation(indent_start~, i.blocks)
       if res {
         l.last_blank = false
@@ -1255,7 +1234,7 @@ fn Parser::try_add_to_list_item(
   let indent = self.curr_indent()
   if indent >= list.item_min_indent {
     let last_blank = self.only_blanks()
-    guard let Some(item) = list.items.last()
+    guard list.items.last() is Some(item)
     return if list.last_blank &&
       not(last_blank) &&
       item.blocks.iter().all(BlockStruct::is_blank_line) {
@@ -1271,13 +1250,13 @@ fn Parser::try_add_to_list_item(
   match self.match_line_type(no_setext=true, indent~) {
     BlankLine => {
       let items = list.items
-      guard let Some(item) = items.last()
+      guard items.last() is Some(item)
       self.add_line(item.blocks)
       bs.push(List({ ..list, items, last_blank: true }))
     }
     IndentedCodeBlockLine | ParagraphLine as ltype => {
       let items = list.items
-      guard let Some(item) = items.last()
+      guard items.last() is Some(item)
       if self.try_lazy_continuation(indent_start~, item.blocks) {
         bs.push(List({ ..list, items, last_blank: false }))
       } else {
@@ -1543,7 +1522,7 @@ fn Parser::block_struct_to_html_block(
   self : Parser,
   b : HtmlBlockStruct
 ) -> Block {
-  guard let Some({ last: last_byte, pos: last_line, .. }) = b.html.last()
+  guard b.html.last() is Some({ last: last_byte, pos: last_line, .. })
   let lines = b.html.map(fn(i) { self.clean_raw_span(i) })
   let start_loc = lines.last().unwrap().meta.loc
   let meta = self.meta({ ..start_loc, last_byte, last_line })
@@ -1574,7 +1553,7 @@ fn Parser::block_struct_to_table(
   indent : Indent,
   rows : Array[(LineSpan, LineSpan)]
 ) -> Block {
-  guard let Some((last, _)) = rows.last()
+  guard rows.last() is Some((last, _))
   let (first, col_count, rows) = loop 0, false, [], rows[:] {
     col_count, last_was_sep, acc, [.. rs, (row, blanks)] => {
       let meta = self.meta(self.text_loc_of_span(row))
