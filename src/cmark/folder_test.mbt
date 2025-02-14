@@ -1,14 +1,17 @@
+///|
 test "folder_none" {
   let folder = Folder::new()
   inspect!(Folder::none(folder, 1, "test"), content="Default")
 }
 
+///|
 test "fold_block with blank line" {
   let folder = Folder::new()
   let block = Block::BlankLine(Node::new(""))
   inspect!(folder.fold_block!(0, block), content="0")
 }
 
+///|
 test "fold_block with paragraph" {
   let folder = Folder::new()
   let block = Block::Paragraph(
@@ -21,6 +24,7 @@ test "fold_block with paragraph" {
   inspect!(folder.fold_block!(0, block), content="0")
 }
 
+///|
 test "fold_block with heading" {
   let folder = Folder::new()
   let heading = Block::Heading(
@@ -34,6 +38,7 @@ test "fold_block with heading" {
   inspect!(folder.fold_block!(0, heading), content="0")
 }
 
+///|
 test "fold_block with blockquote" {
   let folder = Folder::new()
   let quote = Block::BlockQuote(
@@ -51,6 +56,7 @@ test "fold_block with blockquote" {
   inspect!(folder.fold_block!(0, quote), content="0")
 }
 
+///|
 test "fold_block with blocks" {
   let folder = Folder::new()
   let blocks = Block::Blocks(
@@ -76,6 +82,7 @@ test "fold_block with blocks" {
   inspect!(folder.fold_block!(0, blocks), content="0")
 }
 
+///|
 test "fold_doc with empty block" {
   let folder = Folder::new()
   let empty_doc = Doc::empty()
@@ -83,6 +90,7 @@ test "fold_doc with empty block" {
 
 }
 
+///|
 test "fold_doc with simple paragraph" {
   let folder = Folder::new()
   let doc = Doc::from_string("Hello world")
@@ -90,6 +98,7 @@ test "fold_doc with simple paragraph" {
 
 }
 
+///|
 test "folder block with table" {
   let folder = Folder::new()
   let table = Block::ExtTable(
@@ -124,6 +133,7 @@ test "folder block with table" {
   inspect!(result, content="0")
 }
 
+///|
 test "folder block with footnote definition" {
   let folder = Folder::new()
   let footnote = Block::ExtFootnoteDefinition(
@@ -138,6 +148,7 @@ test "folder block with footnote definition" {
   inspect!(result, content="0")
 }
 
+///|
 test "folder fold_block with default block handler" {
   let folder = Folder::new(block=fn(_self, acc, _b) { Folder::ret(acc) })
   let block = Block::empty()

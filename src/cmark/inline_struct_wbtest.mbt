@@ -44,6 +44,7 @@ fn tokenize_only(
   tokenize(p.i, lines, exts=p.exts)
 }
 
+///|
 test "should parse entity and numeric char references" {
   @json.inspect!(
     parse_only(
@@ -75,6 +76,7 @@ test "should parse entity and numeric char references" {
   )
 }
 
+///|
 test "should parse autolinks" {
   @json.inspect!(parse_only("<http://example.org>"), content=[
     [0, ""],
@@ -92,6 +94,7 @@ test "should parse autolinks" {
   ])
 }
 
+///|
 test "should parse breaks" {
   @json.inspect!(
     parse_only(
@@ -190,6 +193,7 @@ test "should parse breaks" {
   )
 }
 
+///|
 test "should tokenize codespans" {
   @json.inspect!(
     tokenize_only(
@@ -235,6 +239,7 @@ test "should tokenize codespans" {
   )
 }
 
+///|
 test "should parse codespans on a single line" {
   @json.inspect!(parse_only("Wow, we have `code spans` now!"), content=[
     [0, ""],
@@ -259,6 +264,7 @@ test "should parse codespans on a single line" {
   ])
 }
 
+///|
 test "should parse codespans across multiple lines" {
   @json.inspect!(
     parse_only(
@@ -372,6 +378,7 @@ test "should parse codespans across multiple lines" {
   )
 }
 
+///|
 test "should parse emphases" {
   @json.inspect!(parse_only("*it's just emph*"), content=[
     [0, ""],
@@ -459,6 +466,7 @@ test "should parse emphases" {
   ])
 }
 
+///|
 test "should parse links/images/refs" {
   @json.inspect!(
     parse_only(
@@ -643,6 +651,7 @@ test "should parse links/images/refs" {
   )
 }
 
+///|
 test "should tokenize broken links across lines" {
   @json.inspect!(
     tokenize_only(
@@ -669,6 +678,7 @@ test "should tokenize broken links across lines" {
   )
 }
 
+///|
 test "should parse broken links across lines" {
   @json.inspect!(
     parse_only(
@@ -701,6 +711,7 @@ test "should parse broken links across lines" {
   )
 }
 
+///|
 test "should parse raw HTML" {
   @json.inspect!(
     parse_only(
@@ -779,6 +790,7 @@ test "should parse raw HTML" {
   )
 }
 
+///|
 test "should tokenize nested strikethroughs and emphases" {
   let doc =
     #|Nesting the nest ~~*emph2* ~~stroke~~ *emph3 **emph4  ~~strikeagain~~***~~
@@ -864,6 +876,7 @@ test "should tokenize nested strikethroughs and emphases" {
   ])
 }
 
+///|
 test "should parse strikethroughs" {
   @json.inspect!(
     parse_only(
@@ -956,6 +969,7 @@ test "should parse strikethroughs" {
   )
 }
 
+///|
 test "should tokenize inline math" {
   @json.inspect!(
     tokenize_only(
@@ -980,6 +994,7 @@ test "should tokenize inline math" {
   )
 }
 
+///|
 test "should parse inline math" {
   @json.inspect!(
     parse_only(

@@ -1,3 +1,4 @@
+///|
 test "node_map" {
   let meta = @rami3l/cmark/cmark_base.Meta::new()
   let node = Node::new("test", meta~)

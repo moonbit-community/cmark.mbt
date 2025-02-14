@@ -1,20 +1,24 @@
+///|
 test "TextLoc::is_none with none value" {
   let loc = TextLoc::none()
   inspect!(loc.is_none(), content="true")
 }
 
+///|
 test "TextLoc::is_empty for non-empty location" {
   let loc = TextLoc::none()
   let loc = { ..loc, first_byte: 10, last_byte: 5 }
   inspect!(loc.is_empty(), content="true")
 }
 
+///|
 test "TextLoc::is_empty for empty location" {
   let loc = TextLoc::none()
   let loc = { ..loc, first_byte: 5, last_byte: 10 }
   inspect!(loc.is_empty(), content="false")
 }
 
+///|
 test "TextLoc::after basic functionality" {
   let loc = TextLoc::none()
   let after_loc = loc.after()
@@ -24,6 +28,7 @@ test "TextLoc::after basic functionality" {
   inspect!(after_loc.last_line, content="(-1, -1)")
 }
 
+///|
 test "test case TextLoc::reloc" {
   let loc1 = TextLoc::none()
   let loc2 = TextLoc::none()
@@ -33,6 +38,7 @@ test "test case TextLoc::reloc" {
   )
 }
 
+///|
 test "TextLoc to_first method test" {
   let initial_loc : TextLoc = {
     file: "dummy_file",
@@ -47,6 +53,7 @@ test "TextLoc to_first method test" {
   inspect!(modified_loc.last_line.1, content="10")
 }
 
+///|
 test "TextLoc to_last method" {
   let loc_initial : TextLoc = {
     file: "test_file",

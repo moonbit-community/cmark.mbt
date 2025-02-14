@@ -1,3 +1,4 @@
+///|
 test "mapper ret function" {
   // Test ret function by passing in different types of values
   let int_result = Mapper::ret(42)
@@ -8,6 +9,7 @@ test "mapper ret function" {
   inspect!(bool_result, content="Map(Some(true))")
 }
 
+///|
 test "mapper_none" {
   // Create a new Mapper with default parameters
   let mapper = Mapper::new()
@@ -15,6 +17,7 @@ test "mapper_none" {
   inspect!(mapper.none(42), content="Default")
 }
 
+///|
 test "map_block blocks" {
   // Test blocks mapping
   let mapper = Mapper::new()
@@ -22,6 +25,7 @@ test "map_block blocks" {
   inspect!(mapper.map_block(blocks), content="None")
 }
 
+///|
 test "panic block_ext_none raises error" {
   let mapper = Mapper::new()
   let block = Block::empty()
@@ -29,12 +33,14 @@ test "panic block_ext_none raises error" {
 
 }
 
+///|
 test "map_inline default case" {
   let mapper = Mapper::new()
   let text = Inline::Text(Node::new("hello"))
   inspect!(mapper.map_inline(text), content="Some(Text(Node::new(\"hello\")))")
 }
 
+///|
 test "map_doc with empty document" {
   let mapper = Mapper::new()
   let doc = Doc::empty()
@@ -42,6 +48,7 @@ test "map_doc with empty document" {
   inspect!(result.block, content="Blocks(Node::new(Seq([])))")
 }
 
+///|
 test "map_block with default case" {
   let mapper = Mapper::new()
   let block = Block::BlankLine(Node::new(""))
@@ -49,6 +56,7 @@ test "map_block with default case" {
   inspect!(result, content="Some(BlankLine(Node::new(\"\")))")
 }
 
+///|
 test "map_block with blocks" {
   let mapper = Mapper::new()
   let block = Block::Blocks(
@@ -63,6 +71,7 @@ test "map_block with blocks" {
   )
 }
 
+///|
 test "map_block with paragraph" {
   let mapper = Mapper::new()
   let para = Block::Paragraph(

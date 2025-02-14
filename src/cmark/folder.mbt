@@ -20,7 +20,9 @@ pub(all) enum FolderResult[A] {
 } derive(Eq, Show, ToJson)
 
 ///|
-pub impl[A] Default for FolderResult[A] with default() { Default }
+pub impl[A] Default for FolderResult[A] with default() {
+  Default
+}
 
 ///|
 pub fn Folder::ret[A](a : A) -> FolderResult[A] {
