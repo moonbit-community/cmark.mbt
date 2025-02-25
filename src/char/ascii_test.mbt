@@ -1,25 +1,25 @@
 ///|
 test "to_ascii_lower uppercase to lowercase" {
-  inspect!(to_ascii_lower('A'), content="'a'")
-  inspect!(to_ascii_lower('Z'), content="'z'")
-  inspect!(to_ascii_lower('M'), content="'m'")
+  inspect!(to_ascii_lower('A'), content="a")
+  inspect!(to_ascii_lower('Z'), content="z")
+  inspect!(to_ascii_lower('M'), content="m")
 }
 
 ///|
 test "to_ascii_upper: convert lowercase to uppercase" {
-  inspect!(to_ascii_upper('a'), content="'A'")
-  inspect!(to_ascii_upper('z'), content="'Z'")
+  inspect!(to_ascii_upper('a'), content="A")
+  inspect!(to_ascii_upper('z'), content="Z")
 }
 
 ///|
 test "to_ascii_upper: keep uppercase unchanged" {
-  inspect!(to_ascii_upper('A'), content="'A'")
+  inspect!(to_ascii_upper('A'), content="A")
 }
 
 ///|
 test "to_ascii_upper: keep non-letters unchanged" {
-  inspect!(to_ascii_upper('1'), content="'1'")
-  inspect!(to_ascii_upper('@'), content="'@'")
+  inspect!(to_ascii_upper('1'), content="1")
+  inspect!(to_ascii_upper('@'), content="@")
 }
 
 ///|
