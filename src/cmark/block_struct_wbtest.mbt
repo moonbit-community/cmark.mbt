@@ -5,7 +5,7 @@ test "plain" {
     #|===========
     #|Basic tests for all CommonMark constructs.
   @json.inspect!(Doc::from_string(doc), content={
-    "nl": "\\n",
+    "nl": "\n",
     "block": {
       "$tag": "Blocks",
       "0": [
@@ -56,7 +56,7 @@ test "complex ref definitions" {
     #|> [c d]: /ha "Multi
     #|>   line titles"
   @json.inspect!(Doc::from_string(doc), content={
-    "nl": "\\n",
+    "nl": "\n",
     "block": {
       "$tag": "Blocks",
       "0": [
@@ -185,7 +185,7 @@ test "HTML block" {
     #|
     #| world
   @json.inspect!(Doc::from_string(doc), content={
-    "nl": "\\n",
+    "nl": "\n",
     "block": {
       "$tag": "Blocks",
       "0": [
@@ -254,7 +254,7 @@ test "should parse indented code block" {
     #|    a
     #|       a b c
   @json.inspect!(Doc::from_string(doc), content={
-    "nl": "\\n",
+    "nl": "\n",
     "block": {
       "$tag": "Blocks",
       "0": [
@@ -303,7 +303,7 @@ test "should parse quoted bullets" {
     #|*
     #|Empty list item above
   @json.inspect!(Doc::from_string(doc), content={
-    "nl": "\\n",
+    "nl": "\n",
     "block": {
       "$tag": "Blocks",
       "0": [
@@ -450,7 +450,7 @@ test "should parse list item with multiple inlines" {
     #|    (There are some relevant comments by John Gruber
     #|    [here](https://web.archive.org/web/20170611172104/http://article.gmane.org/gmane.text.markdown.general/2554).)
   @json.inspect!(Doc::from_string(doc), content={
-    "nl": "\\n",
+    "nl": "\n",
     "block": {
       "$tag": "List",
       "0": [

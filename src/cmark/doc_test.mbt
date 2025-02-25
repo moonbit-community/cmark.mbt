@@ -2,7 +2,7 @@
 test "basic" {
   let rendered = Doc::from_string(test_base_md_str)
   @json.inspect!(rendered, content={
-    "nl": "\\n",
+    "nl": "\n",
     "block": {
       "$tag": "Blocks",
       "0": [
