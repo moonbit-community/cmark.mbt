@@ -242,6 +242,142 @@ test "should tokenize inline image across multiple lines" {
 }
 
 ///|
+/// https://github.com/moonbit-community/cmark/issues/41
+test "should parse normal raw HTML block" {
+  let doc =
+    #|# My Document
+    #|
+    #|This is a standard paragraph in Markdown.
+    #|
+    #|<div class="custom-container">
+    #|  <h2>Section Title</h2>
+    #|  <p>This is a paragraph inside a custom HTML container.</p>
+    #|</div>
+  @json.inspect!(Doc::from_string(doc), content={
+    "nl": "\n",
+    "block": {
+      "$tag": "Blocks",
+      "0": [
+        [
+          {
+            "$tag": "Heading",
+            "0": [
+              {
+                "layout": {
+                  "$tag": "Atx",
+                  "0": { "indent": 0, "after_opening": "", "closing": "" },
+                },
+                "level": 1,
+                "inline": { "$tag": "Text", "0": ["My Document"] },
+              },
+            ],
+          },
+          { "$tag": "BlankLine", "0": [""] },
+          {
+            "$tag": "Paragraph",
+            "0": [
+              {
+                "leading_indent": 0,
+                "inline": {
+                  "$tag": "Text",
+                  "0": ["This is a standard paragraph in Markdown."],
+                },
+                "trailing_blanks": "",
+              },
+            ],
+          },
+          { "$tag": "BlankLine", "0": [""] },
+          {
+            "$tag": "HtmlBlock",
+            "0": [
+              [
+                ["<div class=\"custom-container\">"],
+                ["  <h2>Section Title</h2>"],
+                ["  <p>This is a paragraph inside a custom HTML container.</p>"],
+                ["</div>"],
+              ],
+            ],
+          },
+        ],
+      ],
+    },
+    "defs": {},
+  })
+}
+
+///|
+/// https://github.com/moonbit-community/cmark/issues/41
+test "should parse normal code block" {
+  let doc =
+    #| Checks if all elements in the array view match the condition.
+    #| # Example
+    #| ```
+    #| let v = [1, 4, 6, 8, 9]
+    #| assert_false!(v[:].all(fn(elem) { elem % 2 == 0 }))
+    #| assert_true!(v[1:4].all(fn(elem) { elem % 2 == 0 }))
+    #| ```
+  @json.inspect!(Doc::from_string(doc), content={
+    "nl": "\n",
+    "block": {
+      "$tag": "Blocks",
+      "0": [
+        [
+          {
+            "$tag": "Paragraph",
+            "0": [
+              {
+                "leading_indent": 1,
+                "inline": {
+                  "$tag": "Text",
+                  "0": [
+                    "Checks if all elements in the array view match the condition.",
+                  ],
+                },
+                "trailing_blanks": "",
+              },
+            ],
+          },
+          {
+            "$tag": "Heading",
+            "0": [
+              {
+                "layout": {
+                  "$tag": "Atx",
+                  "0": { "indent": 1, "after_opening": "", "closing": "" },
+                },
+                "level": 1,
+                "inline": { "$tag": "Text", "0": ["Example"] },
+              },
+            ],
+          },
+          {
+            "$tag": "CodeBlock",
+            "0": [
+              {
+                "layout": {
+                  "$tag": "Fenced",
+                  "0": {
+                    "indent": 1,
+                    "opening_fence": [""],
+                    "closing_fence": [""],
+                  },
+                },
+                "code": [
+                  ["let v = [1, 4, 6, 8, 9]"],
+                  ["assert_false!(v[:].all(fn(elem) { elem % 2 == 0 }))"],
+                  ["assert_true!(v[1:4].all(fn(elem) { elem % 2 == 0 }))"],
+                ],
+              },
+            ],
+          },
+        ],
+      ],
+    },
+    "defs": {},
+  })
+}
+
+///|
 test "should parse indented code block" {
   let doc =
     #|The indented code block: 

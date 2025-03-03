@@ -637,12 +637,11 @@ fn Parser::end_doc_close_fenced_code_block(
 ) -> Unit {
   let _ = self
   let { code, .. } = fenced
-  guard code.is_empty() else {
-    guard code.pop() is Some((_, { first, last, .. } as l))
-    if first > last { // Empty line
-      bs..push(BlankLine(0, l)).push(CodeBlock(Fenced({ ..fenced, code, })))
-      return
-    }
+  if code is [.., (_, { first, last, .. } as l)] && first > last {
+    // Empty line
+    let _ = code.pop()
+    bs..push(CodeBlock(Fenced({ ..fenced, code, }))).push(BlankLine(0, l))
+    return
   }
   bs.push(CodeBlock(Fenced(fenced)))
 }
@@ -655,12 +654,11 @@ fn Parser::end_doc_close_html(
 ) -> Unit {
   let _ = self
   let { html, .. } = h
-  guard html.is_empty() else {
-    guard html.pop() is Some({ first, last, .. } as l)
-    if first > last { // Empty line
-      bs..push(HtmlBlock({ end_cond: None, html })).push(BlankLine(0, l))
-      return
-    }
+  if html is [.., { first, last, .. } as l] && first > last {
+    // Empty line
+    let _ = html.pop()
+    bs..push(HtmlBlock({ end_cond: None, html })).push(BlankLine(0, l))
+    return
   }
   bs.push(HtmlBlock({ ..h, end_cond: None }))
 }
