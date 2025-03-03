@@ -127,9 +127,9 @@ impl Meta {
   is_none(Self) -> Bool
   new(loc~ : TextLoc = ..) -> Self
   none() -> Self
-  op_equal(Self, Self) -> Bool
   to_json(Self) -> Json
 }
+impl Eq for Meta
 impl Show for Meta
 impl ToJson for Meta
 
