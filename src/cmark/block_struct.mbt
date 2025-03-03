@@ -126,14 +126,14 @@ fn Parser::accept_code_indent(self : Parser, count~ : Int) -> (Int, BytePos) {
 typealias SpacePad = Int
 
 ///|
-struct IndentedCodeLine {
+priv struct IndentedCodeLine {
   pad : SpacePad
   code : LineSpan
   is_blank : Bool
 } derive(Show, ToJson)
 
 ///|
-struct Fence {
+priv struct Fence {
   indent : Indent
   opening_fence : LineSpan
   fence : (Char, Int) // Fence length
@@ -142,19 +142,19 @@ struct Fence {
 } derive(Show, ToJson)
 
 ///|
-struct FenceCodeBlockStruct {
+priv struct FenceCodeBlockStruct {
   fence : Fence
   code : Array[(SpacePad, LineSpan)]
 } derive(Show, ToJson)
 
 ///|
-enum CodeBlockStruct {
+priv enum CodeBlockStruct {
   Indented(Array[IndentedCodeLine])
   Fenced(FenceCodeBlockStruct)
 } derive(Show, ToJson)
 
 ///|
-struct Atx {
+priv struct Atx {
   indent : Indent
   level : HeadingLevel
   after_open : BytePos
@@ -163,7 +163,7 @@ struct Atx {
 } derive(Show, ToJson)
 
 ///|
-struct Setext {
+priv struct Setext {
   level : HeadingLevel
   heading_lines : Array[LineSpan]
   /// Indent, underline char count, blanks
@@ -171,25 +171,25 @@ struct Setext {
 } derive(Show, ToJson)
 
 ///|
-enum Heading {
+priv enum Heading {
   Atx(Atx)
   Setext(Setext)
 } derive(Show, ToJson)
 
 ///|
-struct HtmlBlockStruct {
+priv struct HtmlBlockStruct {
   end_cond : HtmlBlockEndCond?
   html : Array[LineSpan]
 } derive(Show, ToJson)
 
 ///|
-struct Paragraph {
+priv struct Paragraph {
   maybe_ref : Bool
   lines : Array[LineSpan]
 } derive(Show, ToJson)
 
 ///|
-enum BlockStruct {
+priv enum BlockStruct {
   BlockQuote(Indent, Array[BlockStruct])
   BlankLine(SpacePad, LineSpan)
   CodeBlock(CodeBlockStruct)
@@ -204,7 +204,7 @@ enum BlockStruct {
 } derive(Show, ToJson)
 
 ///|
-struct ListItemStruct {
+priv struct ListItemStruct {
   before_marker : Indent
   marker : LineSpan
   after_marker : Indent
@@ -213,7 +213,7 @@ struct ListItemStruct {
 } derive(Show, ToJson)
 
 ///|
-struct ListBlockStruct {
+priv struct ListBlockStruct {
   mut last_blank : Bool // Last added line was blank and not first line of item
   loose : Bool // Inter-item looseness, intra-item is computed later
   item_min_indent : Indent // Last item minimal indent
@@ -1631,7 +1631,7 @@ fn Parser::block_struct_to_footnote_definition(
 }
 
 ///|
-enum BState {
+priv enum BState {
   Blank
   TrailBlank
   NonBlank

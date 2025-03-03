@@ -3,7 +3,7 @@
 /// They map closing delimiters to the position where they
 /// start. Shortcuts forward searches in inline parsing. See
 /// `inline_struct`
-enum Closer {
+priv enum Closer {
   /// Run length of backticks.
   Backticks(Int)
   RightBrack
@@ -17,7 +17,7 @@ enum Closer {
 typealias PosSet = Set[Int]
 
 ///|
-type CloserIndex Map[Closer, PosSet] derive(Show, ToJson)
+priv type CloserIndex Map[Closer, PosSet] derive(Show, ToJson)
 
 ///|
 fn CloserIndex::new() -> CloserIndex {

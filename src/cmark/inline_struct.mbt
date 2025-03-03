@@ -11,7 +11,7 @@
 /// The token list also represents newlines explicitly, either via
 /// the `Newline` token or via the `Inline` token since inlines may
 /// start on a line and up on another one.
-enum Token {
+priv enum Token {
   AutolinkOrHtmlStart(TokenStart)
   Backticks(TokenBackticks)
   EmphasisMarks(TokenEmphasisMarks)
@@ -25,19 +25,19 @@ enum Token {
 } derive(Show, ToJson)
 
 ///|
-struct TokenStart {
+priv struct TokenStart {
   start : BytePos
 } derive(Show, ToJson)
 
 ///|
-struct TokenBackticks {
+priv struct TokenBackticks {
   start : BytePos
   count : Int
   escaped : Bool
 } derive(Show, ToJson)
 
 ///|
-struct TokenEmphasisMarks {
+priv struct TokenEmphasisMarks {
   start : BytePos
   char : Char
   count : Int
@@ -46,7 +46,7 @@ struct TokenEmphasisMarks {
 } derive(Show, ToJson)
 
 ///|
-struct TokenInline {
+priv struct TokenInline {
   start : BytePos
   inline : Inline
   endline : LineSpan
@@ -54,13 +54,13 @@ struct TokenInline {
 } derive(Show, ToJson)
 
 ///|
-struct TokenLinkStart {
+priv struct TokenLinkStart {
   start : BytePos
   image : Bool
 } derive(Show, ToJson)
 
 ///|
-struct TokenNewline {
+priv struct TokenNewline {
   /// Points at spaces or `\` on the broken line
   start : BytePos
   break_ty : InlineBreakType
@@ -68,14 +68,14 @@ struct TokenNewline {
 } derive(Show, ToJson)
 
 ///|
-struct TokenStrikethroughMarks {
+priv struct TokenStrikethroughMarks {
   start : BytePos
   may_open : Bool
   may_close : Bool
 } derive(Show, ToJson)
 
 ///|
-struct TokenMathSpanMarks {
+priv struct TokenMathSpanMarks {
   start : BytePos
   count : Int
   may_open : Bool
@@ -1594,7 +1594,7 @@ fn Parser::start_col(
 }
 
 ///|
-enum StartColResult {
+priv enum StartColResult {
   Col((Inline, TableCellLayout), BytePos)
   Start(String, Array[Inline])
 } derive(Show, ToJson)

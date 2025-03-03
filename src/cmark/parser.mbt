@@ -1,5 +1,5 @@
 ///|
-struct Parser {
+priv struct Parser {
   /// Input file.
   file : FilePath
 

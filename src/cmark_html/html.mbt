@@ -1,5 +1,5 @@
 ///|
-struct State {
+priv struct State {
   safe : Bool
   backend_blocks : Bool
   ids : StringSet
@@ -8,7 +8,7 @@ struct State {
 } derive(Show)
 
 ///|
-struct HtmlRenderFootnote {
+priv struct HtmlRenderFootnote {
   text : String
   id : String
   mut count : Int
