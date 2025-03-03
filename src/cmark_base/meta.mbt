@@ -27,7 +27,7 @@ pub fn Meta::none() -> Meta {
 }
 
 ///|
-pub fn Meta::op_equal(self : Meta, other : Meta) -> Bool {
+pub impl Eq for Meta with op_equal(self, other) {
   self.id == other.id
 }
 
