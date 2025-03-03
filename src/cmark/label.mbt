@@ -34,7 +34,7 @@ pub fn Label::text_loc(self : Label) -> TextLoc {
 }
 
 ///|
-pub fn Label::op_equal(self : Label, other : Label) -> Bool {
+pub impl Eq for Label with op_equal(self, other) {
   self.key == other.key
 }
 
