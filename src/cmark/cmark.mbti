@@ -9,13 +9,6 @@ let layout_empty : Node[String]
 fn layout_of_string(meta~ : @cmark_base.Meta = .., String) -> Node[String]
 
 // Types and methods
-type Atx
-impl Show for Atx
-impl ToJson for Atx
-
-type BState
-impl Eq for BState
-
 pub(all) enum Block {
   BlankLine(Node[String])
   BlockQuote(Node[BlockQuote])
@@ -130,10 +123,6 @@ impl BlockQuote {
 impl Show for BlockQuote
 impl ToJson for BlockQuote
 
-type BlockStruct
-impl Show for BlockStruct
-impl ToJson for BlockStruct
-
 pub(all) struct BlockThematicBreak {
   indent : Int
   layout : String
@@ -144,17 +133,6 @@ impl BlockThematicBreak {
 impl Show for BlockThematicBreak
 impl ToJson for BlockThematicBreak
 impl @json.FromJson for BlockThematicBreak
-
-type Closer
-impl Compare for Closer
-impl Eq for Closer
-impl Hash for Closer
-impl Show for Closer
-impl ToJson for Closer
-
-type CloserIndex
-impl Show for CloserIndex
-impl ToJson for CloserIndex
 
 pub(all) struct CodeBlock {
   layout : CodeBlockLayout
@@ -187,10 +165,6 @@ pub(all) enum CodeBlockLayout {
 impl Show for CodeBlockLayout
 impl ToJson for CodeBlockLayout
 
-type CodeBlockStruct
-impl Show for CodeBlockStruct
-impl ToJson for CodeBlockStruct
-
 pub(all) struct Doc {
   nl : String
   block : Block
@@ -203,14 +177,6 @@ impl Doc {
 }
 impl Show for Doc
 impl ToJson for Doc
-
-type Fence
-impl Show for Fence
-impl ToJson for Fence
-
-type FenceCodeBlockStruct
-impl Show for FenceCodeBlockStruct
-impl ToJson for FenceCodeBlockStruct
 
 pub(all) struct Folder[A] {
   inline_ext_default : (Folder[A], A, Inline) -> A!FolderError
@@ -255,21 +221,9 @@ impl Footnote {
 impl Show for Footnote
 impl ToJson for Footnote
 
-type Heading
-impl Show for Heading
-impl ToJson for Heading
-
 pub(all) type HtmlBlock Seq[Node[String]]
 impl Show for HtmlBlock
 impl ToJson for HtmlBlock
-
-type HtmlBlockStruct
-impl Show for HtmlBlockStruct
-impl ToJson for HtmlBlockStruct
-
-type IndentedCodeLine
-impl Show for IndentedCodeLine
-impl ToJson for IndentedCodeLine
 
 pub(all) enum Inline {
   Autolink(Node[InlineAutolink])
@@ -397,9 +351,9 @@ pub(all) struct Label {
 impl Label {
   compare(Self, Self) -> Int
   new(meta~ : @cmark_base.Meta = .., key~ : String, Seq[Tight]) -> Self
-  op_equal(Self, Self) -> Bool
   text_loc(Self) -> @cmark_base.TextLoc
 }
+impl Eq for Label
 impl Show for Label
 impl ToJson for Label
 
@@ -453,10 +407,6 @@ pub(all) enum LinkKind {
   Image
 }
 
-type ListBlockStruct
-impl Show for ListBlockStruct
-impl ToJson for ListBlockStruct
-
 pub(all) struct ListItem {
   before_marker : Int
   marker : Node[String]
@@ -471,10 +421,6 @@ impl ListItem {
 }
 impl Show for ListItem
 impl ToJson for ListItem
-
-type ListItemStruct
-impl Show for ListItemStruct
-impl ToJson for ListItemStruct
 
 pub(all) enum ListTaskStatus {
   Cancelled
@@ -529,12 +475,6 @@ impl[A : Eq] Eq for Node[A]
 impl[A : Show] Show for Node[A]
 impl[A : ToJson] ToJson for Node[A]
 
-type Paragraph
-impl Show for Paragraph
-impl ToJson for Paragraph
-
-type Parser
-
 pub(all) enum ReferenceKind {
   Inline(Node[LinkDefinition])
   Ref(ReferenceLayout, Label, Label)
@@ -572,14 +512,6 @@ impl Seq {
 impl[A : Eq] Eq for Seq[A]
 impl[A : Show] Show for Seq[A]
 impl[A : ToJson] ToJson for Seq[A]
-
-type Setext
-impl Show for Setext
-impl ToJson for Setext
-
-type StartColResult
-impl Show for StartColResult
-impl ToJson for StartColResult
 
 pub(all) struct Table {
   indent : Int
@@ -621,42 +553,6 @@ impl Tight {
 impl Eq for Tight
 impl Show for Tight
 impl ToJson for Tight
-
-type Token
-impl Show for Token
-impl ToJson for Token
-
-type TokenBackticks
-impl Show for TokenBackticks
-impl ToJson for TokenBackticks
-
-type TokenEmphasisMarks
-impl Show for TokenEmphasisMarks
-impl ToJson for TokenEmphasisMarks
-
-type TokenInline
-impl Show for TokenInline
-impl ToJson for TokenInline
-
-type TokenLinkStart
-impl Show for TokenLinkStart
-impl ToJson for TokenLinkStart
-
-type TokenMathSpanMarks
-impl Show for TokenMathSpanMarks
-impl ToJson for TokenMathSpanMarks
-
-type TokenNewline
-impl Show for TokenNewline
-impl ToJson for TokenNewline
-
-type TokenStart
-impl Show for TokenStart
-impl ToJson for TokenStart
-
-type TokenStrikethroughMarks
-impl Show for TokenStrikethroughMarks
-impl ToJson for TokenStrikethroughMarks
 
 // Type aliases
 pub typealias Blanks = String

@@ -15,12 +15,6 @@ fn safe(@cmark_renderer.Context) -> Bool
 fn xhtml_renderer(backend_blocks~ : Bool = .., safe~ : Bool) -> @cmark_renderer.Renderer
 
 // Types and methods
-type HtmlRenderFootnote
-impl Show for HtmlRenderFootnote
-impl ToJson for HtmlRenderFootnote
-
-type State
-impl Show for State
 
 // Type aliases
 
