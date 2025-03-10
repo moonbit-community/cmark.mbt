@@ -205,37 +205,28 @@ fn tokens_drop_stop_after_right_brack(rev_toks : RevTokens) -> Unit {
 ///|
 fn tokens_pop_until(start~ : Int, rev_toks : RevTokens) -> Unit {
   for {
-    match rev_toks.pop() {
-      None => break
-      Some(t) => {
-        if t.start() < start {
-          continue
-        }
-        rev_toks.push(t)
-        break
-      }
+    guard rev_toks.pop() is Some(t) else { break }
+    if t.start() < start {
+      continue
     }
+    rev_toks.push(t)
+    break
   }
 }
 
 ///|
 fn tokens_next_line(rev_toks : RevTokens) -> LineSpan? {
   let acc = []
-  loop rev_toks.pop() {
-    None =>
-      loop acc.pop() {
-        None => None
-        Some(t) => {
-          rev_toks.push(t)
-          continue acc.pop()
-        }
-      }
-    Some(Newline({ newline, .. })) => Some(newline)
-    Some(t) => {
-      acc.push(t)
-      continue rev_toks.pop()
+  while rev_toks.pop() is Some(t) {
+    if t is Newline({ newline, .. }) {
+      return Some(newline)
     }
+    acc.push(t)
   }
+  while acc.pop() is Some(t) {
+    rev_toks.push(t)
+  }
+  None
 }
 
 // Tokenization
@@ -393,31 +384,31 @@ fn tokenize(
           }
         }
       }
-      let next = match (s[k], prev_bslash, exts) {
-        ('\\', _, _) => continue lines, line, not(prev_bslash), k + 1
-        ('`', _, _) => tokens_add_backtick(toks, s, line, prev_bslash~, start=k)
-        (_, true, _) => k + 1
-        ('*' | '_', _, _) => tokens_try_add_emphasis(toks, s, line, start=k)
-        (']', _, _) => {
+      let next = match s[k] {
+        '\\' => continue lines, line, not(prev_bslash), k + 1
+        '`' => tokens_add_backtick(toks, s, line, prev_bslash~, start=k)
+        _ if prev_bslash => k + 1
+        '*' | '_' => tokens_try_add_emphasis(toks, s, line, start=k)
+        ']' => {
           toks.push(RightBrack({ start: k }))
           k + 1
         }
-        ('[', _, _) => {
+        '[' => {
           toks.push(LinkStart({ start: k, image: false }))
           k + 1
         }
-        ('!', _, _) => tokens_try_add_image_link_start(toks, s, line, start=k)
-        ('<', _, _) => {
+        '!' => tokens_try_add_image_link_start(toks, s, line, start=k)
+        '<' => {
           toks.push(AutolinkOrHtmlStart({ start: k }))
           k + 1
         }
-        (')', _, _) => {
+        ')' => {
           toks.push(RightParen({ start: k }))
           k + 1
         }
-        ('~', _, true) =>
+        '~' if exts =>
           tokens_try_add_strikethrough_marks(toks, s, line, start=k)
-        ('$', _, true) => tokens_try_add_math_span_marks(toks, s, line, start=k)
+        '$' if exts => tokens_try_add_math_span_marks(toks, s, line, start=k)
         _ => k + 1
       }
       continue lines, line, false, next

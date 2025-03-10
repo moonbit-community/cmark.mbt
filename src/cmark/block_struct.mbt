@@ -702,66 +702,66 @@ fn Parser::match_line_type(
   }
   let start = self.curr_char
   let last = self.curr_line_last_char
-  match (self.i[start], no_setext, self.exts) {
+  match self.i[start] {
     // Early dispatch shaves a few ms but may not be worth doing vs 
     // testing all the cases in sequences.
-    ('>', _, _) => {
+    '>' => {
       if self.match_and_accept_block_quote() {
         return BlockQuoteLine
       }
       ParagraphLine
     }
-    ('=', false, _) => {
+    '=' if not(no_setext) => {
       let r = LineType::setext_heading_underline(self.i, last~, start~)
-      guard r is Nomatch else { return r }
+      guard r is Nomatch else { r }
       ParagraphLine
     }
-    ('-', no_setext, _) => {
+    '-' => {
       let r = if no_setext {
         LineType::Nomatch
       } else {
         LineType::setext_heading_underline(self.i, last~, start~)
       }
-      guard r is Nomatch else { return r }
+      guard r is Nomatch else { r }
       let r = LineType::thematic_break(self.i, last~, start~)
-      guard r is Nomatch else { return r }
+      guard r is Nomatch else { r }
       let r = LineType::list_marker(self.i, last~, start~)
-      guard r is Nomatch else { return r }
+      guard r is Nomatch else { r }
       ParagraphLine
     }
-    ('#', _, _) => {
+    '#' => {
       let r = LineType::atx_heading(self.i, last~, start~)
-      guard r is Nomatch else { return r }
+      guard r is Nomatch else { r }
       ParagraphLine
     }
-    ('+' | '*' | '0'..='9', _, _) => {
+    '+' | '*' | '0'..='9' => {
       let r = LineType::thematic_break(self.i, last~, start~)
-      guard r is Nomatch else { return r }
+      guard r is Nomatch else { r }
       let r = LineType::list_marker(self.i, last~, start~)
-      guard r is Nomatch else { return r }
+      guard r is Nomatch else { r }
       ParagraphLine
     }
-    ('_', _, _) => {
+    '_' => {
       let r = LineType::thematic_break(self.i, last~, start~)
-      guard r is Nomatch else { return r }
+      guard r is Nomatch else { r }
       ParagraphLine
     }
-    ('~' | '`', _, _) => {
+    '~' | '`' => {
       let r = LineType::fenced_code_block_start(self.i, last~, start~)
-      guard r is Nomatch else { return r }
+      guard r is Nomatch else { r }
       ParagraphLine
     }
-    ('<', _, _) => {
+    '<' => {
       let r = LineType::html_block_start(self.i, last~, start~)
-      guard r is Nomatch else { return r }
+      guard r is Nomatch else { r }
       ParagraphLine
     }
-    ('|', _, true) => {
+    '|' if self.exts => {
       let r = LineType::ext_table_row(self.i, last~, start~)
-      guard r is Nomatch else { return r }
+      guard r is Nomatch else { r }
       ParagraphLine
     }
-    ('[', _, true) => {
+    '[' if self.exts => {
       let r = LineType::ext_footnote_label(
         self.buf,
         self.i,
@@ -769,7 +769,7 @@ fn Parser::match_line_type(
         last~,
         start~,
       )
-      guard r is Nomatch else { return r }
+      guard r is Nomatch else { r }
       ParagraphLine
     }
     _ => ParagraphLine

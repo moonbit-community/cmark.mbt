@@ -163,15 +163,16 @@ pub fn CodeBlock::new(
 
 ///| [make_fence cb] is a fence character and count suitable for [cb].
 pub fn CodeBlock::make_fence(self : CodeBlock) -> (Char, Count) {
-  let ch = match self.info_string {
-    Some(info) => if info.v.contains_char('`') { '~' } else { '`' }
-    _ => '`'
+  let ch = if self.info_string is Some(info) && info.v.contains_char('`') {
+    '~'
+  } else {
+    '`'
   }
   let counts = @sorted_set.new()
   for n in self.code {
     let c = n.v
     let k = for k = 0; k < c.length() && c[k] == ch; k = k + 1 {
-
+      ()
     } else {
       k
     }
@@ -185,23 +186,16 @@ pub fn CodeBlock::make_fence(self : CodeBlock) -> (Char, Count) {
 ///| [language_of_info_string s] extracts a (non-empty) language, the first word of [s] and a trimmed remainder.
 /// Assumes [s] is {!String.trim}ed which is what {!info_string} gives you.
 pub fn CodeBlock::language_of_info_string(s : String) -> (String, String)? {
-  if s.is_empty() {
-    return None
-  }
+  guard not(s.is_empty()) else { None }
   let max = s.length() - 1
-  let white = loop s, max, 0 {
-    s, max, i => {
-      if i > max || @char.is_ascii_whitespace(s[i]) {
-        break i
-      }
-      continue s, max, i + 1
+  let white = for i = 0; ; i = i + 1 {
+    if i > max || @char.is_ascii_whitespace(s[i]) {
+      break i
     }
   }
   let rem_first = @cmark_base.first_non_blank(s, last=max, start=white)
   let lang = s.substring(start=0, end=white)
-  if lang.is_empty() {
-    return None
-  }
+  guard not(lang.is_empty()) else { None }
   Some((lang, s.substring(start=rem_first, end=max + 1)))
 }
 
