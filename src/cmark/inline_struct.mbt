@@ -156,8 +156,8 @@ fn make_closer_index(toks : Tokens) -> CloserIndex {
   toks._.retain(fn(curr) {
     match curr {
       Backticks({ count, start, .. }) => cidx.add(Backticks(count), start)
-      RightBrack({ start, .. }) => cidx.add(RightBrack, start)
-      RightParen({ start, .. }) => {
+      RightBrack({ start }) => cidx.add(RightBrack, start)
+      RightParen({ start }) => {
         cidx.add(RightParen, start)
         return false // Discard the token since it's not used for parsing
       }
@@ -1159,7 +1159,7 @@ fn Parser::first_pass(
           acc.push(t)
         }
       }
-      Some(AutolinkOrHtmlStart({ start, .. })) =>
+      Some(AutolinkOrHtmlStart({ start })) =>
         if self.try_autolink_or_html(rev_toks, line, start~) is Some((line_, t)) {
           line = line_
           acc.push(t)
