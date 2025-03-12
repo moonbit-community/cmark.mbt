@@ -188,24 +188,24 @@ pub fn LineType::fenced_code_block_start(
   last~ : BytePos,
   start~ : BytePos
 ) -> LineType {
-  fn info(s : String, last, nobt, info_first, k) -> _!Exit {
+  fn info(s : String, last, nobt, info_first, k) {
     if k > last {
       return Some((info_first, last))
     }
     if nobt && s[k] == '`' {
-      raise Exit
+      return None
     }
     if s[k] != ' ' && s[k] != '\t' {
-      return info!(s, last, nobt, info_first, k + 1)
+      return info(s, last, nobt, info_first, k + 1)
     }
     let after_blank = first_non_blank(s, last~, start=k)
     if after_blank > last {
       return Some((info_first, k - 1))
     }
-    info!(s, last, nobt, info_first, after_blank)
+    info(s, last, nobt, info_first, after_blank)
   }
 
-  fn fence(s : String, last, fence_first, k) -> _!Exit {
+  fn fence(s : String, last, fence_first, k) {
     loop s, last, fence_first, k {
       s, last, fence_first, k => {
         if k <= last && s[k] == s[fence_first] {
@@ -214,17 +214,21 @@ pub fn LineType::fenced_code_block_start(
         let fence_last = k - 1
         let fcount = fence_last - fence_first + 1
         if fcount < 3 {
-          return Nomatch
+          return Some(Nomatch)
         }
         let info = {
           let after_blank = first_non_blank(s, last~, start=k)
           if after_blank > last {
             None
           } else {
-            info!(s, last, s[fence_first] == '`', after_blank, after_blank)
+            guard info(s, last, s[fence_first] == '`', after_blank, after_blank)
+              is Some(i) else {
+              break None
+            }
+            Some(i)
           }
         }
-        FencedCodeBlockLine(fence_first, fence_last, info)
+        Some(FencedCodeBlockLine(fence_first, fence_last, info))
       }
     }
   }
@@ -243,11 +247,7 @@ pub fn LineType::fenced_code_block_start(
       if s[k] != '~' && s[k] != '`' {
         break Nomatch
       }
-      try {
-        fence!(s, last, k, k + 1)
-      } catch {
-        Exit => Nomatch
-      }
+      fence(s, last, k, k + 1).or(Nomatch)
     }
   }
 }
@@ -272,17 +272,17 @@ pub fn FencedCodeBlockContinue::new(
     return Code
   }
   let (fc, fcount) = fence
-  fn fence(s : String, last, fence_first, k) -> _!Exit {
+  fn fence(s : String, last, fence_first, k) {
     loop s, last, fence_first, k {
       s, last, fence_first, k => {
         if k <= last && s[k] == fc {
           continue s, last, fence_first, k + 1
         }
         let fence_last = k - 1
-        guard fence_last - fence_first + 1 >= fcount else { raise Exit } // Not closing
+        guard fence_last - fence_first + 1 >= fcount else { break None } // Not closing
         let after_blank = first_non_blank(s, last~, start=k)
-        guard after_blank > last else { raise Exit }
-        Close(fence_first, fence_last)
+        guard after_blank > last else { break None }
+        Some(Close(fence_first, fence_last))
       }
     }
   }
@@ -298,11 +298,7 @@ pub fn FencedCodeBlockContinue::new(
       if s[k] != fc {
         break Code
       }
-      try {
-        fence!(s, last, k, k + 1)
-      } catch {
-        Exit => Code
-      }
+      fence(s, last, k, k + 1).or(Code)
     }
   }
 }

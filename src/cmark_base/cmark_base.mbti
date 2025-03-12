@@ -42,9 +42,6 @@ fn rev_drop_spaces(String, first~ : Int, start~ : Int) -> Int
 fn run_of(char~ : Char, String, last~ : Int, start~ : Int) -> Int
 
 // Types and methods
-pub(all) type! Exit
-impl Show for Exit
-
 pub(all) enum FencedCodeBlockContinue {
   Close(Int, Int)
   Code
