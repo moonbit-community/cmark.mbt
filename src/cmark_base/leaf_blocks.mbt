@@ -189,19 +189,11 @@ pub fn LineType::fenced_code_block_start(
   start~ : BytePos
 ) -> LineType {
   fn info(s : String, last, nobt, info_first, k) {
-    if k > last {
-      return Some((info_first, last))
-    }
-    if nobt && s[k] == '`' {
-      return None
-    }
-    if s[k] != ' ' && s[k] != '\t' {
-      return info(s, last, nobt, info_first, k + 1)
-    }
+    guard k <= last else { Some((info_first, last)) }
+    guard not(nobt && s[k] == '`') else { None }
+    guard s[k] is (' ' | '\t') else { info(s, last, nobt, info_first, k + 1) }
     let after_blank = first_non_blank(s, last~, start=k)
-    if after_blank > last {
-      return Some((info_first, k - 1))
-    }
+    guard after_blank <= last else { Some((info_first, k - 1)) }
     info(s, last, nobt, info_first, after_blank)
   }
 
@@ -213,9 +205,7 @@ pub fn LineType::fenced_code_block_start(
         }
         let fence_last = k - 1
         let fcount = fence_last - fence_first + 1
-        if fcount < 3 {
-          return Some(Nomatch)
-        }
+        guard fcount >= 3 else { break Some(Nomatch) }
         let info = {
           let after_blank = first_non_blank(s, last~, start=k)
           if after_blank > last {
@@ -238,15 +228,11 @@ pub fn LineType::fenced_code_block_start(
   }
   loop s, start, last, start {
     s, first, last, k => {
-      if k > last {
-        break Nomatch
-      }
+      guard k <= last else { break Nomatch }
       if k - first + 1 < 4 && s[k] == ' ' {
         continue s, first, last, k + 1
       }
-      if s[k] != '~' && s[k] != '`' {
-        break Nomatch
-      }
+      guard s[k] is ('~' | '`') else { break Nomatch }
       fence(s, last, k, k + 1).or(Nomatch)
     }
   }
