@@ -432,10 +432,14 @@ fn Parser::parse_link_ref_definition(
     next,
     { ..line, last, },
   )
-  let lines1 = Ref::new(lines.val)
+  let lines1 = lines
+  let lines = lines1.val
   let (lines, after_dest, title_open_delim, title, after_title, meta_last) = match
     self.first_non_blank_over_nl(next_line~, lines1, line, start~) {
-    None => (lines, [], '"', None, [], meta_last)
+    None => {
+      lines1.val = lines
+      (lines1, [], '"', None, [], meta_last)
+    }
     Some((line1, after_dest, start1)) => {
       guard start1 != start else { return None }
       let no_newline = line1.pos == line.pos
@@ -448,7 +452,8 @@ fn Parser::parse_link_ref_definition(
         )
         is Some((line1, spans, last)) else {
         guard not(no_newline) else { return None }
-        (lines, [], '"', None, [], meta_last)
+        lines1.val = lines
+        (lines1, [], '"', None, [], meta_last)
       }
       let after_title = {
         let last = line1.last
@@ -462,7 +467,8 @@ fn Parser::parse_link_ref_definition(
       }
       guard after_title is Some(after_title) else {
         guard not(no_newline) else { return None }
-        (lines, [], '"', None, [], meta_last)
+        lines1.val = lines
+        (lines1, [], '"', None, [], meta_last)
       }
       let t : Seq[_] = self.tight_block_lines(spans=spans[:])
       (
