@@ -58,15 +58,12 @@ fn attribute_value[A](
   let c = s[start]
   // https://spec.commonmark.org/current/#double-quoted-attribute-value
   // https://spec.commonmark.org/current/#unquoted-attribute-value
-  if c == '"' || c == '\'' {
+  if c is ('"' | '\'') {
     return accept_to(char=c, next_line~, s, lines, line~, spans, after=start)
   }
   // https://spec.commonmark.org/current/#unquoted-attribute-value
   fn is_cont(c) {
-    match c {
-      ' ' | '\t' | '"' | '\'' | '=' | '<' | '>' | '`' => false
-      _ => true
-    }
+    not(c is (' ' | '\t' | '"' | '\'' | '=' | '<' | '>' | '`'))
   }
 
   loop s, line.last, start + 1 {

@@ -18,30 +18,26 @@ fn max_by_key[T, K : Compare](a : T, b : T, key : (T) -> K) -> T {
 
 ///|
 fn char_is_atext_plus_dot(c : Char) -> Bool {
-  if @char.is_ascii_alphanum(c) {
-    return true
-  }
-  match c {
-    '!'
-    | '#'
-    | '$'
-    | '%'
-    | '&'
-    | '\\'
-    | '*'
-    | '+'
-    | '-'
-    | '/'
-    | '='
-    | '?'
-    | '^'
-    | '_'
-    | '`'
-    | '|'
-    | '{'
-    | '}'
-    | '~'
-    | '.' => true
-    _ => false
-  }
+  @char.is_ascii_alphanum(c) ||
+  c
+  is ('!'
+  | '#'
+  | '$'
+  | '%'
+  | '&'
+  | '\\'
+  | '*'
+  | '+'
+  | '-'
+  | '/'
+  | '='
+  | '?'
+  | '^'
+  | '_'
+  | '`'
+  | '|'
+  | '{'
+  | '}'
+  | '~'
+  | '.')
 }

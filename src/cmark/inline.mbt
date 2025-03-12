@@ -299,7 +299,7 @@ pub fn InlineCodeSpan::from_string(
         continue bt_counts, acc, max, btc + 1, start, k + 1
       }
       let bt_counts = if btc > 0 { bt_counts..add(btc) } else { bt_counts }
-      if not(s[k] == '\n' || s[k] == '\r') {
+      guard s[k] is ('\n' | '\r') else {
         continue bt_counts, acc, max, 0, start, k + 1
       }
       BlockLine::flush_tight(meta~, s, start, k - 1, acc)

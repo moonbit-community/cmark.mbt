@@ -398,7 +398,7 @@ fn image(c : Context, i : @cmark.InlineLink, close~ : String = " >") -> Unit {
         joined_string(c, joined)
       }
       c.b.write_char('"')
-      for title in title {
+      if title is Some(title) {
         c.b.write_string(" title=\"")
         joined_string(c, title)
         c.b.write_char('"')
@@ -419,10 +419,7 @@ fn link_footnote!(
 ) -> Unit {
   let key = l.referenced_label().unwrap().key
   let (text, label, ref_) = make_footnote_ref_ids(c, key, f)
-  let is_full_ref = match l.reference {
-    Ref(Full, _, _) => true
-    _ => false
-  }
+  let is_full_ref = l.reference is Ref(Full, _, _)
   if is_full_ref {
     c.b.write_string("<a href=\"#")
     pct_encoded_string(c, label)
@@ -449,7 +446,7 @@ fn link!(c : Context, l : @cmark.InlineLink) -> Unit {
       let (link, title) = link_dest_and_title(c, ld)
       c.b.write_string("<a href=\"")
       pct_encoded_string(c, link)
-      for title in title {
+      if title is Some(title) {
         c.b.write_string("\" title=\"")
         joined_string(c, title)
       }

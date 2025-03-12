@@ -9,7 +9,7 @@ fn parse_only(
   let mut byte_pos = 0
   let mut ln_num = 1
   let lines1 : Array[LineSpan] = []
-  for ln in lines.iter() {
+  for ln in lines {
     lines1.push({
       pos: (ln_num, 0),
       first: byte_pos,
@@ -31,7 +31,7 @@ fn tokenize_only(
   let mut byte_pos = 0
   let mut ln_num = 1
   let lines1 : Array[LineSpan] = []
-  for ln in lines.iter() {
+  for ln in lines {
     lines1.push({
       pos: (ln_num, 0),
       first: byte_pos,
