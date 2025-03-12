@@ -954,9 +954,8 @@ fn Parser::find_link_text_tokens(
           acc.push(t)
         }
       (Some(MathSpanMarks({ start, count, may_open, .. })), _) => {
-        guard may_open else { continue }
-        guard self.try_math_span(rev_toks, line, start~, count~)
-          is Some((line_, t)) else {
+        guard may_open &&
+          self.try_math_span(rev_toks, line, start~, count~) is Some((line_, t)) else {
           continue
         }
         line = line_
@@ -1142,41 +1141,40 @@ fn Parser::first_pass(
   let mut had_link = false
   let mut line = line
   let rev_toks : Ref[RevTokens] = Ref::new(toks.val._)
-  for {
-    match rev_toks.val.pop() {
-      None => break
-      Some(Backticks({ start, count, escaped })) =>
+  while rev_toks.val.pop() is Some(t) {
+    match t {
+      Backticks({ start, count, escaped }) =>
         if self.try_code(rev_toks, line, start~, count~, escaped~)
           is Some((line_, t)) {
           line = line_
           acc.push(t)
         }
-      Some(MathSpanMarks({ start, count, may_open, .. })) => {
-        guard may_open else { continue }
-        if self.try_math_span(rev_toks, line, start~, count~)
-          is Some((line_, t)) {
-          line = line_
-          acc.push(t)
+      MathSpanMarks({ start, count, may_open, .. }) => {
+        guard may_open &&
+          self.try_math_span(rev_toks, line, start~, count~) is Some((line_, t)) else {
+          continue
         }
+        line = line_
+        acc.push(t)
       }
-      Some(AutolinkOrHtmlStart({ start })) =>
+      AutolinkOrHtmlStart({ start }) =>
         if self.try_autolink_or_html(rev_toks, line, start~) is Some((line_, t)) {
           line = line_
           acc.push(t)
         }
-      Some(LinkStart({ start, image })) =>
+      LinkStart({ start, image }) =>
         if self.try_link(rev_toks, line, image~, start~)
           is Some((l, t, had_link_)) {
           acc.push(t)
           line = l
           had_link = had_link_
         }
-      Some(RightBrack(_)) => ()
-      Some(Newline({ newline, .. }) as nl) => {
+      RightBrack(_) => ()
+      Newline({ newline, .. }) as nl => {
         line = newline
         acc.push(nl)
       }
-      Some(t) => acc.push(t)
+      t => acc.push(t)
     }
   }
   toks.val = acc
@@ -1227,7 +1225,7 @@ fn Parser::find_emphasis_text(
           tokens_shorten_last_line(to_last~, acc)
           return Some((line, used, acc, marks))
         } else if marks.may_open && marks_has_precedence(marks, opener) {
-          for l in self.try_emphasis(rev_toks, line, opener=marks) {
+          if self.try_emphasis(rev_toks, line, opener=marks) is Some(l) {
             line = l
           }
         } else {
@@ -1317,7 +1315,7 @@ fn Parser::find_strikethrough_text(
           tokens_shorten_last_line(to_last~, acc)
           return Some((line, acc, marks))
         } else if marks.may_open {
-          for l in self.try_strikethrough(rev_toks, line, opener=marks) {
+          if self.try_strikethrough(rev_toks, line, opener=marks) is Some(l) {
             line = l
           }
         } else {
@@ -1391,16 +1389,14 @@ fn Parser::second_pass(
     match rev_toks.val.pop() {
       None => break
       Some(EmphasisMarks(opener)) =>
-        if opener.may_open {
-          for l in self.try_emphasis(rev_toks, line, opener~) {
-            line = l
-          }
+        if opener.may_open &&
+          self.try_emphasis(rev_toks, line, opener~) is Some(l) {
+          line = l
         }
       Some(StrikethroughMarks(opener)) =>
-        if opener.may_open {
-          for l in self.try_strikethrough(rev_toks, line, opener~) {
-            line = l
-          }
+        if opener.may_open &&
+          self.try_strikethrough(rev_toks, line, opener~) is Some(l) {
+          line = l
         }
       Some(Newline({ newline: l, .. }) | Inline({ endline: l, .. }) as t) => {
         acc.push(t)

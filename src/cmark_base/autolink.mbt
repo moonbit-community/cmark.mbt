@@ -60,16 +60,10 @@ pub fn autolink_uri(
   start~ : Int = 0
 ) -> Last? {
   let char_is_scheme = fn(c) {
-    match c {
-      '+' | '-' | '.' => true
-      _ => @char.is_ascii_alphanum(c)
-    }
+    @char.is_ascii_alphanum(c) || c is ('+' | '-' | '.')
   }
   let char_is_uri = fn(c : Char) {
-    match c {
-      '\x00'..='\x1F' | '\x7F' | '<' | '>' | ' ' => false
-      _ => true
-    }
+    not(c is ('\x00'..='\x1F' | '\x7F' | '<' | '>' | ' '))
   }
   let rest = fn(s : String, last, k) {
     loop s, last, k {

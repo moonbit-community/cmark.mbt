@@ -171,10 +171,9 @@ pub fn CodeBlock::make_fence(self : CodeBlock) -> (Char, Count) {
   let counts = @sorted_set.new()
   for n in self.code {
     let c = n.v
-    let k = for k = 0; k < c.length() && c[k] == ch; k = k + 1 {
-      ()
-    } else {
-      k
+    let mut k = 0
+    while k < c.length() && c[k] == ch {
+      k += 1
     }
     if k != 0 {
       counts.add(k)

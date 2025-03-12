@@ -104,9 +104,7 @@ fn _list_of_string[A](flush : FlushFn[A], s : String) -> Array[A] {
         flush(s, start, max, acc)
         break acc
       }
-      if not(s[k] == '\n' || s[k] == '\r') {
-        continue s, acc, max, start, k + 1
-      }
+      guard s[k] is ('\n' | '\r') else { continue s, acc, max, start, k + 1 }
       flush(s, start, k - 1, acc)
       let next = k + 1
       let start = if s[k] == '\r' && next <= max && s[next] == '\n' {

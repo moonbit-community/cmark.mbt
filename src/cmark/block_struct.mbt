@@ -496,7 +496,7 @@ fn Parser::parse_link_ref_definition(
     let defined_label = self.def_label(label)
     let label = Some(label)
     let ld = { v: { layout, label, defined_label, dest, title }, meta }
-    for def in defined_label {
+    if defined_label is Some(def) {
       self.set_label_def(def, LinkDef(ld))
     }
     let _ = lines_arr.drain(0, lines.val)
@@ -850,7 +850,7 @@ fn Parser::footnote(
 ) -> BlockStruct {
   let label = Parser::label_of_spans(self, key~, spans)
   let defined_label = self.def_label(label)
-  for def in defined_label {
+  if defined_label is Some(def) {
     self.set_label_def(def, Label::stub(label, defined_label))
   }
   self.accept_cols(count=last - self.curr_char + 1)
@@ -1624,7 +1624,7 @@ fn Parser::block_struct_to_footnote_definition(
     v: { indent, label, defined_label, block },
     meta: self.meta(loc),
   }
-  for def in defined_label {
+  if defined_label is Some(def) {
     self.set_label_def(def, FootnoteDef(footnote))
   }
   ExtFootnoteDefinition(footnote)

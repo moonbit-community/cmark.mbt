@@ -19,11 +19,9 @@ pub(all) enum ListType {
 
 ///|
 pub fn ListType::is_same_type(self : ListType, other : ListType) -> Bool {
-  match (self, other) {
-    (Ordered(_, c0), Ordered(_, c1)) => c0 == c1
-    (Unordered(c0), Unordered(c1)) => c0 == c1
-    _ => false
-  }
+  (self, other)
+  is ((Ordered(_, c0), Ordered(_, c1)) | (Unordered(c0), Unordered(c1))) &&
+  c0 == c1
 }
 
 ///|
@@ -64,7 +62,7 @@ pub fn LineType::thematic_break(
             }
           } else if s[k] == s[prev] {
             continue s, last, count + 1, k, k + 1
-          } else if s[k] == ' ' || s[k] == '\t' {
+          } else if s[k] is (' ' | '\t') {
             continue s, last, count, prev, k + 1
           } else {
             Nomatch
@@ -106,7 +104,7 @@ pub fn LineType::atx_heading(
     loop s, last, k {
       s, last, k => {
         guard k <= last else { k - 1 }
-        guard s[k] == ' ' || s[k] == '\t' else { continue s, last, k + 1 }
+        guard s[k] is (' ' | '\t') else { continue s, last, k + 1 }
         let end1 = find_end(s, last, k)
         guard end1 <= last else { k - 1 }
         continue s, last, end1
@@ -433,7 +431,7 @@ pub fn LineType::html_block_start(
       let tag = s.substring(start=tag_first, end=tag_last + 1).to_lower()
       let is_open_end = {
         let n = tag_last + 1
-        n > last || s[n] == ' ' || s[n] == '\t' || s[n] == '>'
+        n > last || s[n] is (' ' | '\t' | '>')
       }
       let is_open_close_end = is_open_end ||
         (
