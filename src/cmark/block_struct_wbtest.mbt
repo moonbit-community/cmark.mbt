@@ -378,6 +378,203 @@ test "should parse normal code block" {
 }
 
 ///|
+test "should parse link refs" {
+  let doc =
+    #|This is an [Extism PDK] that can be used to write [Extism Plug-ins].
+    #|
+    #|[Extism PDK]: https://extism.org/docs/concepts/pdk
+    #|[Extism Plug-ins]: https://extism.org/docs/concepts/plug-in
+  @json.inspect!(Doc::from_string(doc), content={
+    "nl": "\n",
+    "block": {
+      "$tag": "Blocks",
+      "0": [
+        [
+          {
+            "$tag": "Paragraph",
+            "0": [
+              {
+                "leading_indent": 0,
+                "inline": {
+                  "$tag": "Inlines",
+                  "0": [
+                    [
+                      { "$tag": "Text", "0": ["This is an "] },
+                      {
+                        "$tag": "Link",
+                        "0": [
+                          {
+                            "text": { "$tag": "Text", "0": ["Extism PDK"] },
+                            "reference": {
+                              "$tag": "Ref",
+                              "0": { "$tag": "Shortcut" },
+                              "1": {
+                                "meta": {},
+                                "key": "extism pdk",
+                                "text": [
+                                  { "blanks": "", "node": ["Extism PDK"] },
+                                ],
+                              },
+                              "2": {
+                                "meta": {},
+                                "key": "extism pdk",
+                                "text": [
+                                  { "blanks": "", "node": ["Extism PDK"] },
+                                ],
+                              },
+                            },
+                          },
+                        ],
+                      },
+                      { "$tag": "Text", "0": [" that can be used to write "] },
+                      {
+                        "$tag": "Link",
+                        "0": [
+                          {
+                            "text": { "$tag": "Text", "0": ["Extism Plug-ins"] },
+                            "reference": {
+                              "$tag": "Ref",
+                              "0": { "$tag": "Shortcut" },
+                              "1": {
+                                "meta": {},
+                                "key": "extism plug-ins",
+                                "text": [
+                                  { "blanks": "", "node": ["Extism Plug-ins"] },
+                                ],
+                              },
+                              "2": {
+                                "meta": {},
+                                "key": "extism plug-ins",
+                                "text": [
+                                  { "blanks": "", "node": ["Extism Plug-ins"] },
+                                ],
+                              },
+                            },
+                          },
+                        ],
+                      },
+                      { "$tag": "Text", "0": ["."] },
+                    ],
+                  ],
+                },
+                "trailing_blanks": "",
+              },
+            ],
+          },
+          { "$tag": "BlankLine", "0": [""] },
+          {
+            "$tag": "LinkRefDefinition",
+            "0": [
+              {
+                "layout": {
+                  "indent": 0,
+                  "angled_dest": false,
+                  "before_dest": [[" "]],
+                  "after_dest": [],
+                  "title_open_delim": "\"",
+                  "after_title": [],
+                },
+                "label": {
+                  "meta": {},
+                  "key": "extism pdk",
+                  "text": [{ "blanks": "", "node": ["Extism PDK"] }],
+                },
+                "defined_label": {
+                  "meta": {},
+                  "key": "extism pdk",
+                  "text": [{ "blanks": "", "node": ["Extism PDK"] }],
+                },
+                "dest": ["https://extism.org/docs/concepts/pdk"],
+              },
+            ],
+          },
+          {
+            "$tag": "LinkRefDefinition",
+            "0": [
+              {
+                "layout": {
+                  "indent": 0,
+                  "angled_dest": false,
+                  "before_dest": [[" "]],
+                  "after_dest": [],
+                  "title_open_delim": "\"",
+                  "after_title": [],
+                },
+                "label": {
+                  "meta": {},
+                  "key": "extism plug-ins",
+                  "text": [{ "blanks": "", "node": ["Extism Plug-ins"] }],
+                },
+                "defined_label": {
+                  "meta": {},
+                  "key": "extism plug-ins",
+                  "text": [{ "blanks": "", "node": ["Extism Plug-ins"] }],
+                },
+                "dest": ["https://extism.org/docs/concepts/plug-in"],
+              },
+            ],
+          },
+        ],
+      ],
+    },
+    "defs": {
+      "extism pdk": {
+        "$tag": "LinkDef",
+        "0": [
+          {
+            "layout": {
+              "indent": 0,
+              "angled_dest": false,
+              "before_dest": [[" "]],
+              "after_dest": [],
+              "title_open_delim": "\"",
+              "after_title": [],
+            },
+            "label": {
+              "meta": {},
+              "key": "extism pdk",
+              "text": [{ "blanks": "", "node": ["Extism PDK"] }],
+            },
+            "defined_label": {
+              "meta": {},
+              "key": "extism pdk",
+              "text": [{ "blanks": "", "node": ["Extism PDK"] }],
+            },
+            "dest": ["https://extism.org/docs/concepts/pdk"],
+          },
+        ],
+      },
+      "extism plug-ins": {
+        "$tag": "LinkDef",
+        "0": [
+          {
+            "layout": {
+              "indent": 0,
+              "angled_dest": false,
+              "before_dest": [[" "]],
+              "after_dest": [],
+              "title_open_delim": "\"",
+              "after_title": [],
+            },
+            "label": {
+              "meta": {},
+              "key": "extism plug-ins",
+              "text": [{ "blanks": "", "node": ["Extism Plug-ins"] }],
+            },
+            "defined_label": {
+              "meta": {},
+              "key": "extism plug-ins",
+              "text": [{ "blanks": "", "node": ["Extism Plug-ins"] }],
+            },
+            "dest": ["https://extism.org/docs/concepts/plug-in"],
+          },
+        ],
+      },
+    },
+  })
+}
+
+///|
 test "should parse indented code block" {
   let doc =
     #|The indented code block: 

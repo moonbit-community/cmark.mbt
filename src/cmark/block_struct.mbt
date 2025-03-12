@@ -428,8 +428,9 @@ fn Parser::parse_link_ref_definition(
         (angled, Some(dest), next, { ..line, last, })
       }
     }
+    let lines1 = Ref::new(lines.val)
     let (lines, after_dest, title_open_delim, title, after_title, meta_last) = match
-      self.first_non_blank_over_nl(next_line~, lines, line, start~) {
+      self.first_non_blank_over_nl(next_line~, lines1, line, start~) {
       None => (lines, [], '"', None, [], meta_last)
       Some((line1, after_dest, start1)) => {
         if start1 == start {
@@ -439,7 +440,7 @@ fn Parser::parse_link_ref_definition(
         let title = @cmark_base.link_title(
           next_line~,
           self.i,
-          lines,
+          lines1,
           line=line1,
           start=start1,
         )
@@ -471,7 +472,7 @@ fn Parser::parse_link_ref_definition(
               Some(after_title) => {
                 let t : Seq[_] = self.tight_block_lines(spans=spans[:])
                 (
-                  lines,
+                  lines1,
                   after_dest,
                   self.i[start1],
                   Some(t),
