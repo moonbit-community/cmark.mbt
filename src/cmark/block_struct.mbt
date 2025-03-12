@@ -397,114 +397,101 @@ fn Parser::parse_link_ref_definition(
   }
 
   let lines = Ref::new(0)
-  try {
-    guard next_line(lines) is Some(line) else { raise @cmark_base.Exit }
-    let start = self.first_non_blank_in_span(line)
-    let indent = start - line.first
-    let meta_first = { ..line, first: start }
-    let (lines, line, label, start) = match
-      @cmark_base.link_label(self.buf, next_line~, self.i, lines, line~, start~) {
-      None => raise @cmark_base.Exit
-      Some((line, spans, last, key)) => {
-        let colon = last + 1
-        if colon > line.last || self.i[colon] != ':' {
-          raise @cmark_base.Exit
-        }
-        let label = Parser::label_of_spans(self, key~, spans[:])
-        (lines, line, label, colon + 1)
-      }
-    }
-    let (line, before_dest, start) = match
-      self.first_non_blank_over_nl(next_line~, lines, line, start~) {
-      None => raise @cmark_base.Exit
-      Some(v) => v
-    }
-    let (angled_dest, dest, start, meta_last) = match
-      @cmark_base.link_destination(self.i, last=line.last, start~) {
-      None => raise @cmark_base.Exit
-      Some((angled, first, last)) => {
-        let dest = Parser::clean_unesc_unref_span(self, { ..line, first, last })
-        let next = if angled { last + 2 } else { last + 1 }
-        (angled, Some(dest), next, { ..line, last, })
-      }
-    }
-    let lines1 = Ref::new(lines.val)
-    let (lines, after_dest, title_open_delim, title, after_title, meta_last) = match
-      self.first_non_blank_over_nl(next_line~, lines1, line, start~) {
-      None => (lines, [], '"', None, [], meta_last)
-      Some((line1, after_dest, start1)) => {
-        if start1 == start {
-          raise @cmark_base.Exit
-        }
-        let no_newline = line1.pos == line.pos
-        let title = @cmark_base.link_title(
+  guard next_line(lines) is Some(line) else { None }
+  let start = self.first_non_blank_in_span(line)
+  let indent = start - line.first
+  let meta_first = { ..line, first: start }
+  guard @cmark_base.link_label(
+      self.buf,
+      next_line~,
+      self.i,
+      lines,
+      line~,
+      start~,
+    )
+    is Some((line, spans, last, key)) else {
+    None
+  }
+  let colon = last + 1
+  guard colon <= line.last && self.i[colon] == ':' else { None }
+  let label = Parser::label_of_spans(self, key~, spans[:])
+  let (lines, line, label, start) = (lines, line, label, colon + 1)
+  guard self.first_non_blank_over_nl(next_line~, lines, line, start~)
+    is Some((line, before_dest, start)) else {
+    None
+  }
+  guard @cmark_base.link_destination(self.i, last=line.last, start~)
+    is Some((angled, first, last)) else {
+    None
+  }
+  let dest = Parser::clean_unesc_unref_span(self, { ..line, first, last })
+  let next = if angled { last + 2 } else { last + 1 }
+  let (angled_dest, dest, start, meta_last) = (
+    angled,
+    Some(dest),
+    next,
+    { ..line, last, },
+  )
+  let lines1 = Ref::new(lines.val)
+  let (lines, after_dest, title_open_delim, title, after_title, meta_last) = match
+    self.first_non_blank_over_nl(next_line~, lines1, line, start~) {
+    None => (lines, [], '"', None, [], meta_last)
+    Some((line1, after_dest, start1)) => {
+      guard start1 != start else { return None }
+      let no_newline = line1.pos == line.pos
+      guard @cmark_base.link_title(
           next_line~,
           self.i,
           lines1,
           line=line1,
           start=start1,
         )
-        match title {
-          None =>
-            if no_newline {
-              raise @cmark_base.Exit
-            } else {
-              (lines, [], '"', None, [], meta_last)
-            }
-          Some((line1, spans, last)) => {
-            let after_title = {
-              let last = line1.last
-              let start = last + 1
-              let nb = @cmark_base.first_non_blank(self.i, last~, start~)
-              if nb <= line1.last {
-                None
-              } else {
-                Some([self.layout_clean_raw_span({ ..line1, first: start })])
-              }
-            }
-            match after_title {
-              None =>
-                if no_newline {
-                  raise @cmark_base.Exit
-                } else {
-                  (lines, [], '"', None, [], meta_last)
-                }
-              Some(after_title) => {
-                let t : Seq[_] = self.tight_block_lines(spans=spans[:])
-                (
-                  lines1,
-                  after_dest,
-                  self.i[start1],
-                  Some(t),
-                  after_title,
-                  { ..line1, last, },
-                )
-              }
-            }
-          }
+        is Some((line1, spans, last)) else {
+        guard not(no_newline) else { return None }
+        (lines, [], '"', None, [], meta_last)
+      }
+      let after_title = {
+        let last = line1.last
+        let start = last + 1
+        let nb = @cmark_base.first_non_blank(self.i, last~, start~)
+        if nb <= line1.last {
+          None
+        } else {
+          Some([self.layout_clean_raw_span({ ..line1, first: start })])
         }
       }
+      guard after_title is Some(after_title) else {
+        guard not(no_newline) else { return None }
+        (lines, [], '"', None, [], meta_last)
+      }
+      let t : Seq[_] = self.tight_block_lines(spans=spans[:])
+      (
+        lines1,
+        after_dest,
+        self.i[start1],
+        Some(t),
+        after_title,
+        { ..line1, last, },
+      )
     }
-    let meta = self.meta_of_spans(first=meta_first, last=meta_last)
-    let layout : LinkDefinitionLayout = {
-      indent,
-      angled_dest,
-      before_dest,
-      after_dest,
-      title_open_delim,
-      after_title,
-    }
-    let defined_label = self.def_label(label)
-    let label = Some(label)
-    let ld = { v: { layout, label, defined_label, dest, title }, meta }
-    if defined_label is Some(def) {
-      self.set_label_def(def, LinkDef(ld))
-    }
-    let _ = lines_arr.drain(0, lines.val)
-    Some(ld)
-  } catch {
-    @cmark_base.Exit => None
   }
+  let meta = self.meta_of_spans(first=meta_first, last=meta_last)
+  let layout : LinkDefinitionLayout = {
+    indent,
+    angled_dest,
+    before_dest,
+    after_dest,
+    title_open_delim,
+    after_title,
+  }
+  let defined_label = self.def_label(label)
+  let label = Some(label)
+  let ld = { v: { layout, label, defined_label, dest, title }, meta }
+  if defined_label is Some(def) {
+    self.set_label_def(def, LinkDef(ld))
+  }
+  let _ = lines_arr.drain(0, lines.val)
+  Some(ld)
 }
 
 ///|
