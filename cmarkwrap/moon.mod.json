@@ -1,0 +1,14 @@
+{
+  "name": "rami3l/cmarkwrap",
+  "version": "0.1.0",
+  "deps": {
+    "rami3l/cmark": {
+      "path": "../"
+    }
+  },
+  "readme": "README.md",
+  "repository": "",
+  "keywords": [],
+  "description": "",
+  "source": "src"
+}
