@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1741860528478,
+  "lastUpdate": 1741939281894,
   "repoUrl": "https://github.com/moonbit-community/cmark",
   "entries": {
     "Benchmark.js Benchmark": [
@@ -104,6 +104,40 @@ window.BENCHMARK_DATA = {
             "name": "cmarkJS(spec * 200)",
             "value": 0.2,
             "range": "±3.35%",
+            "unit": "ops/sec",
+            "extra": "5 samples"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "name": "moonbit-community",
+            "username": "moonbit-community"
+          },
+          "committer": {
+            "name": "moonbit-community",
+            "username": "moonbit-community"
+          },
+          "id": "9244fc88211bbb66c2e8c720cb38f3edfad12ec9",
+          "message": "docs: add `README`s to each package",
+          "timestamp": "2025-03-13T10:06:32Z",
+          "url": "https://github.com/moonbit-community/cmark/pull/52/commits/9244fc88211bbb66c2e8c720cb38f3edfad12ec9"
+        },
+        "date": 1741939281647,
+        "tool": "benchmarkjs",
+        "benches": [
+          {
+            "name": "cmarkJS(spec * 100)",
+            "value": 0.45,
+            "range": "±4.35%",
+            "unit": "ops/sec",
+            "extra": "6 samples"
+          },
+          {
+            "name": "cmarkJS(spec * 200)",
+            "value": 0.24,
+            "range": "±1.00%",
             "unit": "ops/sec",
             "extra": "5 samples"
           }
