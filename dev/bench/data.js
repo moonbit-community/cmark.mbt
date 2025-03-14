@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1741939421944,
+  "lastUpdate": 1741939627691,
   "repoUrl": "https://github.com/moonbit-community/cmark",
   "entries": {
     "Benchmark.js Benchmark": [
@@ -172,6 +172,44 @@ window.BENCHMARK_DATA = {
             "name": "cmarkJS(spec * 200)",
             "value": 0.21,
             "range": "±5.07%",
+            "unit": "ops/sec",
+            "extra": "5 samples"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "rami3l@outlook.com",
+            "name": "rami3l",
+            "username": "rami3l"
+          },
+          "committer": {
+            "email": "rami3l@outlook.com",
+            "name": "rami3l",
+            "username": "rami3l"
+          },
+          "distinct": true,
+          "id": "4fc7eee70443804414aa3dc5115e7bb4a98af506",
+          "message": "docs(cmark_renderer): add `README.md`",
+          "timestamp": "2025-03-14T16:04:49+08:00",
+          "tree_id": "08df745820f6215f7a0db66dfa0079440b0531ef",
+          "url": "https://github.com/moonbit-community/cmark/commit/4fc7eee70443804414aa3dc5115e7bb4a98af506"
+        },
+        "date": 1741939627196,
+        "tool": "benchmarkjs",
+        "benches": [
+          {
+            "name": "cmarkJS(spec * 100)",
+            "value": 0.45,
+            "range": "±5.59%",
+            "unit": "ops/sec",
+            "extra": "6 samples"
+          },
+          {
+            "name": "cmarkJS(spec * 200)",
+            "value": 0.23,
+            "range": "±1.88%",
             "unit": "ops/sec",
             "extra": "5 samples"
           }
