@@ -98,7 +98,7 @@ fn footnote_id(l : String) -> String {
 
 ///|
 fn footnote_ref_id(fnid : String, c : Int) -> String {
-  String::concat(separator="-", ["ref", c.to_string(), fnid])
+  @string.concat(separator="-", ["ref", c.to_string(), fnid])
 }
 
 ///|
