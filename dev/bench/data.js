@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1742377340086,
+  "lastUpdate": 1742377629724,
   "repoUrl": "https://github.com/moonbit-community/cmark",
   "entries": {
     "Benchmark.js Benchmark": [
@@ -278,6 +278,40 @@ window.BENCHMARK_DATA = {
             "name": "cmarkJS(spec * 200)",
             "value": 0.22,
             "range": "±6.95%",
+            "unit": "ops/sec",
+            "extra": "5 samples"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "name": "moonbit-community",
+            "username": "moonbit-community"
+          },
+          "committer": {
+            "name": "moonbit-community",
+            "username": "moonbit-community"
+          },
+          "id": "a6ebcee5f17f0f843e4a639cc786824936dbed05",
+          "message": "refactor(char)!: upstream a part of the API surface",
+          "timestamp": "2025-03-16T13:56:28Z",
+          "url": "https://github.com/moonbit-community/cmark/pull/53/commits/a6ebcee5f17f0f843e4a639cc786824936dbed05"
+        },
+        "date": 1742377629275,
+        "tool": "benchmarkjs",
+        "benches": [
+          {
+            "name": "cmarkJS(spec * 100)",
+            "value": 0.43,
+            "range": "±3.29%",
+            "unit": "ops/sec",
+            "extra": "6 samples"
+          },
+          {
+            "name": "cmarkJS(spec * 200)",
+            "value": 0.22,
+            "range": "±1.88%",
             "unit": "ops/sec",
             "extra": "5 samples"
           }
