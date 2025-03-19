@@ -159,8 +159,8 @@ pub fn Inline::id(
   buf~ : Buffer = Buffer::new(size_hint=256)
 ) -> String {
   let text = self.to_plain_text(break_on_soft=false)
-  let s = text._.map(fn(l) { String::concat(l._) })
-    |> String::concat(separator="\n")
+  let s = text._.map(fn(l) { @string.concat(l._) })
+    |> @string.concat(separator="\n")
   // Collapses non initial white 
   let collapse_blanks = fn(prev) {
     if @char.is_ascii_blank(prev) && not(buf.is_empty()) {
@@ -317,7 +317,7 @@ pub fn InlineCodeSpan::from_string(
 ///| https://spec.commonmark.org/0.30/#code-spans
 pub fn InlineCodeSpan::code(self : InlineCodeSpan) -> String {
   let s = self.code_layout.iter().map(Tight::to_string).to_array()
-    |> String::concat(separator=" ")
+    |> @string.concat(separator=" ")
   if s == "" {
     return ""
   }
@@ -448,5 +448,5 @@ pub(all) struct InlineMathSpan {
 
 ///|
 pub fn tex(self : InlineMathSpan) -> String {
-  self.tex_layout._.map(Tight::to_string) |> String::concat(separator=" ")
+  self.tex_layout._.map(Tight::to_string) |> @string.concat(separator=" ")
 }
