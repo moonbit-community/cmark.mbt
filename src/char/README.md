@@ -12,23 +12,9 @@ Test if a character belongs to certain ASCII categories:
 
 ```moonbit
 test "ascii classification" {
-  // Basic ASCII checks
-  inspect!(@char.is_ascii('A'), content="true")
-  inspect!(@char.is_ascii('世'), content="false")
-
-  // Letter checks
-  inspect!(@char.is_ascii_alpha('Z'), content="true")
-  inspect!(@char.is_ascii_alpha('9'), content="false")
-
-  // Digit & hex digit checks
-  inspect!(@char.is_ascii_digit('7'), content="true")
-  inspect!(@char.is_ascii_hexdigit('f'), content="true")
-  inspect!(@char.is_ascii_hexdigit('g'), content="false")
-
-  // Other categories
   inspect!(@char.is_ascii_whitespace(' '), content="true")
   inspect!(@char.is_ascii_punctuation('.'), content="true")
-  inspect!(@char.is_ascii_control('\x00'), content="true")
+  inspect!(@char.is_ascii_control('\u{0}'), content="true")
 }
 ```
 

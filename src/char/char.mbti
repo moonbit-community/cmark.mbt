@@ -13,29 +13,15 @@ fn at_checked(String, Int) -> Result[Char, Char]
 
 fn from_int_checked(Int) -> Char?
 
-fn is_ascii(Char) -> Bool
-
-fn is_ascii_alpha(Char) -> Bool
-
 fn is_ascii_alphanum(Char) -> Bool
 
 fn is_ascii_blank(Char) -> Bool
 
 fn is_ascii_control(Char) -> Bool
 
-fn is_ascii_digit(Char) -> Bool
-
 fn is_ascii_graphic(Char) -> Bool
 
-fn is_ascii_hexdigit(Char) -> Bool
-
-fn is_ascii_lower(Char) -> Bool
-
-fn is_ascii_octdigit(Char) -> Bool
-
 fn is_ascii_punctuation(Char) -> Bool
-
-fn is_ascii_upper(Char) -> Bool
 
 fn is_ascii_whitespace(Char) -> Bool
 

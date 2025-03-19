@@ -16,7 +16,7 @@ pub fn link_destination(
   if s[start] == '<' {
     // delimited, i.e. start has '<'
     // https://spec.commonmark.org/current/#link-destination 1st
-    loop s, start, last, '\x00', start + 1 {
+    loop s, start, last, '\u{0}', start + 1 {
       s, start, last, prev, k => {
         if k > last {
           break None
@@ -24,7 +24,7 @@ pub fn link_destination(
         let c = s[k]
         match (c, prev) {
           ('\n' | '\r', _) => break None
-          ('\\', '\\') => continue s, start, last, '\x00', k + 1
+          ('\\', '\\') => continue s, start, last, '\u{0}', k + 1
           ('<', '\\') => ()
           ('<', _) => break None
           ('>', '\\') => ()
@@ -37,14 +37,14 @@ pub fn link_destination(
   } else {
     // not_delimited
     // https://spec.commonmark.org/current/#link-destination 2nd
-    loop s, start, last, '\x00', 0, start {
+    loop s, start, last, '\u{0}', 0, start {
       s, start, last, prev, bal, k => {
         if k > last {
           break if bal == 0 { Some((false, start, k - 1)) } else { None }
         }
         let c = s[k]
         match (c, prev) {
-          ('\\', '\\') => continue s, start, last, '\x00', bal, k + 1
+          ('\\', '\\') => continue s, start, last, '\u{0}', bal, k + 1
           ('(', '\\') => ()
           ('(', _) => continue s, start, last, c, bal + 1, k + 1
           (')', '\\') => ()
@@ -143,7 +143,7 @@ pub fn link_label[A](
   let start = start + 1
   buf.reset()
   let acc = []
-  loop buf, next_line, s, lines, line, '\x00', start, 0, start {
+  loop buf, next_line, s, lines, line, '\u{0}', start, 0, start {
     b, next_line, s, lines, line, prev, start, count, k => {
       if k > line.last {
         guard next_line(lines) is Some(newline) else { break None }
@@ -155,7 +155,7 @@ pub fn link_label[A](
         if not(b.is_empty()) {
           b.write_char(' ')
         }
-        let prev = '\x00'
+        let prev = '\u{0}'
         continue b, next_line, s, lines, newline, prev, start, count, start
       }
       if count > 999 {
@@ -164,7 +164,7 @@ pub fn link_label[A](
       match (s[k], prev) {
         ('\\', '\\') => {
           b.write_char('\\')
-          let prev = '\x00'
+          let prev = '\u{0}'
           continue b, next_line, s, lines, line, prev, start, count + 1, k + 1
         }
         (']', '\\') => ()
@@ -187,7 +187,7 @@ pub fn link_label[A](
         b.write_char(' ')
       }
       let mut u = @char.at(s, k)
-      if u == '\x00' {
+      if u == '\u{0}' {
         u = @char.rep
       }
       let k1 = k + @char.length_utf8(u)

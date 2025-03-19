@@ -392,7 +392,7 @@ pub fn LineType::html_block_start(
         '[' => LineType::html_block_start_5(s, last~, start~)
         '-' => LineType::html_block_start_2(s, last~, start~)
         c =>
-          if @char.is_ascii_alpha(c) {
+          if c.is_ascii_alphabetic() {
             HtmlBlockLine(EndStr(">")) // 4
           } else {
             Nomatch
@@ -400,11 +400,11 @@ pub fn LineType::html_block_start(
       }
     }
     c => {
-      guard @char.is_ascii_alpha(c) || c == '/' else { return Nomatch }
+      guard c.is_ascii_alphabetic() || c == '/' else { return Nomatch }
       let tag_first = if c == '/' { next + 1 } else { next }
       let tag_last = loop s, last, tag_first {
         s, last, i => {
-          if i > last || not(@char.is_ascii_alpha(s[i])) {
+          if i > last || not(s[i].is_ascii_alphabetic()) {
             break i - 1
           }
           continue s, last, i + 1

@@ -350,7 +350,7 @@ pub fn raw_html[A : Show](
         '-' => html_comment(next_line~, s, lines, line~, start~)
         '[' => cdata_section(next_line~, s, lines, line~, start~)
         c => {
-          guard @char.is_ascii_alpha(c) else { None }
+          guard c.is_ascii_alphabetic() else { None }
           declaration(next_line~, s, lines, line~, start~)
         }
       }

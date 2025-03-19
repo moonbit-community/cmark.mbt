@@ -137,7 +137,7 @@ fn joined_string(c : Context, join : Joined[String]) -> Unit {
 ///|
 // fn buffer_add_html_escaped_char(b : Buffer, ch : Char) -> Unit {
 //   match ch {
-//     '\x00' => b.write_char(@char.rep)
+//     '\u{0}' => b.write_char(@char.rep)
 //     '&' => b.write_string("&amp;")
 //     '<' => b.write_string("&lt;")
 //     '>' => b.write_string("&gt;")
@@ -170,7 +170,7 @@ fn buffer_add_html_escaped_string(b : Buffer, s : String) -> Unit {
       }
       let next = i + 1
       match s[i] {
-        '\x00' => {
+        '\u{0}' => {
           flush(b, start, i)
           b.write_char(@char.rep)
           continue next, next

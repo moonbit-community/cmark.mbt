@@ -63,7 +63,7 @@ pub fn autolink_uri(
     @char.is_ascii_alphanum(c) || c is ('+' | '-' | '.')
   }
   let char_is_uri = fn(c : Char) {
-    not(c is ('\x00'..='\x1F' | '\x7F' | '<' | '>' | ' '))
+    not(c is ('\u{0}'..='\u{1f}' | '\u{7f}' | '<' | '>' | ' '))
   }
   let rest = fn(s : String, last, k) {
     loop s, last, k {
@@ -82,7 +82,7 @@ pub fn autolink_uri(
     }
   }
   let next = start + 1
-  if next > last || s[start] != '<' || not(@char.is_ascii_alpha(s[next])) {
+  if next > last || s[start] != '<' || not(s[next].is_ascii_alphabetic()) {
     return None
   }
   loop s, last, 1, next + 1 {
