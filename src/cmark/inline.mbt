@@ -167,7 +167,7 @@ pub fn Inline::id(
       buf.write_char('-')
     }
   }
-  loop buf, s, s.length() - 1, '\x00', 0 {
+  loop buf, s, s.length() - 1, '\u{0}', 0 {
     b, s, max, prev, k => {
       if k > max {
         break buf.to_string()
@@ -188,7 +188,7 @@ pub fn Inline::id(
           let k = k + @char.length_utf16(u)
           // TODO: Use `is_unicode_punctuation()`.
           if @char.is_ascii_punctuation(c) {
-            continue b, s, max, '\x00', k
+            continue b, s, max, '\u{0}', k
           }
           // TODO: Use `unicode_casefold()`
           buf.write_char(@char.to_ascii_lower(u))

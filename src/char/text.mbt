@@ -69,19 +69,14 @@ pub fn prev_char(s : String, first~ : Int, before~ : Int) -> Char {
   if before <= first {
     return ' '
   }
-  let k = loop before - 1 {
-    start => {
-      if start < first {
-        break first
-      }
-      let ch = s[start]
-      if ('\x00' <= ch && ch <= '\x7f') ||
-        ('\xc2' <= ch && ch <= '\xdf') ||
-        ('\xe0' <= ch && ch <= '\xef') ||
-        ('\xf0' <= ch && ch <= '\xf4') {
-        break start
-      }
-      continue start - 1
+  let k = for start = before - 1; ; start = start - 1 {
+    guard first <= start else { break first }
+    if s[start]
+      is ('\u{0}'..='\u{7f}'
+      | '\u{c2}'..='\u{df}'
+      | '\u{e0}'..='\u{ef}'
+      | '\u{f0}'..='\u{f4}') {
+      break start
     }
   }
   at(s, k)
@@ -122,13 +117,13 @@ pub fn utf_16_clean_raw(
           flush(last, start, k)
           break buf.to_string()
         }
-        if s[k] == '\x00' {
+        if s[k] == '\u{0}' {
           let next = k + 1
           flush(last, start, k)
           buf.write_char(rep)
           continue last, next, next
         }
-        if is_ascii(s[k]) {
+        if s[k].is_ascii() {
           continue last, start, k + 1
         }
         match at_checked(s, k) {
@@ -152,10 +147,10 @@ pub fn utf_16_clean_raw(
       last, first, k =>
         if k > last {
           s.substring(start=first, end=last + 1)
-        } else if s[k] == '\x00' {
+        } else if s[k] == '\u{0}' {
           buf.reset()
           clean(last, first, k)
-        } else if is_ascii(s[k]) {
+        } else if s[k].is_ascii() {
           continue last, first, k + 1
         } else {
           match at_checked(s, k) {
@@ -242,7 +237,7 @@ fn _utf_16_clean_unesc_unref(
               return resolve(last, start, next)
             }
             let u = match from_int_checked(u) {
-              Some('\x00') | None => rep
+              Some('\u{0}') | None => rep
               Some(u) => u
             }
             flush(last, start, num_start - 3) // Chop off `&#x` or `&#X`
@@ -250,7 +245,7 @@ fn _utf_16_clean_unesc_unref(
             resolve(last, next, next)
           }
           c => {
-            guard is_ascii_hexdigit(c) else { return resolve(last, start, k) }
+            guard c.is_ascii_hexdigit() else { return resolve(last, start, k) }
             let u = u * 16 + ascii_hexdigit_to_int(c)
             continue last, start, num_start, k + 1, u
           }
@@ -272,7 +267,7 @@ fn _utf_16_clean_unesc_unref(
               return resolve(last, start, next)
             }
             let u = match from_int_checked(u) {
-              Some('\x00') | None => rep
+              Some('\u{0}') | None => rep
               Some(u) => u
             }
             flush(last, start, num_start - 2) // Chop off `&#`
@@ -280,7 +275,7 @@ fn _utf_16_clean_unesc_unref(
             resolve(last, next, next)
           }
           c => {
-            guard is_ascii_digit(c) else { return resolve(last, start, k) }
+            guard c.is_ascii_digit() else { return resolve(last, start, k) }
             let u = u * 10 + ascii_digit_to_int(c)
             continue last, start, num_start, k + 1, u
           }
@@ -327,7 +322,7 @@ fn _utf_16_clean_unesc_unref(
         }
         let next = k + 1
         match (s[k], do_unesc) {
-          ('\x00', _) => {
+          ('\u{0}', _) => {
             flush(last, start, k)
             buf.write_char(rep)
             continue last, next, next
@@ -358,7 +353,7 @@ fn _utf_16_clean_unesc_unref(
                     try_entity_hex(last, start, next, next, 0)
                   }
                   c => {
-                    if is_ascii_digit(c) {
+                    if c.is_ascii_digit() {
                       return try_entity_dec(last, start, next, next, 0)
                     }
                     continue last, start, next
@@ -366,7 +361,7 @@ fn _utf_16_clean_unesc_unref(
                 }
               }
               c => {
-                if is_ascii_alpha(c) {
+                if c.is_ascii_alphabetic() {
                   return try_entity_named(last, start, next, next)
                 }
                 continue last, start, next
@@ -374,7 +369,7 @@ fn _utf_16_clean_unesc_unref(
             }
           }
           (b, _) => {
-            if is_ascii(b) {
+            if b.is_ascii() {
               continue last, start, next
             }
             match at_checked(s, k) {
@@ -407,12 +402,12 @@ fn _utf_16_clean_unesc_unref(
         break s.substring(start=first, end=first + last - start + 1)
       }
       match (s[k], do_unesc) {
-        ('\\', true) | ('&', _) | ('\x00', _) => {
+        ('\\', true) | ('&', _) | ('\u{0}', _) => {
           buf.reset()
           resolve(last, start, k)
         }
         (b, _) => {
-          if is_ascii(b) {
+          if b.is_ascii() {
             continue last, start, k + 1
           }
           match at_checked(s, k) {

@@ -42,20 +42,6 @@ test "is_ascii_graphic with non-graphic chars" {
 }
 
 ///|
-test "is_ascii_octdigit with valid oct digits" {
-  inspect!(is_ascii_octdigit('0'), content="true")
-  inspect!(is_ascii_octdigit('3'), content="true")
-  inspect!(is_ascii_octdigit('7'), content="true")
-}
-
-///|
-test "is_ascii_octdigit with non oct digits" {
-  inspect!(is_ascii_octdigit('8'), content="false")
-  inspect!(is_ascii_octdigit('9'), content="false")
-  inspect!(is_ascii_octdigit('a'), content="false")
-}
-
-///|
 test "ascii_octdigit_to_int normal cases" {
   inspect!(ascii_octdigit_to_int('0'), content="0")
   inspect!(ascii_octdigit_to_int('3'), content="3")

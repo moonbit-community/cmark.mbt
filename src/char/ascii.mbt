@@ -1,24 +1,13 @@
 ///|
-pub fn is_ascii(c : Char) -> Bool {
-  c.to_int() < 128
-}
-
-///|
 pub fn to_ascii_lower(c : Char) -> Char {
-  if is_ascii_upper(c) {
-    Char::from_int(c.to_int() + 32)
-  } else {
-    c
-  }
+  guard c.is_ascii_uppercase() else { c }
+  Char::from_int(c.to_int() + 32)
 }
 
 ///|
 pub fn to_ascii_upper(c : Char) -> Char {
-  if is_ascii_lower(c) {
-    Char::from_int(c.to_int() - 32)
-  } else {
-    c
-  }
+  guard c.is_ascii_lowercase() else { c }
+  Char::from_int(c.to_int() - 32)
 }
 
 ///|
@@ -28,12 +17,12 @@ pub fn is_ascii_blank(c : Char) -> Bool {
 
 ///|
 pub fn is_ascii_whitespace(c : Char) -> Bool {
-  c is (' ' | '\x0A'..='\x0D')
+  c is (' ' | '\u{A}'..='\u{D}')
 }
 
 ///|
 pub fn is_ascii_control(c : Char) -> Bool {
-  c is ('\x00'..='\x1F' | '\x7F')
+  c is ('\u{0}'..='\u{1F}' | '\u{7F}')
 }
 
 ///|
@@ -48,53 +37,19 @@ pub fn is_ascii_graphic(c : Char) -> Bool {
 
 ///|
 pub fn is_ascii_alphanum(c : Char) -> Bool {
-  is_ascii_alpha(c) || is_ascii_digit(c)
-}
-
-///|
-pub fn is_ascii_alpha(c : Char) -> Bool {
-  is_ascii_upper(c) || is_ascii_lower(c)
-}
-
-///|
-pub fn is_ascii_upper(c : Char) -> Bool {
-  c is ('A'..='Z')
-}
-
-///|
-pub fn is_ascii_lower(c : Char) -> Bool {
-  c is ('a'..='z')
-}
-
-///|
-pub fn is_ascii_digit(c : Char) -> Bool {
-  c is ('0'..='9')
+  c.is_ascii_alphabetic() || c.is_ascii_digit()
 }
 
 ///|
 pub fn ascii_digit_to_int(c : Char) -> Int {
-  match c {
-    '0'..='9' => c.to_int() - '0'.to_int()
-    _ => panic()
-  }
-}
-
-///|
-pub fn is_ascii_octdigit(c : Char) -> Bool {
-  c is ('0'..='7')
+  guard c.is_ascii_digit()
+  c.to_int() - '0'.to_int()
 }
 
 ///|
 pub fn ascii_octdigit_to_int(c : Char) -> Int {
-  match c {
-    '0'..='7' => c.to_int() - '0'.to_int()
-    _ => panic()
-  }
-}
-
-///|
-pub fn is_ascii_hexdigit(c : Char) -> Bool {
-  c is ('0'..='9' | 'A'..='F' | 'a'..='f')
+  guard c.is_ascii_octdigit()
+  c.to_int() - '0'.to_int()
 }
 
 ///|
