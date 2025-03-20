@@ -1,0 +1,10 @@
+{
+  "version": "0.0.0",
+  "tasks": {
+    "bench": "deno run -A --no-check ./bench.mjs"
+  },
+  "imports": {
+    "benchmark": "npm:benchmark@2.1.4",
+    "shelljs": "npm:shelljs@0.9.1"
+  }
+}

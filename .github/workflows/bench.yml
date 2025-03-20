@@ -15,10 +15,9 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - uses: actions/setup-node@v4
+      - uses: denoland/setup-deno@v2
         with:
-          node-version: 20
-          cache: "npm"
+          deno-version: v2.x
 
       - uses: phi-ag/setup-binaryen@v1
 
@@ -28,13 +27,13 @@ jobs:
           tool: wasm-tools
 
       - name: Install MoonBit
-        if: ${{ matrix.os.name != 'windows-latest' }}
+        # if: ${{ matrix.os.name != 'windows-latest' }}
         run: |
           curl -fsSL https://cli.moonbitlang.com/install/unix.sh | bash -s -- bleeding
           echo "$HOME/.moon/bin" >> $GITHUB_PATH
 
       - name: Run benchmark
-        run: npm install && npm run bench | tee bench-output.txt
+        run: deno task bench | tee bench-output.txt
 
       - name: Store benchmark result
         uses: benchmark-action/github-action-benchmark@v1
