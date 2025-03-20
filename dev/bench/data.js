@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1742378402955,
+  "lastUpdate": 1742441192727,
   "repoUrl": "https://github.com/moonbit-community/cmark",
   "entries": {
     "Benchmark.js Benchmark": [
@@ -350,6 +350,54 @@ window.BENCHMARK_DATA = {
             "name": "cmarkJS(spec * 200)",
             "value": 0.2,
             "range": "±5.80%",
+            "unit": "ops/sec",
+            "extra": "5 samples"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "name": "moonbit-community",
+            "username": "moonbit-community"
+          },
+          "committer": {
+            "name": "moonbit-community",
+            "username": "moonbit-community"
+          },
+          "id": "35b5c29aa7fdc091e56cbdbf9f6fa3f019ebed77",
+          "message": "ci(bench): use `deno` instead of `node`",
+          "timestamp": "2025-03-19T09:57:51Z",
+          "url": "https://github.com/moonbit-community/cmark/pull/54/commits/35b5c29aa7fdc091e56cbdbf9f6fa3f019ebed77"
+        },
+        "date": 1742441192476,
+        "tool": "benchmarkjs",
+        "benches": [
+          {
+            "name": "cmarkJS(spec * 100)",
+            "value": 0.51,
+            "range": "±4.29%",
+            "unit": "ops/sec",
+            "extra": "6 samples"
+          },
+          {
+            "name": "cmarkWASM(spec * 100)",
+            "value": 0.32,
+            "range": "±13.27%",
+            "unit": "ops/sec",
+            "extra": "5 samples"
+          },
+          {
+            "name": "cmarkJS(spec * 200)",
+            "value": 0.27,
+            "range": "±4.03%",
+            "unit": "ops/sec",
+            "extra": "5 samples"
+          },
+          {
+            "name": "cmarkWASM(spec * 200)",
+            "value": 0.15,
+            "range": "±14.96%",
             "unit": "ops/sec",
             "extra": "5 samples"
           }
