@@ -2,9 +2,12 @@
   "test-import-all": true,
   "pre-build": [
     {
-      "input": "entities.json",
+      "input": [
+        "gen_entities.py",
+        "entities.json"
+      ],
       "output": "entities.mbt",
-      "command": "python3 src/char/gen_entities.py -i $input -o $output"
+      "command": "python3 $input $output"
     }
   ]
 }

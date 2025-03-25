@@ -8,8 +8,8 @@ from pathlib import Path
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("-i", "--input", help="Input file")
-    parser.add_argument("-o", "--output", help="Output file")
+    parser.add_argument("input", help="Input file")
+    parser.add_argument("output", help="Output file")
     args = parser.parse_args()
 
     fin, fout = args.input, args.output
@@ -26,9 +26,12 @@ let html_named_entities : Json = {
         if not entity.endswith(";"):
             continue
         k = entity.removeprefix("&").removesuffix(";")
+        # Convert the value to `repr()` (e.g. "中"), then remove the quotes
         v = repr(value["characters"])[1:-1]
         if v == '"':
             v = r"\""
+        elif v.startswith(r"\x"):
+            v = r"\u{" + v[2:] + "}"
         buf += f'"{k}": "{v}",\n'
 
     buf += "}\n"
