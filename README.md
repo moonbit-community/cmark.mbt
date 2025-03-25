@@ -22,8 +22,10 @@ Supported CommonMark features include:
 ## Building
 
 To begin, you will need to install a recent MoonBit toolchain.
-To do so, please refer to instructions at MoonBit's
-[official website](https://www.moonbitlang.com/download).
+To do so, please refer to instructions at MoonBit's [official website](https://www.moonbitlang.com/download).
+
+Also, a Python installation is required to run the pre-build scripts.
+You can find relevant instructions from Python's [official website](https://www.python.org/downloads/).
 
 Once you have the toolchain installed, you can build this project by running the following command:
 
