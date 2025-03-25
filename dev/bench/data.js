@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1742442570007,
+  "lastUpdate": 1742872248505,
   "repoUrl": "https://github.com/moonbit-community/cmark",
   "entries": {
     "Benchmark.js Benchmark": [
@@ -450,6 +450,54 @@ window.BENCHMARK_DATA = {
             "name": "cmarkWASM(spec * 200)",
             "value": 0.16,
             "range": "±13.80%",
+            "unit": "ops/sec",
+            "extra": "5 samples"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "name": "moonbit-community",
+            "username": "moonbit-community"
+          },
+          "committer": {
+            "name": "moonbit-community",
+            "username": "moonbit-community"
+          },
+          "id": "27db5d3488cde49b648f580e9aacf5cdc6e6f6c5",
+          "message": "build(char): make `gen_entities.py` output new MoonBit char syntax",
+          "timestamp": "2025-03-20T03:46:11Z",
+          "url": "https://github.com/moonbit-community/cmark/pull/55/commits/27db5d3488cde49b648f580e9aacf5cdc6e6f6c5"
+        },
+        "date": 1742872248191,
+        "tool": "benchmarkjs",
+        "benches": [
+          {
+            "name": "cmarkJS(spec * 100)",
+            "value": 0.55,
+            "range": "±4.73%",
+            "unit": "ops/sec",
+            "extra": "6 samples"
+          },
+          {
+            "name": "cmarkWASM(spec * 100)",
+            "value": 0.39,
+            "range": "±15.85%",
+            "unit": "ops/sec",
+            "extra": "5 samples"
+          },
+          {
+            "name": "cmarkJS(spec * 200)",
+            "value": 0.26,
+            "range": "±3.88%",
+            "unit": "ops/sec",
+            "extra": "5 samples"
+          },
+          {
+            "name": "cmarkWASM(spec * 200)",
+            "value": 0.17,
+            "range": "±14.22%",
             "unit": "ops/sec",
             "extra": "5 samples"
           }
