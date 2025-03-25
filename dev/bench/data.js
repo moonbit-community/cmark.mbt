@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1742872248505,
+  "lastUpdate": 1742872410163,
   "repoUrl": "https://github.com/moonbit-community/cmark",
   "entries": {
     "Benchmark.js Benchmark": [
@@ -498,6 +498,58 @@ window.BENCHMARK_DATA = {
             "name": "cmarkWASM(spec * 200)",
             "value": 0.17,
             "range": "±14.22%",
+            "unit": "ops/sec",
+            "extra": "5 samples"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "rami3l@outlook.com",
+            "name": "rami3l",
+            "username": "rami3l"
+          },
+          "committer": {
+            "email": "rami3l@outlook.com",
+            "name": "rami3l",
+            "username": "rami3l"
+          },
+          "distinct": true,
+          "id": "4d16c24001adc5090c9dd08b6bcd0e91733edd25",
+          "message": "docs(README): mention Python 3 as a build dependency",
+          "timestamp": "2025-03-25T11:10:05+08:00",
+          "tree_id": "6fd8b3ed56fa1babe6433709b7339b0c0ccfe986",
+          "url": "https://github.com/moonbit-community/cmark/commit/4d16c24001adc5090c9dd08b6bcd0e91733edd25"
+        },
+        "date": 1742872409849,
+        "tool": "benchmarkjs",
+        "benches": [
+          {
+            "name": "cmarkJS(spec * 100)",
+            "value": 0.55,
+            "range": "±3.74%",
+            "unit": "ops/sec",
+            "extra": "6 samples"
+          },
+          {
+            "name": "cmarkWASM(spec * 100)",
+            "value": 0.34,
+            "range": "±21.32%",
+            "unit": "ops/sec",
+            "extra": "5 samples"
+          },
+          {
+            "name": "cmarkJS(spec * 200)",
+            "value": 0.27,
+            "range": "±2.12%",
+            "unit": "ops/sec",
+            "extra": "5 samples"
+          },
+          {
+            "name": "cmarkWASM(spec * 200)",
+            "value": 0.18,
+            "range": "±13.75%",
             "unit": "ops/sec",
             "extra": "5 samples"
           }
