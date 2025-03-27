@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1743059388812,
+  "lastUpdate": 1743059486735,
   "repoUrl": "https://github.com/moonbit-community/cmark",
   "entries": {
     "Benchmark.js Benchmark": [
@@ -646,6 +646,58 @@ window.BENCHMARK_DATA = {
             "name": "cmarkWASM(spec * 200)",
             "value": 0.2,
             "range": "±9.15%",
+            "unit": "ops/sec",
+            "extra": "5 samples"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "rami3l@outlook.com",
+            "name": "rami3l",
+            "username": "rami3l"
+          },
+          "committer": {
+            "email": "rami3l@outlook.com",
+            "name": "rami3l",
+            "username": "rami3l"
+          },
+          "distinct": true,
+          "id": "b9ea7b5a093b51b04846265ef96735782a2f3e09",
+          "message": "chore: bump version to 0.2.7",
+          "timestamp": "2025-03-27T15:08:17+08:00",
+          "tree_id": "eebb9da9342cf761280ef63a08711575d97c95cf",
+          "url": "https://github.com/moonbit-community/cmark/commit/b9ea7b5a093b51b04846265ef96735782a2f3e09"
+        },
+        "date": 1743059485844,
+        "tool": "benchmarkjs",
+        "benches": [
+          {
+            "name": "cmarkJS(spec * 100)",
+            "value": 0.56,
+            "range": "±5.12%",
+            "unit": "ops/sec",
+            "extra": "6 samples"
+          },
+          {
+            "name": "cmarkWASM(spec * 100)",
+            "value": 0.37,
+            "range": "±10.28%",
+            "unit": "ops/sec",
+            "extra": "5 samples"
+          },
+          {
+            "name": "cmarkJS(spec * 200)",
+            "value": 0.28,
+            "range": "±3.15%",
+            "unit": "ops/sec",
+            "extra": "5 samples"
+          },
+          {
+            "name": "cmarkWASM(spec * 200)",
+            "value": 0.18,
+            "range": "±13.18%",
             "unit": "ops/sec",
             "extra": "5 samples"
           }
