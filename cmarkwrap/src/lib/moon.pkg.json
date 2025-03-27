@@ -25,6 +25,14 @@
         "result_unwrap",
         "result_is_ok"
       ]
+    },
+    "native": {
+      "exports": [
+        "render",
+        "result_unwrap",
+        "result_is_ok"
+      ],
+      "cc-flags": "-c"
     }
   }
 }

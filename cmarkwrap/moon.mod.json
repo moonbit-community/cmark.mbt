@@ -4,7 +4,8 @@
   "deps": {
     "rami3l/cmark": {
       "path": "../"
-    }
+    },
+    "moonbitlang/x": "0.4.23"
   },
   "readme": "README.md",
   "repository": "",
