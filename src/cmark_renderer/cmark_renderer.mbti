@@ -7,9 +7,9 @@ alias @rami3l/cmark/cmark as @cmark
 // Types and methods
 pub(all) struct Context {
   renderer : Renderer
-  state : Error?
+  mut state : Error?
   b : StringBuilder
-  doc : @cmark.Doc
+  mut doc : @cmark.Doc
 }
 impl Context {
   block(Self, @cmark.Block) -> Unit!
