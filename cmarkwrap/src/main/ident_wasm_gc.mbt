@@ -1,0 +1,2 @@
+///|
+let ident = "cmarkWASM"
