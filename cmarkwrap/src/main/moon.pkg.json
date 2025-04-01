@@ -4,5 +4,11 @@
     "moonbitlang/x/benchmark",
     "moonbitlang/x/fs",
     "rami3l/cmarkwrap/lib"
-  ]
+  ],
+  "targets": {
+    "ident_wasm.mbt": ["wasm"],
+    "ident_wasm_gc.mbt": ["wasm-gc"],
+    "ident_js.mbt": ["js"],
+    "ident_native.mbt": ["native"]
+  }
 }
