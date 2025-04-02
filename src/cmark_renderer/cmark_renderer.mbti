@@ -1,6 +1,8 @@
-package rami3l/cmark/cmark_renderer
+package "rami3l/cmark/cmark_renderer"
 
-alias @rami3l/cmark/cmark as @cmark
+import(
+  "rami3l/cmark/cmark"
+)
 
 // Values
 

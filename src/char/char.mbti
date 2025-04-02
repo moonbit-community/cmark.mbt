@@ -1,4 +1,4 @@
-package rami3l/cmark/char
+package "rami3l/cmark/char"
 
 // Values
 fn ascii_digit_to_int(Char) -> Int

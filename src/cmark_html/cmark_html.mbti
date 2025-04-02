@@ -1,7 +1,9 @@
-package rami3l/cmark/cmark_html
+package "rami3l/cmark/cmark_html"
 
-alias @rami3l/cmark/cmark as @cmark
-alias @rami3l/cmark/cmark_renderer as @cmark_renderer
+import(
+  "rami3l/cmark/cmark"
+  "rami3l/cmark/cmark_renderer"
+)
 
 // Values
 fn from_doc(backend_blocks~ : Bool = .., safe~ : Bool, @cmark.Doc) -> String!

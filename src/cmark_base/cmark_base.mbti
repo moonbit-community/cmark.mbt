@@ -1,6 +1,8 @@
-package rami3l/cmark/cmark_base
+package "rami3l/cmark/cmark_base"
 
-alias @moonbitlang/core/json as @json
+import(
+  "moonbitlang/core/json"
+)
 
 // Values
 fn autolink_email(String, last~ : Int = .., start~ : Int = ..) -> Int?
