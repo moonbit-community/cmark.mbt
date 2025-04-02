@@ -15,16 +15,12 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - uses: denoland/setup-deno@v2
-        with:
-          deno-version: v2.x
+      # - uses: phi-ag/setup-binaryen@v1
 
-      - uses: phi-ag/setup-binaryen@v1
-
-      - name: Install wasm-tools
-        uses: taiki-e/install-action@v2
-        with:
-          tool: wasm-tools
+      # - name: Install wasm-tools
+      #   uses: taiki-e/install-action@v2
+      #   with:
+      #     tool: wasm-tools
 
       - name: Install MoonBit
         # if: ${{ matrix.os.name != 'windows-latest' }}
@@ -34,8 +30,12 @@ jobs:
 
       - name: Run benchmark
         run: |
-          deno task prebench
-          deno task bench | tee bench-output.txt
+          moon update
+          for t in js wasm-gc; do
+            moon -C=cmarkwrap run --target=$t --release \
+              cmarkwrap/src/main/main.mbt \
+              | tee -a bench-output.txt
+          done
 
       - name: Store benchmark result
         uses: benchmark-action/github-action-benchmark@v1
