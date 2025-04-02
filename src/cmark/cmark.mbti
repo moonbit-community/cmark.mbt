@@ -1,7 +1,9 @@
-package rami3l/cmark/cmark
+package "rami3l/cmark/cmark"
 
-alias @moonbitlang/core/json as @json
-alias @rami3l/cmark/cmark_base as @cmark_base
+import(
+  "moonbitlang/core/json"
+  "rami3l/cmark/cmark_base"
+)
 
 // Values
 let layout_empty : Node[String]
