@@ -31,7 +31,7 @@ jobs:
       - name: Run benchmark
         run: |
           moon update
-          for t in js wasm-gc; do
+          for t in js wasm-gc native; do
             moon -C=cmarkwrap run --target=$t --release \
               cmarkwrap/src/main/main.mbt \
               | tee -a bench-output.txt
