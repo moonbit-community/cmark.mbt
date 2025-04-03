@@ -1,5 +1,4 @@
 {
-  "test-import-all": true,
   "pre-build": [
     {
       "input": [
