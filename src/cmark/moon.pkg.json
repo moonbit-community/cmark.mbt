@@ -3,7 +3,6 @@
     "rami3l/cmark/char",
     "rami3l/cmark/cmark_base"
   ],
-  "test-import-all": true,
   "pre-build": [
     {
       "input": "../data/test/basic.md",
