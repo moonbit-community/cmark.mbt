@@ -16,32 +16,16 @@ pub fn sub_includes(
 ) -> Bool {
   let len_a = affix.length()
   let len_s = last - first + 1
-  if len_a > len_s {
-    return false
-  }
+  guard len_a <= len_s else { false }
   let max_idx_a = len_a - 1
   let max_idx_s = first + (len_s - len_a)
-  loop first, 0 {
-    i, k => {
-      if i > max_idx_s {
-        break false
-      }
-      if k > max_idx_a {
-        break true
-      }
-      if k > 0 {
-        if affix[k] == s[i + k] {
-          continue i, k + 1
-        } else {
-          continue i + 1, 0
-        }
-      }
-      if affix[0] == s[i] {
-        continue i, 1
-      } else {
-        continue i + 1, 0
-      }
+  for i = first, k = 0 {
+    guard i <= max_idx_s else { return false }
+    guard k <= max_idx_a else { return true }
+    if s[i + k] == affix[k] {
+      continue i, k + 1
     }
+    continue i + 1, 0
   }
 }
 
