@@ -185,7 +185,7 @@ pub fn Inline::id(
           if u == '\u{0000}' {
             u = @char.rep
           }
-          let k = k + @char.length_utf16(u)
+          let k = k + @char.length_utf16(u.to_int())
           // TODO: Use `is_unicode_punctuation()`.
           if @char.is_ascii_punctuation(c) {
             continue b, s, max, '\u{0}', k

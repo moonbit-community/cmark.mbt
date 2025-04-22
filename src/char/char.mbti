@@ -11,7 +11,7 @@ fn ascii_hexdigit_to_int(Char) -> Int
 
 fn ascii_octdigit_to_int(Char) -> Int
 
-fn at_checked(String, Int) -> Result[Char, Char]
+fn at_checked(String, Int) -> Result[Char, Int]
 
 fn from_int_checked(Int) -> Char?
 
@@ -27,11 +27,11 @@ fn is_ascii_punctuation(Char) -> Bool
 
 fn is_ascii_whitespace(Char) -> Bool
 
-fn length_utf16(Char) -> Int
+fn length_utf16(Int) -> Int
 
-fn length_utf32(Char) -> Int
+fn length_utf32(Int) -> Int
 
-fn length_utf8(Char) -> Int
+fn length_utf8(Int) -> Int
 
 fn next_char(@string.StringView, last~ : Int, after~ : Int) -> Char
 

@@ -1,9 +1,9 @@
 ///|
-pub fn at_checked(s : String, idx : Int) -> Result[Char, Char] {
+pub fn at_checked(s : String, idx : Int) -> Result[Char, Int] {
   let cp = s.char_at(idx).to_int()
   match from_int_checked(cp) {
     Some(c) => Ok(c)
-    None => Err(Char::from_int(cp))
+    None => Err(cp)
   }
 }
 
@@ -89,7 +89,7 @@ pub fn utf_16_clean_raw(
         }
         match at_checked(s, k) {
           Ok(d) => {
-            let next = k + length_utf16(d)
+            let next = k + length_utf16(d.to_int())
             continue last, start, next
           }
           Err(d) => {
@@ -116,7 +116,7 @@ pub fn utf_16_clean_raw(
         } else {
           match at_checked(s, k) {
             Ok(d) => {
-              let next = k + length_utf16(d)
+              let next = k + length_utf16(d.to_int())
               continue last, first, next
             }
             Err(_d) => {
@@ -335,7 +335,7 @@ fn _utf_16_clean_unesc_unref(
             }
             match at_checked(s, k) {
               Ok(d) => {
-                let next = k + length_utf16(d)
+                let next = k + length_utf16(d.to_int())
                 continue last, start, next
               }
               Err(d) => {
@@ -373,7 +373,7 @@ fn _utf_16_clean_unesc_unref(
           }
           match at_checked(s, k) {
             Ok(d) => {
-              let next = k + length_utf16(d)
+              let next = k + length_utf16(d.to_int())
               continue last, start, next
             }
             Err(_d) => {
