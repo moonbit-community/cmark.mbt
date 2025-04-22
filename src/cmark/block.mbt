@@ -50,7 +50,7 @@ pub fn Block::normalize(self : Block) -> Block {
   match self {
     BlockQuote(bl) => BlockQuote(bl.map(BlockQuote::normalize_block))
     List(bl) => List(bl.map(BlockList::normalize_items))
-    Blocks({ v: Seq([.. _, _] as bs), meta }) => {
+    Blocks({ v: Seq([.., _] as bs), meta }) => {
       let mut bs = bs
       let acc = [bs.pop().unwrap().normalize()]
       for {
