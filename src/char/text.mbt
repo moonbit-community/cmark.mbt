@@ -46,11 +46,11 @@ pub fn sub_includes(
 }
 
 ///|
-pub fn prev_char(s : String, first~ : Int, before~ : Int) -> Char {
+pub fn prev_char(s : @string.View, first~ : Int, before~ : Int) -> Char {
   guard first < before else { ' ' }
   let k = for start = before - 1; ; start = start - 1 {
     guard first <= start else { break first }
-    if s[start]
+    if s.charcode_at(start)
       is ('\u{0}'..='\u{7f}'
       | '\u{c2}'..='\u{df}'
       | '\u{e0}'..='\u{ef}'
@@ -62,7 +62,7 @@ pub fn prev_char(s : String, first~ : Int, before~ : Int) -> Char {
 }
 
 ///|
-pub fn next_char(s : String, last~ : Int, after~ : Int) -> Char {
+pub fn next_char(s : @string.View, last~ : Int, after~ : Int) -> Char {
   guard after < last else { ' ' }
   s.char_at(after + 1)
 }
