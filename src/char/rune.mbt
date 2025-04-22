@@ -13,8 +13,7 @@ pub fn from_int_checked(ord : Int) -> Char? {
 // https://github.com/lynzrand/aestus/blob/3ab6ecf64fc34914277129e8429d0a7c003cc80f/encoding/rune.mbt#L1-L27
 
 ///|
-pub fn length_utf8(ch : Char) -> Int {
-  let ch = ch.to_int()
+pub fn length_utf8(ch : Int) -> Int {
   if ch < 0x80 {
     1
   } else if ch < 0x800 {
@@ -29,8 +28,7 @@ pub fn length_utf8(ch : Char) -> Int {
 }
 
 ///|
-pub fn length_utf16(ch : Char) -> Int {
-  let ch = ch.to_int()
+pub fn length_utf16(ch : Int) -> Int {
   if ch < 0x10000 {
     1
   } else {
@@ -39,6 +37,6 @@ pub fn length_utf16(ch : Char) -> Int {
 }
 
 ///|
-pub fn length_utf32(_ch : Char) -> Int {
+pub fn length_utf32(_ch : Int) -> Int {
   1
 }

@@ -604,7 +604,7 @@ pub fn ext_task_marker(
   guard s[start] == '[' else { None }
   let mut next = start + 1
   guard @char.at_checked(s, next) is Ok(u) else { None }
-  next += @char.length_utf16(u)
+  next += @char.length_utf16(u.to_int())
   guard next <= last && s[next] == ']' else { None }
   next += 1
   guard next <= last else { Some((u, last)) }

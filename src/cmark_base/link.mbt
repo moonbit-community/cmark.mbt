@@ -190,7 +190,7 @@ pub fn link_label[A](
       if u == '\u{0}' {
         u = @char.rep
       }
-      let k1 = k + @char.length_utf8(u)
+      let k1 = k + @char.length_utf8(u.to_int())
       b.write_char(@char.to_ascii_lower(u))
       let prev = s[k]
       continue b, next_line, s, lines, line, prev, start, count + 1, k1

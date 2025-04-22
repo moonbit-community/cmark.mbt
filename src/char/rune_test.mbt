@@ -28,8 +28,8 @@ test "length_utf8 with multibyte char 3" {
 
 ///|
 test "panic length_utf8 with invalid char" {
-  let invalid_char = Char::from_int(0x110000)
-  ignore(length_utf8(invalid_char))
+  let invalid = 0x110000
+  ignore(length_utf8(invalid))
 }
 
 ///|
