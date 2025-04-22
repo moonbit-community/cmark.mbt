@@ -1,5 +1,9 @@
 package "rami3l/cmark/char"
 
+import(
+  "moonbitlang/core/string"
+)
+
 // Values
 fn ascii_digit_to_int(Char) -> Int
 
@@ -33,9 +37,9 @@ fn length_utf32(Char) -> Int
 
 fn length_utf8(Char) -> Int
 
-fn next_char(String, last~ : Int, after~ : Int) -> Char
+fn next_char(@string.StringView, last~ : Int, after~ : Int) -> Char
 
-fn prev_char(String, first~ : Int, before~ : Int) -> Char
+fn prev_char(@string.StringView, first~ : Int, before~ : Int) -> Char
 
 let rep : Char
 
