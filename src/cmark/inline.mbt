@@ -94,7 +94,7 @@ pub fn Inline::normalize(self : Inline) -> Inline {
             }
           Text({ v: t1, meta: meta1 }) as i1 =>
             match acc {
-              [.. _, Text({ v: t, meta })] =>
+              [.., Text({ v: t, meta })] =>
                 acc[acc.length() - 1] = Text({
                   v: t + t1,
                   meta: { ..meta, loc: meta.loc.span(meta1.loc) },

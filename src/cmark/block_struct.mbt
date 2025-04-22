@@ -579,7 +579,7 @@ fn Parser::close_list(
   // The final blank line extraction of the list item entails less blank
   // line churn for CommonMark rendering but we don't do it on empty list items.
   match blocks {
-    [.. _, _, BlankLine(_, _)] => {
+    [.., _, BlankLine(_, _)] => {
       guard blocks.pop() is Some(bl)
       let items = l.items
       items[items.length() - 1] = { ..i, blocks, }
@@ -606,7 +606,7 @@ fn Parser::close_footnote(
   let blanks = []
   for {
     match blocks {
-      [.. _, _, BlankLine(_, _)] => {
+      [.., _, BlankLine(_, _)] => {
         guard blocks.pop() is Some(bl)
         blanks.push(bl)
       }
@@ -631,7 +631,7 @@ fn Parser::end_doc_close_fenced_code_block(
 ) -> Unit {
   let _ = self
   let { code, .. } = fenced
-  if code is [.. _, (_, { first, last, .. } as l)] && first > last {
+  if code is [.., (_, { first, last, .. } as l)] && first > last {
     // Empty line
     let _ = code.pop()
     bs..push(CodeBlock(Fenced({ ..fenced, code, }))).push(BlankLine(0, l))
@@ -648,7 +648,7 @@ fn Parser::end_doc_close_html(
 ) -> Unit {
   let _ = self
   let { html, .. } = h
-  if html is [.. _, { first, last, .. } as l] && first > last {
+  if html is [.., { first, last, .. } as l] && first > last {
     // Empty line
     let _ = html.pop()
     bs..push(HtmlBlock({ end_cond: None, html })).push(BlankLine(0, l))
@@ -979,7 +979,7 @@ fn Parser::try_add_to_paragraph(
     SetextUnderlineLine(level, last_underline) => {
       self.close_paragraph(par, bs)
       match bs {
-        [.. _, Paragraph(par)] =>
+        [.., Paragraph(par)] =>
           bs[bs.length() - 1] = self.setext_heading(
             indent~,
             level~,
@@ -1646,7 +1646,7 @@ fn Parser::block_struct_to_list_item(
       _,
       acc,
       [
-        List({ items: [.. _, { blocks: [.. _, BlankLine(_)], .. }], .. }) as l,
+        List({ items: [.., { blocks: [.., BlankLine(_)], .. }], .. }) as l,
         .. bs,
       ] => continue bstate, false, acc..push(self.block_struct_to_block(l)), bs
       bstate, tight, acc, [b, .. bs] => {
