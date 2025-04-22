@@ -1,11 +1,6 @@
 ///|
-pub fn at(s : String, idx : Int) -> Char {
-  Char::from_int(code_point_at(s, idx))
-}
-
-///|
 pub fn at_checked(s : String, idx : Int) -> Result[Char, Char] {
-  let cp = code_point_at(s, idx)
+  let cp = s.char_at(idx).to_int()
   match from_int_checked(cp) {
     Some(c) => Ok(c)
     None => Err(Char::from_int(cp))
@@ -50,25 +45,9 @@ pub fn sub_includes(
   }
 }
 
-// https://github.com/mathiasbynens/String.prototype.codePointAt/blob/c3b623184014a50de6cf3e322f0cf598c3fd4894/implementation.js#L20-L33
-///|
-fn code_point_at(s : String, idx : Int) -> Int {
-  let fst = s[idx].to_int()
-  if is_high_surrogate(fst) && idx < s.length() - 1 { // there is a next code unit
-    let snd = s[idx + 1].to_int()
-    if is_low_surrogate(snd) {
-      // https://mathiasbynens.be/notes/javascript-encoding#surrogate-formulae
-      return (fst - 0xD800) * 0x400 + snd - 0xDC00 + 0x10000
-    }
-  }
-  fst
-}
-
 ///|
 pub fn prev_char(s : String, first~ : Int, before~ : Int) -> Char {
-  if before <= first {
-    return ' '
-  }
+  guard first < before else { ' ' }
   let k = for start = before - 1; ; start = start - 1 {
     guard first <= start else { break first }
     if s[start]
@@ -79,15 +58,13 @@ pub fn prev_char(s : String, first~ : Int, before~ : Int) -> Char {
       break start
     }
   }
-  at(s, k)
+  s.char_at(k)
 }
 
 ///|
 pub fn next_char(s : String, last~ : Int, after~ : Int) -> Char {
-  if after >= last {
-    return ' '
-  }
-  at(s, after + 1)
+  guard after < last else { ' ' }
+  s.char_at(after + 1)
 }
 
 ///|

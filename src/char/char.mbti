@@ -7,8 +7,6 @@ fn ascii_hexdigit_to_int(Char) -> Int
 
 fn ascii_octdigit_to_int(Char) -> Int
 
-fn at(String, Int) -> Char
-
 fn at_checked(String, Int) -> Result[Char, Char]
 
 fn from_int_checked(Int) -> Char?
