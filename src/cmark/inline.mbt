@@ -181,7 +181,7 @@ pub fn Inline::id(
         }
         c => {
           collapse_blanks(prev)
-          let mut u = @char.at(s, k)
+          let mut u = s.char_at(k)
           if u == '\u{0000}' {
             u = @char.rep
           }

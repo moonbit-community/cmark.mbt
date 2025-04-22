@@ -186,7 +186,7 @@ pub fn link_label[A](
       if @char.is_ascii_blank(prev) && not(b.is_empty()) {
         b.write_char(' ')
       }
-      let mut u = @char.at(s, k)
+      let mut u = s.char_at(k)
       if u == '\u{0}' {
         u = @char.rep
       }
