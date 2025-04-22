@@ -10,16 +10,6 @@ pub fn from_int_checked(ord : Int) -> Char? {
   Some(Char::from_int(ord))
 }
 
-///|
-pub fn is_high_surrogate(ord : Int) -> Bool {
-  0xD800 <= ord && ord <= 0xDBFF
-}
-
-///|
-pub fn is_low_surrogate(ord : Int) -> Bool {
-  0xDC00 <= ord && ord <= 0xDFFF
-}
-
 // https://github.com/lynzrand/aestus/blob/3ab6ecf64fc34914277129e8429d0a7c003cc80f/encoding/rune.mbt#L1-L27
 
 ///|
