@@ -31,7 +31,7 @@ pub impl[A : ToJson] ToJson for Node[A] with to_json(self) {
   if not(self.meta.is_none()) {
     jsons.push(self.meta.to_json())
   }
-  Array(jsons)
+  Json::array(jsons)
 }
 
 ///|

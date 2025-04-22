@@ -59,13 +59,13 @@ pub impl Show for Meta with output(self, logger) {
 ///|
 pub impl ToJson for Meta with to_json(self) {
   if self.is_none() {
-    return Object({})
+    return {}
   }
-  Object({
+  {
     "id": self.id.to_json(),
     "loc": self.loc.to_json(),
     "dict": self.extra.to_string().to_json(),
-  })
+  }
 }
 
 ///|

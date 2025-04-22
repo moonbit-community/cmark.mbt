@@ -38,7 +38,7 @@ impl Show for Tokens with output(self, logger) {
 
 ///|
 impl ToJson for Tokens with to_json(self) {
-  Array(Array::from_iter(self._.iter().map(ToJson::to_json)))
+  Json::array(Array::from_iter(self._.iter().map(ToJson::to_json)))
 }
 
 ///|
@@ -61,7 +61,7 @@ impl Show for RevTokens with output(self, logger) {
 
 ///|
 impl ToJson for RevTokens with to_json(self) {
-  Array(Array::from_iter(self._.iter().map(ToJson::to_json)))
+  Json::array(Array::from_iter(self._.iter().map(ToJson::to_json)))
 }
 
 ///|
