@@ -313,7 +313,7 @@ fn LineType::html_block_start_5(
 ) -> LineType {
   let next = start + 3 // 3 first chars checked
   let sub = "CDATA["
-  if start + 8 > last || not(s.substring(start=next).starts_with(sub)) {
+  if start + 8 > last || not(s.substring(start=next).has_prefix(sub)) {
     return Nomatch
   }
   HtmlBlockLine(EndStr("]]>"))
@@ -452,14 +452,14 @@ fn LineType::html_block_end_cond_1(
       let is_end_tag = {
         let lower_s_sub = lower_s.substring(start=next)
         match s[next] {
-          'p' => lower_s_sub.starts_with("pre>")
+          'p' => lower_s_sub.has_prefix("pre>")
           's' =>
             if s[k + 3] == 't' {
-              lower_s_sub.starts_with("style>")
+              lower_s_sub.has_prefix("style>")
             } else {
-              lower_s_sub.starts_with("script>")
+              lower_s_sub.has_prefix("script>")
             }
-          't' => lower_s_sub.starts_with("textarea>")
+          't' => lower_s_sub.has_prefix("textarea>")
           _ => false
         }
       }

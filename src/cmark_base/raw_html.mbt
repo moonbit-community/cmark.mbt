@@ -304,7 +304,7 @@ fn cdata_section[A](
   if start + 8 > line.last {
     return None
   }
-  if not(s.substring(start=start + 3).starts_with("CDATA[")) {
+  if not(s.substring(start=start + 3).has_prefix("CDATA[")) {
     return None
   }
   let acc = []

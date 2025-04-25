@@ -351,35 +351,31 @@ fn _utf_16_clean_unesc_unref(
     }
   }
 
-  if first > last {
-    return ""
-  }
+  guard first <= last else { return "" }
   let max = s.length() - 1
   let last = @math.minimum(last, max)
   let first = @math.maximum(first, 0)
-  loop last, first, first {
-    last, start, k => {
-      if k > last {
-        break s.substring(start=first, end=first + last - start + 1)
+  for start = first, k = first {
+    guard k <= last else {
+      break s.substring(start=first, end=first + last - start + 1)
+    }
+    match (s[k], do_unesc) {
+      ('\\', true) | ('&', _) | ('\u{0}', _) => {
+        buf.reset()
+        break resolve(last, start, k)
       }
-      match (s[k], do_unesc) {
-        ('\\', true) | ('&', _) | ('\u{0}', _) => {
-          buf.reset()
-          resolve(last, start, k)
+      (b, _) => {
+        if b.is_ascii() {
+          continue start, k + 1
         }
-        (b, _) => {
-          if b.is_ascii() {
-            continue last, start, k + 1
+        match at_checked(s, k) {
+          Ok(d) => {
+            let next = k + length_utf16(d.to_int())
+            continue start, next
           }
-          match at_checked(s, k) {
-            Ok(d) => {
-              let next = k + length_utf16(d.to_int())
-              continue last, start, next
-            }
-            Err(_d) => {
-              buf.reset()
-              resolve(last, start, k)
-            }
+          Err(_d) => {
+            buf.reset()
+            break resolve(last, start, k)
           }
         }
       }
