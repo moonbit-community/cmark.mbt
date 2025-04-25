@@ -167,17 +167,17 @@ pub fn Inline::id(
       buf.write_char('-')
     }
   }
-  loop buf, s, s.length() - 1, '\u{0}', 0 {
-    b, s, max, prev, k => {
+  loop s.length() - 1, '\u{0}', 0 {
+    max, prev, k => {
       if k > max {
         break buf.to_string()
       }
       match s[k] {
-        ' ' | '\t' as prev_byte => continue b, s, max, prev_byte, k + 1
+        ' ' | '\t' as prev_byte => continue max, prev_byte, k + 1
         '_' | '-' as c => {
           collapse_blanks(prev)
           buf.write_char(c)
-          continue b, s, max, c, k + 1
+          continue max, c, k + 1
         }
         c => {
           collapse_blanks(prev)
@@ -188,12 +188,12 @@ pub fn Inline::id(
           let k = k + @char.length_utf16(u.to_int())
           // TODO: Use `is_unicode_punctuation()`.
           if @char.is_ascii_punctuation(c) {
-            continue b, s, max, '\u{0}', k
+            continue max, '\u{0}', k
           }
           // TODO: Use `unicode_casefold()`
           buf.write_char(@char.to_ascii_lower(u))
           let prev = c
-          continue b, s, max, prev, k
+          continue max, prev, k
         }
       }
     }
@@ -408,21 +408,24 @@ pub fn InlineLink::reference_definition(
 pub fn InlineLink::is_unsafe(l : String) -> Bool {
   let allowed_data_url = fn(l : String) {
     // Extract mediatype from data:[<mediatype>][;base64],<data>
-    let j = l.index_of(",", from=4)
-    guard j != -1 else { return false }
-    let mut k = l.index_of(";", from=4)
-    if k == -1 {
-      k = j
+    let start_offset = 4
+    let j = match l.view(start_offset~).find(",") {
+      Some(i) => i + start_offset
+      None => return false
+    }
+    let k = match l.view(start_offset~).find(";") {
+      Some(i) => i + start_offset
+      None => j
     }
     let allowed = ["image/gif", "image/png", "image/jpeg", "image/webp"]
     allowed.contains(l.substring(start=5, end=@math.minimum(j, k)))
   }
   // TODO: Use `casefold()`.
   let lower = l.to_lower()
-  lower.starts_with("javascript:") ||
-  lower.starts_with("vbscript:") ||
-  lower.starts_with("file:") ||
-  (lower.starts_with("data:") && not(allowed_data_url(l)))
+  lower.has_prefix("javascript:") ||
+  lower.has_prefix("vbscript:") ||
+  lower.has_prefix("file:") ||
+  (lower.has_prefix("data:") && not(allowed_data_url(l)))
 }
 
 ///| The type for [inline raw HTML](https://spec.commonmark.org/0.30/#raw-html) (can span multiple lines).

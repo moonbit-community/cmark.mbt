@@ -199,12 +199,9 @@ pub fn first_non_escaped_char(
   last~ : BytePos,
   start~ : BytePos
 ) -> BytePos {
-  loop start {
-    k => {
-      if k > last || (s[k] == c && (k == start || s[k - 1] != '\\')) {
-        break k
-      }
-      continue k + 1
+  for k = start; ; k = k + 1 {
+    if k > last || (s[k] == c && (k == start || s[k - 1] != '\\')) {
+      break k
     }
   }
 }
