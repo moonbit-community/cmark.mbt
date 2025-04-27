@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1745748100860,
+  "lastUpdate": 1745750482404,
   "repoUrl": "https://github.com/moonbit-community/cmark.mbt",
   "entries": {
     "Benchmark.js Benchmark": [
@@ -2050,6 +2050,68 @@ window.BENCHMARK_DATA = {
             "name": "cmarkNative(spec * 200)",
             "value": 0.48,
             "range": "±0.04%",
+            "unit": "ops/sec",
+            "extra": "5 samples"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "name": "moonbit-community",
+            "username": "moonbit-community"
+          },
+          "committer": {
+            "name": "moonbit-community",
+            "username": "moonbit-community"
+          },
+          "id": "2912407b6c0979c5a0cbf79183ce686582260120",
+          "message": "test: improve test coverage",
+          "timestamp": "2025-04-27T09:16:17Z",
+          "url": "https://github.com/moonbit-community/cmark.mbt/pull/61/commits/2912407b6c0979c5a0cbf79183ce686582260120"
+        },
+        "date": 1745750481585,
+        "tool": "benchmarkjs",
+        "benches": [
+          {
+            "name": "cmarkJS(spec * 100)",
+            "value": 0.45,
+            "range": "±1.29%",
+            "unit": "ops/sec",
+            "extra": "5 samples"
+          },
+          {
+            "name": "cmarkJS(spec * 200)",
+            "value": 0.22,
+            "range": "±0.55%",
+            "unit": "ops/sec",
+            "extra": "5 samples"
+          },
+          {
+            "name": "cmarkWASM(spec * 100)",
+            "value": 0.83,
+            "range": "±2.73%",
+            "unit": "ops/sec",
+            "extra": "5 samples"
+          },
+          {
+            "name": "cmarkWASM(spec * 200)",
+            "value": 0.4,
+            "range": "±0.77%",
+            "unit": "ops/sec",
+            "extra": "5 samples"
+          },
+          {
+            "name": "cmarkNative(spec * 100)",
+            "value": 0.97,
+            "range": "±1.48%",
+            "unit": "ops/sec",
+            "extra": "5 samples"
+          },
+          {
+            "name": "cmarkNative(spec * 200)",
+            "value": 0.48,
+            "range": "±0.05%",
             "unit": "ops/sec",
             "extra": "5 samples"
           }
