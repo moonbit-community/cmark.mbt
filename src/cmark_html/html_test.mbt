@@ -221,3 +221,69 @@ test "spec" (it : @test.T) {
   it.write(rendered)
   it.snapshot!(filename="spec.html")
 }
+
+///| Test for raw HTML handling in safe mode
+test "raw html in safe mode" (it : @test.T) {
+  let doc =
+    #|## Raw HTML in safe mode
+    #|
+    #|<div>This is raw HTML</div>
+    #|
+    #|<script>alert('hello');</script>
+    #|
+    #|Inline <span>HTML</span> elements.
+
+  // Render with safe=true to test HTML omission
+  let rendered = from_doc!(safe=true, Doc::from_string(doc))
+  it.write(rendered)
+  it.snapshot!(filename="raw_html_safe_mode.html")
+}
+
+///| Test for comments
+test "html with comments" (it : @test.T) {
+  let doc =
+    #|## HTML with comments
+    #|
+    #|<!-- This is a comment -->
+    #|
+    #|Regular text.
+    #|
+    #|<!-- 
+    #|  Multi-line comment
+    #|-->
+  let rendered = from_doc!(safe=false, Doc::from_string(doc))
+  it.write(rendered)
+  it.snapshot!(filename="html_comments.html")
+}
+
+///| Test for strict mode HTML
+test "strict mode html" (it : @test.T) {
+  let doc =
+    #|<p>This paragraph is valid HTML.</p>
+    #|
+    #|<p>This paragraph is missing a closing tag.
+    #|
+    #|<div>
+    #|  <p>Nested elements</p>
+    #|</div>
+  let rendered = from_doc!(safe=false, Doc::from_string(doc, strict=true))
+  it.write(rendered)
+  it.snapshot!(filename="strict_mode_html.html")
+}
+
+///| Test XHTML rendering
+test "xhtml rendering" (it : @test.T) {
+  let doc =
+    #|## Thematic breaks
+    #|
+    #|---
+    #|
+    #|***
+    #|
+    #|___
+
+  // Test xhtml rendering
+  let rendered = xhtml_renderer(safe=true).doc_to_string!(Doc::from_string(doc))
+  it.write(rendered)
+  it.snapshot!(filename="xhtml_rendering.html")
+}
