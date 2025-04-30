@@ -29,9 +29,11 @@ jobs:
           echo "$HOME/.moon/bin" >> $GITHUB_PATH
 
       - name: Run benchmark
+        env:
+          MOONC_INTERNAL_PARAMS: "allocator = tlsf-mbt |"
         run: |
           moon update
-          for t in js wasm-gc native; do
+          for t in js wasm wasm-gc native; do
             moon -C=cmarkwrap run --target=$t --release \
               cmarkwrap/src/main/main.mbt \
               | tee -a bench-output.txt
