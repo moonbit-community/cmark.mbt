@@ -202,9 +202,8 @@ test "ext_task_marker returns None when start >= last" {
 }
 
 ///|
-test "ext_task_marker returns None when input is invalid UTF-16" {
-  // Create an invalid UTF-16 sequence by using a high surrogate without a low surrogate
-  let s = "[\xD800]" // \xD800 is a high surrogate
+test "ext_task_marker returns None when the marker is too long" {
+  let s = "[\u{d8}00]"
   inspect!(ext_task_marker(s, last=s.length(), start=0), content="None")
 }
 

@@ -38,7 +38,7 @@ test "is_ascii_graphic with non-graphic chars" {
   // Test with chars before '!'
   inspect!(is_ascii_graphic(' '), content="false")
   // Test with chars after '~'
-  inspect!(is_ascii_graphic('\x7F'), content="false")
+  inspect!(is_ascii_graphic('\u007F'), content="false")
 }
 
 ///|
