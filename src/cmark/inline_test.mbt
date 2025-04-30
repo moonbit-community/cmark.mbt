@@ -271,6 +271,190 @@ test "Inline::normalize with ExtStrikethrough type" {
 }
 
 ///|
+test "Inline::normalize with complex structure - has nested inlines" {
+  let meta = @cmark_base.Meta::none()
+
+  // Create a nested structure with Inlines
+  let text1 = Inline::Text(Node::new("text1", meta~))
+  let nested = Inline::Inlines(Node::new(Seq::from_array([text1]), meta~))
+  let text2 = Inline::Text(Node::new("text2", meta~))
+  let outer = Inline::Inlines(
+    Node::new(Seq::from_array([nested, text2]), meta~),
+  )
+
+  // Normalize should flatten nested Inlines
+  let normalized = outer.normalize()
+  inspect!(normalized.is_empty(), content="false")
+}
+
+///|
+test "InlineCodeSpan::from_string with simple content" {
+  // Test with string that needs spaces (contains backticks)
+  let code_with_backticks = InlineCodeSpan::from_string("`code`")
+  inspect!(code_with_backticks.code(), content="`code`")
+}
+
+///|
+test "InlineCodeSpan::from_string with empty string" {
+  // Test with empty string
+  let empty_code = InlineCodeSpan::from_string("")
+  inspect!(empty_code.code(), content="")
+}
+
+///|
+test "InlineCodeSpan::from_string with newlines" {
+  let meta = @cmark_base.Meta::none()
+  // Test with string containing newlines
+  let code_with_newlines = InlineCodeSpan::from_string(
+    meta~,
+    "code\nwith\nnewlines",
+  )
+  inspect!(code_with_newlines.code(), content="code with newlines")
+
+  // Test with CRLF
+  let code_with_crlf = InlineCodeSpan::from_string(
+    meta~,
+    "code\r\nwith\r\ncrlf",
+  )
+  inspect!(code_with_crlf.code(), content="code with crlf")
+}
+
+///|
+test "InlineCodeSpan::new creates a code span directly" {
+  let meta = @cmark_base.Meta::none()
+  let tight = Tight::{ blanks: "", node: Node::new("code", meta~) }
+  let code_layout = Seq::from_array([tight])
+
+  // Create with explicit backtick count
+  let code_span = InlineCodeSpan::new(backticks=2, code_layout)
+  inspect!(code_span.backticks, content="2")
+  inspect!(code_span.code(), content="code")
+}
+
+///|
+test "Inline::to_plain_text with hard line break" {
+  let meta = @cmark_base.Meta::none()
+  let hard_break = Inline::Break(
+    Node::new(
+      {
+        layout_before: Node::new("", meta~),
+        ty: InlineBreakType::Hard,
+        layout_after: Node::new("", meta~),
+      },
+      meta~,
+    ),
+  )
+  let result = hard_break.to_plain_text(break_on_soft=false)
+  inspect!(result.length(), content="2")
+}
+
+///|
+test "Inline::to_plain_text with soft line break" {
+  let meta = @cmark_base.Meta::none()
+  let soft_break = Inline::Break(
+    Node::new(
+      {
+        layout_before: Node::new("", meta~),
+        ty: InlineBreakType::Soft,
+        layout_after: Node::new("", meta~),
+      },
+      meta~,
+    ),
+  )
+
+  // With break_on_soft=true
+  let result_true = soft_break.to_plain_text(break_on_soft=true)
+  inspect!(result_true.length(), content="2")
+
+  // With break_on_soft=false
+  let result_false = soft_break.to_plain_text(break_on_soft=false)
+  inspect!(result_false.length(), content="1")
+}
+
+///|
+test "Inline::to_plain_text with autolink" {
+  let meta = @cmark_base.Meta::none()
+  let link_node = Node::new("example.com", meta~)
+  let autolink = Inline::Autolink(
+    Node::new(InlineAutolink::new(link_node), meta~),
+  )
+  let result = autolink.to_plain_text(break_on_soft=false)
+  inspect!(result.length(), content="1")
+}
+
+///|
+test "Inline::to_plain_text with emphasis and strong emphasis" {
+  let meta = @cmark_base.Meta::none()
+  let text = Inline::Text(Node::new("emphasized", meta~))
+
+  // Test with Emphasis
+  let emphasis = Inline::Emphasis(
+    Node::new({ delim: '*', inline: text }, meta~),
+  )
+  let emphasis_result = emphasis.to_plain_text(break_on_soft=false)
+  inspect!(emphasis_result.length(), content="1")
+
+  // Test with StrongEmphasis
+  let strong = Inline::StrongEmphasis(
+    Node::new({ delim: '*', inline: text }, meta~),
+  )
+  let strong_result = strong.to_plain_text(break_on_soft=false)
+  inspect!(strong_result.length(), content="1")
+}
+
+///|
+test "Inline::to_plain_text with inlines and link" {
+  let meta = @cmark_base.Meta::none()
+
+  // Test with nested Inlines
+  let text1 = Inline::Text(Node::new("text1", meta~))
+  let text2 = Inline::Text(Node::new("text2", meta~))
+  let inlines = Inline::Inlines(
+    Node::new(Seq::from_array([text1, text2]), meta~),
+  )
+  let inlines_result = inlines.to_plain_text(break_on_soft=false)
+  inspect!(inlines_result.length(), content="1")
+
+  // Test with Link
+  let link_def = Node::new(LinkDefinition::new(), meta~)
+  let reference = ReferenceKind::Inline(link_def)
+  let link = Inline::Link(Node::new({ text: text1, reference }, meta~))
+  let link_result = link.to_plain_text(break_on_soft=false)
+  inspect!(link_result.length(), content="1")
+}
+
+///|
+test "Inline::to_plain_text with raw html and strikethrough" {
+  let meta = @cmark_base.Meta::none()
+
+  // Test with RawHtml
+  let raw_content = Seq::from_array([Tight::empty(meta~)])
+  let raw_html = Inline::RawHtml(Node::new(raw_content, meta~))
+  let raw_html_result = raw_html.to_plain_text(break_on_soft=false)
+  inspect!(raw_html_result.length(), content="1")
+
+  // Test with Strikethrough
+  let text = Inline::Text(Node::new("strikethrough", meta~))
+  let strikethrough = Inline::ExtStrikethrough(Node::new(text, meta~))
+  let strikethrough_result = strikethrough.to_plain_text(break_on_soft=false)
+  inspect!(strikethrough_result.length(), content="1")
+}
+
+///|
+test "Inline::to_plain_text with math span" {
+  let meta = @cmark_base.Meta::none()
+
+  // Test with MathSpan
+  let tight = Tight::{ blanks: "", node: Node::new("x^2", meta~) }
+  let tex_layout = Seq::from_array([tight])
+  let math_span = Inline::ExtMathSpan(
+    Node::new({ display: false, tex_layout }, meta~),
+  )
+  let math_result = math_span.to_plain_text(break_on_soft=false)
+  inspect!(math_result.length(), content="1")
+}
+
+///|
 test "Inline::normalize with singleton list" {
   let meta = @cmark_base.Meta::none()
 
