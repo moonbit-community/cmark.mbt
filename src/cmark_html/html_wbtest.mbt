@@ -1,7 +1,7 @@
 ///|
 test "html escape with null character" {
   let b = StringBuilder::new()
-  buffer_add_html_escaped_string(b, "\x00abc")
+  buffer_add_html_escaped_string(b, "\u{0}abc")
   inspect!(b.to_string(), content="\uFFFDabc")
 }
 

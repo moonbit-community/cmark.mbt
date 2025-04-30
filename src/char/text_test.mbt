@@ -83,8 +83,8 @@ test "try_entity_named with incomplete entity" {
 ///|
 test "handling null character and non-ascii chars" {
   let buf = StringBuilder::new(size_hint=0)
-  let s = "\x00\xFF"
-  inspect!(utf_16_clean_unesc_unref(buf, s, first=0, last=1), content="�\xFF")
+  let s = "\u{0}\u{FF}"
+  inspect!(utf_16_clean_unesc_unref(buf, s, first=0, last=1), content="�ÿ")
 }
 
 ///|
@@ -336,8 +336,8 @@ test "try_entity_named with incomplete entity" {
 ///|
 test "handling null character and non-ascii chars" {
   let buf = StringBuilder::new(size_hint=0)
-  let s = "\x00\xFF"
-  inspect!(utf_16_clean_unesc_unref(buf, s, first=0, last=1), content="�\xFF")
+  let s = "\u0000\u00FF"
+  inspect!(utf_16_clean_unesc_unref(buf, s, first=0, last=1), content="�ÿ")
 }
 
 ///|
