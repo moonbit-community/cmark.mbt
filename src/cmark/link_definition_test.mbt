@@ -7,7 +7,7 @@ test "link definition layout for destination with space" {
 
 ///|
 test "link definition layout for destination with control character" {
-  let dest = "hello\x00world"
+  let dest = "hello\u{0}world"
   let layout = LinkDefinitionLayout::for_dest(dest)
   inspect!(layout.angled_dest, content="true")
 }

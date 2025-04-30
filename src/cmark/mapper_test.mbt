@@ -12,7 +12,7 @@ test "mapper ret function" {
 ///|
 test "mapper delete function" {
   // Test delete function to ensure it returns None
-  let delete_result = Mapper::delete()
+  let delete_result : MapperResult[Unit] = Mapper::delete()
   inspect!(delete_result, content="Map(None)")
 }
 
