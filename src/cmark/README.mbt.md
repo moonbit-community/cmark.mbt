@@ -1,7 +1,3 @@
----
-moonbit: true
----
-
 # `cmark`
 
 This package provides a CommonMark parser in MoonBit, with support for tables, task lists, math blocks, and more.
