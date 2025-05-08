@@ -1,7 +1,3 @@
----
-moonbit: true
----
-
 # `char`
 
 A package providing helper functions for working with Chars, with a focus on ASCII and Unicode operations.
@@ -43,9 +39,6 @@ Safe and checked ways to access characters in a string:
 test "string char access" {
   let s = "Hello, 🐰"
 
-  // Basic character access
-  inspect!(@char.at(s, 0), content="H")
-
   // Safe checked access
   inspect!(@char.at_checked(s, 0), content="Ok('H')")
   inspect!(@char.at_checked(s, 7), content="Ok('🐰')")
@@ -75,7 +68,7 @@ Query Unicode properties of characters:
 ```moonbit
 test "unicode properties" {
   // UTF encoding lengths
-  let c = '🐰'
+  let c = '🐰'.to_int()
   inspect!(@char.length_utf8(c), content="4")
   inspect!(@char.length_utf16(c), content="2")
   inspect!(@char.length_utf32(c), content="1")

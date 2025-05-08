@@ -1,7 +1,3 @@
----
-moonbit: true
----
-
 # `cmark_base`
 
 This package provides fundamental CommonMark parsing utilities and data structures for parsing various CommonMark elements.
