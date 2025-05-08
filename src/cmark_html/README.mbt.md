@@ -1,7 +1,3 @@
----
-moonbit: true
----
-
 # `cmark_html`
 
 This package provides basic facilities for rendering CommonMark documents as HTML.
