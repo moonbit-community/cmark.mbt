@@ -108,7 +108,7 @@ fn make_footnote_ref_ids(
   f : @cmark.Footnote
 ) -> (String, String, String) {
   guard c.state is Some(EState({ footnotes, footnote_count, .. } as st))
-  guard footnotes[label] is Some({ text, id, .. } as rf) else {
+  guard footnotes.get(label) is Some({ text, id, .. } as rf) else {
     let footnote_count = footnote_count + 1
     st.footnote_count = footnote_count
     let text = "[\{footnote_count}]"

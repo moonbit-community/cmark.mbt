@@ -26,7 +26,7 @@ fn CloserIndex::new() -> CloserIndex {
 
 ///|
 fn CloserIndex::add(self : CloserIndex, key : Closer, pos : Int) -> Unit {
-  (match self._[key] {
+  (match self._.get(key) {
     Some(ps) => ps
     None => {
       let ps = PosSet::new()
@@ -38,7 +38,7 @@ fn CloserIndex::add(self : CloserIndex, key : Closer, pos : Int) -> Unit {
 
 ///|
 fn CloserIndex::pos(self : CloserIndex, key : Closer, after~ : Int) -> Int? {
-  self._[key].bind(fn(s) { s.iter().find_first(fn(pos) { pos > after }) })
+  self._.get(key).bind(fn(s) { s.iter().find_first(fn(pos) { pos > after }) })
 }
 
 ///|
