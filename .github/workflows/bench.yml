@@ -25,7 +25,7 @@ jobs:
       - name: Install MoonBit
         # if: ${{ matrix.os.name != 'windows-latest' }}
         run: |
-          curl -fsSL https://cli.moonbitlang.com/install/unix.sh | bash -s -- bleeding
+          curl -fsSL https://cli.moonbitlang.com/install/unix.sh | bash -s -- pre-release
           echo "$HOME/.moon/bin" >> $GITHUB_PATH
 
       - name: Run benchmark
