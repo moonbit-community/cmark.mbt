@@ -394,7 +394,7 @@ pub fn InlineLink::reference_definition(
 ) -> LabelDef? {
   match self.reference {
     Inline(ld) => Some(LinkDef(ld))
-    Ref(_, _, def) => defs[def.key]
+    Ref(_, _, def) => defs.get(def.key)
   }
 }
 
