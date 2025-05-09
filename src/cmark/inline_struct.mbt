@@ -290,10 +290,10 @@ fn tokens_try_add_emphasis(
   let count = run_last - start + 1
   let prev_char = @char.prev_char(s, first~, before=start)
   let next_char = @char.next_char(s, last~, after=run_last)
-  let is_prev_white = @char.is_ascii_whitespace(prev_char)
-  let is_prev_punct = @char.is_ascii_punctuation(prev_char)
-  let is_next_white = @char.is_ascii_whitespace(next_char)
-  let is_next_punct = @char.is_ascii_punctuation(next_char)
+  let is_prev_white = @unicode.is_whitespace(prev_char)
+  let is_prev_punct = @unicode.is_punctuation(prev_char)
+  let is_next_white = @unicode.is_whitespace(next_char)
+  let is_next_punct = @unicode.is_punctuation(next_char)
   let is_left_flanking = not(is_next_white) &&
     (not(is_next_punct) || is_prev_white || is_prev_punct)
   let is_right_flanking = not(is_prev_white) &&

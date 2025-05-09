@@ -464,6 +464,23 @@ test "should parse emphases" {
       ],
     },
   ])
+  @json.inspect!(parse_only("**许可证**：GPL-v3.0"), content=[
+    [0, ""],
+    {
+      "$tag": "Inlines",
+      "0": [
+        [
+          {
+            "$tag": "StrongEmphasis",
+            "0": [
+              { "delim": "*", "inline": { "$tag": "Text", "0": ["许可证"] } },
+            ],
+          },
+          { "$tag": "Text", "0": ["：GPL-v3.0"] },
+        ],
+      ],
+    },
+  ])
 }
 
 ///|
@@ -795,7 +812,7 @@ test "should tokenize nested strikethroughs and emphases" {
   let doc =
     #|Nesting the nest ~~*emph2* ~~stroke~~ *emph3 **emph4  ~~strikeagain~~***~~
   @json.inspect!(tokenize_only(doc, strict=false), content=[
-    { "EmphasisMarks('*')": [25, 69], "StrikethroughMarks": [35, 67, 72] },
+    { "EmphasisMarks('*')": [19, 25, 69], "StrikethroughMarks": [35, 67, 72] },
     [
       {
         "$tag": "StrikethroughMarks",
@@ -808,7 +825,7 @@ test "should tokenize nested strikethroughs and emphases" {
           "char": "*",
           "count": 1,
           "may_open": true,
-          "may_close": false,
+          "may_close": true,
         },
       },
       {
