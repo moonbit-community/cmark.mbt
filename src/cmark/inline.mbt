@@ -186,12 +186,21 @@ pub fn Inline::id(
             u = @char.rep
           }
           let k = k + @char.length_utf16(u.to_int())
-          // TODO: Use `is_unicode_punctuation()`.
-          if @char.is_ascii_punctuation(c) {
+          if @char.is_ascii_punctuation(c) || @unicode.is_punctuation(c) {
             continue max, '\u{0}', k
           }
-          // TODO: Use `unicode_casefold()`
-          buf.write_char(@char.to_ascii_lower(u))
+          match @casefold.casefold_char(u) {
+            One(c) => buf.write_char(c)
+            Two(c1, c2) => {
+              buf.write_char(c1)
+              buf.write_char(c2)
+            }
+            Three(c1, c2, c3) => {
+              buf.write_char(c1)
+              buf.write_char(c2)
+              buf.write_char(c3)
+            }
+          }
           let prev = c
           continue max, prev, k
         }
