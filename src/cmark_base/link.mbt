@@ -7,8 +7,8 @@
 /// See: https://spec.commonmark.org/current/#link-destination
 pub fn link_destination(
   s : String,
-  last~ : BytePos,
-  start~ : BytePos
+  last~ : CharCodePos,
+  start~ : CharCodePos
 ) -> (Bool, First, Last)? {
   if start > last {
     return None
@@ -81,7 +81,7 @@ pub fn link_title[A](
   s : String,
   lines : A,
   line~ : LineSpan,
-  start~ : BytePos
+  start~ : CharCodePos
 ) -> (LineSpan, Array[Span], Last)? {
   if start > line.last {
     return None
@@ -135,7 +135,7 @@ pub fn link_label[A](
   s : String,
   lines : A,
   line~ : LineSpan,
-  start~ : BytePos
+  start~ : CharCodePos
 ) -> (LineSpan, Array[Span], Last, String)? {
   if start > line.last || s[start] != '[' {
     return None

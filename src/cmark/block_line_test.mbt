@@ -18,7 +18,7 @@ test "BlockLine::list_text_loc handles empty sequence" {
   inspect!(
     BlockLine::list_text_loc(empty_seq),
     content=
-      #|{file: "-", first_byte: -1, last_byte: -1, first_line: (-1, -1), last_line: (-1, -1)}
+      #|{file: "-", first_ccode: -1, last_ccode: -1, first_line: (-1, -1), last_line: (-1, -1)}
     ,
   )
 }
@@ -27,8 +27,8 @@ test "BlockLine::list_text_loc handles empty sequence" {
 test "BlockLine::list_text_loc handles single element sequence" {
   let loc = @cmark_base.TextLoc::{
     file: @cmark_base.file_path_none,
-    first_byte: 0,
-    last_byte: 5,
+    first_ccode: 0,
+    last_ccode: 5,
     first_line: (1, 0),
     last_line: (1, 5),
   }
@@ -39,7 +39,7 @@ test "BlockLine::list_text_loc handles single element sequence" {
   inspect!(
     result,
     content=
-      #|{file: "-", first_byte: 0, last_byte: 5, first_line: (1, 0), last_line: (1, 5)}
+      #|{file: "-", first_ccode: 0, last_ccode: 5, first_line: (1, 0), last_line: (1, 5)}
     ,
   )
 }
@@ -49,8 +49,8 @@ test "BlockLine::list_text_loc handles multiple element sequence" {
   // First node with location at line 1
   let loc1 = @cmark_base.TextLoc::{
     file: @cmark_base.file_path_none,
-    first_byte: 0,
-    last_byte: 5,
+    first_ccode: 0,
+    last_ccode: 5,
     first_line: (1, 0),
     last_line: (1, 5),
   }
@@ -60,8 +60,8 @@ test "BlockLine::list_text_loc handles multiple element sequence" {
   // Second node with location at line 2
   let loc2 = @cmark_base.TextLoc::{
     file: @cmark_base.file_path_none,
-    first_byte: 6,
-    last_byte: 11,
+    first_ccode: 6,
+    last_ccode: 11,
     first_line: (2, 0),
     last_line: (2, 5),
   }
@@ -70,11 +70,11 @@ test "BlockLine::list_text_loc handles multiple element sequence" {
   let multi_seq = Seq::from_array([node1, node2])
   let result = BlockLine::list_text_loc(multi_seq)
 
-  // Should span from first_byte of first node to last_byte of last node
+  // Should span from first_ccode of first node to last_ccode of last node
   inspect!(
     result,
     content=
-      #|{file: "-", first_byte: 0, last_byte: 11, first_line: (1, 0), last_line: (2, 5)}
+      #|{file: "-", first_ccode: 0, last_ccode: 11, first_line: (1, 0), last_line: (2, 5)}
     ,
   )
 }
@@ -85,7 +85,7 @@ test "Tight::list_text_loc handles empty sequence" {
   inspect!(
     Tight::list_text_loc(empty_seq),
     content=
-      #|{file: "-", first_byte: -1, last_byte: -1, first_line: (-1, -1), last_line: (-1, -1)}
+      #|{file: "-", first_ccode: -1, last_ccode: -1, first_line: (-1, -1), last_line: (-1, -1)}
     ,
   )
 }
@@ -94,8 +94,8 @@ test "Tight::list_text_loc handles empty sequence" {
 test "Tight::list_text_loc handles single element sequence" {
   let loc = @cmark_base.TextLoc::{
     file: @cmark_base.file_path_none,
-    first_byte: 0,
-    last_byte: 5,
+    first_ccode: 0,
+    last_ccode: 5,
     first_line: (1, 0),
     last_line: (1, 5),
   }
@@ -106,7 +106,7 @@ test "Tight::list_text_loc handles single element sequence" {
   inspect!(
     Tight::list_text_loc(seq),
     content=
-      #|{file: "-", first_byte: 0, last_byte: 5, first_line: (1, 0), last_line: (1, 5)}
+      #|{file: "-", first_ccode: 0, last_ccode: 5, first_line: (1, 0), last_line: (1, 5)}
     ,
   )
 }
@@ -116,8 +116,8 @@ test "Tight::list_text_loc handles multiple element sequence" {
   // First tight element
   let loc1 = @cmark_base.TextLoc::{
     file: @cmark_base.file_path_none,
-    first_byte: 0,
-    last_byte: 5,
+    first_ccode: 0,
+    last_ccode: 5,
     first_line: (1, 0),
     last_line: (1, 5),
   }
@@ -128,8 +128,8 @@ test "Tight::list_text_loc handles multiple element sequence" {
   // Second tight element
   let loc2 = @cmark_base.TextLoc::{
     file: @cmark_base.file_path_none,
-    first_byte: 6,
-    last_byte: 11,
+    first_ccode: 6,
+    last_ccode: 11,
     first_line: (2, 0),
     last_line: (2, 5),
   }
@@ -140,7 +140,7 @@ test "Tight::list_text_loc handles multiple element sequence" {
   inspect!(
     Tight::list_text_loc(seq),
     content=
-      #|{file: "-", first_byte: 0, last_byte: 11, first_line: (1, 0), last_line: (2, 5)}
+      #|{file: "-", first_ccode: 0, last_ccode: 11, first_line: (1, 0), last_line: (2, 5)}
     ,
   )
 }

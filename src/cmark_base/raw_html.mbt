@@ -124,8 +124,8 @@ fn open_tag[A](
   s : String,
   lines : A,
   line~ : LineSpan,
-  start~ : BytePos
-) -> (LineSpan, Array[Span], BytePos)? {
+  start~ : CharCodePos
+) -> (LineSpan, Array[Span], CharCodePos)? {
   let tag_start = start
   guard tag_name(s, last=line.last, start=tag_start + 1) is Some(tag_name_end) else {
     None
@@ -182,8 +182,8 @@ fn closing_tag[A](
   s : String,
   lines : A,
   line~ : LineSpan,
-  start~ : BytePos
-) -> (LineSpan, Array[Span], BytePos)? {
+  start~ : CharCodePos
+) -> (LineSpan, Array[Span], CharCodePos)? {
   let tag_start = start
   guard tag_name(s, last=line.last, start=start + 2) is Some(tag_name_end) else {
     return None
@@ -210,8 +210,8 @@ fn declaration[A](
   s : String,
   lines : A,
   line~ : LineSpan,
-  start~ : BytePos
-) -> (LineSpan, Array[Span], BytePos)? {
+  start~ : CharCodePos
+) -> (LineSpan, Array[Span], CharCodePos)? {
   let spans = []
   accept_to(char='>', next_line~, s, lines, line~, spans, after=start).map(fn {
     (line, k) => (line, spans, k)
@@ -224,8 +224,8 @@ fn processing_instruction[A](
   s : String,
   lines : A,
   line~ : LineSpan,
-  start~ : BytePos
-) -> (LineSpan, Array[Span], BytePos)? {
+  start~ : CharCodePos
+) -> (LineSpan, Array[Span], CharCodePos)? {
   let acc = []
   loop lines, line, start, start + 2 {
     lines, line, start, k => {
@@ -255,8 +255,8 @@ fn html_comment[A](
   s : String,
   lines : A,
   line~ : LineSpan,
-  start~ : BytePos
-) -> (LineSpan, Array[Span], BytePos)? {
+  start~ : CharCodePos
+) -> (LineSpan, Array[Span], CharCodePos)? {
   // Check we have at least <!-- and not <!--> or <!--->.
   if start + 3 > line.last || s[start + 3] != '-' {
     return None
@@ -299,8 +299,8 @@ fn cdata_section[A](
   s : String,
   lines : A,
   line~ : LineSpan,
-  start~ : BytePos
-) -> (LineSpan, Array[Span], BytePos)? {
+  start~ : CharCodePos
+) -> (LineSpan, Array[Span], CharCodePos)? {
   if start + 8 > line.last {
     return None
   }
@@ -335,8 +335,8 @@ pub fn raw_html[A : Show](
   s : String,
   lines : A,
   line~ : LineSpan,
-  start~ : BytePos
-) -> (LineSpan, Array[Span], BytePos)? {
+  start~ : CharCodePos
+) -> (LineSpan, Array[Span], CharCodePos)? {
   let next = start + 1
   let { last, .. } = line
   guard next <= last && s[start] == '<' else { None }

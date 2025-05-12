@@ -26,19 +26,19 @@ priv enum Token {
 
 ///|
 priv struct TokenStart {
-  start : BytePos
+  start : CharCodePos
 } derive(Show, ToJson)
 
 ///|
 priv struct TokenBackticks {
-  start : BytePos
+  start : CharCodePos
   count : Int
   escaped : Bool
 } derive(Show, ToJson)
 
 ///|
 priv struct TokenEmphasisMarks {
-  start : BytePos
+  start : CharCodePos
   char : Char
   count : Int
   may_open : Bool
@@ -47,43 +47,43 @@ priv struct TokenEmphasisMarks {
 
 ///|
 priv struct TokenInline {
-  start : BytePos
+  start : CharCodePos
   inline : Inline
   endline : LineSpan
-  next : BytePos
+  next : CharCodePos
 } derive(Show, ToJson)
 
 ///|
 priv struct TokenLinkStart {
-  start : BytePos
+  start : CharCodePos
   image : Bool
 } derive(Show, ToJson)
 
 ///|
 priv struct TokenNewline {
   /// Points at spaces or `\` on the broken line
-  start : BytePos
+  start : CharCodePos
   break_ty : InlineBreakType
   newline : LineSpan
 } derive(Show, ToJson)
 
 ///|
 priv struct TokenStrikethroughMarks {
-  start : BytePos
+  start : CharCodePos
   may_open : Bool
   may_close : Bool
 } derive(Show, ToJson)
 
 ///|
 priv struct TokenMathSpanMarks {
-  start : BytePos
+  start : CharCodePos
   count : Int
   may_open : Bool
   may_close : Bool
 } derive(Show, ToJson)
 
 ///|
-fn Token::start(self : Token) -> BytePos {
+fn Token::start(self : Token) -> CharCodePos {
   match self {
     Token::AutolinkOrHtmlStart(t) => t.start
     Token::Backticks(t) => t.start
@@ -459,8 +459,8 @@ fn Parser::try_add_text_inline(
 ///|
 fn Parser::inlines_inline(
   self : Parser,
-  first~ : BytePos,
-  last~ : BytePos,
+  first~ : CharCodePos,
+  last~ : CharCodePos,
   first_line~ : LineSpan,
   last_line~ : LineSpan,
   acc : Array[Inline]
@@ -483,8 +483,8 @@ fn Parser::inlines_inline(
 fn Parser::code_span_token(
   self : Parser,
   count~ : Int,
-  first~ : BytePos,
-  last~ : BytePos,
+  first~ : CharCodePos,
+  last~ : CharCodePos,
   first_line~ : LineSpan,
   last_line~ : LineSpan,
   spans : ArrayView[Span]
@@ -524,8 +524,8 @@ fn Parser::raw_html_token(
   let raw = Seq::from_array(self.raw_tight_block_lines(spans~))
   let text_loc = {
     let first = raw[0].node.meta.loc
-    let { last: last_byte, pos: last_line, .. } = spans[spans.length() - 1].span
-    { ..first, last_byte, last_line }
+    let { last: last_ccode, pos: last_line, .. } = spans[spans.length() - 1].span
+    { ..first, last_ccode, last_line }
   }
   let inline = RawHtml({ v: raw, meta: self.meta(text_loc) })
   Inline({ start: first, inline, endline: last_line, next: last + 1 })
@@ -605,7 +605,7 @@ fn Parser::try_code(
   self : Parser,
   rev_toks : Ref[RevTokens],
   start_line : LineSpan,
-  start~ : BytePos,
+  start~ : CharCodePos,
   count~ : Int,
   escaped~ : Bool
 ) -> (LineSpan, Token)? {
@@ -658,7 +658,7 @@ fn Parser::try_math_span(
   self : Parser,
   rev_toks : Ref[RevTokens],
   start_line : LineSpan,
-  start~ : BytePos,
+  start~ : CharCodePos,
   count~ : Int
 ) -> (LineSpan, Token)? {
   let cstart = start
@@ -708,7 +708,7 @@ fn Parser::try_autolink_or_html(
   self : Parser,
   rev_toks : Ref[RevTokens],
   line : LineSpan,
-  start~ : BytePos
+  start~ : CharCodePos
 ) -> (LineSpan, Token)? {
   // Weirdly, there's seemingly no `if let` in Moonbit.
   if @cmark_base.autolink_uri(self.i, last=line.last, start~) is Some(last) {
@@ -760,8 +760,8 @@ fn Parser::try_full_reflink_remainder(
   rev_toks : Ref[RevTokens],
   line : LineSpan,
   image~ : Bool,
-  start~ : BytePos
-) -> (LineSpan, ReferenceKind, BytePos)?? {
+  start~ : CharCodePos
+) -> (LineSpan, ReferenceKind, CharCodePos)?? {
   guard @cmark_base.link_label(
       self.buf,
       next_line=tokens_next_line,
@@ -786,8 +786,8 @@ fn Parser::try_shortcut_reflink(
   rev_toks : Ref[RevTokens],
   line : LineSpan,
   image~ : Bool,
-  start~ : BytePos
-) -> (LineSpan, ReferenceKind, BytePos)? {
+  start~ : CharCodePos
+) -> (LineSpan, ReferenceKind, CharCodePos)? {
   let start = start + image.to_int() // [
   guard @cmark_base.link_label(
       self.buf,
@@ -813,8 +813,8 @@ fn Parser::try_collapsed_reflink(
   rev_toks : Ref[RevTokens],
   line : LineSpan,
   image~ : Bool,
-  start~ : BytePos
-) -> (LineSpan, ReferenceKind, BytePos)? {
+  start~ : CharCodePos
+) -> (LineSpan, ReferenceKind, CharCodePos)? {
   let start = start + image.to_int() // [
   guard @cmark_base.link_label(
       self.buf,
@@ -842,8 +842,8 @@ fn Parser::try_inline_link_remainder(
   rev_toks : Ref[RevTokens],
   start_line : LineSpan,
   image~ : Bool,
-  start~ : BytePos
-) -> (LineSpan, ReferenceKind, BytePos)? {
+  start~ : CharCodePos
+) -> (LineSpan, ReferenceKind, CharCodePos)? {
   let _ = image
   let st = start
   guard self.cidx.has_right_paren(after=st) else { None }
@@ -934,8 +934,8 @@ fn Parser::find_link_text_tokens(
   self : Parser,
   rev_toks : Ref[RevTokens],
   start_line : LineSpan,
-  start~ : BytePos
-) -> (LineSpan, Tokens, BytePos)? {
+  start~ : CharCodePos
+) -> (LineSpan, Tokens, CharCodePos)? {
   let _ = start
   let mut line = start_line
   let mut nest = 0
@@ -994,12 +994,12 @@ fn Parser::find_link_text_tokens(
 /// If this function returns `Some((line_span, token, had_link))`, it means the stack has been modified.
 fn Parser::try_link_def(
   self : Parser,
-  start~ : BytePos,
+  start~ : CharCodePos,
   start_rev_toks~ : Ref[RevTokens],
   start_line~ : LineSpan,
   rev_toks~ : Ref[RevTokens],
   line~ : LineSpan,
-  text_last~ : BytePos,
+  text_last~ : CharCodePos,
   image~ : Bool,
   text : Array[Inline]
 ) -> (LineSpan, Token, Bool)? {
@@ -1086,7 +1086,7 @@ fn Parser::try_link(
   start_rev_toks : Ref[RevTokens],
   start_line : LineSpan,
   image~ : Bool,
-  start~ : BytePos
+  start~ : CharCodePos
 ) -> (LineSpan, Token, Bool)? {
   let rev_toks : Ref[RevTokens] = Ref::new(start_rev_toks.val._.copy())
   guard self.cidx.has_right_brack(after=start) else { return None }
@@ -1508,9 +1508,9 @@ fn Parser::parse_inline(
 fn Parser::get_blanks(
   self : Parser,
   line : LineSpan,
-  before~ : BytePos,
-  k : BytePos
-) -> (String, BytePos) {
+  before~ : CharCodePos,
+  k : CharCodePos
+) -> (String, CharCodePos) {
   let nb = @cmark_base.first_non_blank(self.i, last=before - 1, start=k)
   let line = { ..line, first: k, last: nb - 1 }
   (self.layout_clean_raw_span1(line), nb)
@@ -1534,8 +1534,8 @@ fn Parser::make_col(self : Parser, is_ : Array[Inline]) -> Inline {
 fn Parser::find_pipe(
   self : Parser,
   line : LineSpan,
-  before~ : BytePos,
-  k : BytePos
+  before~ : CharCodePos,
+  k : CharCodePos
 ) -> Result[(Inline?, String, Col), Inline] {
   fn text(first, last) {
     let line = { ..line, first, last }
@@ -1561,8 +1561,8 @@ fn Parser::find_pipe(
 fn Parser::start_col(
   self : Parser,
   line : LineSpan,
-  before~ : BytePos,
-  k : BytePos
+  before~ : CharCodePos,
+  k : CharCodePos
 ) -> StartColResult {
   let (bbefore, k) = self.get_blanks(line, before~, k)
   if k >= before {
@@ -1582,7 +1582,7 @@ fn Parser::start_col(
 
 ///|
 priv enum StartColResult {
-  Col((Inline, TableCellLayout), BytePos)
+  Col((Inline, TableCellLayout), CharCodePos)
   Start(String, Array[Inline])
 } derive(Show, ToJson)
 
@@ -1593,8 +1593,8 @@ fn Parser::finish_col(
   blanks_before : String,
   is_ : Array[Inline],
   toks : Tokens,
-  k : BytePos
-) -> ((Inline, TableCellLayout), BytePos) {
+  k : CharCodePos
+) -> ((Inline, TableCellLayout), CharCodePos) {
   loop k {
     k => {
       if toks._.is_empty() {
@@ -1631,7 +1631,7 @@ fn Parser::parse_cols(
   line : LineSpan,
   acc : Array[(Inline, TableCellLayout)],
   toks : Tokens,
-  k : BytePos
+  k : CharCodePos
 ) -> Unit {
   loop line, k {
     line, k => {

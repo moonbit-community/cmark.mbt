@@ -3,8 +3,8 @@
 pub fn run_of(
   char~ : Char,
   s : String,
-  last~ : BytePos,
-  start~ : BytePos
+  last~ : CharCodePos,
+  start~ : CharCodePos
 ) -> Last {
   if start > last || s[start] != char {
     return start - 1
@@ -16,9 +16,9 @@ pub fn run_of(
 /// that is not blank and `last + 1` if there is none.
 pub fn first_non_blank(
   s : String,
-  last~ : BytePos,
-  start~ : BytePos
-) -> BytePos {
+  last~ : CharCodePos,
+  start~ : CharCodePos
+) -> CharCodePos {
   for k in start..=last {
     guard @char.is_ascii_blank(s[k]) else { return k }
 
@@ -27,7 +27,7 @@ pub fn first_non_blank(
 }
 
 ///| `first_non_blank_in_span(s, span)` is `first_non_blank(s, last=span.last, start=span.first)`.
-pub fn first_non_blank_in_span(s : String, span : LineSpan) -> BytePos {
+pub fn first_non_blank_in_span(s : String, span : LineSpan) -> CharCodePos {
   first_non_blank(s, last=span.last, start=span.first)
 }
 
@@ -35,9 +35,9 @@ pub fn first_non_blank_in_span(s : String, span : LineSpan) -> BytePos {
 /// that is not blank and `first - 1` if there is none.
 pub fn last_non_blank(
   s : String,
-  first~ : BytePos,
-  start~ : BytePos
-) -> BytePos {
+  first~ : CharCodePos,
+  start~ : CharCodePos
+) -> CharCodePos {
   if start < first {
     return first - 1
   }
@@ -51,9 +51,9 @@ pub fn last_non_blank(
 /// that is not U+0020 and `first - 1` if there is none.
 pub fn rev_drop_spaces(
   s : String,
-  first~ : BytePos,
-  start~ : BytePos
-) -> BytePos {
+  first~ : CharCodePos,
+  start~ : CharCodePos
+) -> CharCodePos {
   if start < first {
     return first - 1
   }
@@ -66,8 +66,8 @@ pub fn rev_drop_spaces(
 ///|
 fn push_span(
   line~ : LineSpan,
-  first : BytePos,
-  last : BytePos,
+  first : CharCodePos,
+  last : CharCodePos,
   spans : Array[Span]
 ) -> Unit {
   let first1 = first
@@ -93,7 +93,7 @@ fn accept_to[A](
   lines : A,
   line~ : LineSpan,
   spans : Array[Span],
-  after~ : BytePos
+  after~ : CharCodePos
 ) -> (LineSpan, Int)? {
   loop lines, line, after, after + 1 {
     lines, line, start, k => {
@@ -120,7 +120,7 @@ fn accept_upto[A](
   lines : A,
   line~ : LineSpan,
   spans : Array[Span],
-  after~ : BytePos
+  after~ : CharCodePos
 ) -> (LineSpan, Int)? {
   let start = after + 1
   loop char, next_line, s, lines, line, false, start, spans, start {
@@ -153,7 +153,7 @@ pub fn first_non_blank_over_nl[A](
   s : String,
   lines : A,
   line~ : LineSpan,
-  start~ : BytePos
+  start~ : CharCodePos
 ) -> NextLineResult? {
   let nb = first_non_blank(s, last=line.last, start~)
   if nb <= line.last {
@@ -174,8 +174,8 @@ fn first_non_blank_over_nl1[A](
   lines : A,
   line~ : LineSpan,
   spans : Array[Span],
-  start~ : BytePos
-) -> (LineSpan, BytePos)? {
+  start~ : CharCodePos
+) -> (LineSpan, CharCodePos)? {
   match first_non_blank_over_nl(next_line~, s, lines, line~, start~) {
     None => None
     Some(ThisLine(nb)) => {
@@ -191,14 +191,14 @@ fn first_non_blank_over_nl1[A](
   }
 }
 
-///| `first_non_escaped_char(c, s, last, start)` is the first `BytePos`
+///| `first_non_escaped_char(c, s, last, start)` is the first `CharCodePos`
 /// in the range `[start, last]` that has `c` unescaped and `last + 1` if there is none.
 pub fn first_non_escaped_char(
   c : Char,
   s : String,
-  last~ : BytePos,
-  start~ : BytePos
-) -> BytePos {
+  last~ : CharCodePos,
+  start~ : CharCodePos
+) -> CharCodePos {
   for k = start; ; k = k + 1 {
     if k > last || (s[k] == c && (k == start || s[k - 1] != '\\')) {
       break k

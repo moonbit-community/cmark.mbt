@@ -14,7 +14,7 @@ typealias TextLoc = @cmark_base.TextLoc
 typealias LinePos = @cmark_base.LinePos
 
 ///|
-typealias BytePos = @cmark_base.BytePos
+typealias CharCodePos = @cmark_base.CharCodePos
 
 ///|
 typealias FilePath = @cmark_base.FilePath
