@@ -2,6 +2,7 @@ package "rami3l/cmark/cmark_base"
 
 import(
   "moonbitlang/core/json"
+  "moonbitlang/core/string"
 )
 
 // Values
@@ -17,9 +18,9 @@ fn ext_task_marker(String, last~ : Int, start~ : Int) -> (Char, Int)?
 
 let file_path_none : String
 
-fn first_non_blank(String, last~ : Int, start~ : Int) -> Int
+fn first_non_blank(@string.StringView, last~ : Int, start~ : Int) -> Int
 
-fn first_non_blank_in_span(String, LineSpan) -> Int
+fn first_non_blank_in_span(@string.StringView, LineSpan) -> Int
 
 fn first_non_blank_over_nl[A](next_line~ : (A) -> LineSpan?, String, A, line~ : LineSpan, start~ : Int) -> NextLineResult?
 
@@ -33,7 +34,7 @@ let line_pos_none : (Int, Int)
 
 fn link_destination(String, last~ : Int, start~ : Int) -> (Bool, Int, Int)?
 
-fn link_label[A](StringBuilder, next_line~ : (A) -> LineSpan?, String, A, line~ : LineSpan, start~ : Int) -> (LineSpan, Array[Span], Int, String)?
+fn link_label[A](StringBuilder, next_line~ : (A) -> LineSpan?, @string.StringView, A, line~ : LineSpan, start~ : Int) -> (LineSpan, Array[Span], Int, String)?
 
 fn link_title[A](next_line~ : (A) -> LineSpan?, String, A, line~ : LineSpan, start~ : Int) -> (LineSpan, Array[Span], Int)?
 

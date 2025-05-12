@@ -1562,7 +1562,9 @@ fn Parser::block_struct_to_table(
           ({ v, meta }, false)
         }
       }
-      let acc = acc..push((r, self.layout_clean_raw_span1(blanks)))
+      let acc = acc..push(
+        (r, self.layout_clean_raw_span1(blanks) |> String::view()),
+      )
       guard rs.length() != 0 else { break (row, col_count, acc) }
       continue col_count, last_was_sep, acc, rs
     }

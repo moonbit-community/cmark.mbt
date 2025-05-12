@@ -2,19 +2,20 @@ package "rami3l/cmark/cmark"
 
 import(
   "moonbitlang/core/json"
+  "moonbitlang/core/string"
   "rami3l/cmark/cmark_base"
 )
 
 // Values
-let layout_empty : Node[String]
+let layout_empty : Node[@string.StringView]
 
-fn layout_of_string(meta~ : @cmark_base.Meta = .., String) -> Node[String]
+fn layout_of_string(meta~ : @cmark_base.Meta = .., String) -> Node[@string.StringView]
 
 fn tex(InlineMathSpan) -> String
 
 // Types and methods
 pub(all) enum Block {
-  BlankLine(Node[String])
+  BlankLine(Node[@string.StringView])
   BlockQuote(Node[BlockQuote])
   Blocks(Node[Seq[Block]])
   CodeBlock(Node[CodeBlock])
@@ -29,7 +30,7 @@ pub(all) enum Block {
   ExtFootnoteDefinition(Node[Footnote])
 }
 impl Block {
-  defs(Self, init~ : Map[String, LabelDef] = ..) -> Map[String, LabelDef]
+  defs(Self, init~ : Map[@string.StringView, LabelDef] = ..) -> Map[@string.StringView, LabelDef]
   empty() -> Self
   meta(Self) -> @cmark_base.Meta
   normalize(Self) -> Self
@@ -51,7 +52,7 @@ impl ToJson for BlockHeading
 
 pub(all) struct BlockHeadingAtxLayout {
   indent : Int
-  after_opening : String
+  after_opening : @string.StringView
   closing : String
 }
 impl BlockHeadingAtxLayout {
@@ -78,10 +79,10 @@ impl ToJson for BlockHeadingLayout
 
 pub(all) struct BlockHeadingSetextLayout {
   leading_indent : Int
-  trailing_blanks : String
+  trailing_blanks : @string.StringView
   underline_indent : Int
   underline_count : Node[Int]
-  underline_blanks : String
+  underline_blanks : @string.StringView
 }
 impl Show for BlockHeadingSetextLayout
 impl ToJson for BlockHeadingSetextLayout
@@ -107,10 +108,10 @@ impl ToJson for BlockList
 pub(all) struct BlockParagraph {
   leading_indent : Int
   inline : Inline
-  trailing_blanks : String
+  trailing_blanks : @string.StringView
 }
 impl BlockParagraph {
-  new(leading_indent~ : Int = .., trailing_blanks~ : String = .., Inline) -> Self
+  new(leading_indent~ : Int = .., trailing_blanks~ : @string.StringView = .., Inline) -> Self
 }
 impl Show for BlockParagraph
 impl ToJson for BlockParagraph
@@ -129,10 +130,10 @@ impl ToJson for BlockQuote
 
 pub(all) struct BlockThematicBreak {
   indent : Int
-  layout : String
+  layout : @string.StringView
 }
 impl BlockThematicBreak {
-  new(indent~ : Int = .., layout~ : String = ..) -> Self
+  new(indent~ : Int = .., layout~ : @string.StringView = ..) -> Self
 }
 impl Show for BlockThematicBreak
 impl ToJson for BlockThematicBreak
@@ -140,21 +141,21 @@ impl @json.FromJson for BlockThematicBreak
 
 pub(all) struct CodeBlock {
   layout : CodeBlockLayout
-  info_string : Node[String]?
-  code : Seq[Node[String]]
+  info_string : Node[@string.StringView]?
+  code : Seq[Node[@string.StringView]]
 }
 impl CodeBlock {
-  language_of_info_string(String) -> (String, String)?
+  language_of_info_string(@string.StringView) -> (@string.StringView, @string.StringView)?
   make_fence(Self) -> (Char, Int)
-  new(layout~ : CodeBlockLayout = .., info_string~ : Node[String]? = .., Seq[Node[String]]) -> Self
+  new(layout~ : CodeBlockLayout = .., info_string~ : Node[@string.StringView]? = .., Seq[Node[@string.StringView]]) -> Self
 }
 impl Show for CodeBlock
 impl ToJson for CodeBlock
 
 pub(all) struct CodeBlockFencedLayout {
   indent : Int
-  opening_fence : Node[String]
-  closing_fence : Node[String]?
+  opening_fence : Node[@string.StringView]
+  closing_fence : Node[@string.StringView]?
 }
 impl CodeBlockFencedLayout {
   default() -> Self
@@ -172,12 +173,12 @@ impl ToJson for CodeBlockLayout
 pub(all) struct Doc {
   nl : String
   block : Block
-  defs : Map[String, LabelDef]
+  defs : Map[@string.StringView, LabelDef]
 }
 impl Doc {
   empty() -> Self
-  from_string(defs~ : Map[String, LabelDef] = .., resolver~ : (LabelContext) -> Label? = .., nested_links~ : Bool = .., heading_auto_ids~ : Bool = .., layout~ : Bool = .., locs~ : Bool = .., file~ : String = .., strict~ : Bool = .., String) -> Self
-  new(nl~ : String = .., defs~ : Map[String, LabelDef] = .., Block) -> Self
+  from_string(defs~ : Map[@string.StringView, LabelDef] = .., resolver~ : (LabelContext) -> Label? = .., nested_links~ : Bool = .., heading_auto_ids~ : Bool = .., layout~ : Bool = .., locs~ : Bool = .., file~ : String = .., strict~ : Bool = .., String) -> Self
+  new(nl~ : String = .., defs~ : Map[@string.StringView, LabelDef] = .., Block) -> Self
 }
 impl Show for Doc
 impl ToJson for Doc
@@ -225,7 +226,7 @@ impl Footnote {
 impl Show for Footnote
 impl ToJson for Footnote
 
-pub(all) type HtmlBlock Seq[Node[String]]
+pub(all) type HtmlBlock Seq[Node[@string.StringView]]
 impl Show for HtmlBlock
 impl ToJson for HtmlBlock
 
@@ -239,7 +240,7 @@ pub(all) enum Inline {
   Link(Node[InlineLink])
   RawHtml(Node[InlineRawHtml])
   StrongEmphasis(Node[InlineEmphasis])
-  Text(Node[String])
+  Text(Node[@string.StringView])
   ExtStrikethrough(Node[InlineStrikethrough])
   ExtMathSpan(Node[InlineMathSpan])
 }
@@ -257,22 +258,22 @@ impl ToJson for Inline
 
 pub(all) struct InlineAutolink {
   is_email : Bool
-  link : Node[String]
+  link : Node[@string.StringView]
 }
 impl InlineAutolink {
-  new(Node[String]) -> Self
+  new(Node[@string.StringView]) -> Self
 }
 impl Eq for InlineAutolink
 impl Show for InlineAutolink
 impl ToJson for InlineAutolink
 
 pub(all) struct InlineBreak {
-  layout_before : Node[String]
+  layout_before : Node[@string.StringView]
   ty : InlineBreakType
-  layout_after : Node[String]
+  layout_after : Node[@string.StringView]
 }
 impl InlineBreak {
-  new(layout_before~ : Node[String] = .., layout_after~ : Node[String] = .., InlineBreakType) -> Self
+  new(layout_before~ : Node[@string.StringView] = .., layout_after~ : Node[@string.StringView] = .., InlineBreakType) -> Self
 }
 impl Eq for InlineBreak
 impl Show for InlineBreak
@@ -293,8 +294,8 @@ pub(all) struct InlineCodeSpan {
   code_layout : Seq[Tight]
 }
 impl InlineCodeSpan {
-  code(Self) -> String
-  from_string(meta~ : @cmark_base.Meta = .., String) -> Self
+  code(Self) -> @string.StringView
+  from_string(meta~ : @cmark_base.Meta = .., @string.StringView) -> Self
   new(backticks~ : Int, Seq[Tight]) -> Self
 }
 impl Eq for InlineCodeSpan
@@ -317,9 +318,9 @@ pub(all) struct InlineLink {
   reference : ReferenceKind
 }
 impl InlineLink {
-  is_unsafe(String) -> Bool
+  is_unsafe(@string.StringView) -> Bool
   new(Inline, ReferenceKind) -> Self
-  reference_definition(Self, Map[String, LabelDef]) -> LabelDef?
+  reference_definition(Self, Map[@string.StringView, LabelDef]) -> LabelDef?
   referenced_label(Self) -> Label?
 }
 impl Eq for InlineLink
@@ -349,7 +350,7 @@ impl ToJson for InlineStrikethrough
 
 pub(all) struct Label {
   meta : @cmark_base.Meta
-  key : String
+  key : @string.StringView
   text : Seq[Tight]
 }
 impl Label {
@@ -380,11 +381,11 @@ pub(all) struct LinkDefinition {
   layout : LinkDefinitionLayout
   label : Label?
   defined_label : Label?
-  dest : Node[String]?
+  dest : Node[@string.StringView]?
   title : Seq[Tight]?
 }
 impl LinkDefinition {
-  new(layout~ : LinkDefinitionLayout = .., label~ : Label? = .., defined_label~ : Label? = .., dest~ : Node[String]? = .., title~ : Seq[Tight]? = ..) -> Self
+  new(layout~ : LinkDefinitionLayout = .., label~ : Label? = .., defined_label~ : Label? = .., dest~ : Node[@string.StringView]? = .., title~ : Seq[Tight]? = ..) -> Self
 }
 impl Eq for LinkDefinition
 impl Show for LinkDefinition
@@ -393,14 +394,14 @@ impl ToJson for LinkDefinition
 pub(all) struct LinkDefinitionLayout {
   indent : Int
   angled_dest : Bool
-  before_dest : Seq[Node[String]]
-  after_dest : Seq[Node[String]]
+  before_dest : Seq[Node[@string.StringView]]
+  after_dest : Seq[Node[@string.StringView]]
   title_open_delim : Char
-  after_title : Seq[Node[String]]
+  after_title : Seq[Node[@string.StringView]]
 }
 impl LinkDefinitionLayout {
   default() -> Self
-  for_dest(String) -> Self
+  for_dest(@string.StringView) -> Self
 }
 impl Eq for LinkDefinitionLayout
 impl Show for LinkDefinitionLayout
@@ -413,14 +414,14 @@ pub(all) enum LinkKind {
 
 pub(all) struct ListItem {
   before_marker : Int
-  marker : Node[String]
+  marker : Node[@string.StringView]
   after_marker : Int
   block : Block
   ext_task_marker : Node[Char]?
 }
 impl ListItem {
   map_block(Self, (Block) -> Block) -> Self
-  new(before_marker~ : Int = .., marker~ : Node[String] = .., after_marker~ : Int = .., ext_task_marker~ : Node[Char]?, Block) -> Self
+  new(before_marker~ : Int = .., marker~ : Node[@string.StringView] = .., after_marker~ : Int = .., ext_task_marker~ : Node[Char]?, Block) -> Self
   normalize_block(Self) -> Self
 }
 impl Show for ListItem
@@ -471,7 +472,7 @@ pub(all) struct Node[A] {
   meta : @cmark_base.Meta
 }
 impl Node {
-  empty(meta~ : @cmark_base.Meta = ..) -> Self[String]
+  empty(meta~ : @cmark_base.Meta = ..) -> Self[@string.StringView]
   map[A, B](Self[A], (A) -> B) -> Self[B]
   new[A](A, meta~ : @cmark_base.Meta = ..) -> Self[A]
 }
@@ -520,10 +521,10 @@ impl[A : ToJson] ToJson for Seq[A]
 pub(all) struct Table {
   indent : Int
   col_count : Int
-  rows : Seq[(Node[TableRow], String)]
+  rows : Seq[(Node[TableRow], @string.StringView)]
 }
 impl Table {
-  new(indent~ : Int = .., Seq[(Node[TableRow], String)]) -> Self
+  new(indent~ : Int = .., Seq[(Node[TableRow], @string.StringView)]) -> Self
 }
 impl Show for Table
 impl ToJson for Table
@@ -538,34 +539,34 @@ impl ToJson for TableAlign
 impl @json.FromJson for TableAlign
 
 pub(all) enum TableRow {
-  Header(Seq[(Inline, (String, String))])
+  Header(Seq[(Inline, (@string.StringView, @string.StringView))])
   Sep(Seq[Node[(TableAlign?, Int)]])
-  Data(Seq[(Inline, (String, String))])
+  Data(Seq[(Inline, (@string.StringView, @string.StringView))])
 }
 impl Show for TableRow
 impl ToJson for TableRow
 
 pub(all) struct Tight {
-  blanks : String
-  node : Node[String]
+  blanks : @string.StringView
+  node : Node[@string.StringView]
 }
 impl Tight {
   empty(meta~ : @cmark_base.Meta = ..) -> Self
   list_text_loc(Seq[Self]) -> @cmark_base.TextLoc
-  to_string(Self) -> String
+  to_string_view(Self) -> @string.StringView
 }
 impl Eq for Tight
 impl Show for Tight
 impl ToJson for Tight
 
 // Type aliases
-pub typealias Blanks = String
+pub typealias Blanks = @string.StringView
 
-pub typealias BlanksNode = Node[String]
+pub typealias BlanksNode = Node[@string.StringView]
 
-pub typealias BlockBlankLine = String
+pub typealias BlockBlankLine = @string.StringView
 
-pub typealias BlockLineBlank = Node[String]
+pub typealias BlockLineBlank = Node[@string.StringView]
 
 pub typealias Count = Int
 
@@ -575,13 +576,13 @@ pub typealias FoldFn[A, B] = (Folder[B], B, A) -> B!FolderError
 
 pub typealias FolderFn[A, B] = (Folder[B], B, A) -> FolderResult[B]
 
-pub typealias InlineText = String
+pub typealias InlineText = @string.StringView
 
-pub typealias LabelDefs = Map[String, LabelDef]
+pub typealias LabelDefs = Map[@string.StringView, LabelDef]
 
-pub typealias LabelKey = String
+pub typealias LabelKey = @string.StringView
 
-pub typealias LabelMap[V] = Map[String, V]
+pub typealias LabelMap[V] = Map[@string.StringView, V]
 
 pub typealias LabelResolverFn = (LabelContext) -> Label?
 
@@ -591,9 +592,9 @@ pub typealias MapFn[A] = (Mapper, A) -> A?!MapperError
 
 pub typealias MapperFn[A] = (Mapper, A) -> MapperResult[A]
 
-pub typealias StringNode = Node[String]
+pub typealias StringNode = Node[@string.StringView]
 
-pub typealias TableCellLayout = (String, String)
+pub typealias TableCellLayout = (@string.StringView, @string.StringView)
 
 pub typealias TableSep = (TableAlign?, Int)
 

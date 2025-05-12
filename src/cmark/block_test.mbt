@@ -27,7 +27,7 @@ test "language_of_info_string with only whitespace in language" {
 test "code block new with info string" {
   let node = StringNode::empty()
   let code = Seq::from_array([node])
-  let info = Node::new("info")
+  let info = Node::new("info"[:])
   let codeBlock = CodeBlock::new(info_string=Some(info), code)
   match codeBlock.info_string {
     Some(info_node) => inspect!(info_node.v, content="info")
@@ -39,7 +39,7 @@ test "code block new with info string" {
 test "code block with indented layout and info string" {
   let node = StringNode::empty()
   let code = Seq::from_array([node])
-  let info = Node::new("info")
+  let info = Node::new("info"[:])
   let codeBlock = CodeBlock::new(
     layout=CodeBlockLayout::Indented,
     info_string=Some(info),
@@ -57,7 +57,7 @@ test "code block with indented layout and info string" {
 ///| Test for CodeBlock::make_fence
 test "code block make fence" {
   // Test when there are no backticks in any lines
-  let node = Node::new("plain text")
+  let node = Node::new("plain text"[:])
   let code = Seq::from_array([node])
   let codeBlock = CodeBlock::new(code)
   let (char, count) = codeBlock.make_fence()
@@ -65,7 +65,7 @@ test "code block make fence" {
   inspect!(count, content="3")
 
   // Test with backticks in code
-  let node_with_backticks = Node::new("```Example with backticks```")
+  let node_with_backticks = Node::new("```Example with backticks```"[:])
   let code_with_backticks = Seq::from_array([node_with_backticks])
   let codeBlock_with_backticks = CodeBlock::new(code_with_backticks)
   let (char2, count2) = codeBlock_with_backticks.make_fence()

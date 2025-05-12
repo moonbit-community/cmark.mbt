@@ -96,7 +96,7 @@ pub fn Inline::normalize(self : Inline) -> Inline {
             match acc {
               [.., Text({ v: t, meta })] =>
                 acc[acc.length() - 1] = Text({
-                  v: t + t1,
+                  v: "\{t}\{t1}",
                   meta: { ..meta, loc: meta.loc.span(meta1.loc) },
                 })
               _ => acc.push(i1.normalize())
@@ -135,7 +135,7 @@ pub fn Inline::to_plain_text(
         } else {
           push(" ")
         }
-      CodeSpan(cs) => push(cs.v.code())
+      CodeSpan(cs) => push(cs.v.code() |> @string.View::to_string())
       Emphasis({ v: { inline, .. }, .. })
       | StrongEmphasis({ v: { inline, .. }, .. }) => st.push(inline)
       Inlines({ v: is1, .. }) =>
@@ -144,7 +144,7 @@ pub fn Inline::to_plain_text(
         }
       Link(l) => st.push(l.v.text)
       RawHtml(_) => ()
-      Text(t) => push(t.v)
+      Text(t) => push(t.v |> @string.View::to_string())
       ExtStrikethrough(i) => st.push(i.v._)
       ExtMathSpan(m) => push(m.v.tex())
       i => st.push(i)
@@ -282,58 +282,51 @@ fn InlineCodeSpan::min_backticks(
 /// the resulting code layout (see `code_layout`).
 pub fn InlineCodeSpan::from_string(
   meta~ : Meta = Meta::none(),
-  s : String
+  s : @string.View
 ) -> InlineCodeSpan {
-  if s.is_empty() {
-    return { backticks: 1, code_layout: [Tight::empty(meta~)] }
+  guard not(s.is_empty()) else {
+    { backticks: 1, code_layout: [Tight::empty(meta~)] }
   }
   // This finds out the needed backtick count, whether spaces are needed,
   // and treats blanks after newline as layout 
   let max = s.length() - 1
-  let need_sp = s[0] == '`' || s[max] == '`'
-  let s = if need_sp { " \{s} " } else { s }
-  let (bt_counts, code_layout) = loop @sorted_set.new(), [], max, 0, 0, 0 {
-    bt_counts, acc, max, btc, start, k => {
-      if k > max {
-        // assert (btc = 0) because of [need_sp]
-        let layout = if acc.is_empty() {
-          [{ blanks: "", node: { v: s, meta } }]
-        } else {
-          BlockLine::flush_tight(meta~, s, start, max, acc)
-          acc
-        }
-        break (bt_counts, layout)
-      }
-      if s[k] == '`' {
-        continue bt_counts, acc, max, btc + 1, start, k + 1
-      }
-      let bt_counts = if btc > 0 { bt_counts..add(btc) } else { bt_counts }
-      guard s[k] is ('\n' | '\r') else {
-        continue bt_counts, acc, max, 0, start, k + 1
-      }
-      BlockLine::flush_tight(meta~, s, start, k - 1, acc)
-      let start = if k + 1 <= max && s[k] == '\r' && s[k + 1] == '\n' {
-        k + 2
+  let need_sp = s.charcode_at(0) == '`' || s.charcode_at(max) == '`'
+  let s = if need_sp { " \{s} " } else { s.to_string() }
+  let (bt_counts, code_layout) = for bt_counts = @sorted_set.new(), acc = [], max = max, btc = 0, start = 0, k = 0 {
+    if k > max {
+      // assert (btc = 0) because of [need_sp]
+      let layout = if acc.is_empty() {
+        [{ blanks: "", node: { v: s, meta } }]
       } else {
-        k + 1
+        BlockLine::flush_tight(meta~, s, start, max, acc)
+        acc
       }
-      continue bt_counts, acc, max, 0, start, start
+      break (bt_counts, layout)
     }
+    if s[k] == '`' {
+      continue bt_counts, acc, max, btc + 1, start, k + 1
+    }
+    let bt_counts = if btc > 0 { bt_counts..add(btc) } else { bt_counts }
+    guard s[k] is ('\n' | '\r') else {
+      continue bt_counts, acc, max, 0, start, k + 1
+    }
+    BlockLine::flush_tight(meta~, s, start, k - 1, acc)
+    let start = k +
+      1 +
+      (k + 1 <= max && s[k] == '\r' && s[k + 1] == '\n').to_int()
+    continue bt_counts, acc, max, 0, start, start
   }
   { code_layout, backticks: InlineCodeSpan::min_backticks(min=1, bt_counts) }
 }
 
 ///| https://spec.commonmark.org/0.30/#code-spans
-pub fn InlineCodeSpan::code(self : InlineCodeSpan) -> String {
-  let s = self.code_layout.iter().map(Tight::to_string).to_array()
-    |> @string.concat(separator=" ")
-  if s == "" {
-    return ""
-  }
-  if s[0] == ' ' &&
-    s[s.length() - 1] == ' ' &&
-    not(s.iter().all(fn(it) { it == ' ' })) {
-    return s.substring(start=1, end=s.length() - 1)
+pub fn InlineCodeSpan::code(self : InlineCodeSpan) -> @string.View {
+  let s = self.code_layout
+    .iter()
+    .map(fn(i) { Tight::to_string_view(i).to_string() })
+    .join(" ")
+  if s is [' ',  .. mid,  ' '] && mid.iter().any(fn(it) { it != ' ' }) {
+    return mid
   }
   s
 }
@@ -414,8 +407,8 @@ pub fn InlineLink::reference_definition(
 /// These rules were taken from the C reference implementation of CommonMark
 /// and are likely incomplete. If you are trying to prevent XSS you should
 /// post-process rendering outputs with a dedicated HTML sanitizer.
-pub fn InlineLink::is_unsafe(l : String) -> Bool {
-  let allowed_data_url = fn(l : String) {
+pub fn InlineLink::is_unsafe(l : @string.View) -> Bool {
+  let allowed_data_url = fn(l : @string.View) {
     // Extract mediatype from data:[<mediatype>][;base64],<data>
     let start_offset = 4
     let j = match l.view(start_offset~).find(",") {
@@ -426,8 +419,10 @@ pub fn InlineLink::is_unsafe(l : String) -> Bool {
       Some(i) => i + start_offset
       None => j
     }
-    let allowed = ["image/gif", "image/png", "image/jpeg", "image/webp"]
-    allowed.contains(l.substring(start=5, end=@math.minimum(j, k)))
+    let allowed : Array[@string.View] = [
+      "image/gif", "image/png", "image/jpeg", "image/webp",
+    ]
+    allowed.contains(l.view(start_offset=5, end_offset=@math.minimum(j, k)))
   }
   // TODO: Use `casefold()`.
   let lower = l.to_lower()
@@ -445,7 +440,7 @@ pub(all) type InlineRawHtml Seq[Tight] derive(Eq, Show, ToJson)
 /// Normally these strings should not contain newlines. This can
 /// however happen if the source had newlines as
 /// [character references](https://spec.commonmark.org/0.30/#entity-and-numeric-character-references).
-pub(all) typealias InlineText = String
+pub(all) typealias InlineText = @string.View
 
 // Extensions
 
@@ -460,5 +455,8 @@ pub(all) struct InlineMathSpan {
 
 ///|
 pub fn tex(self : InlineMathSpan) -> String {
-  self.tex_layout._.map(Tight::to_string) |> @string.concat(separator=" ")
+  self.tex_layout._
+  .iter()
+  .map(fn(i) { Tight::to_string_view(i).to_string() })
+  .join(" ")
 }

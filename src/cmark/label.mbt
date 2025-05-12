@@ -14,7 +14,7 @@ pub(all) struct Label {
 ///| The type for label keys. These are
 /// [link labels](https://spec.commonmark.org/0.30/#link-label)
 /// normalized for [matches](https://spec.commonmark.org/0.30/#matches).
-pub(all) typealias LabelKey = String
+pub(all) typealias LabelKey = @string.View
 
 ///|
 pub(all) typealias LabelMap[V] = Map[LabelKey, V]

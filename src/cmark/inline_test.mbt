@@ -1,7 +1,7 @@
 ///|
 test "InlineAutolink::new with link" {
   let meta = @rami3l/cmark/cmark_base.Meta::none()
-  let link = Node::new("example.com", meta~)
+  let link = Node::new("example.com"[:], meta~)
   let autolink = InlineAutolink::new(link)
   inspect!(autolink.is_email, content="false")
   inspect!(autolink.link.v, content="example.com")
@@ -153,8 +153,8 @@ test "Inline::normalize with StrongEmphasis type" {
 ///|
 test "InlineBreak::new creates a break with specified parameters" {
   let meta = @cmark_base.Meta::none()
-  let layout_before = Node::new("  ", meta~)
-  let layout_after = Node::new("   ", meta~)
+  let layout_before = Node::new("  "[:], meta~)
+  let layout_after = Node::new("   "[:], meta~)
   let break_type = InlineBreakType::Hard
   let line_break = InlineBreak::new(layout_before~, layout_after~, break_type)
   inspect!(line_break.ty, content="Hard")
@@ -374,7 +374,7 @@ test "Inline::to_plain_text with soft line break" {
 ///|
 test "Inline::to_plain_text with autolink" {
   let meta = @cmark_base.Meta::none()
-  let link_node = Node::new("example.com", meta~)
+  let link_node = Node::new("example.com"[:], meta~)
   let autolink = Inline::Autolink(
     Node::new(InlineAutolink::new(link_node), meta~),
   )

@@ -15,19 +15,23 @@ pub fn run_of(
 ///| `first_non_blank(s, last, start)` is the first position in the range `[start, last]`
 /// that is not blank and `last + 1` if there is none.
 pub fn first_non_blank(
-  s : String,
+  s : @string.View,
   last~ : CharCodePos,
   start~ : CharCodePos
 ) -> CharCodePos {
   for k in start..=last {
-    guard @char.is_ascii_blank(s[k]) else { return k }
-
+    if not(@char.is_ascii_blank(s.charcode_at(k).unsafe_to_char())) {
+      return k
+    }
   }
   last + 1
 }
 
 ///| `first_non_blank_in_span(s, span)` is `first_non_blank(s, last=span.last, start=span.first)`.
-pub fn first_non_blank_in_span(s : String, span : LineSpan) -> CharCodePos {
+pub fn first_non_blank_in_span(
+  s : @string.View,
+  span : LineSpan
+) -> CharCodePos {
   first_non_blank(s, last=span.last, start=span.first)
 }
 

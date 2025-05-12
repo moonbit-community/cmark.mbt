@@ -41,7 +41,7 @@ pub impl Show for Tight with output(self, logger) {
 }
 
 ///|
-pub fn Tight::to_string(self : Tight) -> String {
+pub fn Tight::to_string_view(self : Tight) -> @string.View {
   self.node.v
 }
 

@@ -68,7 +68,7 @@ fn Parser::new(
 }
 
 ///|
-fn Parser::find_label_defining_key(self : Parser, key : String) -> Label? {
+fn Parser::find_label_defining_key(self : Parser, key : LabelKey) -> Label? {
   match self.defs.get(key) {
     Some(LinkDef(ld)) => ld.v.defined_label
     Some(FootnoteDef(ld)) => ld.v.defined_label

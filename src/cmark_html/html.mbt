@@ -82,10 +82,10 @@ fn uid(c : Context, id : String) -> String {
 }
 
 ///|
-fn footnote_id(l : String) -> String {
+fn footnote_id(l : @string.View) -> String {
   let res = StringBuilder::new()
   res.write_string("fn-")
-  for c in l.substring(start=1) {
+  for c in l.view(start_offset=1) {
     res.write_char(
       match c {
         ' ' | '\t' => '-'
@@ -97,14 +97,14 @@ fn footnote_id(l : String) -> String {
 }
 
 ///|
-fn footnote_ref_id(fnid : String, c : Int) -> String {
-  @string.concat(separator="-", ["ref", c.to_string(), fnid])
+fn footnote_ref_id(fnid : @string.View, c : Int) -> String {
+  "ref-\{c}-\{fnid}"
 }
 
 ///|
 fn make_footnote_ref_ids(
   c : Context,
-  label : String,
+  label : @string.View,
   f : @cmark.Footnote
 ) -> (String, String, String) {
   guard c.state is Some(EState({ footnotes, footnote_count, .. } as st))
@@ -123,7 +123,7 @@ fn make_footnote_ref_ids(
 // Escaping
 
 ///|
-fn joined_string(c : Context, join : Joined[String]) -> Unit {
+fn joined_string(c : Context, join : Joined[@string.View]) -> Unit {
   let mut first = true
   for s in join.iter {
     if not(first) {
@@ -153,61 +153,62 @@ fn joined_string(c : Context, join : Joined[String]) -> Unit {
 // }
 
 ///|
-fn buffer_add_html_escaped_string(b : Buffer, s : String) -> Unit {
+fn buffer_add_html_escaped_string(b : Buffer, s : @string.View) -> Unit {
   let len = s.length()
   let max_idx = len - 1
   fn flush(b : Buffer, start : Int, i : Int) {
     if start < len {
-      b.write_substring(s, start, i - start)
+      // TODO: Use `write_string_view` here.
+      b.write_string(
+        s.view(start_offset=start, end_offset=i) |> @string.View::to_string(),
+      )
     }
   }
 
-  loop 0, 0 {
-    start, i => {
-      if i > max_idx {
+  for start = 0, i = 0 {
+    if i > max_idx {
+      flush(b, start, i)
+      break
+    }
+    let next = i + 1
+    match s.unsafe_charcode_at(i) {
+      '\u{0}' => {
         flush(b, start, i)
-        break
+        b.write_char(@char.rep)
+        continue next, next
       }
-      let next = i + 1
-      match s[i] {
-        '\u{0}' => {
-          flush(b, start, i)
-          b.write_char(@char.rep)
-          continue next, next
-        }
-        '&' => {
-          flush(b, start, i)
-          b.write_string("&amp;")
-          continue next, next
-        }
-        '<' => {
-          flush(b, start, i)
-          b.write_string("&lt;")
-          continue next, next
-        }
-        '>' => {
-          flush(b, start, i)
-          b.write_string("&gt;")
-          continue next, next
-        }
-        // '\'' => {
-        //  flush(b, start, i)
-        //  b.write_string("&apos;")
-        //  continue next, next
-        //  }
-        '"' => {
-          flush(b, start, i)
-          b.write_string("&quot;")
-          continue next, next
-        }
-        _ => continue start, next
+      '&' => {
+        flush(b, start, i)
+        b.write_string("&amp;")
+        continue next, next
       }
+      '<' => {
+        flush(b, start, i)
+        b.write_string("&lt;")
+        continue next, next
+      }
+      '>' => {
+        flush(b, start, i)
+        b.write_string("&gt;")
+        continue next, next
+      }
+      // '\'' => {
+      //  flush(b, start, i)
+      //  b.write_string("&apos;")
+      //  continue next, next
+      //  }
+      '"' => {
+        flush(b, start, i)
+        b.write_string("&quot;")
+        continue next, next
+      }
+      _ => continue start, next
     }
   }
 }
 
 ///|
-fn html_escaped_string(c : Context, s : String) -> Unit {
+fn html_escaped_string(c : Context, s : @string.View) -> Unit {
   buffer_add_html_escaped_string(c.b, s)
 }
 
@@ -314,10 +315,12 @@ fn comment_footnote_image(c : Context, l : @cmark.InlineLink) -> Unit {
 ///|
 fn block_lines(c : Context, ls : Array[@cmark.StringNode]) -> Unit {
   guard ls.get(0) is Some({ v, .. }) else { return }
-  c.b.write_string(v)
+  // TODO: Use `write_string_view` here.
+  c.b.write_string(v |> @string.View::to_string())
   for l in ls[1:] {
     c.b.write_char('\n')
-    c.b.write_string(l.v)
+    // TODO: Use `write_string_view` here.
+    c.b.write_string(l.v |> @string.View::to_string())
   }
 }
 
@@ -326,8 +329,10 @@ fn block_lines(c : Context, ls : Array[@cmark.StringNode]) -> Unit {
 ///|
 fn autolink(c : Context, a : @cmark.InlineAutolink) -> Unit {
   let pre = if a.is_email { "mailto:" } else { "" }
-  let url = pre + a.link.v
-  let url = if @cmark.InlineLink::is_unsafe(url) { "" } else { url }
+  let mut url = "\{pre}\{a.link.v}"
+  if @cmark.InlineLink::is_unsafe(url) {
+    url = ""
+  }
   c.b.write_string("<a href=\"")
   pct_encoded_string(c, url)
   c.b.write_string("\">")
@@ -368,9 +373,9 @@ fn strong_emphasis!(c : Context, e : @cmark.InlineEmphasis) -> Unit {
 fn link_dest_and_title(
   c : Context,
   ld : @cmark.LinkDefinition
-) -> (String, Joined[String]?) {
+) -> (@string.View, Joined[@string.View]?) {
   let dest = match ld.dest {
-    None => ""
+    None => ""[:]
     Some({ v, .. }) =>
       if safe(c) && @cmark.InlineLink::is_unsafe(v) {
         ""
@@ -390,11 +395,11 @@ fn image(c : Context, i : @cmark.InlineLink, close~ : String = " >") -> Unit {
     Some(LinkDef({ v: ld, .. })) => {
       let (link, title) = link_dest_and_title(c, ld)
       c.b.write_string("<img src=\"")
-      pct_encoded_string(c, link)
+      pct_encoded_string(c, link |> @string.View::to_string())
       c.b.write_string("\" alt=\"")
       let lines = i.text.to_plain_text(break_on_soft=false)
       for line in lines {
-        let joined = { iter: line.iter(), sep: "\n" }
+        let joined = { iter: line.iter().map(fn(s) { s[:] }), sep: "\n" }
         joined_string(c, joined)
       }
       c.b.write_char('"')
@@ -445,7 +450,7 @@ fn link!(c : Context, l : @cmark.InlineLink) -> Unit {
     Some(LinkDef({ v: ld, .. })) => {
       let (link, title) = link_dest_and_title(c, ld)
       c.b.write_string("<a href=\"")
-      pct_encoded_string(c, link)
+      pct_encoded_string(c, link |> @string.View::to_string())
       if title is Some(title) {
         c.b.write_string("\" title=\"")
         joined_string(c, title)
@@ -469,10 +474,12 @@ fn raw_html(c : Context, h : @cmark.InlineRawHtml) -> Unit {
   if h._.is_empty() {
     return
   }
-  c.b.write_string(h._[0].node.v)
+  // TODO: Use `write_string_view` here.
+  c.b.write_string(h._[0].node.v |> @string.View::to_string())
   for x in h._.to_array()[1:] {
     c.b.write_char('\n')
-    c.b.write_string(x.node.v)
+    // TODO: Use `write_string_view` here.
+    c.b.write_string(x.node.v |> @string.View::to_string())
   }
 }
 
@@ -486,7 +493,7 @@ fn strikethrough!(c : Context, s : @cmark.InlineStrikethrough) -> Unit {
 ///|
 fn math_span(c : Context, ms : @cmark.InlineMathSpan) -> Unit {
   fn tex_line(c : Context, l : @cmark.Tight) {
-    html_escaped_string(c, l.to_string())
+    html_escaped_string(c, l.to_string_view())
   }
 
   fn tex_lines(c : Context, ls : ArrayView[@cmark.Tight]) {
@@ -548,7 +555,7 @@ fn code_block(c : Context, cb : @cmark.CodeBlock) -> Unit {
     c.b.write_char('\n')
   }
   if lang is Some((lang, _env)) {
-    if backend_blocks(c) && lang[0] == '=' {
+    if backend_blocks(c) && lang.charcode_at(0) == '=' {
       if lang == "=html" && not(safe(c)) {
         block_lines(c, cb.code.to_array())
       }
@@ -696,7 +703,8 @@ fn html_block(c : Context, html : @cmark.HtmlBlock) -> Unit {
     return
   }
   for l in html._ {
-    c.b.write_string(l.v)
+    // TODO: Use `write_string_view` here.
+    c.b.write_string(l.v |> @string.View::to_string())
     c.b.write_char('\n')
   }
 }

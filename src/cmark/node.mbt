@@ -35,7 +35,7 @@ pub impl[A : ToJson] ToJson for Node[A] with to_json(self) {
 }
 
 ///|
-pub(all) typealias StringNode = Node[String]
+pub(all) typealias StringNode = Node[@string.View]
 
 ///|
 pub(all) typealias BlanksNode = Node[Blanks]

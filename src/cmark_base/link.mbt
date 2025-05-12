@@ -132,68 +132,61 @@ pub fn link_title[A](
 pub fn link_label[A](
   buf : Buffer,
   next_line~ : NextLineFn[A],
-  s : String,
+  s : @string.View,
   lines : A,
   line~ : LineSpan,
   start~ : CharCodePos
 ) -> (LineSpan, Array[Span], Last, String)? {
-  if start > line.last || s[start] != '[' {
-    return None
-  }
+  guard start <= line.last && s.charcode_at(start) == '[' else { None }
   let start = start + 1
   buf.reset()
   let acc = []
-  loop buf, next_line, s, lines, line, '\u{0}', start, 0, start {
-    b, next_line, s, lines, line, prev, start, count, k => {
-      if k > line.last {
-        guard next_line(lines) is Some(newline) else { break None }
-        if newline.first == newline.last {
-          break None
-        }
-        push_span(line~, start, line.last, acc)
-        let start = first_non_blank_in_span(s, newline)
-        if not(b.is_empty()) {
-          b.write_char(' ')
-        }
-        let prev = '\u{0}'
-        continue b, next_line, s, lines, newline, prev, start, count, start
+  for line = line, prev = '\u{0}', start = start, count = 0, k = start {
+    guard k <= line.last else {
+      guard next_line(lines) is Some(newline) else { break None }
+      guard newline.first != newline.last else { break None }
+      push_span(line~, start, line.last, acc)
+      let start = first_non_blank_in_span(
+        s |> @string.View::to_string(),
+        newline,
+      )
+      if not(buf.is_empty()) {
+        buf.write_char(' ')
       }
-      if count > 999 {
-        break None
-      }
-      match (s[k], prev) {
-        ('\\', '\\') => {
-          b.write_char('\\')
-          let prev = '\u{0}'
-          continue b, next_line, s, lines, line, prev, start, count + 1, k + 1
-        }
-        (']', '\\') => ()
-        (']', _) => {
-          let key = b.to_string()
-          if key.iter().all(@char.is_ascii_whitespace) {
-            break None
-          }
-          push_span(line~, start, k - 1, acc)
-          break Some((line, acc, k, key))
-        }
-        ('[', '\\') => ()
-        ('[', _) => break None
-        (' ' | '\t' as prev, _) =>
-          continue b, next_line, s, lines, line, prev, start, count + 1, k + 1
-        _ => ()
-      }
-      // Collapse non initial whitespace
-      if @char.is_ascii_blank(prev) && not(b.is_empty()) {
-        b.write_char(' ')
-      }
-      let mut u = s.char_at(k)
-      if u == '\u{0}' {
-        u = @char.rep
-      }
-      let k1 = k + @char.length_utf8(u.to_int())
-      b.write_char(@char.to_ascii_lower(u))
-      let prev = s[k]
-      continue b, next_line, s, lines, line, prev, start, count + 1, k1
+      let prev = '\u{0}'
+      continue newline, prev, start, count, start
     }
+    guard count <= 999 else { break None }
+    match (s.unsafe_charcode_at(k), prev) {
+      ('\\', '\\') => {
+        buf.write_char('\\')
+        let prev = '\u{0}'
+        continue line, prev, start, count + 1, k + 1
+      }
+      (']', '\\') => ()
+      (']', _) => {
+        let key = buf.to_string()
+        guard not(key.iter().all(@char.is_ascii_whitespace)) else { break None }
+        push_span(line~, start, k - 1, acc)
+        break Some((line, acc, k, key))
+      }
+      ('[', '\\') => ()
+      ('[', _) => break None
+      (' ' | '\t' as prev, _) =>
+        continue line, prev.unsafe_to_char(), start, count + 1, k + 1
+      _ => ()
+    }
+    // Collapse non initial whitespace
+    if @char.is_ascii_blank(prev) && not(buf.is_empty()) {
+      buf.write_char(' ')
+    }
+    let mut u = s.char_at(k)
+    if u == '\u{0}' {
+      u = @char.rep
+    }
+    let k1 = k + @char.length_utf8(u.to_int())
+    buf.write_char(@char.to_ascii_lower(u))
+    let prev = s.char_at(k)
+    continue line, prev, start, count + 1, k1
   }
 }

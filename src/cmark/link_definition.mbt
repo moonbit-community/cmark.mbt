@@ -45,7 +45,9 @@ pub fn LinkDefinitionLayout::default() -> LinkDefinitionLayout {
 }
 
 ///|
-pub fn LinkDefinitionLayout::for_dest(dest : String) -> LinkDefinitionLayout {
+pub fn LinkDefinitionLayout::for_dest(
+  dest : @string.View
+) -> LinkDefinitionLayout {
   let needs_angles = fn(c) { c == ' ' || @char.is_ascii_control(c) }
   {
     ..LinkDefinitionLayout::default(),

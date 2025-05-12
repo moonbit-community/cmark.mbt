@@ -163,7 +163,7 @@ pub fn CodeBlock::new(
 
 ///| [make_fence cb] is a fence character and count suitable for [cb].
 pub fn CodeBlock::make_fence(self : CodeBlock) -> (Char, Count) {
-  let ch = if self.info_string is Some(info) && info.v.contains_char('`') {
+  let ch : Int = if self.info_string is Some(info) && info.v.contains_char('`') {
     '~'
   } else {
     '`'
@@ -172,34 +172,36 @@ pub fn CodeBlock::make_fence(self : CodeBlock) -> (Char, Count) {
   for n in self.code {
     let c = n.v
     let mut k = 0
-    while k < c.length() && c[k] == ch {
+    while k < c.length() && c.charcode_at(k) == ch {
       k += 1
     }
     if k != 0 {
       counts.add(k)
     }
   }
-  (ch, InlineCodeSpan::min_backticks(min=3, counts))
+  (ch.unsafe_to_char(), InlineCodeSpan::min_backticks(min=3, counts))
 }
 
 ///| [language_of_info_string s] extracts a (non-empty) language, the first word of [s] and a trimmed remainder.
 /// Assumes [s] is {!String.trim}ed which is what {!info_string} gives you.
-pub fn CodeBlock::language_of_info_string(s : String) -> (String, String)? {
+pub fn CodeBlock::language_of_info_string(
+  s : @string.View
+) -> (@string.View, @string.View)? {
   guard not(s.is_empty()) else { None }
   let max = s.length() - 1
   let white = for i = 0; ; i = i + 1 {
-    if i > max || @char.is_ascii_whitespace(s[i]) {
+    if i > max || @char.is_ascii_whitespace(s.charcode_at(i).unsafe_to_char()) {
       break i
     }
   }
   let rem_first = @cmark_base.first_non_blank(s, last=max, start=white)
-  let lang = s.substring(start=0, end=white)
+  let lang = s.view(end_offset=white)
   guard not(lang.is_empty()) else { None }
-  Some((lang, s.substring(start=rem_first, end=max + 1)))
+  Some((lang, s.view(start_offset=rem_first, end_offset=max + 1)))
 }
 
 ///|
-fn CodeBlock::is_math_block(s : String?) -> Bool {
+fn CodeBlock::is_math_block(s : @string.View?) -> Bool {
   guard s is Some(s) else { return false }
   CodeBlock::language_of_info_string(s).map(fn(i) { i.0 }) == Some("math")
 }
@@ -349,13 +351,13 @@ pub fn BlockParagraph::new(
 ///| The type for [thematic breaks](https://spec.commonmark.org/0.30/#thematic-break).
 pub(all) struct BlockThematicBreak {
   indent : Indent
-  layout : String
+  layout : @string.View
 } derive(Show, FromJson, ToJson)
 
 ///|
 pub fn BlockThematicBreak::new(
   indent~ : Indent = 0,
-  layout~ : String = "---"
+  layout~ : @string.View = "---"
 ) -> BlockThematicBreak {
   { indent, layout }
 }
@@ -450,12 +452,12 @@ fn Table::parse_sep_row(
     acc, [(Text({ v, meta }), ("", "")), .. cs] => {
       guard not(v.is_empty()) else { None }
       let max = v.length() - 1
-      let first_colon = v[0] == ':'
-      let last_colon = v[max] == ':'
+      let first_colon = v.charcode_at(0) == ':'
+      let last_colon = v.charcode_at(max) == ':'
       let first = if first_colon { 1 } else { 0 }
       let last = if last_colon { max - 1 } else { max }
       for i in first..=last {
-        guard v[i] == '-' else { break None }
+        guard v.charcode_at(i) == '-' else { break None }
 
       } else {
         let count = last - first + 1
