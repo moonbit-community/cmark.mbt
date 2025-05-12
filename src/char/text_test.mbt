@@ -248,13 +248,9 @@ test "at_checked valid character" {
 
 ///|
 test "at_checked invalid character" {
-  // Use a different approach since we can't directly create invalid surrogate pairs
-  // Testing with a character that will produce an Err result
-  let invalid_char = '\u{fffd}' // Replacement character
-  match from_int_checked(invalid_char.to_int()) {
-    Some(_) => inspect!("Valid character", content="Valid character")
-    None => inspect!("Invalid character", content="Invalid character")
-  }
+  let s = "🌞"
+  inspect!(at_checked(s, 0), content="Ok('🌞')")
+  inspect!(at_checked(s, 1), content="Err(57118)")
 }
 
 ///|

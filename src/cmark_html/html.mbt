@@ -214,7 +214,7 @@ fn html_escaped_string(c : Context, s : String) -> Unit {
 ///|
 fn buffer_add_pct_encoded_string(b : Buffer, s : String) -> Unit { // Percent encoded + HTML escaped
   fn unsafe_hexdigit(i : Int) {
-    Char::from_int(if i < 10 { i + 0x30 } else { i + 0x37 })
+    (if i < 10 { i + 0x30 } else { i + 0x37 }).unsafe_to_char()
   }
 
   // See https://tools.ietf.org/html/rfc3986

@@ -1,15 +1,6 @@
 ///|
 pub let rep : Char = '\u{fffd}'
 
-// https://doc.rust-lang.org/1.81.0/src/core/char/convert.rs.html#231
-///|
-pub fn from_int_checked(ord : Int) -> Char? {
-  if ord >= 0x110000 || (0xD800 <= ord && ord < 0xE000) {
-    return None
-  }
-  Some(Char::from_int(ord))
-}
-
 // https://github.com/lynzrand/aestus/blob/3ab6ecf64fc34914277129e8429d0a7c003cc80f/encoding/rune.mbt#L1-L27
 
 ///|

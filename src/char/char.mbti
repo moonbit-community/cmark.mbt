@@ -11,9 +11,7 @@ fn ascii_hexdigit_to_int(Char) -> Int
 
 fn ascii_octdigit_to_int(Char) -> Int
 
-fn at_checked(String, Int) -> Result[Char, Int]
-
-fn from_int_checked(Int) -> Char?
+fn at_checked(@string.StringView, Int) -> Result[Char, Int]
 
 fn is_ascii_alphanum(Char) -> Bool
 

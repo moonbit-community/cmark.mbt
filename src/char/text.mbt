@@ -1,9 +1,30 @@
 ///|
-pub fn at_checked(s : String, idx : Int) -> Result[Char, Int] {
-  let cp = s.char_at(idx).to_int()
-  match from_int_checked(cp) {
-    Some(c) => Ok(c)
-    None => Err(cp)
+pub fn at_checked(s : @string.View, idx : Int) -> Result[Char, Int] {
+  let min_leading_surrogate = 0xD800
+  let max_leading_surrogate = 0xDBFF
+  let min_trailing_surrogate = 0xDC00
+  let max_trailing_surrogate = 0xDFFF
+  fn is_leading_surrogate(c : Int) -> Bool {
+    min_leading_surrogate <= c && c <= max_leading_surrogate
+  }
+
+  fn is_trailing_surrogate(c : Int) -> Bool {
+    min_trailing_surrogate <= c && c <= max_trailing_surrogate
+  }
+
+  fn code_point_of_surrogate_pair(leading : Int, trailing : Int) -> Char {
+    ((leading - 0xD800) * 0x400 + trailing - 0xDC00 + 0x10000).unsafe_to_char()
+  }
+
+  let c1 = s.charcode_at(idx)
+  if is_leading_surrogate(c1) {
+    guard idx + 1 < s.length() else { Err(c1) }
+    let c2 = s.charcode_at(idx + 1)
+    Ok(code_point_of_surrogate_pair(c1, c2))
+  } else if is_trailing_surrogate(c1) {
+    Err(c1)
+  } else {
+    Ok(c1.unsafe_to_char())
   }
 }
 
@@ -197,7 +218,7 @@ fn _utf_16_clean_unesc_unref(
             if k == num_start {
               return resolve(last, start, next)
             }
-            let u = match from_int_checked(u) {
+            let u = match Int::to_char(u) {
               Some('\u{0}') | None => rep
               Some(u) => u
             }
@@ -227,7 +248,7 @@ fn _utf_16_clean_unesc_unref(
             if k == num_start {
               return resolve(last, start, next)
             }
-            let u = match from_int_checked(u) {
+            let u = match Int::to_char(u) {
               Some('\u{0}') | None => rep
               Some(u) => u
             }
