@@ -1,17 +1,4 @@
 ///|
-test "from_int_checked invalid surrogates" {
-  inspect!(from_int_checked(0xD800), content="None")
-  inspect!(from_int_checked(0xD900), content="None")
-  inspect!(from_int_checked(0xDFFF), content="None")
-}
-
-///|
-test "from_int_checked too large" {
-  inspect!(from_int_checked(0x110000), content="None")
-  inspect!(from_int_checked(0x200000), content="None")
-}
-
-///|
 test "length_utf8 with multibyte char 1" {
   inspect!(length_utf8('¢'), content="2")
 }

@@ -118,16 +118,4 @@ test "string processing" {
 }
 ```
 
-## Character Conversion
-
-Converting between integers and characters:
-
-```moonbit
-test "char conversion" {
-  // Converting integer to character safely
-  inspect!(@char.from_int_checked(65), content="Some('A')")
-  inspect!(@char.from_int_checked(-1), content="None")
-}
-```
-
 Note: This package provides essential functionality for character handling in text processing applications, especially those dealing with ASCII and Unicode text. It offers safe ways to inspect and manipulate characters while handling edge cases appropriately.

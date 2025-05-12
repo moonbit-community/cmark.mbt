@@ -1,13 +1,13 @@
 ///|
 pub fn to_ascii_lower(c : Char) -> Char {
   guard c.is_ascii_uppercase() else { c }
-  Char::from_int(c.to_int() + 32)
+  (c.to_int() + 32).unsafe_to_char()
 }
 
 ///|
 pub fn to_ascii_upper(c : Char) -> Char {
   guard c.is_ascii_lowercase() else { c }
-  Char::from_int(c.to_int() - 32)
+  (c.to_int() - 32).unsafe_to_char()
 }
 
 ///|
