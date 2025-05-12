@@ -26,7 +26,7 @@ pub fn ListType::is_same_type(self : ListType, other : ListType) -> Bool {
 
 ///|
 pub(all) enum LineType {
-  AtxHeadingLine(HeadingLevel, BytePos, First, Last)
+  AtxHeadingLine(HeadingLevel, CharCodePos, First, Last)
   BlankLine
   BlockQuoteLine
   FencedCodeBlockLine(First, Last, (First, Last)?)
@@ -44,8 +44,8 @@ pub(all) enum LineType {
 ///| https://spec.commonmark.org/current/#thematic-breaks
 pub fn LineType::thematic_break(
   s : String,
-  last~ : BytePos,
-  start~ : BytePos
+  last~ : CharCodePos,
+  start~ : CharCodePos
 ) -> LineType {
   if start > last {
     return Nomatch
@@ -75,8 +75,8 @@ pub fn LineType::thematic_break(
 ///| https://spec.commonmark.org/current/#atx-headings
 pub fn LineType::atx_heading(
   s : String,
-  last~ : BytePos,
-  start~ : BytePos
+  last~ : CharCodePos,
+  start~ : CharCodePos
 ) -> LineType {
   fn skip_hashes(s : String, last, k) {
     for k = k; k <= last && s[k] == '#'; k = k + 1 {
@@ -152,8 +152,8 @@ pub fn LineType::atx_heading(
 ///| https://spec.commonmark.org/current/#setext-heading
 pub fn LineType::setext_heading_underline(
   s : String,
-  last~ : BytePos,
-  start~ : BytePos
+  last~ : CharCodePos,
+  start~ : CharCodePos
 ) -> LineType {
   let level = fn(c) { if c == '=' { 1 } else { 2 } }
   fn underline(s : String, last, start, k) {
@@ -185,8 +185,8 @@ pub fn LineType::setext_heading_underline(
 ///|
 pub fn LineType::fenced_code_block_start(
   s : String,
-  last~ : BytePos,
-  start~ : BytePos
+  last~ : CharCodePos,
+  start~ : CharCodePos
 ) -> LineType {
   fn info(s : String, last, nobt, info_first, k) {
     guard k <= last else { Some((info_first, last)) }
@@ -251,8 +251,8 @@ pub(all) enum FencedCodeBlockContinue {
 pub fn FencedCodeBlockContinue::new(
   s : String,
   fence~ : (Char, Int),
-  last~ : BytePos,
-  start~ : BytePos
+  last~ : CharCodePos,
+  start~ : CharCodePos
 ) -> FencedCodeBlockContinue {
   if start > last {
     return Code
@@ -308,8 +308,8 @@ let html_start_cond_6_set : Set[String] = Set::of([
 ///|
 fn LineType::html_block_start_5(
   s : String,
-  last~ : BytePos,
-  start~ : BytePos
+  last~ : CharCodePos,
+  start~ : CharCodePos
 ) -> LineType {
   let next = start + 3 // 3 first chars checked
   let sub = "CDATA["
@@ -322,8 +322,8 @@ fn LineType::html_block_start_5(
 ///|
 fn LineType::html_block_start_2(
   s : String,
-  last~ : BytePos,
-  start~ : BytePos
+  last~ : CharCodePos,
+  start~ : CharCodePos
 ) -> LineType {
   let next = start + 3 // 3 first chars checked
   if next > last || s[next] != '-' {
@@ -335,8 +335,8 @@ fn LineType::html_block_start_2(
 ///|
 fn LineType::html_block_start_7_open_tag(
   s : String,
-  last~ : BytePos,
-  start~ : BytePos
+  last~ : CharCodePos,
+  start~ : CharCodePos
 ) -> LineType {
   // Has to be on the same line we fake one and use the inline parser
   let line = { pos: line_pos_none, first: start, last }
@@ -355,8 +355,8 @@ fn LineType::html_block_start_7_open_tag(
 ///|
 fn LineType::html_block_start_7_close_tag(
   s : String,
-  last~ : BytePos,
-  start~ : BytePos
+  last~ : CharCodePos,
+  start~ : CharCodePos
 ) -> LineType {
   let line = { pos: line_pos_none, first: start, last }
   guard closing_tag(next_line=fn(_x) { None }, s, (), line~, start~)
@@ -374,8 +374,8 @@ fn LineType::html_block_start_7_close_tag(
 ///| https://spec.commonmark.org/current/#html-blocks
 pub fn LineType::html_block_start(
   s : String,
-  last~ : BytePos,
-  start~ : BytePos
+  last~ : CharCodePos,
+  start~ : CharCodePos
 ) -> LineType {
   let next = start + 1
   if next > last || s[start] != '<' {
@@ -440,8 +440,8 @@ pub fn LineType::html_block_start(
 ///| https://spec.commonmark.org/current/#html-blocks end condition 1.
 fn LineType::html_block_end_cond_1(
   s : String,
-  last~ : BytePos,
-  start~ : BytePos
+  last~ : CharCodePos,
+  start~ : CharCodePos
 ) -> Bool {
   let lower_s = s.to_lower()
   loop last, start {
@@ -473,8 +473,8 @@ fn LineType::html_block_end_cond_1(
 pub fn LineType::html_block_end(
   s : String,
   end_cond~ : HtmlBlockEndCond,
-  last~ : BytePos,
-  start~ : BytePos
+  last~ : CharCodePos,
+  start~ : CharCodePos
 ) -> Bool {
   match end_cond {
     EndStr(str) => @char.sub_includes(s, affix=str, first=start, last~)
@@ -486,8 +486,8 @@ pub fn LineType::html_block_end(
 ///|
 pub fn LineType::ext_table_row(
   s : String,
-  last~ : BytePos,
-  start~ : BytePos
+  last~ : CharCodePos,
+  start~ : CharCodePos
 ) -> LineType {
   guard start <= last && s[start] == '|' else { Nomatch }
   let first = start + 1
@@ -503,8 +503,8 @@ pub fn LineType::ext_footnote_label(
   buf : Buffer,
   s : String,
   line_pos~ : LinePos,
-  last~ : BytePos,
-  start~ : BytePos
+  last~ : CharCodePos,
+  start~ : CharCodePos
 ) -> LineType {
   guard start <= last && s[start] == '[' && s[start + 1] == '^' else { Nomatch }
   let rbrack = first_non_escaped_char(']', s, last~, start=start + 2)
@@ -525,8 +525,8 @@ pub fn LineType::ext_footnote_label(
 ///|
 pub fn could_be_link_ref_definition(
   s : String,
-  last~ : BytePos,
-  start~ : BytePos
+  last~ : CharCodePos,
+  start~ : CharCodePos
 ) -> Bool {
   if start > last {
     return false
@@ -550,8 +550,8 @@ pub fn could_be_link_ref_definition(
 ///|
 pub fn LineType::list_marker(
   s : String,
-  last~ : BytePos,
-  start~ : BytePos
+  last~ : CharCodePos,
+  start~ : CharCodePos
 ) -> LineType {
   if start > last {
     return Nomatch
@@ -597,9 +597,9 @@ pub fn LineType::list_marker(
 ///|
 pub fn ext_task_marker(
   s : String,
-  last~ : BytePos,
-  start~ : BytePos
-) -> (Char, BytePos)? {
+  last~ : CharCodePos,
+  start~ : CharCodePos
+) -> (Char, CharCodePos)? {
   guard start < last else { None }
   guard s[start] == '[' else { None }
   let mut next = start + 1

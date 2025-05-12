@@ -2,41 +2,31 @@
 priv struct Parser {
   /// Input file.
   file : FilePath
-
   /// Input string.
   i : String
-
   /// Scratch buffer.
   buf : Buffer
-
   /// Whether extensions are enabled.
   exts : Bool
-
   /// Don't compute locations.
   no_locs : Bool
-
   /// Don't compute layouts.
   no_layouts : Bool
-
   /// Compute heading IDs.
   heading_auto_ids : Bool
   nested_links : Bool
   defs : LabelDefs
   resolver : LabelResolverFn
-
   /// Current `CloserIndex`, for inline parsing.
   mut cidx : CloserIndex
-
   /// Current line, only used during block parsing.
   mut curr_line_pos : LinePos
-
   /// First char of line - 1 on empty lines.
-  mut curr_line_last_char : BytePos
-  mut curr_char : BytePos
+  mut curr_line_last_char : CharCodePos
+  mut curr_char : CharCodePos
   mut curr_char_col : Col
-
   /// `curr_line_last_char + 1` if none.
-  mut next_non_blank : BytePos
+  mut next_non_blank : CharCodePos
   mut next_non_blank_col : Col
 
   // Number of cols consumed from tab if i[curr_char] = '\t'.
@@ -120,8 +110,8 @@ fn Parser::debug_line(self : Parser) -> String {
 ///|
 fn Parser::curr_line_span(
   self : Parser,
-  first~ : BytePos,
-  last~ : BytePos
+  first~ : CharCodePos,
+  last~ : CharCodePos
 ) -> LineSpan {
   { first, last, pos: self.curr_line_pos }
 }
@@ -145,8 +135,8 @@ fn Parser::text_loc_of_span(self : Parser, span : LineSpan) -> TextLoc {
   }
   {
     file: self.file,
-    first_byte: span.first,
-    last_byte: span.last,
+    first_ccode: span.first,
+    last_ccode: span.last,
     first_line: span.pos,
     last_line: span.pos,
   }
@@ -155,8 +145,8 @@ fn Parser::text_loc_of_span(self : Parser, span : LineSpan) -> TextLoc {
 ///|
 fn Parser::text_loc_of_lines(
   self : Parser,
-  first~ : BytePos,
-  last~ : BytePos,
+  first~ : CharCodePos,
+  last~ : CharCodePos,
   first_line~ : LineSpan,
   last_line~ : LineSpan
 ) -> TextLoc {
@@ -165,8 +155,8 @@ fn Parser::text_loc_of_lines(
   }
   {
     file: self.file,
-    first_byte: first,
-    last_byte: last,
+    first_ccode: first,
+    last_ccode: last,
     first_line: first_line.pos,
     last_line: last_line.pos,
   }
@@ -325,7 +315,10 @@ fn Parser::_tight_block_lines(
 }
 
 ///|
-fn Parser::first_non_blank_in_span(self : Parser, span : LineSpan) -> BytePos {
+fn Parser::first_non_blank_in_span(
+  self : Parser,
+  span : LineSpan
+) -> CharCodePos {
   @cmark_base.first_non_blank_in_span(self.i, span)
 }
 
@@ -335,7 +328,7 @@ fn Parser::first_non_blank_over_nl[A](
   next_line~ : NextLineFn[A],
   lines : A,
   line : LineSpan,
-  start~ : BytePos
+  start~ : CharCodePos
 ) -> (LineSpan, Array[StringNode], Int)? {
   match
     @cmark_base.first_non_blank_over_nl(

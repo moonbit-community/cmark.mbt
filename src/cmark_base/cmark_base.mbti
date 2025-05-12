@@ -9,7 +9,7 @@ fn autolink_email(String, last~ : Int = .., start~ : Int = ..) -> Int?
 
 fn autolink_uri(String, last~ : Int = .., start~ : Int = ..) -> Int?
 
-let byte_pos_none : Int
+let char_code_pos_none : Int
 
 fn could_be_link_ref_definition(String, last~ : Int, start~ : Int) -> Bool
 
@@ -150,8 +150,8 @@ impl ToJson for Span
 
 pub(all) struct TextLoc {
   file : String
-  first_byte : Int
-  last_byte : Int
+  first_ccode : Int
+  last_ccode : Int
   first_line : (Int, Int)
   last_line : (Int, Int)
 }
@@ -172,7 +172,7 @@ impl ToJson for TextLoc
 impl @json.FromJson for TextLoc
 
 // Type aliases
-pub typealias BytePos = Int
+pub typealias CharCodePos = Int
 
 pub typealias FilePath = String
 

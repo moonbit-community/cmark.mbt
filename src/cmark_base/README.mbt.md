@@ -10,8 +10,8 @@ The package includes utilities for tracking text locations in source files:
 test "text location handling" {
   let loc = @cmark_base.TextLoc::{
     file: "test.md",
-    first_byte: 0,
-    last_byte: 10,
+    first_ccode: 0,
+    last_ccode: 10,
     first_line: (1, 0),
     last_line: (1, 10),
   }
@@ -20,7 +20,7 @@ test "text location handling" {
   inspect!(
     after_loc,
     content=
-      #|{file: "test.md", first_byte: 1, last_byte: -1, first_line: (1, 10), last_line: (-1, -1)}
+      #|{file: "test.md", first_ccode: 1, last_ccode: -1, first_line: (1, 10), last_line: (-1, -1)}
 ,
   )
 
@@ -144,8 +144,8 @@ The package includes structures for tracking metadata:
 test "metadata handling" {
   let loc = @cmark_base.TextLoc::{
     file: "test.md",
-    first_byte: 0,
-    last_byte: 10,
+    first_ccode: 0,
+    last_ccode: 10,
     first_line: (1, 0),
     last_line: (1, 10),
   }

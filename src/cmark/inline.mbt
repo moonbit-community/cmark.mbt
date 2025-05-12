@@ -173,7 +173,7 @@ pub fn Inline::id(
         break buf.to_string()
       }
       match s[k] {
-        ' ' | '\t' as prev_byte => continue max, prev_byte, k + 1
+        ' ' | '\t' as prev_ccode => continue max, prev_ccode, k + 1
         '_' | '-' as c => {
           collapse_blanks(prev)
           buf.write_char(c)

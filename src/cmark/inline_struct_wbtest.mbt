@@ -6,17 +6,17 @@ fn parse_only(
 ) -> ((Col, String), Inline) {
   let p = Parser::new(txt, strict~) |> polish()
   let lines = txt.split("\n")
-  let mut byte_pos = 0
+  let mut char_code_pos = 0
   let mut ln_num = 1
   let lines1 : Array[LineSpan] = []
   for ln in lines {
     lines1.push({
       pos: (ln_num, 0),
-      first: byte_pos,
-      last: byte_pos + ln.length() - 1,
+      first: char_code_pos,
+      last: char_code_pos + ln.length() - 1,
     })
     ln_num += 1
-    byte_pos += ln.length() + 1 // considering the trailing '\n'
+    char_code_pos += ln.length() + 1 // considering the trailing '\n'
   }
   p.parse_inline(lines1)
 }
@@ -28,17 +28,17 @@ fn tokenize_only(
 ) -> (CloserIndex, Tokens, LineSpan) {
   let p = Parser::new(txt, strict~)
   let lines = txt.split("\n")
-  let mut byte_pos = 0
+  let mut char_code_pos = 0
   let mut ln_num = 1
   let lines1 : Array[LineSpan] = []
   for ln in lines {
     lines1.push({
       pos: (ln_num, 0),
-      first: byte_pos,
-      last: byte_pos + ln.length() - 1,
+      first: char_code_pos,
+      last: char_code_pos + ln.length() - 1,
     })
     ln_num += 1
-    byte_pos += ln.length() + 1 // considering the trailing '\n'
+    char_code_pos += ln.length() + 1 // considering the trailing '\n'
   }
   let (_, _, lines) = p.strip_paragraph(lines1)
   tokenize(p.i, lines, exts=p.exts)
