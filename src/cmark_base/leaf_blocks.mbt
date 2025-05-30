@@ -50,7 +50,7 @@ pub fn LineType::thematic_break(
   if start > last {
     return Nomatch
   }
-  match s[start] {
+  match s.charcode_at(start) {
     '-' | '_' | '*' =>
       loop s, last, 1, start, start + 1 {
         s, last, count, prev, k =>
@@ -60,9 +60,9 @@ pub fn LineType::thematic_break(
             } else {
               ThematicBreakLine(prev)
             }
-          } else if s[k] == s[prev] {
+          } else if s.charcode_at(k) == s.charcode_at(prev) {
             continue s, last, count + 1, k, k + 1
-          } else if s[k] is (' ' | '\t') {
+          } else if s.charcode_at(k) is (' ' | '\t') {
             continue s, last, count, prev, k + 1
           } else {
             Nomatch
@@ -79,7 +79,7 @@ pub fn LineType::atx_heading(
   start~ : CharCodePos
 ) -> LineType {
   fn skip_hashes(s : String, last, k) {
-    for k = k; k <= last && s[k] == '#'; k = k + 1 {
+    for k = k; k <= last && s.charcode_at(k) == '#'; k = k + 1 {
 
     } else {
       k
@@ -88,7 +88,7 @@ pub fn LineType::atx_heading(
 
   fn find_end(s : String, last, k) { // Blank on k, last + 1 if blank* [#+] blank*
     let after_blank = first_non_blank(s, last~, start=k + 1)
-    if after_blank > last || s[after_blank] != '#' {
+    if after_blank > last || s.charcode_at(after_blank) != '#' {
       return after_blank
     }
     let after_hash = skip_hashes(s, last, after_blank + 1)
@@ -104,7 +104,7 @@ pub fn LineType::atx_heading(
     loop s, last, k {
       s, last, k => {
         guard k <= last else { k - 1 }
-        guard s[k] is (' ' | '\t') else { continue s, last, k + 1 }
+        guard s.charcode_at(k) is (' ' | '\t') else { continue s, last, k + 1 }
         let end1 = find_end(s, last, k)
         guard end1 <= last else { k - 1 }
         continue s, last, end1
@@ -116,7 +116,7 @@ pub fn LineType::atx_heading(
     if k > last {
       return AtxHeadingLine(acc, k, k, last)
     }
-    if s[k] == '#' {
+    if s.charcode_at(k) == '#' {
       if acc < 6 {
         return level(s, last, acc + 1, k + 1)
       } else {
@@ -130,7 +130,7 @@ pub fn LineType::atx_heading(
     if first == k {
       return Nomatch // Need a blank
     }
-    let last = if s[first] != '#' {
+    let last = if s.charcode_at(first) != '#' {
       content(s, last, first + 1)
     } else {
       let end1 = find_end(s, last, first - 1) // Start on blank
@@ -143,7 +143,7 @@ pub fn LineType::atx_heading(
     AtxHeadingLine(acc, k, first, last)
   }
 
-  if start > last || s[start] != '#' {
+  if start > last || s.charcode_at(start) != '#' {
     return Nomatch
   }
   level(s, last, 1, start + 1)
@@ -155,20 +155,24 @@ pub fn LineType::setext_heading_underline(
   last~ : CharCodePos,
   start~ : CharCodePos
 ) -> LineType {
-  let level = fn(c) { if c == '=' { 1 } else { 2 } }
+  let level = fn(c) { 2 - (c == '=').to_int() }
   fn underline(s : String, last, start, k) {
     if k > last {
-      return SetextUnderlineLine(level(s[start]), k - 1)
+      return SetextUnderlineLine(
+        level(s.charcode_at(start).unsafe_to_char()),
+        k - 1,
+      )
     }
-    if s[k] == s[start] {
+    if s.charcode_at(k) == s.charcode_at(start) {
       return underline(s, last, start, k + 1)
     }
-    if s[k] != ' ' && s[k] != '\t' {
-      return Nomatch
-    }
+    guard s.charcode_at(k) is (' ' | '\t') else { return Nomatch }
     let end_blank = first_non_blank(s, last~, start=k + 1)
     if end_blank > last {
-      return SetextUnderlineLine(level(s[start]), k - 1)
+      return SetextUnderlineLine(
+        level(s.charcode_at(start).unsafe_to_char()),
+        k - 1,
+      )
     }
     Nomatch
   }
@@ -176,7 +180,7 @@ pub fn LineType::setext_heading_underline(
   if start > last {
     return Nomatch
   }
-  if s[start] != '-' && s[start] != '=' {
+  if s.charcode_at(start) != '-' && s.charcode_at(start) != '=' {
     return Nomatch
   }
   underline(s, last, start, start + 1)
@@ -189,9 +193,10 @@ pub fn LineType::fenced_code_block_start(
   start~ : CharCodePos
 ) -> LineType {
   fn info(s : String, last, nobt, info_first, k) {
+    let sk = s.charcode_at(k)
     guard k <= last else { Some((info_first, last)) }
-    guard not(nobt && s[k] == '`') else { None }
-    guard s[k] is (' ' | '\t') else { info(s, last, nobt, info_first, k + 1) }
+    guard not(nobt && sk == '`') else { None }
+    guard sk is (' ' | '\t') else { info(s, last, nobt, info_first, k + 1) }
     let after_blank = first_non_blank(s, last~, start=k)
     guard after_blank <= last else { Some((info_first, k - 1)) }
     info(s, last, nobt, info_first, after_blank)
@@ -200,7 +205,7 @@ pub fn LineType::fenced_code_block_start(
   fn fence(s : String, last, fence_first, k) {
     loop s, last, fence_first, k {
       s, last, fence_first, k => {
-        if k <= last && s[k] == s[fence_first] {
+        if k <= last && s.charcode_at(k) == s.charcode_at(fence_first) {
           continue s, last, fence_first, k + 1
         }
         let fence_last = k - 1
@@ -211,7 +216,13 @@ pub fn LineType::fenced_code_block_start(
           if after_blank > last {
             None
           } else {
-            guard info(s, last, s[fence_first] == '`', after_blank, after_blank)
+            guard info(
+                s,
+                last,
+                s.charcode_at(fence_first) == '`',
+                after_blank,
+                after_blank,
+              )
               is Some(i) else {
               break None
             }
@@ -229,10 +240,10 @@ pub fn LineType::fenced_code_block_start(
   loop s, start, last, start {
     s, first, last, k => {
       guard k <= last else { break Nomatch }
-      if k - first + 1 < 4 && s[k] == ' ' {
+      if k - first + 1 < 4 && s.charcode_at(k) == ' ' {
         continue s, first, last, k + 1
       }
-      guard s[k] is ('~' | '`') else { break Nomatch }
+      guard s.charcode_at(k) is ('~' | '`') else { break Nomatch }
       fence(s, last, k, k + 1).or(Nomatch)
     }
   }
@@ -261,7 +272,7 @@ pub fn FencedCodeBlockContinue::new(
   fn fence(s : String, last, fence_first, k) {
     loop s, last, fence_first, k {
       s, last, fence_first, k => {
-        if k <= last && s[k] == fc {
+        if k <= last && s.charcode_at(k).unsafe_to_char() == fc {
           continue s, last, fence_first, k + 1
         }
         let fence_last = k - 1
@@ -275,15 +286,12 @@ pub fn FencedCodeBlockContinue::new(
 
   loop s, start, last, start {
     s, first, last, k => {
-      if k > last {
-        break Code // Short blank line
-      }
-      if k - first + 1 < 4 && s[k] == ' ' {
+      guard k <= last else { break Code } // Short blank line
+      let sk = s.charcode_at(k).unsafe_to_char()
+      if k - first + 1 < 4 && sk == ' ' {
         continue s, first, last, k + 1
       }
-      if s[k] != fc {
-        break Code
-      }
+      guard sk == fc else { break Code }
       fence(s, last, k, k + 1).or(Code)
     }
   }
@@ -326,7 +334,7 @@ fn LineType::html_block_start_2(
   start~ : CharCodePos
 ) -> LineType {
   let next = start + 3 // 3 first chars checked
-  if next > last || s[next] != '-' {
+  if next > last || s.charcode_at(next) != '-' {
     return Nomatch
   }
   HtmlBlockLine(EndStr("-->"))
@@ -378,17 +386,17 @@ pub fn LineType::html_block_start(
   start~ : CharCodePos
 ) -> LineType {
   let next = start + 1
-  if next > last || s[start] != '<' {
+  if next > last || s.charcode_at(start) != '<' {
     return Nomatch
   }
-  match s[next] {
+  match s.charcode_at(next).unsafe_to_char() {
     '?' => HtmlBlockLine(EndStr("?>")) // 3
     '!' => {
       let next = next + 1
       if next > last {
         return Nomatch
       }
-      match s[next] {
+      match s.charcode_at(next).unsafe_to_char() {
         '[' => LineType::html_block_start_5(s, last~, start~)
         '-' => LineType::html_block_start_2(s, last~, start~)
         c =>
@@ -404,7 +412,8 @@ pub fn LineType::html_block_start(
       let tag_first = if c == '/' { next + 1 } else { next }
       let tag_last = loop s, last, tag_first {
         s, last, i => {
-          if i > last || not(s[i].is_ascii_alphabetic()) {
+          if i > last ||
+            not(s.charcode_at(i).unsafe_to_char().is_ascii_alphabetic()) {
             break i - 1
           }
           continue s, last, i + 1
@@ -413,7 +422,7 @@ pub fn LineType::html_block_start(
       let tag = s.substring(start=tag_first, end=tag_last + 1).to_lower()
       let is_open_end = {
         let n = tag_last + 1
-        n > last || s[n] is (' ' | '\t' | '>')
+        n > last || s.charcode_at(n) is (' ' | '\t' | '>')
       }
       let is_open_close_end = is_open_end ||
         (
@@ -447,14 +456,16 @@ fn LineType::html_block_end_cond_1(
   loop last, start {
     last, k => {
       guard k + 3 <= last else { break false }
-      guard s[k] == '<' && s[k + 1] == '/' else { continue last, k + 1 }
+      guard s.charcode_at(k) == '<' && s.charcode_at(k + 1) == '/' else {
+        continue last, k + 1
+      }
       let next = k + 2
       let is_end_tag = {
         let lower_s_sub = lower_s.substring(start=next)
-        match s[next] {
+        match s.charcode_at(next) {
           'p' => lower_s_sub.has_prefix("pre>")
           's' =>
-            if s[k + 3] == 't' {
+            if s.charcode_at(k + 3) == 't' {
               lower_s_sub.has_prefix("style>")
             } else {
               lower_s_sub.has_prefix("script>")
@@ -489,12 +500,12 @@ pub fn LineType::ext_table_row(
   last~ : CharCodePos,
   start~ : CharCodePos
 ) -> LineType {
-  guard start <= last && s[start] == '|' else { Nomatch }
+  guard start <= last && s.charcode_at(start) == '|' else { Nomatch }
   let first = start + 1
   let last_nb = last_non_blank(s, first~, start=last)
   let before = last_nb - 1
-  guard last_nb >= first && s[last_nb] == '|' else { Nomatch }
-  guard before < first || s[before] != '\\' else { Nomatch }
+  guard last_nb >= first && s.charcode_at(last_nb) == '|' else { Nomatch }
+  guard before < first || s.charcode_at(before) != '\\' else { Nomatch }
   ExtTableRow(last_nb)
 }
 
@@ -506,10 +517,14 @@ pub fn LineType::ext_footnote_label(
   last~ : CharCodePos,
   start~ : CharCodePos
 ) -> LineType {
-  guard start <= last && s[start] == '[' && s[start + 1] == '^' else { Nomatch }
+  guard start <= last &&
+    s.charcode_at(start) == '[' &&
+    s.charcode_at(start + 1) == '^' else {
+    Nomatch
+  }
   let rbrack = first_non_escaped_char(']', s, last~, start=start + 2)
   let colon = rbrack + 1
-  guard colon <= last && s[colon] == ':' && colon - start + 1 >= 5 else {
+  guard colon <= last && s.charcode_at(colon) == ':' && colon - start + 1 >= 5 else {
     Nomatch
   }
   // Get the normalized label
@@ -536,10 +551,10 @@ pub fn could_be_link_ref_definition(
       if k > last {
         break false
       }
-      if k - first + 1 < 4 && s[k] == ' ' {
+      if k - first + 1 < 4 && s.charcode_at(k) == ' ' {
         continue s, first, last, k + 1
       }
-      s[k] == '['
+      s.charcode_at(k) == '['
     }
   }
 }
@@ -556,10 +571,11 @@ pub fn LineType::list_marker(
   if start > last {
     return Nomatch
   }
-  match s[start] {
+  match s.charcode_at(start).unsafe_to_char() {
     '-' | '+' | '*' as c => {
       let next = start + 1
-      if next > last || @char.is_ascii_blank(s[next]) {
+      if next > last ||
+        (s.charcode_at(next).to_char() is Some(c) && @char.is_ascii_blank(c)) {
         ListMarkerLine(Unordered(c), start)
       } else {
         Nomatch
@@ -571,7 +587,7 @@ pub fn LineType::list_marker(
           if k > last || count > 9 {
             return Nomatch
           }
-          match s[k] {
+          match s.charcode_at(k).unsafe_to_char() {
             '0'..='9' as c =>
               continue s,
                 last,
@@ -580,7 +596,11 @@ pub fn LineType::list_marker(
                 k + 1
             '.' | ')' as c => {
               let next = k + 1
-              if next > last || @char.is_ascii_blank(s[next]) {
+              if next > last ||
+                (
+                  s.charcode_at(next).to_char() is Some(c) &&
+                  @char.is_ascii_blank(c)
+                ) {
                 ListMarkerLine(Ordered(acc, c), k)
               } else {
                 Nomatch
@@ -601,13 +621,13 @@ pub fn ext_task_marker(
   start~ : CharCodePos
 ) -> (Char, CharCodePos)? {
   guard start < last else { None }
-  guard s[start] == '[' else { None }
+  guard s.charcode_at(start) == '[' else { None }
   let mut next = start + 1
   guard @char.at_checked(s, next) is Ok(u) else { None }
   next += @char.length_utf16(u.to_int())
-  guard next <= last && s[next] == ']' else { None }
+  guard next <= last && s.charcode_at(next) == ']' else { None }
   next += 1
   guard next <= last else { Some((u, last)) }
-  guard s[next] == ' ' else { None }
+  guard s.charcode_at(next) == ' ' else { None }
   Some((u, next))
 }

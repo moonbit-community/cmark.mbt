@@ -43,7 +43,7 @@ pub fn sub_includes(
   for i = first, k = 0 {
     guard i <= max_idx_s else { return false }
     guard k <= max_idx_a else { return true }
-    if s[i + k] == affix[k] {
+    if s.charcode_at(i + k) == affix.charcode_at(k) {
       continue i, k + 1
     }
     continue i + 1, 0
@@ -99,13 +99,13 @@ pub fn utf_16_clean_raw(
           flush(last, start, k)
           break buf.to_string()
         }
-        if s[k] == '\u{0}' {
+        if s.charcode_at(k) == '\u{0}' {
           let next = k + 1
           flush(last, start, k)
           buf.write_char(rep)
           continue last, next, next
         }
-        if s[k].is_ascii() {
+        if s.charcode_at(k).to_char() is Some(c) && c.is_ascii() {
           continue last, start, k + 1
         }
         match at_checked(s, k) {
@@ -129,10 +129,10 @@ pub fn utf_16_clean_raw(
       last, first, k =>
         if k > last {
           s.substring(start=first, end=last + 1)
-        } else if s[k] == '\u{0}' {
+        } else if s.charcode_at(k) == '\u{0}' {
           buf.reset()
           clean(last, first, k)
-        } else if s[k].is_ascii() {
+        } else if s.charcode_at(k).to_char() is Some(c) && c.is_ascii() {
           continue last, first, k + 1
         } else {
           match at_checked(s, k) {
@@ -212,7 +212,7 @@ fn _utf_16_clean_unesc_unref(
         if k > last || k > num_start + 6 {
           return resolve(last, start, k)
         }
-        match s[k] {
+        match s.charcode_at(k) {
           ';' => {
             let next = k + 1
             if k == num_start {
@@ -227,6 +227,7 @@ fn _utf_16_clean_unesc_unref(
             resolve(last, next, next)
           }
           c => {
+            let c = c.unsafe_to_char()
             guard c.is_ascii_hexdigit() else { return resolve(last, start, k) }
             let u = u * 16 + ascii_hexdigit_to_int(c)
             continue last, start, num_start, k + 1, u
@@ -242,7 +243,7 @@ fn _utf_16_clean_unesc_unref(
         if k > last || k > num_start + 7 {
           return resolve(last, start, k)
         }
-        match s[k] {
+        match s.charcode_at(k) {
           ';' => {
             let next = k + 1
             if k == num_start {
@@ -257,6 +258,7 @@ fn _utf_16_clean_unesc_unref(
             resolve(last, next, next)
           }
           c => {
+            let c = c.unsafe_to_char()
             guard c.is_ascii_digit() else { return resolve(last, start, k) }
             let u = u * 10 + ascii_digit_to_int(c)
             continue last, start, num_start, k + 1, u
@@ -273,7 +275,7 @@ fn _utf_16_clean_unesc_unref(
         if k > last {
           return resolve(last, start, k)
         }
-        match s[k] {
+        match s.charcode_at(k) {
           ';' => {
             let name = s.substring(start=name_start, end=k)
             match html_named_entity(name) {
@@ -287,6 +289,7 @@ fn _utf_16_clean_unesc_unref(
             }
           }
           c => {
+            let c = c.unsafe_to_char()
             guard is_ascii_alphanum(c) else { return resolve(last, start, k) }
             continue last, start, name_start, k + 1
           }
@@ -303,7 +306,7 @@ fn _utf_16_clean_unesc_unref(
           return buf.to_string()
         }
         let next = k + 1
-        match (s[k], do_unesc) {
+        match (s.charcode_at(k), do_unesc) {
           ('\u{0}', _) => {
             flush(last, start, k)
             buf.write_char(rep)
@@ -313,7 +316,7 @@ fn _utf_16_clean_unesc_unref(
             if next > last {
               continue last, start, next
             }
-            let nc = s[next]
+            let nc = s.charcode_at(next).unsafe_to_char()
             if not(is_ascii_punctuation(nc)) {
               continue last, start, next
             }
@@ -326,16 +329,16 @@ fn _utf_16_clean_unesc_unref(
             if k + 2 > last {
               continue last, start, next
             }
-            match s[next] {
+            match s.charcode_at(next) {
               '#' => {
                 let next = next + 1
-                match s[next] {
+                match s.charcode_at(next) {
                   'x' | 'X' => {
                     let next = next + 1
                     try_entity_hex(last, start, next, next, 0)
                   }
                   c => {
-                    if c.is_ascii_digit() {
+                    if c.to_char() is Some(c) && c.is_ascii_digit() {
                       return try_entity_dec(last, start, next, next, 0)
                     }
                     continue last, start, next
@@ -343,7 +346,7 @@ fn _utf_16_clean_unesc_unref(
                 }
               }
               c => {
-                if c.is_ascii_alphabetic() {
+                if c.to_char() is Some(c) && c.is_ascii_alphabetic() {
                   return try_entity_named(last, start, next, next)
                 }
                 continue last, start, next
@@ -351,7 +354,7 @@ fn _utf_16_clean_unesc_unref(
             }
           }
           (b, _) => {
-            if b.is_ascii() {
+            if b.to_char() is Some(c) && c.is_ascii() {
               continue last, start, next
             }
             match at_checked(s, k) {
@@ -380,13 +383,13 @@ fn _utf_16_clean_unesc_unref(
     guard k <= last else {
       break s.substring(start=first, end=first + last - start + 1)
     }
-    match (s[k], do_unesc) {
+    match (s.charcode_at(k), do_unesc) {
       ('\\', true) | ('&', _) | ('\u{0}', _) => {
         buf.reset()
         break resolve(last, start, k)
       }
       (b, _) => {
-        if b.is_ascii() {
+        if b.to_char() is Some(c) && c.is_ascii() {
           continue start, k + 1
         }
         match at_checked(s, k) {

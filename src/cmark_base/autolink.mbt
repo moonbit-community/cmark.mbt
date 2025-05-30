@@ -5,50 +5,49 @@ pub fn autolink_email(
   last~ : Int = s.length() - 1,
   start~ : Int = 0
 ) -> Last? {
-  fn label_seq(s : String, last : Int, k : Int) -> Int? {
-    fn char_is_alphanum_or_hyp(c) {
-      @char.is_ascii_alphanum(c) || c == '-'
-    }
+  fn char_is_alphanum_or_hyp(c) {
+    @char.is_ascii_alphanum(c) || c == '-'
+  }
 
-    if k > last || not(@char.is_ascii_alphanum(s[k])) {
+  fn label_seq(last : Int, k : Int) -> Int? {
+    guard k <= last &&
+      s.charcode_at(k).to_char() is Some(c) &&
+      @char.is_ascii_alphanum(c) else {
       return None
     }
-    loop s, last, 1, k + 1 {
-      s, last, c, k => {
-        if k > last {
-          break None
-        }
-        if char_is_alphanum_or_hyp(s[k]) && c <= 63 {
-          continue s, last, c + 1, k + 1
-        }
-        if c > 63 || not(@char.is_ascii_alphanum(s[k - 1])) {
-          break None
-        }
-        match s[k] {
-          '>' => Some(k)
-          '.' => label_seq(s, last, k + 1)
-          _ => None
-        }
+    for c = 1, k = k + 1 {
+      guard k <= last else { break None }
+      let sk = s.charcode_at(k).unsafe_to_char()
+      if char_is_alphanum_or_hyp(sk) && c <= 63 {
+        continue c + 1, k + 1
+      }
+      guard c <= 63 &&
+        s.charcode_at(k - 1).to_char() is Some(c) &&
+        @char.is_ascii_alphanum(c) else {
+        break None
+      }
+      break match sk {
+        '>' => Some(k)
+        '.' => label_seq(last, k + 1)
+        _ => None
       }
     }
   }
 
-  if start > last || s[start] != '<' {
-    return None
-  }
-  loop s, last, start + 1 {
-    s, last, k => {
-      if k > last {
-        break None
-      }
-      if char_is_atext_plus_dot(s[k]) {
-        continue s, last, k + 1
-      }
-      if s[k] == '@' && char_is_atext_plus_dot(s[k - 1]) {
-        break label_seq(s, last, k + 1)
-      }
-      break None
+  guard start <= last || s.charcode_at(start) == '<' else { None }
+  for k in (start + 1)..=last {
+    let sk = s.charcode_at(k).unsafe_to_char()
+    if char_is_atext_plus_dot(sk) {
+      continue
     }
+    if sk == '@' &&
+      s.charcode_at(k - 1).to_char() is Some(c) &&
+      char_is_atext_plus_dot(c) {
+      break label_seq(last, k + 1)
+    }
+    break None
+  } else {
+    None
   }
 }
 
@@ -66,37 +65,29 @@ pub fn autolink_uri(
     not(c is ('\u{0}'..='\u{1f}' | '\u{7f}' | '<' | '>' | ' '))
   }
   let rest = fn(s : String, last, k) {
-    loop s, last, k {
-      s, last, k => {
-        if k > last {
-          break None
-        }
-        if char_is_uri(s[k]) {
-          continue s, last, k + 1
-        }
-        if s[k] == '>' {
-          break Some(k)
-        }
-        None
-      }
+    for k in k..=last {
+      let sk = s.charcode_at(k).unsafe_to_char()
+      guard not(char_is_uri(sk)) else { continue }
+      break if sk == '>' { Some(k) } else { None }
+    } else {
+      None
     }
   }
   let next = start + 1
-  if next > last || s[start] != '<' || not(s[next].is_ascii_alphabetic()) {
+  guard next <= last &&
+    s.charcode_at(start) == '<' &&
+    s.charcode_at(next).unsafe_to_char().is_ascii_alphabetic() else {
     return None
   }
-  loop s, last, 1, next + 1 {
-    s, last, c, k => {
-      if k > last {
-        break None
-      }
-      if char_is_scheme(s[k]) && c <= 32 {
-        continue s, last, c + 1, k + 1
-      }
-      if s[k] == ':' && 2 <= c && c <= 32 {
-        break rest(s, last, k + 1)
-      }
-      break None
+  for c = 1, k = next + 1 {
+    guard k <= last else { break None }
+    let sk = s.charcode_at(k).unsafe_to_char()
+    if char_is_scheme(sk) && c <= 32 {
+      continue c + 1, k + 1
     }
+    if sk == ':' && 2 <= c && c <= 32 {
+      break rest(s, last, k + 1)
+    }
+    break None
   }
 }

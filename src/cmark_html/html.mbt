@@ -98,7 +98,7 @@ fn footnote_id(l : String) -> String {
 
 ///|
 fn footnote_ref_id(fnid : String, c : Int) -> String {
-  @string.concat(separator="-", ["ref", c.to_string(), fnid])
+  ["ref", c.to_string(), fnid].join("-")
 }
 
 ///|
@@ -169,7 +169,7 @@ fn buffer_add_html_escaped_string(b : Buffer, s : String) -> Unit {
         break
       }
       let next = i + 1
-      match s[i] {
+      match s.charcode_at(i) {
         '\u{0}' => {
           flush(b, start, i)
           b.write_char(@char.rep)
@@ -253,8 +253,9 @@ fn buffer_add_pct_encoded_string(b : Buffer, s : String) -> Unit { // Percent en
         break
       }
       let next = i + 1
-      match s[i] {
-        c if @char.is_ascii_alphanum(c) || is_delim(c) =>
+      match s.charcode_at(i) {
+        c if c.to_char() is Some(c) &&
+          (@char.is_ascii_alphanum(c) || is_delim(c)) =>
           continue b, s, max, start, next
         '&' => {
           flush(b, max, start, i)
@@ -268,8 +269,8 @@ fn buffer_add_pct_encoded_string(b : Buffer, s : String) -> Unit { // Percent en
         }
         c => {
           flush(b, max, start, i)
-          let hi = (c.to_int() >> 4) & 0xF
-          let lo = c.to_int() & 0xF
+          let hi = (c >> 4) & 0xF
+          let lo = c & 0xF
           b.write_char('%')
           b.write_char(unsafe_hexdigit(hi))
           b.write_char(unsafe_hexdigit(lo))
@@ -548,7 +549,7 @@ fn code_block(c : Context, cb : @cmark.CodeBlock) -> Unit {
     c.b.write_char('\n')
   }
   if lang is Some((lang, _env)) {
-    if backend_blocks(c) && lang[0] == '=' {
+    if backend_blocks(c) && lang.charcode_at(0) == '=' {
       if lang == "=html" && not(safe(c)) {
         block_lines(c, cb.code.to_array())
       }
