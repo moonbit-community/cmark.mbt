@@ -241,7 +241,8 @@ fn Token::newline(
   // https://spec.commonmark.org/current/#hard-line-breaks
   let { first, last, .. } = prev_line
   let non_space = @cmark_base.rev_drop_spaces(s, first~, start=last)
-  let (start, break_ty) = if non_space == last && s[non_space] == '\\' {
+  let (start, break_ty) = if non_space == last &&
+    s.charcode_at(non_space) == '\\' {
     (non_space, Hard)
   } else {
     let start = non_space + 1
@@ -272,7 +273,7 @@ fn tokens_try_add_image_link_start(
   start~ : Int
 ) -> Int {
   let next = start + 1
-  guard next <= line.last && s[next] == '[' else { next }
+  guard next <= line.last && s.charcode_at(next) == '[' else { next }
   toks.push(LinkStart({ start, image: true }))
   next + 1
 }
@@ -285,7 +286,7 @@ fn tokens_try_add_emphasis(
   start~ : Int
 ) -> Int {
   let { first, last, .. } = line
-  let char = s[start]
+  let char = s.charcode_at(start).unsafe_to_char()
   let run_last = @cmark_base.run_of(char~, last~, s, start=start + 1)
   let count = run_last - start + 1
   let prev_char = @char.prev_char(s, first~, before=start)
@@ -325,7 +326,7 @@ fn tokens_try_add_strikethrough_marks(
   start~ : Int
 ) -> Int {
   let { first, last, .. } = line
-  let char = s[start]
+  let char = s.charcode_at(start).unsafe_to_char()
   let run_last = @cmark_base.run_of(char~, s, last~, start=start + 1)
   let count = run_last - start + 1
   let next = run_last + 1
@@ -346,7 +347,7 @@ fn tokens_try_add_math_span_marks(
   start~ : Int
 ) -> Int {
   let { first, last, .. } = line
-  let char = s[start]
+  let char = s.charcode_at(start).unsafe_to_char()
   let run_last = @cmark_base.run_of(char~, s, last~, start=start + 1)
   let count = run_last - start + 1
   let next = run_last + 1
@@ -384,7 +385,7 @@ fn tokenize(
           }
         }
       }
-      let next = match s[k] {
+      let next = match s.charcode_at(k) {
         '\\' => continue lines, line, not(prev_bslash), k + 1
         '`' => tokens_add_backtick(toks, s, line, prev_bslash~, start=k)
         _ if prev_bslash => k + 1
@@ -558,7 +559,7 @@ fn Parser::emphasis_token(
   emph : Inline
 ) -> Token {
   let text_loc = self.text_loc_of_lines(first~, last~, first_line~, last_line~)
-  let delim = self.i[first]
+  let delim = self.i.charcode_at(first).unsafe_to_char()
   let emph = { v: { delim, inline: emph }, meta: self.meta(text_loc) }
   let inline = if strong { StrongEmphasis(emph) } else { Emphasis(emph) }
   Inline({ start: first, inline, endline: last_line, next: last + 1 })
@@ -889,7 +890,13 @@ fn Parser::try_inline_link_remainder(
           None => (line, after_dest, '"', None, start)
           Some((line, spans, last)) => {
             let title : Seq[_] = self.tight_block_lines(spans=spans[:])
-            (line, after_dest, self.i[start], Some(title), last + 1)
+            (
+              line,
+              after_dest,
+              self.i.charcode_at(start).unsafe_to_char(),
+              Some(title),
+              last + 1,
+            )
           }
         }
       }
@@ -902,7 +909,7 @@ fn Parser::try_inline_link_remainder(
       start~,
     )
     .or((line, [], start))
-  if last > line.last || self.i[last] != ')' {
+  if last > line.last || self.i.charcode_at(last) != ')' {
     return None
   }
   let layout : LinkDefinitionLayout = {
@@ -1008,7 +1015,7 @@ fn Parser::try_link_def(
   let link = if next > line.last {
     self.try_shortcut_reflink(start_rev_toks, start_line, image~, start~)
   } else {
-    match self.i[next] {
+    match self.i.charcode_at(next) {
       '(' =>
         match
           self.try_inline_link_remainder(rev_toks, line, image~, start=next) {
@@ -1023,7 +1030,7 @@ fn Parser::try_link_def(
         }
       '[' => {
         let next1 = next + 1
-        if next1 <= line.last && self.i[next1] == ']' {
+        if next1 <= line.last && self.i.charcode_at(next1) == ']' {
           self.try_collapsed_reflink(start_rev_toks, start_line, image~, start~)
         } else {
           let r = self.try_full_reflink_remainder(
@@ -1473,7 +1480,7 @@ fn Parser::strip_paragraph(
     })
     (last, trailing_blanks)
   }
-  let lines = lines..push(last)
+  lines.push(last)
   let (first, leading_indent) = {
     let line = lines[0]
     let non_blank = self.first_non_blank_in_span(line)
@@ -1648,13 +1655,8 @@ fn Parser::parse_cols(
         }
         Start(before, is_) => {
           toks._.unsafe_pop_front()
-          let (col, k) = self.finish_col(
-            line,
-            before,
-            is_..push(inline),
-            toks,
-            next,
-          )
+          is_.push(inline)
+          let (col, k) = self.finish_col(line, before, is_, toks, next)
           acc.push(col)
           continue line, k
         }

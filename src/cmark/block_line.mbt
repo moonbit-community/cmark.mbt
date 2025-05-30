@@ -104,10 +104,14 @@ fn[A] _list_of_string(flush : FlushFn[A], s : String) -> Array[A] {
         flush(s, start, max, acc)
         break acc
       }
-      guard s[k] is ('\n' | '\r') else { continue s, acc, max, start, k + 1 }
+      guard s.charcode_at(k) is ('\n' | '\r') else {
+        continue s, acc, max, start, k + 1
+      }
       flush(s, start, k - 1, acc)
       let next = k + 1
-      let start = if s[k] == '\r' && next <= max && s[next] == '\n' {
+      let start = if s.charcode_at(k) == '\r' &&
+        next <= max &&
+        s.charcode_at(next) == '\n' {
         next + 1
       } else {
         next

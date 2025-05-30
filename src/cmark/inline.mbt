@@ -159,8 +159,7 @@ pub fn Inline::id(
   buf~ : Buffer = Buffer::new(size_hint=256)
 ) -> String {
   let text = self.to_plain_text(break_on_soft=false)
-  let s = text._.map(fn(l) { @string.concat(l._) })
-    |> @string.concat(separator="\n")
+  let s = text._.map(fn(l) { l._.join("") }).join("\n")
   // Collapses non initial white 
   let collapse_blanks = fn(prev) {
     if @char.is_ascii_blank(prev) && not(buf.is_empty()) {
@@ -172,7 +171,7 @@ pub fn Inline::id(
       if k > max {
         break buf.to_string()
       }
-      match s[k] {
+      match s.char_at(k) {
         ' ' | '\t' as prev_ccode => continue max, prev_ccode, k + 1
         '_' | '-' as c => {
           collapse_blanks(prev)
@@ -290,7 +289,7 @@ pub fn InlineCodeSpan::from_string(
   // This finds out the needed backtick count, whether spaces are needed,
   // and treats blanks after newline as layout 
   let max = s.length() - 1
-  let need_sp = s[0] == '`' || s[max] == '`'
+  let need_sp = s is (['`', ..] | [.., '`'])
   let s = if need_sp { " \{s} " } else { s }
   let (bt_counts, code_layout) = loop @sorted_set.new(), [], max, 0, 0, 0 {
     bt_counts, acc, max, btc, start, k => {
@@ -304,15 +303,18 @@ pub fn InlineCodeSpan::from_string(
         }
         break (bt_counts, layout)
       }
-      if s[k] == '`' {
+      let sk = s.charcode_at(k)
+      if sk == '`' {
         continue bt_counts, acc, max, btc + 1, start, k + 1
       }
-      let bt_counts = if btc > 0 { bt_counts..add(btc) } else { bt_counts }
-      guard s[k] is ('\n' | '\r') else {
+      if btc > 0 {
+        bt_counts.add(btc)
+      }
+      guard sk is ('\n' | '\r') else {
         continue bt_counts, acc, max, 0, start, k + 1
       }
       BlockLine::flush_tight(meta~, s, start, k - 1, acc)
-      let start = if k + 1 <= max && s[k] == '\r' && s[k + 1] == '\n' {
+      let start = if k + 1 <= max && sk == '\r' && s.charcode_at(k + 1) == '\n' {
         k + 2
       } else {
         k + 1
@@ -325,14 +327,9 @@ pub fn InlineCodeSpan::from_string(
 
 ///| https://spec.commonmark.org/0.30/#code-spans
 pub fn InlineCodeSpan::code(self : InlineCodeSpan) -> String {
-  let s = self.code_layout.iter().map(Tight::to_string).to_array()
-    |> @string.concat(separator=" ")
-  if s == "" {
-    return ""
-  }
-  if s[0] == ' ' &&
-    s[s.length() - 1] == ' ' &&
-    not(s.iter().all(fn(it) { it == ' ' })) {
+  let s = self.code_layout.iter().map(Tight::to_string).to_array().join(" ")
+  guard s != "" else { "" }
+  if s is [' ', .. mid, ' '] && not(mid.iter().all(fn(it) { it == ' ' })) {
     return s.substring(start=1, end=s.length() - 1)
   }
   s
@@ -460,5 +457,5 @@ pub(all) struct InlineMathSpan {
 
 ///|
 pub fn tex(self : InlineMathSpan) -> String {
-  self.tex_layout._.map(Tight::to_string) |> @string.concat(separator=" ")
+  self.tex_layout._.map(Tight::to_string).join(" ")
 }

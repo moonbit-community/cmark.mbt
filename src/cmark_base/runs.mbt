@@ -6,7 +6,7 @@ pub fn run_of(
   last~ : CharCodePos,
   start~ : CharCodePos
 ) -> Last {
-  if start > last || s[start] != char {
+  if start > last || s.charcode_at(start).unsafe_to_char() != char {
     return start - 1
   }
   run_of(char~, s, last~, start=start + 1)
@@ -20,7 +20,9 @@ pub fn first_non_blank(
   start~ : CharCodePos
 ) -> CharCodePos {
   for k in start..=last {
-    guard @char.is_ascii_blank(s[k]) else { return k }
+    guard s.charcode_at(k).to_char() is Some(c) && @char.is_ascii_blank(c) else {
+      return k
+    }
   }
   last + 1
 }
@@ -40,7 +42,7 @@ pub fn last_non_blank(
   if start < first {
     return first - 1
   }
-  match s[start] {
+  match s.charcode_at(start) {
     ' ' | '\t' => last_non_blank(s, first~, start=start - 1)
     _ => start
   }
@@ -56,7 +58,7 @@ pub fn rev_drop_spaces(
   if start < first {
     return first - 1
   }
-  match s[start] {
+  match s.charcode_at(start) {
     ' ' => rev_drop_spaces(s, first~, start=start - 1)
     _ => start
   }
@@ -102,7 +104,7 @@ fn[A] accept_to(
         let start = first_non_blank_in_span(s, new_line)
         continue lines, new_line, start, start
       }
-      if s[k] == char {
+      if s.charcode_at(k).unsafe_to_char() == char {
         push_span(line~, start, k, spans)
         break Some((line, k))
       }
@@ -134,11 +136,11 @@ fn[A] accept_upto(
         let prev_bslash = false
         continue char, next_line, s, lines, newline, prev_bslash, start, acc, start
       } else {
-        if s[k] == char && not(prev_bslash) {
+        if s.charcode_at(k) == char.to_int() && not(prev_bslash) {
           push_span(line~, start, k - 1, acc)
           break Some((line, k))
         }
-        let prev_bslash = s[k] == '\\' && not(prev_bslash)
+        let prev_bslash = s.charcode_at(k) == '\\' && not(prev_bslash)
         continue char, next_line, s, lines, line, prev_bslash, start, acc, k + 1
       }
   }
@@ -199,7 +201,11 @@ pub fn first_non_escaped_char(
   start~ : CharCodePos
 ) -> CharCodePos {
   for k = start; ; k = k + 1 {
-    if k > last || (s[k] == c && (k == start || s[k - 1] != '\\')) {
+    if k > last ||
+      (
+        s.charcode_at(k) == c.to_int() &&
+        (k == start || s.charcode_at(k - 1) != '\\')
+      ) {
       break k
     }
   }

@@ -33,7 +33,7 @@ fn Parser::update_next_non_blank(self : Parser) -> Unit {
         self.next_non_blank = k
         self.next_non_blank_col = col
       } else {
-        match s[k] {
+        match s.charcode_at(k) {
           ' ' => continue s, last, k + 1, col + 1
           '\t' => continue s, last, k + 1, next_tab_stop(col)
           _ => {
@@ -52,7 +52,7 @@ fn Parser::accept_cols(self : Parser, count~ : Int) -> Unit {
       if count == 0 {
         self.curr_char = k
         self.curr_char_col = col
-      } else if self.i[k] != '\t' {
+      } else if self.i.charcode_at(k) != '\t' {
         continue count - 1, k + 1, col + 1
       } else {
         let col1 = next_tab_stop(col)
@@ -71,19 +71,16 @@ fn Parser::accept_cols(self : Parser, count~ : Int) -> Unit {
 
 ///| https://spec.commonmark.org/current/#block-quote-marker
 fn Parser::match_and_accept_block_quote(self : Parser) -> Bool {
-  if self.end_of_line() || self.i[self.curr_char] != '>' {
+  if self.end_of_line() || self.i.charcode_at(self.curr_char) != '>' {
     return false
   }
   let next_is_blank = {
     let next = self.curr_char + 1
-    next <= self.curr_line_last_char && @char.is_ascii_blank(self.i[next])
+    next <= self.curr_line_last_char &&
+    @char.is_ascii_blank(self.i.char_at(next))
   }
   self.accept_cols(
-    count=if next_is_blank {
-      2 // We eat a space
-    } else {
-      1
-    },
+    count=1 + next_is_blank.to_int(), // We eat a space
   )
   true
 }
@@ -307,7 +304,10 @@ fn Parser::fenced_code_block(
     Some((first, last)) => (Some(self.curr_line_span(first~, last~)), first)
   }
   let opening_fence = self.curr_line_span(first=fence_first, last=layout_last)
-  let fence = (self.i[fence_first], fence_last - fence_first + 1)
+  let fence = (
+    self.i.charcode_at(fence_first).unsafe_to_char(),
+    fence_last - fence_first + 1,
+  )
   let fence = { indent, opening_fence, fence, info_string, closing_fence: None }
   CodeBlock(Fenced({ fence, code: [] }))
 }
@@ -416,7 +416,7 @@ fn Parser::parse_link_ref_definition(
     None
   }
   let colon = last + 1
-  guard colon <= line.last && self.i[colon] == ':' else { None }
+  guard colon <= line.last && self.i.charcode_at(colon) == ':' else { None }
   let label = Parser::label_of_spans(self, key~, spans[:])
   let (lines, line, label, start) = (lines, line, label, colon + 1)
   guard self.first_non_blank_over_nl(next_line~, lines, line, start~)
@@ -477,7 +477,7 @@ fn Parser::parse_link_ref_definition(
       (
         lines1,
         after_dest,
-        self.i[start1],
+        self.i.charcode_at(start1).unsafe_to_char(),
         Some(t),
         after_title,
         { ..line1, last, },
@@ -586,7 +586,7 @@ fn Parser::close_list(
       guard blocks.pop() is Some(bl)
       let items = l.items
       items[items.length() - 1] = { ..i, blocks, }
-      bs..push(List({ ..l, items, })).push(bl)
+      bs..push(List({ ..l, items, }))..push(bl)
     }
     _ => {
       let items = l.items
@@ -699,7 +699,7 @@ fn Parser::match_line_type(
   }
   let start = self.curr_char
   let last = self.curr_line_last_char
-  match self.i[start] {
+  match self.i.charcode_at(start) {
     // Early dispatch shaves a few ms but may not be worth doing vs 
     // testing all the cases in sequences.
     '>' => {
@@ -924,13 +924,14 @@ fn Parser::try_add_to_list(
   if list.list_type.is_same_type(list_type) {
     let l = list
     self.close_last_list_item(l)
+    l.items.push(item)
     bs.push(
       List({
         last_blank: false,
         loose: l.last_blank,
         item_min_indent,
         list_type: l.list_type,
-        items: l.items..push(item),
+        items: l.items,
       }),
     )
   } else {
@@ -1036,14 +1037,16 @@ fn Parser::try_add_to_indented_code_block(
       let last = self.curr_line_last_char
       let code = self.curr_line_span(first~, last~)
       let l = { pad: 0, code, is_blank: true }
-      bs.push(CodeBlock(Indented(ls..push(l))))
+      ls.push(l)
+      bs.push(CodeBlock(Indented(ls)))
     }
   } else {
     let (pad, first) = self.accept_code_indent(count=4)
     let last = self.curr_line_last_char
     let is_blank = self.only_blanks()
     let l = { pad, code: self.curr_line_span(first~, last~), is_blank }
-    bs.push(CodeBlock(Indented(ls..push(l))))
+    ls.push(l)
+    bs.push(CodeBlock(Indented(ls)))
   }
 }
 
@@ -1054,8 +1057,11 @@ fn Parser::try_add_to_fenced_code_block(
   bs : Array[BlockStruct]
 ) -> Unit {
   match f {
-    { fence: { closing_fence: Some(_), .. }, .. } => // Block is closed
-      self.add_open_blocks(bs..push(CodeBlock(Fenced(f))))
+    { fence: { closing_fence: Some(_), .. }, .. } => {
+      // Block is closed
+      bs.push(CodeBlock(Fenced(f)))
+      self.add_open_blocks(bs)
+    }
     { fence: { indent, fence, .. }, code: ls } as b => {
       let start = self.curr_char
       let last = self.curr_line_last_char
@@ -1064,8 +1070,8 @@ fn Parser::try_add_to_fenced_code_block(
         Code => {
           let strip = @math.minimum(indent, self.curr_indent())
           let (pad, first) = self.accept_code_indent(count=strip)
-          let code = ls..push((pad, self.curr_line_span(first~, last~)))
-          bs.push(CodeBlock(Fenced({ ..b, code, })))
+          ls.push((pad, self.curr_line_span(first~, last~)))
+          bs.push(CodeBlock(Fenced({ ..b, code: ls })))
         }
         Close(first, _fence_last) => {
           let close = self.curr_line_span(first~, last~) // With layout
@@ -1084,7 +1090,10 @@ fn Parser::try_add_to_html_block(
   bs : Array[BlockStruct]
 ) -> Unit {
   match b.end_cond {
-    None => self.add_open_blocks(bs..push(HtmlBlock({ ..b, end_cond: None })))
+    None => {
+      bs.push(HtmlBlock({ ..b, end_cond: None }))
+      self.add_open_blocks(bs)
+    }
     Some(end_cond) => {
       let start = self.curr_char
       let last = self.curr_line_last_char
@@ -1092,11 +1101,17 @@ fn Parser::try_add_to_html_block(
       if LineType::html_block_end(self.i, end_cond~, last~, start~) {
         match end_cond {
           EndBlank7 | EndBlank =>
-            bs..push(HtmlBlock({ ..b, end_cond: None })).push(self.blank_line())
-          _ => bs.push(HtmlBlock({ html: b.html..push(l), end_cond: None }))
+            bs
+            ..push(HtmlBlock({ ..b, end_cond: None }))
+            ..push(self.blank_line())
+          _ => {
+            b.html.push(l)
+            bs.push(HtmlBlock({ html: b.html, end_cond: None }))
+          }
         }
       } else {
-        bs.push(HtmlBlock({ ..b, html: b.html..push(l) }))
+        b.html.push(l)
+        bs.push(HtmlBlock(b))
       }
     }
   }
@@ -1139,7 +1154,8 @@ fn Parser::try_add_to_table(
   match self.match_line_type(no_setext=true, indent=curr_indent) {
     ExtTableRow(last) => {
       let row = self.table_row(first=self.curr_char, last~)
-      bs.push(ExtTable(indent, rows..push(row)))
+      rows.push(row)
+      bs.push(ExtTable(indent, rows))
     }
     lt => {
       bs.push(ExtTable(indent, rows))
@@ -1235,7 +1251,8 @@ fn Parser::try_add_to_list_item(
       item.blocks.iter().all(BlockStruct::is_blank_line) {
       // Item can only start with a single blank line, 
       // if we are here it's not a new item so the list ends
-      self.add_open_blocks(bs..push(List(list)))
+      bs..push(List(list))
+      self.add_open_blocks(bs)
     } else {
       self.accept_cols(count=list.item_min_indent)
       self.add_line(item.blocks)
@@ -1312,7 +1329,9 @@ fn Parser::add_line(self : Parser, bs : Array[BlockStruct]) -> Unit {
 fn Parser::get_first_line(self : Parser) -> String {
   let max = self.i.length() - 1
   let mut k = 0
-  let last_char = while k <= max && self.i[k] != '\r' && self.i[k] != '\n' {
+  let last_char = while k <= max &&
+                        self.i.charcode_at(k) != '\r' &&
+                        self.i.charcode_at(k) != '\n' {
     k += 1
   } else {
     // If the line is empty, we have -1
@@ -1321,11 +1340,11 @@ fn Parser::get_first_line(self : Parser) -> String {
   self.curr_line_last_char = last_char
   self.update_next_non_blank()
   // Return first used newline (or "\n" if there is none)
-  if k > max || self.i[k] == '\n' {
+  if k > max || self.i.charcode_at(k) == '\n' {
     return "\n"
   }
   let next = k + 1
-  if next <= max && self.i[next] == '\n' {
+  if next <= max && self.i.charcode_at(next) == '\n' {
     return "\r\n"
   }
   "\r"
@@ -1339,18 +1358,18 @@ fn Parser::get_next_line(self : Parser) -> Bool {
   }
   let first_char = {
     let nl = self.curr_line_last_char + 1
-    if self.i[nl] == '\n' {
+    if self.i.charcode_at(nl) == '\n' {
       nl + 1
     } else {
       let mut next = nl + 1
-      if next <= max && self.i[next] == '\n' {
+      if next <= max && self.i.charcode_at(next) == '\n' {
         next += 1
       }
       next
     }
   }
   let last_char = for k = first_char
-                      k <= max && self.i[k] != '\r' && self.i[k] != '\n'
+                      k <= max && not(self.i.charcode_at(k) is ('\r' | '\n'))
                       k = k + 1 {
 
   } else {
@@ -1562,7 +1581,7 @@ fn Parser::block_struct_to_table(
           ({ v, meta }, false)
         }
       }
-      let acc = acc..push((r, self.layout_clean_raw_span1(blanks)))
+      acc.push((r, self.layout_clean_raw_span1(blanks)))
       guard rs.length() != 0 else { break (row, col_count, acc) }
       continue col_count, last_was_sep, acc, rs
     }
@@ -1643,7 +1662,8 @@ fn Parser::block_struct_to_list_item(
     loop bstate, tight, acc, bs {
       bstate, tight, acc, [BlankLine(_) as bl, .. bs] => {
         let bstate = if bstate == TrailBlank { TrailBlank } else { Blank }
-        continue bstate, tight, acc..push(self.block_struct_to_block(bl)), bs
+        acc.push(self.block_struct_to_block(bl))
+        continue bstate, tight, acc, bs
       }
       bstate,
       _,
@@ -1651,10 +1671,14 @@ fn Parser::block_struct_to_list_item(
       [
         List({ items: [.., { blocks: [.., BlankLine(_)], .. }], .. }) as l,
         .. bs,
-      ] => continue bstate, false, acc..push(self.block_struct_to_block(l)), bs
+      ] => {
+        acc.push(self.block_struct_to_block(l))
+        continue bstate, false, acc, bs
+      }
       bstate, tight, acc, [b, .. bs] => {
         let tight = tight && bstate != Blank
-        continue NonBlank, tight, acc..push(self.block_struct_to_block(b)), bs
+        acc.push(self.block_struct_to_block(b))
+        continue NonBlank, tight, acc, bs
       }
       _, tight, acc, [] => (tight, acc)
     }
@@ -1701,7 +1725,8 @@ fn Parser::block_struct_to_list(self : Parser, list : ListBlockStruct) -> Block 
     tight, acc, [] => (tight, acc)
     tight, acc, [item, .. items] => {
       let (item, item_tight) = self.block_struct_to_list_item(item)
-      continue tight && item_tight, acc..push(item), items
+      acc.push(item)
+      continue tight && item_tight, acc, items
     }
   }
   let meta = self.meta_of_metas(
