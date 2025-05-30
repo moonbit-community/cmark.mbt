@@ -8,78 +8,78 @@ pub impl[A : ToJson] ToJson for Seq[A] with to_json(self) -> Json {
 
 ///|
 /// @coverage.skip
-pub fn Seq::empty[A]() -> Seq[A] {
+pub fn[A] Seq::empty() -> Seq[A] {
   []
 }
 
 ///|
 /// @coverage.skip
-pub fn Seq::from_iter[A](iter : Iter[A]) -> Seq[A] {
+pub fn[A] Seq::from_iter(iter : Iter[A]) -> Seq[A] {
   Array::from_iter(iter)
 }
 
 ///|
 /// @coverage.skip
-pub fn Seq::from_array[A](arr : Array[A]) -> Seq[A] {
+pub fn[A] Seq::from_array(arr : Array[A]) -> Seq[A] {
   arr
 }
 
 ///|
 /// @coverage.skip
-pub fn Seq::to_array[A](self : Seq[A]) -> Array[A] {
+pub fn[A] Seq::to_array(self : Seq[A]) -> Array[A] {
   self._
 }
 
 ///|
 /// @coverage.skip
-pub fn Seq::iter[A](self : Seq[A]) -> Iter[A] {
+pub fn[A] Seq::iter(self : Seq[A]) -> Iter[A] {
   self._.iter()
 }
 
 ///|
 /// @coverage.skip
-pub fn Seq::length[A](self : Seq[A]) -> Int {
+pub fn[A] Seq::length(self : Seq[A]) -> Int {
   self._.length()
 }
 
 ///|
 /// @coverage.skip
-pub fn Seq::map[A, B](self : Seq[A], f : (A) -> B) -> Seq[B] {
+pub fn[A, B] Seq::map(self : Seq[A], f : (A) -> B) -> Seq[B] {
   self._.map(f)
 }
 
 ///|
 /// @coverage.skip
-pub fn Seq::fold[A, B](self : Seq[A], init~ : B, f : (B, A) -> B) -> B {
+pub fn[A, B] Seq::fold(self : Seq[A], init~ : B, f : (B, A) -> B) -> B {
   self._.fold(init~, f)
 }
 
 ///|
 /// @coverage.skip
-pub fn Seq::rev_fold[A, B](self : Seq[A], init~ : B, f : (B, A) -> B) -> B {
+pub fn[A, B] Seq::rev_fold(self : Seq[A], init~ : B, f : (B, A) -> B) -> B {
   self._.rev_fold(init~, f)
 }
 
 ///|
 /// @coverage.skip
-pub fn Seq::get[A](self : Seq[A], idx : Int) -> A? {
+pub fn[A] Seq::get(self : Seq[A], idx : Int) -> A? {
   self._.get(idx)
 }
 
 ///|
 /// @coverage.skip
-pub fn Seq::op_get[A](self : Seq[A], idx : Int) -> A {
+pub fn[A] Seq::op_get(self : Seq[A], idx : Int) -> A {
   self._[idx]
 }
 
 ///|
 /// @coverage.skip
-pub fn Seq::op_set[A](self : Seq[A], idx : Int, val : A) -> Unit {
+pub fn[A] Seq::op_set(self : Seq[A], idx : Int, val : A) -> Unit {
   self._[idx] = val
 }
 
 ///|
 /// @coverage.skip
-pub fn Seq::is_empty[A](self : Seq[A]) -> Bool {
+pub fn[A] Seq::is_empty(self : Seq[A]) -> Bool {
   self._.is_empty()
 }

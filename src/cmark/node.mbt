@@ -5,12 +5,12 @@ pub(all) struct Node[A] {
 } derive(Eq)
 
 ///|
-pub fn Node::new[A](v : A, meta~ : Meta = Meta::none()) -> Node[A] {
+pub fn[A] Node::new(v : A, meta~ : Meta = Meta::none()) -> Node[A] {
   { v, meta }
 }
 
 ///|
-pub fn Node::map[A, B](self : Node[A], f : (A) -> B) -> Node[B] {
+pub fn[A, B] Node::map(self : Node[A], f : (A) -> B) -> Node[B] {
   { v: f(self.v), meta: self.meta }
 }
 

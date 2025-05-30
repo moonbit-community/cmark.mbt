@@ -20,7 +20,7 @@ pub fn BlockLine::list_text_loc(ls : Seq[BlockLine]) -> TextLoc {
   match ls._ {
     [] => TextLoc::none()
     [head] => head.meta.loc
-    [head,  ..,  last] => head.meta.loc.reloc(last.meta.loc)
+    [head, .., last] => head.meta.loc.reloc(last.meta.loc)
   }
 }
 
@@ -50,7 +50,7 @@ pub fn Tight::list_text_loc(ls : Seq[Tight]) -> TextLoc {
   match ls._ {
     [] => TextLoc::none()
     [head] => head.node.meta.loc
-    [head,  ..,  last] => head.node.meta.loc.reloc(last.node.meta.loc)
+    [head, .., last] => head.node.meta.loc.reloc(last.node.meta.loc)
   }
 }
 
@@ -97,7 +97,7 @@ fn BlockLine::flush_tight(
 typealias FlushFn[A] = (String, Int, Int, Array[A]) -> Unit
 
 ///|
-fn _list_of_string[A](flush : FlushFn[A], s : String) -> Array[A] {
+fn[A] _list_of_string(flush : FlushFn[A], s : String) -> Array[A] {
   loop s, [], s.length() - 1, 0, 0 {
     s, acc, max, start, k => {
       if k > max {

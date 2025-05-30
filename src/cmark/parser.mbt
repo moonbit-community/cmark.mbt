@@ -323,7 +323,7 @@ fn Parser::first_non_blank_in_span(
 }
 
 ///|
-fn Parser::first_non_blank_over_nl[A](
+fn[A] Parser::first_non_blank_over_nl(
   self : Parser,
   next_line~ : NextLineFn[A],
   lines : A,

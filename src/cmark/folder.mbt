@@ -25,18 +25,18 @@ pub impl[A] Default for FolderResult[A] with default() {
 }
 
 ///|
-pub fn Folder::ret[A](a : A) -> FolderResult[A] {
+pub fn[A] Folder::ret(a : A) -> FolderResult[A] {
   Fold(a)
 }
 
 ///|
-pub fn Folder::none[A, B](self : Folder[A], _a : A, _b : B) -> FolderResult[A] {
+pub fn[A, B] Folder::none(self : Folder[A], _a : A, _b : B) -> FolderResult[A] {
   let _ = self
   Default
 }
 
 ///|
-pub fn Folder::inline_ext_none[A](
+pub fn[A] Folder::inline_ext_none(
   self : Folder[A],
   _a : A,
   _b : Inline
@@ -46,7 +46,7 @@ pub fn Folder::inline_ext_none[A](
 }
 
 ///|
-pub fn Folder::block_ext_none[A](
+pub fn[A] Folder::block_ext_none(
   self : Folder[A],
   _a : A,
   _b : Block
@@ -56,7 +56,7 @@ pub fn Folder::block_ext_none[A](
 }
 
 ///|
-pub fn Folder::new[A](
+pub fn[A] Folder::new(
   inline_ext_default~ : FoldFn[Inline, A] = Folder::inline_ext_none,
   block_ext_default~ : FoldFn[Block, A] = Folder::block_ext_none,
   inline~ : FolderFn[Inline, A] = Folder::none,
@@ -66,7 +66,7 @@ pub fn Folder::new[A](
 }
 
 ///|
-pub fn Folder::fold_inline[A](
+pub fn[A] Folder::fold_inline(
   self : Folder[A],
   acc : A,
   i : Inline
@@ -97,7 +97,7 @@ pub fn Folder::fold_inline[A](
 }
 
 ///|
-pub fn Folder::fold_block[A](
+pub fn[A] Folder::fold_block(
   self : Folder[A],
   acc : A,
   b : Block
@@ -146,7 +146,7 @@ pub fn Folder::fold_block[A](
 }
 
 ///|
-pub fn Folder::fold_doc[A](
+pub fn[A] Folder::fold_doc(
   self : Folder[A],
   acc : A,
   doc : Doc
