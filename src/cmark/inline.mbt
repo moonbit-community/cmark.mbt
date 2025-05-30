@@ -426,8 +426,7 @@ pub fn InlineLink::is_unsafe(l : String) -> Bool {
     let allowed = ["image/gif", "image/png", "image/jpeg", "image/webp"]
     allowed.contains(l.substring(start=5, end=@math.minimum(j, k)))
   }
-  // TODO: Use `casefold()`.
-  let lower = l.to_lower()
+  let lower = @casefold.casefold(l)
   lower.has_prefix("javascript:") ||
   lower.has_prefix("vbscript:") ||
   lower.has_prefix("file:") ||
