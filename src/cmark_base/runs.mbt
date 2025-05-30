@@ -21,7 +21,6 @@ pub fn first_non_blank(
 ) -> CharCodePos {
   for k in start..=last {
     guard @char.is_ascii_blank(s[k]) else { return k }
-
   }
   last + 1
 }
@@ -86,7 +85,7 @@ fn push_span(
 }
 
 ///| Includes final `char` in spans.
-fn accept_to[A](
+fn[A] accept_to(
   char~ : Char,
   next_line~ : NextLineFn[A],
   s : String,
@@ -113,7 +112,7 @@ fn accept_to[A](
 }
 
 ///| Does not not include final `char` in spans and continues on backslashed `char`.
-fn accept_upto[A](
+fn[A] accept_upto(
   char~ : Char,
   next_line~ : NextLineFn[A],
   s : String,
@@ -148,7 +147,7 @@ fn accept_upto[A](
 ///| `first_non_blank_over_nl(next_line, s, lines, line, start)` is the first byte position starting with `start`
 /// that is not blank in `line` or on the next line as determined by `next_line`.
 /// Returns `None` if there is no such position.
-pub fn first_non_blank_over_nl[A](
+pub fn[A] first_non_blank_over_nl(
   next_line~ : NextLineFn[A],
   s : String,
   lines : A,
@@ -168,7 +167,7 @@ pub fn first_non_blank_over_nl[A](
 }
 
 ///| Same as `first_non_blank_over_nl()` but pushes skipped data on `spans`.
-fn first_non_blank_over_nl1[A](
+fn[A] first_non_blank_over_nl1(
   next_line~ : NextLineFn[A],
   s : String,
   lines : A,

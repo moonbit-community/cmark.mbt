@@ -39,23 +39,23 @@ pub impl[A] Default for MapperResult[A] with default() {
 pub(all) typealias FilterMap[A] = A?
 
 ///|
-pub fn Mapper::delete[A]() -> MapperResult[A] {
+pub fn[A] Mapper::delete() -> MapperResult[A] {
   Map(None)
 }
 
 ///|
-pub fn Mapper::ret[A](a : A) -> MapperResult[A] {
+pub fn[A] Mapper::ret(a : A) -> MapperResult[A] {
   Map(Some(a))
 }
 
 ///|
-pub fn Mapper::none[A](self : Mapper, _a : A) -> MapperResult[A] {
+pub fn[A] Mapper::none(self : Mapper, _a : A) -> MapperResult[A] {
   let _ = self
   Default
 }
 
 ///|
-pub fn Mapper::inline_ext_none[A](
+pub fn[A] Mapper::inline_ext_none(
   self : Mapper,
   _a : A
 ) -> FilterMap[A]!MapperError {
@@ -64,7 +64,7 @@ pub fn Mapper::inline_ext_none[A](
 }
 
 ///|
-pub fn Mapper::block_ext_none[A](
+pub fn[A] Mapper::block_ext_none(
   self : Mapper,
   _a : A
 ) -> FilterMap[A]!MapperError {

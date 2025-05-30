@@ -21,7 +21,7 @@ fn first_non_blank(String, last~ : Int, start~ : Int) -> Int
 
 fn first_non_blank_in_span(String, LineSpan) -> Int
 
-fn first_non_blank_over_nl[A](next_line~ : (A) -> LineSpan?, String, A, line~ : LineSpan, start~ : Int) -> NextLineResult?
+fn[A] first_non_blank_over_nl(next_line~ : (A) -> LineSpan?, String, A, line~ : LineSpan, start~ : Int) -> NextLineResult?
 
 fn first_non_escaped_char(Char, String, last~ : Int, start~ : Int) -> Int
 
@@ -33,11 +33,11 @@ let line_pos_none : (Int, Int)
 
 fn link_destination(String, last~ : Int, start~ : Int) -> (Bool, Int, Int)?
 
-fn link_label[A](StringBuilder, next_line~ : (A) -> LineSpan?, String, A, line~ : LineSpan, start~ : Int) -> (LineSpan, Array[Span], Int, String)?
+fn[A] link_label(StringBuilder, next_line~ : (A) -> LineSpan?, String, A, line~ : LineSpan, start~ : Int) -> (LineSpan, Array[Span], Int, String)?
 
-fn link_title[A](next_line~ : (A) -> LineSpan?, String, A, line~ : LineSpan, start~ : Int) -> (LineSpan, Array[Span], Int)?
+fn[A] link_title(next_line~ : (A) -> LineSpan?, String, A, line~ : LineSpan, start~ : Int) -> (LineSpan, Array[Span], Int)?
 
-fn raw_html[A : Show](next_line~ : (A) -> LineSpan?, String, A, line~ : LineSpan, start~ : Int) -> (LineSpan, Array[Span], Int)?
+fn[A : Show] raw_html(next_line~ : (A) -> LineSpan?, String, A, line~ : LineSpan, start~ : Int) -> (LineSpan, Array[Span], Int)?
 
 fn rev_drop_spaces(String, first~ : Int, start~ : Int) -> Int
 
@@ -48,9 +48,7 @@ pub(all) enum FencedCodeBlockContinue {
   Close(Int, Int)
   Code
 }
-impl FencedCodeBlockContinue {
-  new(String, fence~ : (Char, Int), last~ : Int, start~ : Int) -> Self
-}
+fn FencedCodeBlockContinue::new(String, fence~ : (Char, Int), last~ : Int, start~ : Int) -> Self
 impl Show for FencedCodeBlockContinue
 impl ToJson for FencedCodeBlockContinue
 
@@ -89,17 +87,15 @@ pub(all) enum LineType {
   ExtFootnoteLabel(Array[Span], Int, String)
   Nomatch
 }
-impl LineType {
-  atx_heading(String, last~ : Int, start~ : Int) -> Self
-  ext_footnote_label(StringBuilder, String, line_pos~ : (Int, Int), last~ : Int, start~ : Int) -> Self
-  ext_table_row(String, last~ : Int, start~ : Int) -> Self
-  fenced_code_block_start(String, last~ : Int, start~ : Int) -> Self
-  html_block_end(String, end_cond~ : HtmlBlockEndCond, last~ : Int, start~ : Int) -> Bool
-  html_block_start(String, last~ : Int, start~ : Int) -> Self
-  list_marker(String, last~ : Int, start~ : Int) -> Self
-  setext_heading_underline(String, last~ : Int, start~ : Int) -> Self
-  thematic_break(String, last~ : Int, start~ : Int) -> Self
-}
+fn LineType::atx_heading(String, last~ : Int, start~ : Int) -> Self
+fn LineType::ext_footnote_label(StringBuilder, String, line_pos~ : (Int, Int), last~ : Int, start~ : Int) -> Self
+fn LineType::ext_table_row(String, last~ : Int, start~ : Int) -> Self
+fn LineType::fenced_code_block_start(String, last~ : Int, start~ : Int) -> Self
+fn LineType::html_block_end(String, end_cond~ : HtmlBlockEndCond, last~ : Int, start~ : Int) -> Bool
+fn LineType::html_block_start(String, last~ : Int, start~ : Int) -> Self
+fn LineType::list_marker(String, last~ : Int, start~ : Int) -> Self
+fn LineType::setext_heading_underline(String, last~ : Int, start~ : Int) -> Self
+fn LineType::thematic_break(String, last~ : Int, start~ : Int) -> Self
 impl Eq for LineType
 impl Show for LineType
 impl ToJson for LineType
@@ -108,9 +104,7 @@ pub(all) enum ListType {
   Unordered(Char)
   Ordered(Int, Char)
 }
-impl ListType {
-  is_same_type(Self, Self) -> Bool
-}
+fn ListType::is_same_type(Self, Self) -> Bool
 impl Eq for ListType
 impl Show for ListType
 impl ToJson for ListType
@@ -121,13 +115,11 @@ pub(all) struct Meta {
   loc : TextLoc
   extra : Error?
 }
-impl Meta {
-  compare(Self, Self) -> Int
-  is_none(Self) -> Bool
-  new(loc~ : TextLoc = ..) -> Self
-  none() -> Self
-  to_json(Self) -> Json
-}
+fn Meta::compare(Self, Self) -> Int
+fn Meta::is_none(Self) -> Bool
+fn Meta::new(loc~ : TextLoc = ..) -> Self
+fn Meta::none() -> Self
+fn Meta::to_json(Self) -> Json
 impl Eq for Meta
 impl Show for Meta
 impl ToJson for Meta
@@ -155,16 +147,14 @@ pub(all) struct TextLoc {
   first_line : (Int, Int)
   last_line : (Int, Int)
 }
-impl TextLoc {
-  after(Self) -> Self
-  is_empty(Self) -> Bool
-  is_none(Self) -> Bool
-  none() -> Self
-  reloc(Self, Self) -> Self
-  span(Self, Self) -> Self
-  to_first(Self) -> Self
-  to_last(Self) -> Self
-}
+fn TextLoc::after(Self) -> Self
+fn TextLoc::is_empty(Self) -> Bool
+fn TextLoc::is_none(Self) -> Bool
+fn TextLoc::none() -> Self
+fn TextLoc::reloc(Self, Self) -> Self
+fn TextLoc::span(Self, Self) -> Self
+fn TextLoc::to_first(Self) -> Self
+fn TextLoc::to_last(Self) -> Self
 impl Compare for TextLoc
 impl Eq for TextLoc
 impl Show for TextLoc

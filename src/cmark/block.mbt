@@ -456,7 +456,6 @@ fn Table::parse_sep_row(
       let last = if last_colon { max - 1 } else { max }
       for i in first..=last {
         guard v[i] == '-' else { break None }
-
       } else {
         let count = last - first + 1
         let sep = match (first_colon, last_colon) {

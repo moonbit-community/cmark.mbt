@@ -1231,7 +1231,6 @@ fn Parser::find_emphasis_text(
         } else {
           acc.push(t)
           guard self.cidx.has_emphasis(char=opener.char, after~) else { break }
-
         }
       }
       Some(Newline({ newline: l, .. }) | Inline({ endline: l, .. }) as t) => {

@@ -28,12 +28,10 @@ pub(all) enum Block {
   ExtTable(Node[Table])
   ExtFootnoteDefinition(Node[Footnote])
 }
-impl Block {
-  defs(Self, init~ : Map[String, LabelDef] = ..) -> Map[String, LabelDef]
-  empty() -> Self
-  meta(Self) -> @cmark_base.Meta
-  normalize(Self) -> Self
-}
+fn Block::defs(Self, init~ : Map[String, LabelDef] = ..) -> Map[String, LabelDef]
+fn Block::empty() -> Self
+fn Block::meta(Self) -> @cmark_base.Meta
+fn Block::normalize(Self) -> Self
 impl Show for Block
 impl ToJson for Block
 
@@ -43,9 +41,7 @@ pub(all) struct BlockHeading {
   inline : Inline
   id : BlockHeadingId?
 }
-impl BlockHeading {
-  new(id~ : BlockHeadingId? = .., layout~ : BlockHeadingLayout = .., level~ : Int, Inline) -> Self
-}
+fn BlockHeading::new(id~ : BlockHeadingId? = .., layout~ : BlockHeadingLayout = .., level~ : Int, Inline) -> Self
 impl Show for BlockHeading
 impl ToJson for BlockHeading
 
@@ -54,9 +50,7 @@ pub(all) struct BlockHeadingAtxLayout {
   after_opening : String
   closing : String
 }
-impl BlockHeadingAtxLayout {
-  default() -> Self
-}
+fn BlockHeadingAtxLayout::default() -> Self
 impl Show for BlockHeadingAtxLayout
 impl ToJson for BlockHeadingAtxLayout
 impl @json.FromJson for BlockHeadingAtxLayout
@@ -87,20 +81,16 @@ impl Show for BlockHeadingSetextLayout
 impl ToJson for BlockHeadingSetextLayout
 
 pub(all) type BlockLine Node[String]
-impl BlockLine {
-  list_text_loc(Seq[Self]) -> @cmark_base.TextLoc
-  to_string(Self) -> String
-}
+fn BlockLine::list_text_loc(Seq[Self]) -> @cmark_base.TextLoc
+fn BlockLine::to_string(Self) -> String
 
 pub(all) struct BlockList {
   ty : @cmark_base.ListType
   tight : Bool
   items : Seq[Node[ListItem]]
 }
-impl BlockList {
-  map_items(Self, (ListItem) -> ListItem) -> Self
-  normalize_items(Self) -> Self
-}
+fn BlockList::map_items(Self, (ListItem) -> ListItem) -> Self
+fn BlockList::normalize_items(Self) -> Self
 impl Show for BlockList
 impl ToJson for BlockList
 
@@ -109,9 +99,7 @@ pub(all) struct BlockParagraph {
   inline : Inline
   trailing_blanks : String
 }
-impl BlockParagraph {
-  new(leading_indent~ : Int = .., trailing_blanks~ : String = .., Inline) -> Self
-}
+fn BlockParagraph::new(leading_indent~ : Int = .., trailing_blanks~ : String = .., Inline) -> Self
 impl Show for BlockParagraph
 impl ToJson for BlockParagraph
 
@@ -119,11 +107,9 @@ pub(all) struct BlockQuote {
   indent : Int
   block : Block
 }
-impl BlockQuote {
-  map_block(Self, (Block) -> Block) -> Self
-  new(indent~ : Int = .., Block) -> Self
-  normalize_block(Self) -> Self
-}
+fn BlockQuote::map_block(Self, (Block) -> Block) -> Self
+fn BlockQuote::new(indent~ : Int = .., Block) -> Self
+fn BlockQuote::normalize_block(Self) -> Self
 impl Show for BlockQuote
 impl ToJson for BlockQuote
 
@@ -131,9 +117,7 @@ pub(all) struct BlockThematicBreak {
   indent : Int
   layout : String
 }
-impl BlockThematicBreak {
-  new(indent~ : Int = .., layout~ : String = ..) -> Self
-}
+fn BlockThematicBreak::new(indent~ : Int = .., layout~ : String = ..) -> Self
 impl Show for BlockThematicBreak
 impl ToJson for BlockThematicBreak
 impl @json.FromJson for BlockThematicBreak
@@ -143,11 +127,9 @@ pub(all) struct CodeBlock {
   info_string : Node[String]?
   code : Seq[Node[String]]
 }
-impl CodeBlock {
-  language_of_info_string(String) -> (String, String)?
-  make_fence(Self) -> (Char, Int)
-  new(layout~ : CodeBlockLayout = .., info_string~ : Node[String]? = .., Seq[Node[String]]) -> Self
-}
+fn CodeBlock::language_of_info_string(String) -> (String, String)?
+fn CodeBlock::make_fence(Self) -> (Char, Int)
+fn CodeBlock::new(layout~ : CodeBlockLayout = .., info_string~ : Node[String]? = .., Seq[Node[String]]) -> Self
 impl Show for CodeBlock
 impl ToJson for CodeBlock
 
@@ -156,9 +138,7 @@ pub(all) struct CodeBlockFencedLayout {
   opening_fence : Node[String]
   closing_fence : Node[String]?
 }
-impl CodeBlockFencedLayout {
-  default() -> Self
-}
+fn CodeBlockFencedLayout::default() -> Self
 impl Show for CodeBlockFencedLayout
 impl ToJson for CodeBlockFencedLayout
 
@@ -174,11 +154,9 @@ pub(all) struct Doc {
   block : Block
   defs : Map[String, LabelDef]
 }
-impl Doc {
-  empty() -> Self
-  from_string(defs~ : Map[String, LabelDef] = .., resolver~ : (LabelContext) -> Label? = .., nested_links~ : Bool = .., heading_auto_ids~ : Bool = .., layout~ : Bool = .., locs~ : Bool = .., file~ : String = .., strict~ : Bool = .., String) -> Self
-  new(nl~ : String = .., defs~ : Map[String, LabelDef] = .., Block) -> Self
-}
+fn Doc::empty() -> Self
+fn Doc::from_string(defs~ : Map[String, LabelDef] = .., resolver~ : (LabelContext) -> Label? = .., nested_links~ : Bool = .., heading_auto_ids~ : Bool = .., layout~ : Bool = .., locs~ : Bool = .., file~ : String = .., strict~ : Bool = .., String) -> Self
+fn Doc::new(nl~ : String = .., defs~ : Map[String, LabelDef] = .., Block) -> Self
 impl Show for Doc
 impl ToJson for Doc
 
@@ -188,16 +166,14 @@ pub(all) struct Folder[A] {
   inline : (Folder[A], A, Inline) -> FolderResult[A]
   block : (Folder[A], A, Block) -> FolderResult[A]
 }
-impl Folder {
-  block_ext_none[A](Self[A], A, Block) -> A!FolderError
-  fold_block[A](Self[A], A, Block) -> A!FolderError
-  fold_doc[A](Self[A], A, Doc) -> A!FolderError
-  fold_inline[A](Self[A], A, Inline) -> A!FolderError
-  inline_ext_none[A](Self[A], A, Inline) -> A!FolderError
-  new[A](inline_ext_default~ : (Self[A], A, Inline) -> A!FolderError = .., block_ext_default~ : (Self[A], A, Block) -> A!FolderError = .., inline~ : (Self[A], A, Inline) -> FolderResult[A] = .., block~ : (Self[A], A, Block) -> FolderResult[A] = ..) -> Self[A]
-  none[A, B](Self[A], A, B) -> FolderResult[A]
-  ret[A](A) -> FolderResult[A]
-}
+fn[A] Folder::block_ext_none(Self[A], A, Block) -> A!FolderError
+fn[A] Folder::fold_block(Self[A], A, Block) -> A!FolderError
+fn[A] Folder::fold_doc(Self[A], A, Doc) -> A!FolderError
+fn[A] Folder::fold_inline(Self[A], A, Inline) -> A!FolderError
+fn[A] Folder::inline_ext_none(Self[A], A, Inline) -> A!FolderError
+fn[A] Folder::new(inline_ext_default~ : (Self[A], A, Inline) -> A!FolderError = .., block_ext_default~ : (Self[A], A, Block) -> A!FolderError = .., inline~ : (Self[A], A, Inline) -> FolderResult[A] = .., block~ : (Self[A], A, Block) -> FolderResult[A] = ..) -> Self[A]
+fn[A, B] Folder::none(Self[A], A, B) -> FolderResult[A]
+fn[A] Folder::ret(A) -> FolderResult[A]
 
 pub(all) type! FolderError String
 impl Show for FolderError
@@ -217,11 +193,9 @@ pub(all) struct Footnote {
   defined_label : Label?
   block : Block
 }
-impl Footnote {
-  map_block(Self, (Block) -> Block) -> Self
-  new(indent~ : Int = .., defined_label? : Label?, Label, Block) -> Self
-  normalize_block(Self) -> Self
-}
+fn Footnote::map_block(Self, (Block) -> Block) -> Self
+fn Footnote::new(indent~ : Int = .., defined_label? : Label?, Label, Block) -> Self
+fn Footnote::normalize_block(Self) -> Self
 impl Show for Footnote
 impl ToJson for Footnote
 
@@ -243,14 +217,12 @@ pub(all) enum Inline {
   ExtStrikethrough(Node[InlineStrikethrough])
   ExtMathSpan(Node[InlineMathSpan])
 }
-impl Inline {
-  empty() -> Self
-  id(Self, buf~ : StringBuilder = ..) -> String
-  is_empty(Self) -> Bool
-  meta(Self) -> @cmark_base.Meta
-  normalize(Self) -> Self
-  to_plain_text(Self, break_on_soft~ : Bool) -> Seq[Seq[String]]
-}
+fn Inline::empty() -> Self
+fn Inline::id(Self, buf~ : StringBuilder = ..) -> String
+fn Inline::is_empty(Self) -> Bool
+fn Inline::meta(Self) -> @cmark_base.Meta
+fn Inline::normalize(Self) -> Self
+fn Inline::to_plain_text(Self, break_on_soft~ : Bool) -> Seq[Seq[String]]
 impl Eq for Inline
 impl Show for Inline
 impl ToJson for Inline
@@ -259,9 +231,7 @@ pub(all) struct InlineAutolink {
   is_email : Bool
   link : Node[String]
 }
-impl InlineAutolink {
-  new(Node[String]) -> Self
-}
+fn InlineAutolink::new(Node[String]) -> Self
 impl Eq for InlineAutolink
 impl Show for InlineAutolink
 impl ToJson for InlineAutolink
@@ -271,9 +241,7 @@ pub(all) struct InlineBreak {
   ty : InlineBreakType
   layout_after : Node[String]
 }
-impl InlineBreak {
-  new(layout_before~ : Node[String] = .., layout_after~ : Node[String] = .., InlineBreakType) -> Self
-}
+fn InlineBreak::new(layout_before~ : Node[String] = .., layout_after~ : Node[String] = .., InlineBreakType) -> Self
 impl Eq for InlineBreak
 impl Show for InlineBreak
 impl ToJson for InlineBreak
@@ -292,11 +260,9 @@ pub(all) struct InlineCodeSpan {
   backticks : Int
   code_layout : Seq[Tight]
 }
-impl InlineCodeSpan {
-  code(Self) -> String
-  from_string(meta~ : @cmark_base.Meta = .., String) -> Self
-  new(backticks~ : Int, Seq[Tight]) -> Self
-}
+fn InlineCodeSpan::code(Self) -> String
+fn InlineCodeSpan::from_string(meta~ : @cmark_base.Meta = .., String) -> Self
+fn InlineCodeSpan::new(backticks~ : Int, Seq[Tight]) -> Self
 impl Eq for InlineCodeSpan
 impl Show for InlineCodeSpan
 impl ToJson for InlineCodeSpan
@@ -305,9 +271,7 @@ pub(all) struct InlineEmphasis {
   delim : Char
   inline : Inline
 }
-impl InlineEmphasis {
-  new(delim~ : Char = .., Inline) -> Self
-}
+fn InlineEmphasis::new(delim~ : Char = .., Inline) -> Self
 impl Eq for InlineEmphasis
 impl Show for InlineEmphasis
 impl ToJson for InlineEmphasis
@@ -316,12 +280,10 @@ pub(all) struct InlineLink {
   text : Inline
   reference : ReferenceKind
 }
-impl InlineLink {
-  is_unsafe(String) -> Bool
-  new(Inline, ReferenceKind) -> Self
-  reference_definition(Self, Map[String, LabelDef]) -> LabelDef?
-  referenced_label(Self) -> Label?
-}
+fn InlineLink::is_unsafe(String) -> Bool
+fn InlineLink::new(Inline, ReferenceKind) -> Self
+fn InlineLink::reference_definition(Self, Map[String, LabelDef]) -> LabelDef?
+fn InlineLink::referenced_label(Self) -> Label?
 impl Eq for InlineLink
 impl Show for InlineLink
 impl ToJson for InlineLink
@@ -330,9 +292,7 @@ pub(all) struct InlineMathSpan {
   display : Bool
   tex_layout : Seq[Tight]
 }
-impl InlineMathSpan {
-  tex(Self) -> String
-}
+fn InlineMathSpan::tex(Self) -> String
 impl Eq for InlineMathSpan
 impl Show for InlineMathSpan
 impl ToJson for InlineMathSpan
@@ -352,11 +312,9 @@ pub(all) struct Label {
   key : String
   text : Seq[Tight]
 }
-impl Label {
-  compare(Self, Self) -> Int
-  new(meta~ : @cmark_base.Meta = .., key~ : String, Seq[Tight]) -> Self
-  text_loc(Self) -> @cmark_base.TextLoc
-}
+fn Label::compare(Self, Self) -> Int
+fn Label::new(meta~ : @cmark_base.Meta = .., key~ : String, Seq[Tight]) -> Self
+fn Label::text_loc(Self) -> @cmark_base.TextLoc
 impl Eq for Label
 impl Show for Label
 impl ToJson for Label
@@ -365,9 +323,7 @@ pub(all) enum LabelContext {
   Def(Label?, Label)
   Ref(LinkKind, Label, Label?)
 }
-impl LabelContext {
-  default_resolver(Self) -> Label?
-}
+fn LabelContext::default_resolver(Self) -> Label?
 
 pub(all) enum LabelDef {
   LinkDef(Node[LinkDefinition])
@@ -383,9 +339,7 @@ pub(all) struct LinkDefinition {
   dest : Node[String]?
   title : Seq[Tight]?
 }
-impl LinkDefinition {
-  new(layout~ : LinkDefinitionLayout = .., label~ : Label? = .., defined_label~ : Label? = .., dest~ : Node[String]? = .., title~ : Seq[Tight]? = ..) -> Self
-}
+fn LinkDefinition::new(layout~ : LinkDefinitionLayout = .., label~ : Label? = .., defined_label~ : Label? = .., dest~ : Node[String]? = .., title~ : Seq[Tight]? = ..) -> Self
 impl Eq for LinkDefinition
 impl Show for LinkDefinition
 impl ToJson for LinkDefinition
@@ -398,10 +352,8 @@ pub(all) struct LinkDefinitionLayout {
   title_open_delim : Char
   after_title : Seq[Node[String]]
 }
-impl LinkDefinitionLayout {
-  default() -> Self
-  for_dest(String) -> Self
-}
+fn LinkDefinitionLayout::default() -> Self
+fn LinkDefinitionLayout::for_dest(String) -> Self
 impl Eq for LinkDefinitionLayout
 impl Show for LinkDefinitionLayout
 impl ToJson for LinkDefinitionLayout
@@ -418,11 +370,9 @@ pub(all) struct ListItem {
   block : Block
   ext_task_marker : Node[Char]?
 }
-impl ListItem {
-  map_block(Self, (Block) -> Block) -> Self
-  new(before_marker~ : Int = .., marker~ : Node[String] = .., after_marker~ : Int = .., ext_task_marker~ : Node[Char]?, Block) -> Self
-  normalize_block(Self) -> Self
-}
+fn ListItem::map_block(Self, (Block) -> Block) -> Self
+fn ListItem::new(before_marker~ : Int = .., marker~ : Node[String] = .., after_marker~ : Int = .., ext_task_marker~ : Node[Char]?, Block) -> Self
+fn ListItem::normalize_block(Self) -> Self
 impl Show for ListItem
 impl ToJson for ListItem
 
@@ -432,9 +382,7 @@ pub(all) enum ListTaskStatus {
   Unchecked
   Other(Char)
 }
-impl ListTaskStatus {
-  from_marker(Char) -> Self
-}
+fn ListTaskStatus::from_marker(Char) -> Self
 
 pub(all) struct Mapper {
   inline_ext_default : (Mapper, Inline) -> Inline?!MapperError
@@ -442,17 +390,15 @@ pub(all) struct Mapper {
   inline : (Mapper, Inline) -> MapperResult[Inline]
   block : (Mapper, Block) -> MapperResult[Block]
 }
-impl Mapper {
-  block_ext_none[A](Self, A) -> A?!MapperError
-  delete[A]() -> MapperResult[A]
-  inline_ext_none[A](Self, A) -> A?!MapperError
-  map_block(Self, Block) -> Block?
-  map_doc(Self, Doc) -> Doc
-  map_inline(Self, Inline) -> Inline?
-  new(inline_ext_default~ : (Self, Inline) -> Inline?!MapperError = .., block_ext_default~ : (Self, Block) -> Block?!MapperError = .., inline~ : (Self, Inline) -> MapperResult[Inline] = .., block~ : (Self, Block) -> MapperResult[Block] = ..) -> Self
-  none[A](Self, A) -> MapperResult[A]
-  ret[A](A) -> MapperResult[A]
-}
+fn[A] Mapper::block_ext_none(Self, A) -> A?!MapperError
+fn[A] Mapper::delete() -> MapperResult[A]
+fn[A] Mapper::inline_ext_none(Self, A) -> A?!MapperError
+fn Mapper::map_block(Self, Block) -> Block?
+fn Mapper::map_doc(Self, Doc) -> Doc
+fn Mapper::map_inline(Self, Inline) -> Inline?
+fn Mapper::new(inline_ext_default~ : (Self, Inline) -> Inline?!MapperError = .., block_ext_default~ : (Self, Block) -> Block?!MapperError = .., inline~ : (Self, Inline) -> MapperResult[Inline] = .., block~ : (Self, Block) -> MapperResult[Block] = ..) -> Self
+fn[A] Mapper::none(Self, A) -> MapperResult[A]
+fn[A] Mapper::ret(A) -> MapperResult[A]
 
 pub(all) type! MapperError String
 impl Show for MapperError
@@ -470,11 +416,9 @@ pub(all) struct Node[A] {
   v : A
   meta : @cmark_base.Meta
 }
-impl Node {
-  empty(meta~ : @cmark_base.Meta = ..) -> Self[String]
-  map[A, B](Self[A], (A) -> B) -> Self[B]
-  new[A](A, meta~ : @cmark_base.Meta = ..) -> Self[A]
-}
+fn Node::empty(meta~ : @cmark_base.Meta = ..) -> Self[String]
+fn[A, B] Node::map(Self[A], (A) -> B) -> Self[B]
+fn[A] Node::new(A, meta~ : @cmark_base.Meta = ..) -> Self[A]
 impl[A : Eq] Eq for Node[A]
 impl[A : Show] Show for Node[A]
 impl[A : ToJson] ToJson for Node[A]
@@ -498,21 +442,19 @@ impl ToJson for ReferenceLayout
 impl @json.FromJson for ReferenceLayout
 
 type Seq[A]
-impl Seq {
-  empty[A]() -> Self[A]
-  fold[A, B](Self[A], init~ : B, (B, A) -> B) -> B
-  from_array[A](Array[A]) -> Self[A]
-  from_iter[A](Iter[A]) -> Self[A]
-  get[A](Self[A], Int) -> A?
-  is_empty[A](Self[A]) -> Bool
-  iter[A](Self[A]) -> Iter[A]
-  length[A](Self[A]) -> Int
-  map[A, B](Self[A], (A) -> B) -> Self[B]
-  op_get[A](Self[A], Int) -> A
-  op_set[A](Self[A], Int, A) -> Unit
-  rev_fold[A, B](Self[A], init~ : B, (B, A) -> B) -> B
-  to_array[A](Self[A]) -> Array[A]
-}
+fn[A] Seq::empty() -> Self[A]
+fn[A, B] Seq::fold(Self[A], init~ : B, (B, A) -> B) -> B
+fn[A] Seq::from_array(Array[A]) -> Self[A]
+fn[A] Seq::from_iter(Iter[A]) -> Self[A]
+fn[A] Seq::get(Self[A], Int) -> A?
+fn[A] Seq::is_empty(Self[A]) -> Bool
+fn[A] Seq::iter(Self[A]) -> Iter[A]
+fn[A] Seq::length(Self[A]) -> Int
+fn[A, B] Seq::map(Self[A], (A) -> B) -> Self[B]
+fn[A] Seq::op_get(Self[A], Int) -> A
+fn[A] Seq::op_set(Self[A], Int, A) -> Unit
+fn[A, B] Seq::rev_fold(Self[A], init~ : B, (B, A) -> B) -> B
+fn[A] Seq::to_array(Self[A]) -> Array[A]
 impl[A : Eq] Eq for Seq[A]
 impl[A : Show] Show for Seq[A]
 impl[A : ToJson] ToJson for Seq[A]
@@ -522,9 +464,7 @@ pub(all) struct Table {
   col_count : Int
   rows : Seq[(Node[TableRow], String)]
 }
-impl Table {
-  new(indent~ : Int = .., Seq[(Node[TableRow], String)]) -> Self
-}
+fn Table::new(indent~ : Int = .., Seq[(Node[TableRow], String)]) -> Self
 impl Show for Table
 impl ToJson for Table
 
@@ -549,11 +489,9 @@ pub(all) struct Tight {
   blanks : String
   node : Node[String]
 }
-impl Tight {
-  empty(meta~ : @cmark_base.Meta = ..) -> Self
-  list_text_loc(Seq[Self]) -> @cmark_base.TextLoc
-  to_string(Self) -> String
-}
+fn Tight::empty(meta~ : @cmark_base.Meta = ..) -> Self
+fn Tight::list_text_loc(Seq[Self]) -> @cmark_base.TextLoc
+fn Tight::to_string(Self) -> String
 impl Eq for Tight
 impl Show for Tight
 impl ToJson for Tight

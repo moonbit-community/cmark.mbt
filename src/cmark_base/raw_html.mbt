@@ -44,7 +44,7 @@ fn attribute_name(
 }
 
 ///| https://spec.commonmark.org/current/#attribute-value
-fn attribute_value[A](
+fn[A] attribute_value(
   next_line~ : NextLineFn[A],
   s : String,
   lines : A,
@@ -80,7 +80,7 @@ fn attribute_value[A](
 
 ///| https://spec.commonmark.org/current/#attribute
 /// https://spec.commonmark.org/current/#attribute-value-specification
-fn attribute[A](
+fn[A] attribute(
   next_line~ : NextLineFn[A],
   s : String,
   lines : A,
@@ -119,7 +119,7 @@ fn attribute[A](
 }
 
 ///| https://spec.commonmark.org/current/#open-tag
-fn open_tag[A](
+fn[A] open_tag(
   next_line~ : NextLineFn[A],
   s : String,
   lines : A,
@@ -177,7 +177,7 @@ fn open_tag[A](
 
 ///| Start is on `</`.
 /// https://spec.commonmark.org/current/#closing-tag
-fn closing_tag[A](
+fn[A] closing_tag(
   next_line~ : NextLineFn[A],
   s : String,
   lines : A,
@@ -205,7 +205,7 @@ fn closing_tag[A](
 
 ///| Start is on `<!{letter}`.
 /// https://spec.commonmark.org/current/#declaration
-fn declaration[A](
+fn[A] declaration(
   next_line~ : NextLineFn[A],
   s : String,
   lines : A,
@@ -219,7 +219,7 @@ fn declaration[A](
 }
 
 ///| https://spec.commonmark.org/current/#processing-instruction
-fn processing_instruction[A](
+fn[A] processing_instruction(
   next_line : NextLineFn[A],
   s : String,
   lines : A,
@@ -250,7 +250,7 @@ fn processing_instruction[A](
 
 ///| Start is on `<!-`.
 /// https://spec.commonmark.org/current/#html-comment
-fn html_comment[A](
+fn[A] html_comment(
   next_line~ : NextLineFn[A],
   s : String,
   lines : A,
@@ -294,7 +294,7 @@ fn html_comment[A](
 
 ///| Start is on `<![`.
 /// https://spec.commonmark.org/current/#cdata-section
-fn cdata_section[A](
+fn[A] cdata_section(
   next_line~ : NextLineFn[A],
   s : String,
   lines : A,
@@ -330,7 +330,7 @@ fn cdata_section[A](
 }
 
 ///| https://spec.commonmark.org/current/#html-tag
-pub fn raw_html[A : Show](
+pub fn[A : Show] raw_html(
   next_line~ : NextLineFn[A],
   s : String,
   lines : A,

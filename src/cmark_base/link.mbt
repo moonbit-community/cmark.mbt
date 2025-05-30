@@ -76,7 +76,7 @@ pub fn link_destination(
 /// order, `last` is on the closing delimiter and guaranteed to be on `last_line`. 
 ///
 /// See: https://spec.commonmark.org/current/#link-title 
-pub fn link_title[A](
+pub fn[A] link_title(
   next_line~ : NextLineFn[A],
   s : String,
   lines : A,
@@ -129,7 +129,7 @@ pub fn link_title[A](
 /// `buf` is used as scratch space.
 ///
 /// See: https://spec.commonmark.org/current/#link-label
-pub fn link_label[A](
+pub fn[A] link_label(
   buf : Buffer,
   next_line~ : NextLineFn[A],
   s : String,
