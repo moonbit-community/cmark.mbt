@@ -7,7 +7,7 @@ pub fn layout_of_string(meta~ : Meta = Meta::none(), s : String) -> StringNode {
 pub let layout_empty : StringNode = layout_of_string("")
 
 ///|
-pub(all) typealias Blanks = String
+pub typealias String as Blanks
 
 ///|
-pub(all) typealias Count = Int
+pub typealias Int as Count

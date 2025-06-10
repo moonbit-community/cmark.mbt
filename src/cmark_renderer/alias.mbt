@@ -1,11 +1,11 @@
 ///|
-typealias Buffer = StringBuilder
+typealias StringBuilder as Buffer
 
 ///|
-typealias Inline = @cmark.Inline
+typealias @cmark.Inline
 
 ///|
-typealias Block = @cmark.Block
+typealias @cmark.Block
 
 ///|
-typealias Doc = @cmark.Doc
+typealias @cmark.Doc

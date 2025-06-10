@@ -1,5 +1,5 @@
 ///|
-typealias Doc = @cmark.Doc
+typealias @cmark.Doc
 
 ///|
 test "should render task list" (it : @test.T) {

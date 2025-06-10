@@ -21,7 +21,7 @@ fn first_non_blank(String, last~ : Int, start~ : Int) -> Int
 
 fn first_non_blank_in_span(String, LineSpan) -> Int
 
-fn[A] first_non_blank_over_nl(next_line~ : (A) -> LineSpan?, String, A, line~ : LineSpan, start~ : Int) -> NextLineResult?
+fn[A] first_non_blank_over_nl(next_line~ : NextLineFn[A], String, A, line~ : LineSpan, start~ : Int) -> NextLineResult?
 
 fn first_non_escaped_char(Char, String, last~ : Int, start~ : Int) -> Int
 
@@ -29,15 +29,15 @@ fn last_non_blank(String, first~ : Int, start~ : Int) -> Int
 
 let line_num_none : Int
 
-let line_pos_none : (Int, Int)
+let line_pos_none : LinePos
 
 fn link_destination(String, last~ : Int, start~ : Int) -> (Bool, Int, Int)?
 
-fn[A] link_label(StringBuilder, next_line~ : (A) -> LineSpan?, String, A, line~ : LineSpan, start~ : Int) -> (LineSpan, Array[Span], Int, String)?
+fn[A] link_label(StringBuilder, next_line~ : NextLineFn[A], String, A, line~ : LineSpan, start~ : Int) -> (LineSpan, Array[Span], Int, String)?
 
-fn[A] link_title(next_line~ : (A) -> LineSpan?, String, A, line~ : LineSpan, start~ : Int) -> (LineSpan, Array[Span], Int)?
+fn[A] link_title(next_line~ : NextLineFn[A], String, A, line~ : LineSpan, start~ : Int) -> (LineSpan, Array[Span], Int)?
 
-fn[A : Show] raw_html(next_line~ : (A) -> LineSpan?, String, A, line~ : LineSpan, start~ : Int) -> (LineSpan, Array[Span], Int)?
+fn[A : Show] raw_html(next_line~ : NextLineFn[A], String, A, line~ : LineSpan, start~ : Int) -> (LineSpan, Array[Span], Int)?
 
 fn rev_drop_spaces(String, first~ : Int, start~ : Int) -> Int
 
@@ -62,8 +62,15 @@ impl Eq for HtmlBlockEndCond
 impl Show for HtmlBlockEndCond
 impl ToJson for HtmlBlockEndCond
 
+pub(all) type LinePos (Int, Int)
+impl Compare for LinePos
+impl Eq for LinePos
+impl Show for LinePos
+impl ToJson for LinePos
+impl @json.FromJson for LinePos
+
 pub(all) struct LineSpan {
-  pos : (Int, Int)
+  pos : LinePos
   first : Int
   last : Int
 }
@@ -88,7 +95,7 @@ pub(all) enum LineType {
   Nomatch
 }
 fn LineType::atx_heading(String, last~ : Int, start~ : Int) -> Self
-fn LineType::ext_footnote_label(StringBuilder, String, line_pos~ : (Int, Int), last~ : Int, start~ : Int) -> Self
+fn LineType::ext_footnote_label(StringBuilder, String, line_pos~ : LinePos, last~ : Int, start~ : Int) -> Self
 fn LineType::ext_table_row(String, last~ : Int, start~ : Int) -> Self
 fn LineType::fenced_code_block_start(String, last~ : Int, start~ : Int) -> Self
 fn LineType::html_block_end(String, end_cond~ : HtmlBlockEndCond, last~ : Int, start~ : Int) -> Bool
@@ -124,6 +131,8 @@ impl Eq for Meta
 impl Show for Meta
 impl ToJson for Meta
 
+pub(all) type NextLineFn[A] (A) -> LineSpan?
+
 pub(all) enum NextLineResult {
   ThisLine(Int)
   NextLine(LineSpan, Int)
@@ -144,8 +153,8 @@ pub(all) struct TextLoc {
   file : String
   first_ccode : Int
   last_ccode : Int
-  first_line : (Int, Int)
-  last_line : (Int, Int)
+  first_line : LinePos
+  last_line : LinePos
 }
 fn TextLoc::after(Self) -> Self
 fn TextLoc::is_empty(Self) -> Bool
@@ -176,11 +185,7 @@ pub typealias Last = Int
 
 pub typealias LineNum = Int
 
-pub typealias LinePos = (Int, Int)
-
 pub typealias Next = Int
-
-pub typealias NextLineFn[A] = (A) -> LineSpan?
 
 // Traits
 

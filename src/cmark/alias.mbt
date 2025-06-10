@@ -1,32 +1,32 @@
 ///|
-typealias Buffer = StringBuilder
+typealias StringBuilder as Buffer
 
 ///|
-typealias Indent = @cmark_base.Indent
+typealias @cmark_base.Indent
 
 ///|
-typealias Meta = @cmark_base.Meta
+typealias @cmark_base.Meta
 
 ///|
-typealias TextLoc = @cmark_base.TextLoc
+typealias @cmark_base.TextLoc
 
 ///|
-typealias LinePos = @cmark_base.LinePos
+typealias @cmark_base.LinePos
 
 ///|
-typealias CharCodePos = @cmark_base.CharCodePos
+typealias @cmark_base.CharCodePos
 
 ///|
-typealias FilePath = @cmark_base.FilePath
+typealias @cmark_base.FilePath
 
 ///|
 let file_path_none = @cmark_base.file_path_none
 
 ///|
-typealias Span = @cmark_base.Span
+typealias @cmark_base.Span
 
 ///|
-typealias LineSpan = @cmark_base.LineSpan
+typealias @cmark_base.LineSpan
 
 ///|
 priv type Tokens @deque.T[Token]
@@ -75,16 +75,16 @@ fn RevTokens::pop(self : RevTokens) -> Token? {
 }
 
 ///|
-typealias HeadingLevel = @cmark_base.HeadingLevel
+typealias @cmark_base.HeadingLevel
 
 ///|
-typealias NextLineFn[A] = @cmark_base.NextLineFn[A]
+typealias @cmark_base.NextLineFn
 
 ///|
-typealias HtmlBlockEndCond = @cmark_base.HtmlBlockEndCond
+typealias @cmark_base.HtmlBlockEndCond
 
 ///|
-typealias ListType = @cmark_base.ListType
+typealias @cmark_base.ListType
 
 ///|
-typealias LineType = @cmark_base.LineType
+typealias @cmark_base.LineType

@@ -155,28 +155,32 @@ pub(all) struct Doc {
   defs : Map[String, LabelDef]
 }
 fn Doc::empty() -> Self
-fn Doc::from_string(defs~ : Map[String, LabelDef] = .., resolver~ : (LabelContext) -> Label? = .., nested_links~ : Bool = .., heading_auto_ids~ : Bool = .., layout~ : Bool = .., locs~ : Bool = .., file~ : String = .., strict~ : Bool = .., String) -> Self
+fn Doc::from_string(defs~ : Map[String, LabelDef] = .., resolver~ : LabelResolverFn = .., nested_links~ : Bool = .., heading_auto_ids~ : Bool = .., layout~ : Bool = .., locs~ : Bool = .., file~ : String = .., strict~ : Bool = .., String) -> Self
 fn Doc::new(nl~ : String = .., defs~ : Map[String, LabelDef] = .., Block) -> Self
 impl Show for Doc
 impl ToJson for Doc
 
+pub(all) type FoldFn[A, B] (Folder[B], B, A) -> B!FolderError
+
 pub(all) struct Folder[A] {
-  inline_ext_default : (Folder[A], A, Inline) -> A!FolderError
-  block_ext_default : (Folder[A], A, Block) -> A!FolderError
-  inline : (Folder[A], A, Inline) -> FolderResult[A]
-  block : (Folder[A], A, Block) -> FolderResult[A]
+  inline_ext_default : FoldFn[Inline, A]
+  block_ext_default : FoldFn[Block, A]
+  inline : FolderFn[Inline, A]
+  block : FolderFn[Block, A]
 }
 fn[A] Folder::block_ext_none(Self[A], A, Block) -> A!FolderError
 fn[A] Folder::fold_block(Self[A], A, Block) -> A!FolderError
 fn[A] Folder::fold_doc(Self[A], A, Doc) -> A!FolderError
 fn[A] Folder::fold_inline(Self[A], A, Inline) -> A!FolderError
 fn[A] Folder::inline_ext_none(Self[A], A, Inline) -> A!FolderError
-fn[A] Folder::new(inline_ext_default~ : (Self[A], A, Inline) -> A!FolderError = .., block_ext_default~ : (Self[A], A, Block) -> A!FolderError = .., inline~ : (Self[A], A, Inline) -> FolderResult[A] = .., block~ : (Self[A], A, Block) -> FolderResult[A] = ..) -> Self[A]
+fn[A] Folder::new(inline_ext_default~ : FoldFn[Inline, A] = .., block_ext_default~ : FoldFn[Block, A] = .., inline~ : FolderFn[Inline, A] = .., block~ : FolderFn[Block, A] = ..) -> Self[A]
 fn[A, B] Folder::none(Self[A], A, B) -> FolderResult[A]
 fn[A] Folder::ret(A) -> FolderResult[A]
 
 pub(all) type! FolderError String
 impl Show for FolderError
+
+pub(all) type FolderFn[A, B] (Folder[B], B, A) -> FolderResult[B]
 
 pub(all) enum FolderResult[A] {
   Default
@@ -332,6 +336,8 @@ pub(all) enum LabelDef {
 impl Show for LabelDef
 impl ToJson for LabelDef
 
+pub(all) type LabelResolverFn (LabelContext) -> Label?
+
 pub(all) struct LinkDefinition {
   layout : LinkDefinitionLayout
   label : Label?
@@ -384,11 +390,13 @@ pub(all) enum ListTaskStatus {
 }
 fn ListTaskStatus::from_marker(Char) -> Self
 
+pub(all) type MapFn[A] (Mapper, A) -> A?!MapperError
+
 pub(all) struct Mapper {
-  inline_ext_default : (Mapper, Inline) -> Inline?!MapperError
-  block_ext_default : (Mapper, Block) -> Block?!MapperError
-  inline : (Mapper, Inline) -> MapperResult[Inline]
-  block : (Mapper, Block) -> MapperResult[Block]
+  inline_ext_default : MapFn[Inline]
+  block_ext_default : MapFn[Block]
+  inline : MapperFn[Inline]
+  block : MapperFn[Block]
 }
 fn[A] Mapper::block_ext_none(Self, A) -> A?!MapperError
 fn[A] Mapper::delete() -> MapperResult[A]
@@ -396,12 +404,14 @@ fn[A] Mapper::inline_ext_none(Self, A) -> A?!MapperError
 fn Mapper::map_block(Self, Block) -> Block?
 fn Mapper::map_doc(Self, Doc) -> Doc
 fn Mapper::map_inline(Self, Inline) -> Inline?
-fn Mapper::new(inline_ext_default~ : (Self, Inline) -> Inline?!MapperError = .., block_ext_default~ : (Self, Block) -> Block?!MapperError = .., inline~ : (Self, Inline) -> MapperResult[Inline] = .., block~ : (Self, Block) -> MapperResult[Block] = ..) -> Self
+fn Mapper::new(inline_ext_default~ : MapFn[Inline] = .., block_ext_default~ : MapFn[Block] = .., inline~ : MapperFn[Inline] = .., block~ : MapperFn[Block] = ..) -> Self
 fn[A] Mapper::none(Self, A) -> MapperResult[A]
 fn[A] Mapper::ret(A) -> MapperResult[A]
 
 pub(all) type! MapperError String
 impl Show for MapperError
+
+pub(all) type MapperFn[A] (Mapper, A) -> MapperResult[A]
 
 pub(all) enum MapperResult[A] {
   Default
@@ -477,13 +487,23 @@ impl Show for TableAlign
 impl ToJson for TableAlign
 impl @json.FromJson for TableAlign
 
+pub(all) type TableCellLayout (String, String)
+impl Compare for TableCellLayout
+impl Eq for TableCellLayout
+impl Show for TableCellLayout
+impl ToJson for TableCellLayout
+
 pub(all) enum TableRow {
-  Header(Seq[(Inline, (String, String))])
-  Sep(Seq[Node[(TableAlign?, Int)]])
-  Data(Seq[(Inline, (String, String))])
+  Header(Seq[(Inline, TableCellLayout)])
+  Sep(Seq[Node[TableSep]])
+  Data(Seq[(Inline, TableCellLayout)])
 }
 impl Show for TableRow
 impl ToJson for TableRow
+
+pub(all) type TableSep (TableAlign?, Int)
+impl Show for TableSep
+impl ToJson for TableSep
 
 pub(all) struct Tight {
   blanks : String
@@ -507,33 +527,15 @@ pub typealias BlockLineBlank = Node[String]
 
 pub typealias Count = Int
 
-pub typealias FilterMap[A] = A?
-
-pub typealias FoldFn[A, B] = (Folder[B], B, A) -> B!FolderError
-
-pub typealias FolderFn[A, B] = (Folder[B], B, A) -> FolderResult[B]
-
 pub typealias InlineText = String
 
 pub typealias LabelDefs = Map[String, LabelDef]
 
 pub typealias LabelKey = String
 
-pub typealias LabelMap[V] = Map[String, V]
-
-pub typealias LabelResolverFn = (LabelContext) -> Label?
-
 pub typealias ListItemBlock = ListItem
 
-pub typealias MapFn[A] = (Mapper, A) -> A?!MapperError
-
-pub typealias MapperFn[A] = (Mapper, A) -> MapperResult[A]
-
 pub typealias StringNode = Node[String]
-
-pub typealias TableCellLayout = (String, String)
-
-pub typealias TableSep = (TableAlign?, Int)
 
 // Traits
 

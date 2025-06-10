@@ -18,25 +18,22 @@ pub(all) struct Mapper {
 }
 
 ///|
-pub(all) typealias MapFn[A] = (Mapper, A) -> FilterMap[A]!MapperError
+pub(all) type MapFn[A] (Mapper, A) -> A?!MapperError
 
 ///|
-pub(all) typealias MapperFn[A] = (Mapper, A) -> MapperResult[A]
+pub(all) type MapperFn[A] (Mapper, A) -> MapperResult[A]
 
 ///| The type for mapper results.
 /// `Default` means doing the default map.
 pub(all) enum MapperResult[A] {
   Default
-  Map(FilterMap[A])
+  Map(A?)
 } derive(Eq, Show, ToJson)
 
 ///|
 pub impl[A] Default for MapperResult[A] with default() {
   Default
 }
-
-///|
-pub(all) typealias FilterMap[A] = A?
 
 ///|
 pub fn[A] Mapper::delete() -> MapperResult[A] {
@@ -55,19 +52,13 @@ pub fn[A] Mapper::none(self : Mapper, _a : A) -> MapperResult[A] {
 }
 
 ///|
-pub fn[A] Mapper::inline_ext_none(
-  self : Mapper,
-  _a : A
-) -> FilterMap[A]!MapperError {
+pub fn[A] Mapper::inline_ext_none(self : Mapper, _a : A) -> A?!MapperError {
   let _ = self
   raise MapperError("unknown inline extension")
 }
 
 ///|
-pub fn[A] Mapper::block_ext_none(
-  self : Mapper,
-  _a : A
-) -> FilterMap[A]!MapperError {
+pub fn[A] Mapper::block_ext_none(self : Mapper, _a : A) -> A?!MapperError {
   let _ = self
   raise MapperError("unknown block extension")
 }
@@ -83,7 +74,7 @@ pub fn Mapper::new(
 }
 
 ///|
-pub fn Mapper::map_inline(self : Mapper, i : Inline) -> FilterMap[Inline] {
+pub fn Mapper::map_inline(self : Mapper, i : Inline) -> Inline? {
   if (self.inline)(self, i) is Map(i) {
     return i
   }
@@ -124,7 +115,7 @@ pub fn Mapper::map_inline(self : Mapper, i : Inline) -> FilterMap[Inline] {
 }
 
 ///|
-pub fn Mapper::map_block(self : Mapper, b : Block) -> FilterMap[Block] {
+pub fn Mapper::map_block(self : Mapper, b : Block) -> Block? {
   if (self.block)(self, b) is Map(b) {
     return b
   }

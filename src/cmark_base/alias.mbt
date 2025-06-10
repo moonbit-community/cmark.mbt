@@ -1,2 +1,2 @@
 ///|
-typealias Buffer = StringBuilder
+typealias StringBuilder as Buffer

@@ -97,7 +97,7 @@ pub fn Block::defs(
 
 ///| The type for [blank lines](https://spec.commonmark.org/0.30/#blank-lines).
 /// These can be ignored during rendering, they are kept for layout.
-pub(all) typealias BlockBlankLine = Blanks
+pub typealias Blanks as BlockBlankLine
 
 ///| The type for [block quotes](https://spec.commonmark.org/0.30/#block-quotes).
 pub(all) struct BlockQuote {
@@ -273,7 +273,7 @@ pub(all) struct ListItem {
 } derive(Show, ToJson)
 
 ///|
-pub(all) typealias ListItemBlock = ListItem
+pub typealias ListItem as ListItemBlock
 
 ///|
 pub fn ListItem::new(
@@ -424,10 +424,10 @@ pub(all) enum TableRow {
 } derive(Show, ToJson)
 
 ///|
-pub(all) typealias TableSep = (TableAlign?, Count)
+pub(all) type TableSep (TableAlign?, Count) derive(Show, ToJson)
 
 ///|
-pub(all) typealias TableCellLayout = (Blanks, Blanks)
+pub(all) type TableCellLayout (Blanks, Blanks) derive(Show, ToJson, Eq, Compare)
 
 ///|
 pub fn Table::new(
@@ -451,7 +451,7 @@ fn Table::parse_sep_row(
 ) -> Array[Node[TableSep]]? {
   loop [], cs {
     acc, [] => Some(acc)
-    acc, [(Text({ v, meta }), ("", "")), .. cs] => {
+    acc, [(Text({ v, meta }), TableCellLayout(("", ""))), .. cs] => {
       guard not(v.is_empty()) else { None }
       let max = v.length() - 1
       let first_colon = v.charcode_at(0) == ':'

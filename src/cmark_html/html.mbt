@@ -4,7 +4,7 @@ priv struct State {
   backend_blocks : Bool
   ids : StringSet
   mut footnote_count : Int
-  footnotes : LabelMap[HtmlRenderFootnote]
+  footnotes : Map[LabelKey, HtmlRenderFootnote]
 } derive(Show)
 
 ///|
@@ -61,7 +61,7 @@ fn init_context(
     backend_blocks,
     ids: StringSet::new(),
     footnote_count: 0,
-    footnotes: LabelMap::new(),
+    footnotes: Map::new(),
   }
   c.state = Some(EState(st))
 }
@@ -739,19 +739,19 @@ fn table!(c : Context, t : @cmark.Table) -> Unit {
   fn cols!(
     c : Context,
     tag,
-    align : ArrayView[@cmark.Node[(_, _)]],
+    align : ArrayView[@cmark.Node[@cmark.TableSep]],
     count,
     cs : ArrayView[(_, _)]
   ) {
     match (align, cs) {
       ([{ v, .. }, .. align], [(col, _), .. cs]) => {
-        start(c, v.0, tag)
+        start(c, v._.0, tag)
         c.inline!(col)
         close(c, tag)
         cols!(c, tag, align, count - 1, cs)
       }
       ([{ v, .. }, .. align], []) => {
-        start(c, v.0, tag)
+        start(c, v._.0, tag)
         close(c, tag)
         cols!(c, tag, align, count - 1, [][:])
       }
@@ -867,7 +867,7 @@ fn xhtml_inline!(c : Context, i : @cmark.Inline) -> Bool {
 // Document rendering
 
 ///|
-fn footnotes!(c : Context, fs : LabelMap[HtmlRenderFootnote]) -> Unit {
+fn footnotes!(c : Context, fs : Map[LabelKey, HtmlRenderFootnote]) -> Unit {
   let fs = fs.values().to_array()
   fs.sort()
   c.b.write_string("<section role=\"doc-endnotes\"><ol>\n")

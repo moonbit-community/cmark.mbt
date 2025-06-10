@@ -123,7 +123,7 @@ fn Parser::accept_code_indent(
 // line spans. See:
 // https://spec.commonmark.org/current/#phase-1-block-structure
 ///| Number of space characters to pad content with
-typealias SpacePad = Int
+typealias Int as SpacePad
 
 ///|
 priv struct IndentedCodeLine {

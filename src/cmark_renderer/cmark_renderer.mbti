@@ -7,6 +7,8 @@ import(
 // Values
 
 // Types and methods
+pub(all) type BlockFn (Context, @cmark.Block) -> Bool!
+
 pub(all) struct Context {
   renderer : Renderer
   mut state : Error?
@@ -21,28 +23,27 @@ fn Context::inline(Self, @cmark.Inline) -> Unit!
 fn Context::new(Renderer, StringBuilder) -> Self
 fn Context::string(Self, String) -> Unit
 
+pub(all) type DocFn (Context, @cmark.Doc) -> Bool!
+
+pub(all) type InitContextFn (Context, @cmark.Doc) -> Unit
+
+pub(all) type InlineFn (Context, @cmark.Inline) -> Bool!
+
 pub(all) type! RenderError String
 impl Show for RenderError
 
 pub(all) struct Renderer {
-  init_context : (Context, @cmark.Doc) -> Unit
-  inline : (Context, @cmark.Inline) -> Bool!
-  block : (Context, @cmark.Block) -> Bool!
-  doc : (Context, @cmark.Doc) -> Bool!
+  init_context : InitContextFn
+  inline : InlineFn
+  block : BlockFn
+  doc : DocFn
 }
 fn Renderer::buffer_add_doc(Self, StringBuilder, @cmark.Doc) -> Unit!
 fn Renderer::compose(Self, Self) -> Self
 fn Renderer::doc_to_string(Self, @cmark.Doc) -> String!
-fn Renderer::new(init_context~ : (Context, @cmark.Doc) -> Unit = .., inline~ : (Context, @cmark.Inline) -> Bool! = .., block~ : (Context, @cmark.Block) -> Bool! = .., doc~ : (Context, @cmark.Doc) -> Bool! = ..) -> Self
+fn Renderer::new(init_context~ : InitContextFn = .., inline~ : InlineFn = .., block~ : BlockFn = .., doc~ : DocFn = ..) -> Self
 
 // Type aliases
-pub typealias BlockFn = (Context, @cmark.Block) -> Bool!
-
-pub typealias DocFn = (Context, @cmark.Doc) -> Bool!
-
-pub typealias InitContextFn = (Context, @cmark.Doc) -> Unit
-
-pub typealias InlineFn = (Context, @cmark.Inline) -> Bool!
 
 // Traits
 
