@@ -49,16 +49,16 @@ pub fn Context::init(self : Context, doc : Doc) -> Unit {
 }
 
 ///|
-pub(all) typealias InitContextFn = (Context, Doc) -> Unit
+pub(all) type InitContextFn (Context, Doc) -> Unit
 
 ///|
-pub(all) typealias InlineFn = (Context, Inline) -> Bool!
+pub(all) type InlineFn (Context, Inline) -> Bool!
 
 ///|
-pub(all) typealias BlockFn = (Context, Block) -> Bool!
+pub(all) type BlockFn (Context, Block) -> Bool!
 
 ///|
-pub(all) typealias DocFn = (Context, Doc) -> Bool!
+pub(all) type DocFn (Context, Doc) -> Bool!
 
 ///|
 pub fn Context::char(self : Context, ch : Char) -> Unit {

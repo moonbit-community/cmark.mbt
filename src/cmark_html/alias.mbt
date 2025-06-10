@@ -1,11 +1,11 @@
 ///|
-typealias Context = @cmark_renderer.Context
+typealias @cmark_renderer.Context
 
 ///|
-typealias Buffer = StringBuilder
+typealias StringBuilder as Buffer
 
 ///|
-typealias Doc = @cmark.Doc
+typealias @cmark.Doc
 
 ///|
-typealias LabelMap[V] = @cmark.LabelMap[V]
+typealias @cmark.LabelKey

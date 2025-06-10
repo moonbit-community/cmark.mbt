@@ -36,7 +36,7 @@ test "raw_html with processing instruction" {
   )
   inspect!(
     result,
-    content="Some(({pos: (1, 0), first: 0, last: 20}, [{start: 0, span: {pos: (1, 0), first: 0, last: 20}}], 20))",
+    content="Some(({pos: LinePos((1, 0)), first: 0, last: 20}, [{start: 0, span: {pos: LinePos((1, 0)), first: 0, last: 20}}], 20))",
   )
 }
 
@@ -58,7 +58,7 @@ test "raw_html with HTML comment" {
   )
   inspect!(
     result,
-    content="Some(({pos: (1, 0), first: 0, last: 12}, [{start: 0, span: {pos: (1, 0), first: 0, last: 12}}], 12))",
+    content="Some(({pos: LinePos((1, 0)), first: 0, last: 12}, [{start: 0, span: {pos: LinePos((1, 0)), first: 0, last: 12}}], 12))",
   )
 }
 
@@ -80,7 +80,7 @@ test "raw_html with declaration" {
   )
   inspect!(
     result,
-    content="Some(({pos: (1, 0), first: 0, last: 14}, [{start: 0, span: {pos: (1, 0), first: 0, last: 14}}], 14))",
+    content="Some(({pos: LinePos((1, 0)), first: 0, last: 14}, [{start: 0, span: {pos: LinePos((1, 0)), first: 0, last: 14}}], 14))",
   )
 }
 
@@ -102,7 +102,7 @@ test "raw_html with CDATA section" {
   )
   inspect!(
     result,
-    content="Some(({pos: (1, 0), first: 0, last: 15}, [{start: 0, span: {pos: (1, 0), first: 0, last: 15}}], 15))",
+    content="Some(({pos: LinePos((1, 0)), first: 0, last: 15}, [{start: 0, span: {pos: LinePos((1, 0)), first: 0, last: 15}}], 15))",
   )
 }
 
@@ -162,7 +162,7 @@ test "raw_html_closing_tag_invalid_name" {
   )
   inspect!(
     result,
-    content="Some(({pos: (1, 0), first: 6, last: 6}, [{start: 0, span: {pos: (1, 0), first: 0, last: 6}}], 6))",
+    content="Some(({pos: LinePos((1, 0)), first: 6, last: 6}, [{start: 0, span: {pos: LinePos((1, 0)), first: 0, last: 6}}], 6))",
   )
 }
 
@@ -201,7 +201,7 @@ test "raw_html_open_tag_invalid" {
   )
   inspect!(
     result,
-    content="Some(({pos: (1, 0), first: 5, last: 5}, [{start: 0, span: {pos: (1, 0), first: 0, last: 5}}], 5))",
+    content="Some(({pos: LinePos((1, 0)), first: 5, last: 5}, [{start: 0, span: {pos: LinePos((1, 0)), first: 0, last: 5}}], 5))",
   )
 }
 
@@ -258,7 +258,7 @@ test "raw_html_attribute_no_value" {
   )
   inspect!(
     result,
-    content="Some(({pos: (1, 0), first: 14, last: 14}, [{start: 0, span: {pos: (1, 0), first: 0, last: 14}}], 14))",
+    content="Some(({pos: LinePos((1, 0)), first: 14, last: 14}, [{start: 0, span: {pos: LinePos((1, 0)), first: 0, last: 14}}], 14))",
   )
 }
 
@@ -279,7 +279,7 @@ test "raw_html_attribute_unquoted_value" {
   )
   inspect!(
     result,
-    content="Some(({pos: (1, 0), first: 20, last: 20}, [{start: 0, span: {pos: (1, 0), first: 0, last: 20}}], 20))",
+    content="Some(({pos: LinePos((1, 0)), first: 20, last: 20}, [{start: 0, span: {pos: LinePos((1, 0)), first: 0, last: 20}}], 20))",
   )
 }
 

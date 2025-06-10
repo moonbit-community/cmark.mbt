@@ -441,7 +441,7 @@ pub(all) type InlineRawHtml Seq[Tight] derive(Eq, Show, ToJson)
 /// Normally these strings should not contain newlines. This can
 /// however happen if the source had newlines as
 /// [character references](https://spec.commonmark.org/0.30/#entity-and-numeric-character-references).
-pub(all) typealias InlineText = String
+pub typealias String as InlineText
 
 // Extensions
 

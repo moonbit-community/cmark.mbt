@@ -14,10 +14,7 @@ pub(all) struct Label {
 ///| The type for label keys. These are
 /// [link labels](https://spec.commonmark.org/0.30/#link-label)
 /// normalized for [matches](https://spec.commonmark.org/0.30/#matches).
-pub(all) typealias LabelKey = String
-
-///|
-pub(all) typealias LabelMap[V] = Map[LabelKey, V]
+pub typealias String as LabelKey
 
 ///|
 pub fn Label::new(
@@ -50,7 +47,7 @@ pub(all) enum LabelDef {
 } derive(Show, ToJson)
 
 ///|
-pub(all) typealias LabelDefs = Map[LabelKey, LabelDef]
+pub typealias LabelDefs = Map[LabelKey, LabelDef]
 
 ///| `context` is:
 /// - `Def (prev, current)` when we just hit a
@@ -83,7 +80,7 @@ pub(all) enum LinkKind {
 }
 
 ///|
-pub(all) typealias LabelResolverFn = (LabelContext) -> Label?
+pub(all) type LabelResolverFn (LabelContext) -> Label?
 
 ///|
 pub fn LabelContext::default_resolver(self : LabelContext) -> Label? {

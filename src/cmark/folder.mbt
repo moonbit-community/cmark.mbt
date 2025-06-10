@@ -7,10 +7,10 @@ pub(all) struct Folder[A] {
 }
 
 ///|
-pub(all) typealias FoldFn[A, B] = (Folder[B], B, A) -> B!FolderError
+pub(all) type FoldFn[A, B] (Folder[B], B, A) -> B!FolderError
 
 ///|
-pub(all) typealias FolderFn[A, B] = (Folder[B], B, A) -> FolderResult[B]
+pub(all) type FolderFn[A, B] (Folder[B], B, A) -> FolderResult[B]
 
 ///| The type for folder results.
 /// `Default` means doing the default fold.

@@ -18,7 +18,7 @@ test "BlockLine::list_text_loc handles empty sequence" {
   inspect!(
     BlockLine::list_text_loc(empty_seq),
     content=
-      #|{file: "-", first_ccode: -1, last_ccode: -1, first_line: (-1, -1), last_line: (-1, -1)}
+      #|{file: "-", first_ccode: -1, last_ccode: -1, first_line: LinePos((-1, -1)), last_line: LinePos((-1, -1))}
     ,
   )
 }
@@ -39,7 +39,7 @@ test "BlockLine::list_text_loc handles single element sequence" {
   inspect!(
     result,
     content=
-      #|{file: "-", first_ccode: 0, last_ccode: 5, first_line: (1, 0), last_line: (1, 5)}
+      #|{file: "-", first_ccode: 0, last_ccode: 5, first_line: LinePos((1, 0)), last_line: LinePos((1, 5))}
     ,
   )
 }
@@ -74,7 +74,7 @@ test "BlockLine::list_text_loc handles multiple element sequence" {
   inspect!(
     result,
     content=
-      #|{file: "-", first_ccode: 0, last_ccode: 11, first_line: (1, 0), last_line: (2, 5)}
+      #|{file: "-", first_ccode: 0, last_ccode: 11, first_line: LinePos((1, 0)), last_line: LinePos((2, 5))}
     ,
   )
 }
@@ -85,7 +85,7 @@ test "Tight::list_text_loc handles empty sequence" {
   inspect!(
     Tight::list_text_loc(empty_seq),
     content=
-      #|{file: "-", first_ccode: -1, last_ccode: -1, first_line: (-1, -1), last_line: (-1, -1)}
+      #|{file: "-", first_ccode: -1, last_ccode: -1, first_line: LinePos((-1, -1)), last_line: LinePos((-1, -1))}
     ,
   )
 }
@@ -106,7 +106,7 @@ test "Tight::list_text_loc handles single element sequence" {
   inspect!(
     Tight::list_text_loc(seq),
     content=
-      #|{file: "-", first_ccode: 0, last_ccode: 5, first_line: (1, 0), last_line: (1, 5)}
+      #|{file: "-", first_ccode: 0, last_ccode: 5, first_line: LinePos((1, 0)), last_line: LinePos((1, 5))}
     ,
   )
 }
@@ -140,7 +140,7 @@ test "Tight::list_text_loc handles multiple element sequence" {
   inspect!(
     Tight::list_text_loc(seq),
     content=
-      #|{file: "-", first_ccode: 0, last_ccode: 11, first_line: (1, 0), last_line: (2, 5)}
+      #|{file: "-", first_ccode: 0, last_ccode: 11, first_line: LinePos((1, 0)), last_line: LinePos((2, 5))}
     ,
   )
 }

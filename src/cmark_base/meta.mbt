@@ -6,7 +6,7 @@ pub(all) struct Meta {
 }
 
 ///|
-typealias MetaId = Int
+typealias Int as MetaId
 
 ///|
 let curr_id : Ref[MetaId] = Ref::new(0)

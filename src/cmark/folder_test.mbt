@@ -109,7 +109,9 @@ test "folder block with table" {
         (
           Node::new(
             Header(
-              Seq::from_array([(Inline::Text(Node::new("Header")), ("", ""))]),
+              Seq::from_array([
+                (Inline::Text(Node::new("Header")), TableCellLayout(("", ""))),
+              ]),
             ),
           ),
           "",
@@ -122,7 +124,11 @@ test "folder block with table" {
         ),
         (
           Node::new(
-            Data(Seq::from_array([(Inline::Text(Node::new("Data")), ("", ""))])),
+            Data(
+              Seq::from_array([
+                (Inline::Text(Node::new("Data")), TableCellLayout(("", ""))),
+              ]),
+            ),
           ),
           "",
         ),

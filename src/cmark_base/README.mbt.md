@@ -20,7 +20,8 @@ test "text location handling" {
   inspect!(
     after_loc,
     content=
-      #|{file: "test.md", first_ccode: 1, last_ccode: -1, first_line: (1, 10), last_line: (-1, -1)}
+      #|{file: "test.md", first_ccode: 1, last_ccode: -1, first_line: LinePos((1, 10)), last_line: LinePos((-1, -1))}
+
 ,
   )
 

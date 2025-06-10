@@ -283,7 +283,7 @@ fn Parser::raw_tight_block_lines(
 }
 
 ///|
-typealias ParserCleanSpanFn = (Parser, LineSpan) -> StringNode
+priv type ParserCleanSpanFn (Parser, LineSpan) -> StringNode
 
 ///|
 fn Parser::_tight_block_lines(
