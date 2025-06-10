@@ -92,31 +92,3 @@ fn BlockLine::flush_tight(
     node: { meta, v: s.substring(start=nb, end=last + 1) },
   })
 }
-
-///|
-typealias FlushFn[A] = (String, Int, Int, Array[A]) -> Unit
-
-///|
-fn[A] _list_of_string(flush : FlushFn[A], s : String) -> Array[A] {
-  loop s, [], s.length() - 1, 0, 0 {
-    s, acc, max, start, k => {
-      if k > max {
-        flush(s, start, max, acc)
-        break acc
-      }
-      guard s.charcode_at(k) is ('\n' | '\r') else {
-        continue s, acc, max, start, k + 1
-      }
-      flush(s, start, k - 1, acc)
-      let next = k + 1
-      let start = if s.charcode_at(k) == '\r' &&
-        next <= max &&
-        s.charcode_at(next) == '\n' {
-        next + 1
-      } else {
-        next
-      }
-      continue s, acc, max, start, start
-    }
-  }
-}
