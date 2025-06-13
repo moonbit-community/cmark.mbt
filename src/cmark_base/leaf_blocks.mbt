@@ -52,21 +52,20 @@ pub fn LineType::thematic_break(
   }
   match s.charcode_at(start) {
     '-' | '_' | '*' =>
-      loop s, last, 1, start, start + 1 {
-        s, last, count, prev, k =>
-          if k > last {
-            if count < 3 {
-              Nomatch
-            } else {
-              ThematicBreakLine(prev)
-            }
-          } else if s.charcode_at(k) == s.charcode_at(prev) {
-            continue s, last, count + 1, k, k + 1
-          } else if s.charcode_at(k) is (' ' | '\t') {
-            continue s, last, count, prev, k + 1
-          } else {
+      for s = s, last = last, count = 1, prev = start, k = start + 1 {
+        break if k > last {
+          if count < 3 {
             Nomatch
+          } else {
+            ThematicBreakLine(prev)
           }
+        } else if s.charcode_at(k) == s.charcode_at(prev) {
+          continue s, last, count + 1, k, k + 1
+        } else if s.charcode_at(k) is (' ' | '\t') {
+          continue s, last, count, prev, k + 1
+        } else {
+          Nomatch
+        }
       }
     _ => Nomatch
   }
@@ -101,14 +100,12 @@ pub fn LineType::atx_heading(
   }
 
   fn content(s : String, last, k) {
-    loop s, last, k {
-      s, last, k => {
-        guard k <= last else { k - 1 }
-        guard s.charcode_at(k) is (' ' | '\t') else { continue s, last, k + 1 }
-        let end1 = find_end(s, last, k)
-        guard end1 <= last else { k - 1 }
-        continue s, last, end1
-      }
+    for s = s, last = last, k = k {
+      guard k <= last else { break k - 1 }
+      guard s.charcode_at(k) is (' ' | '\t') else { continue s, last, k + 1 }
+      let end1 = find_end(s, last, k)
+      guard end1 <= last else { break k - 1 }
+      continue s, last, end1
     }
   }
 
@@ -203,49 +200,45 @@ pub fn LineType::fenced_code_block_start(
   }
 
   fn fence(s : String, last, fence_first, k) {
-    loop s, last, fence_first, k {
-      s, last, fence_first, k => {
-        if k <= last && s.charcode_at(k) == s.charcode_at(fence_first) {
-          continue s, last, fence_first, k + 1
-        }
-        let fence_last = k - 1
-        let fcount = fence_last - fence_first + 1
-        guard fcount >= 3 else { break Some(Nomatch) }
-        let info = {
-          let after_blank = first_non_blank(s, last~, start=k)
-          if after_blank > last {
-            None
-          } else {
-            guard info(
-                s,
-                last,
-                s.charcode_at(fence_first) == '`',
-                after_blank,
-                after_blank,
-              )
-              is Some(i) else {
-              break None
-            }
-            Some(i)
-          }
-        }
-        Some(FencedCodeBlockLine(fence_first, fence_last, info))
+    for s = s, last = last, fence_first = fence_first, k = k {
+      if k <= last && s.charcode_at(k) == s.charcode_at(fence_first) {
+        continue s, last, fence_first, k + 1
       }
+      let fence_last = k - 1
+      let fcount = fence_last - fence_first + 1
+      guard fcount >= 3 else { break Some(Nomatch) }
+      let info = {
+        let after_blank = first_non_blank(s, last~, start=k)
+        if after_blank > last {
+          None
+        } else {
+          guard info(
+              s,
+              last,
+              s.charcode_at(fence_first) == '`',
+              after_blank,
+              after_blank,
+            )
+            is Some(i) else {
+            break None
+          }
+          Some(i)
+        }
+      }
+      break Some(FencedCodeBlockLine(fence_first, fence_last, info))
     }
   }
 
   if start > last {
     return Nomatch
   }
-  loop s, start, last, start {
-    s, first, last, k => {
-      guard k <= last else { break Nomatch }
-      if k - first + 1 < 4 && s.charcode_at(k) == ' ' {
-        continue s, first, last, k + 1
-      }
-      guard s.charcode_at(k) is ('~' | '`') else { break Nomatch }
-      fence(s, last, k, k + 1).or(Nomatch)
+  for s = s, first = start, last = last, k = start {
+    guard k <= last else { break Nomatch }
+    if k - first + 1 < 4 && s.charcode_at(k) == ' ' {
+      continue s, first, last, k + 1
     }
+    guard s.charcode_at(k) is ('~' | '`') else { break Nomatch }
+    break fence(s, last, k, k + 1).or(Nomatch)
   }
 }
 
@@ -270,30 +263,26 @@ pub fn FencedCodeBlockContinue::new(
   }
   let (fc, fcount) = fence
   fn fence(s : String, last, fence_first, k) {
-    loop s, last, fence_first, k {
-      s, last, fence_first, k => {
-        if k <= last && s.charcode_at(k).unsafe_to_char() == fc {
-          continue s, last, fence_first, k + 1
-        }
-        let fence_last = k - 1
-        guard fence_last - fence_first + 1 >= fcount else { break None } // Not closing
-        let after_blank = first_non_blank(s, last~, start=k)
-        guard after_blank > last else { break None }
-        Some(Close(fence_first, fence_last))
+    for s = s, last = last, fence_first = fence_first, k = k {
+      if k <= last && s.charcode_at(k).unsafe_to_char() == fc {
+        continue s, last, fence_first, k + 1
       }
+      let fence_last = k - 1
+      guard fence_last - fence_first + 1 >= fcount else { break None } // Not closing
+      let after_blank = first_non_blank(s, last~, start=k)
+      guard after_blank > last else { break None }
+      break Some(Close(fence_first, fence_last))
     }
   }
 
-  loop s, start, last, start {
-    s, first, last, k => {
-      guard k <= last else { break Code } // Short blank line
-      let sk = s.charcode_at(k).unsafe_to_char()
-      if k - first + 1 < 4 && sk == ' ' {
-        continue s, first, last, k + 1
-      }
-      guard sk == fc else { break Code }
-      fence(s, last, k, k + 1).or(Code)
+  for s = s, first = start, last = last, k = start {
+    guard k <= last else { break Code } // Short blank line
+    let sk = s.charcode_at(k).unsafe_to_char()
+    if k - first + 1 < 4 && sk == ' ' {
+      continue s, first, last, k + 1
     }
+    guard sk == fc else { break Code }
+    break fence(s, last, k, k + 1).or(Code)
   }
 }
 
@@ -410,14 +399,12 @@ pub fn LineType::html_block_start(
     c => {
       guard c.is_ascii_alphabetic() || c == '/' else { return Nomatch }
       let tag_first = if c == '/' { next + 1 } else { next }
-      let tag_last = loop s, last, tag_first {
-        s, last, i => {
-          if i > last ||
-            not(s.charcode_at(i).unsafe_to_char().is_ascii_alphabetic()) {
-            break i - 1
-          }
-          continue s, last, i + 1
+      let tag_last = for s = s, last = last, i = tag_first {
+        if i > last ||
+          not(s.charcode_at(i).unsafe_to_char().is_ascii_alphabetic()) {
+          break i - 1
         }
+        continue s, last, i + 1
       }
       let tag = s.substring(start=tag_first, end=tag_last + 1).to_lower()
       let is_open_end = {
@@ -453,30 +440,28 @@ fn LineType::html_block_end_cond_1(
   start~ : CharCodePos
 ) -> Bool {
   let lower_s = s.to_lower()
-  loop last, start {
-    last, k => {
-      guard k + 3 <= last else { break false }
-      guard s.charcode_at(k) == '<' && s.charcode_at(k + 1) == '/' else {
-        continue last, k + 1
-      }
-      let next = k + 2
-      let is_end_tag = {
-        let lower_s_sub = lower_s.substring(start=next)
-        match s.charcode_at(next) {
-          'p' => lower_s_sub.has_prefix("pre>")
-          's' =>
-            if s.charcode_at(k + 3) == 't' {
-              lower_s_sub.has_prefix("style>")
-            } else {
-              lower_s_sub.has_prefix("script>")
-            }
-          't' => lower_s_sub.has_prefix("textarea>")
-          _ => false
-        }
-      }
-      guard not(is_end_tag) else { break true }
+  for last = last, k = start {
+    guard k + 3 <= last else { break false }
+    guard s.charcode_at(k) == '<' && s.charcode_at(k + 1) == '/' else {
       continue last, k + 1
     }
+    let next = k + 2
+    let is_end_tag = {
+      let lower_s_sub = lower_s.substring(start=next)
+      match s.charcode_at(next) {
+        'p' => lower_s_sub.has_prefix("pre>")
+        's' =>
+          if s.charcode_at(k + 3) == 't' {
+            lower_s_sub.has_prefix("style>")
+          } else {
+            lower_s_sub.has_prefix("script>")
+          }
+        't' => lower_s_sub.has_prefix("textarea>")
+        _ => false
+      }
+    }
+    guard not(is_end_tag) else { break true }
+    continue last, k + 1
   }
 }
 
@@ -546,16 +531,12 @@ pub fn could_be_link_ref_definition(
   if start > last {
     return false
   }
-  loop s, start, last, start {
-    s, first, last, k => {
-      if k > last {
-        break false
-      }
-      if k - first + 1 < 4 && s.charcode_at(k) == ' ' {
-        continue s, first, last, k + 1
-      }
-      s.charcode_at(k) == '['
+  for s = s, first = start, last = last, k = start {
+    guard k <= last else { break false }
+    if k - first + 1 < 4 && s.charcode_at(k) == ' ' {
+      continue s, first, last, k + 1
     }
+    break s.charcode_at(k) == '['
   }
 }
 
@@ -582,32 +563,31 @@ pub fn LineType::list_marker(
       }
     }
     '0'..='9' as c =>
-      loop s, last, 1, @char.ascii_digit_to_int(c), start + 1 {
-        s, last, count, acc, k => {
-          if k > last || count > 9 {
-            return Nomatch
-          }
-          match s.charcode_at(k).unsafe_to_char() {
-            '0'..='9' as c =>
-              continue s,
-                last,
-                count + 1,
-                acc * 10 + @char.ascii_digit_to_int(c),
-                k + 1
-            '.' | ')' as c => {
-              let next = k + 1
-              if next > last ||
-                (
-                  s.charcode_at(next).to_char() is Some(c) &&
-                  @char.is_ascii_blank(c)
-                ) {
-                ListMarkerLine(Ordered(acc, c), k)
-              } else {
-                Nomatch
-              }
+      for s = s, last = last, count = 1, acc = @char.ascii_digit_to_int(c), k = start +
+            1 {
+        if k > last || count > 9 {
+          return Nomatch
+        }
+        break match s.charcode_at(k).unsafe_to_char() {
+          '0'..='9' as c =>
+            continue s,
+              last,
+              count + 1,
+              acc * 10 + @char.ascii_digit_to_int(c),
+              k + 1
+          '.' | ')' as c => {
+            let next = k + 1
+            if next > last ||
+              (
+                s.charcode_at(next).to_char() is Some(c) &&
+                @char.is_ascii_blank(c)
+              ) {
+              ListMarkerLine(Ordered(acc, c), k)
+            } else {
+              Nomatch
             }
-            _ => Nomatch
           }
+          _ => Nomatch
         }
       }
     _ => Nomatch

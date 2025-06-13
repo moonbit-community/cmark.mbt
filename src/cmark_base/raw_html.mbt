@@ -1,14 +1,12 @@
 ///| https://spec.commonmark.org/current/#tag-name
 fn tag_name(s : String, last~ : Int = s.length() - 1, start~ : Int = 0) -> Int? {
-  loop s, last, start + 1 {
-    s, last, k => {
-      guard k <= last &&
-        s.charcode_at(k).to_char() is Some(c) &&
-        (@char.is_ascii_alphanum(c) || c == '-') else {
-        break Some(k - 1)
-      }
-      continue s, last, k + 1
+  for s = s, last = last, k = start + 1 {
+    guard k <= last &&
+      s.charcode_at(k).to_char() is Some(c) &&
+      (@char.is_ascii_alphanum(c) || c == '-') else {
+      break Some(k - 1)
     }
+    continue s, last, k + 1
   }
 }
 
@@ -36,14 +34,11 @@ fn attribute_name(
     not(s.charcode_at(start).to_char() is Some(c) && char_is_start(c)) {
     return None
   }
-  loop s, last, start + 1 {
-    s, last, k => {
-      if k > last ||
-        not(s.charcode_at(k).to_char() is Some(c) && char_is_cont(c)) {
-        break Some(k - 1)
-      }
-      continue s, last, k + 1
+  for s = s, last = last, k = start + 1 {
+    if k > last || not(s.charcode_at(k).to_char() is Some(c) && char_is_cont(c)) {
+      break Some(k - 1)
     }
+    continue s, last, k + 1
   }
 }
 
@@ -70,15 +65,13 @@ fn[A] attribute_value(
     not(c is (' ' | '\t' | '"' | '\'' | '=' | '<' | '>' | '`'))
   }
 
-  loop s, line.last, start + 1 {
-    s, last, k => {
-      if k <= last && s.charcode_at(k).to_char() is Some(c) && is_cont(c) {
-        continue s, last, k + 1
-      }
-      let last = k - 1
-      push_span(line~, start, last, spans)
-      Some((line, last))
+  for s = s, last = line.last, k = start + 1 {
+    if k <= last && s.charcode_at(k).to_char() is Some(c) && is_cont(c) {
+      continue s, last, k + 1
     }
+    let last = k - 1
+    push_span(line~, start, last, spans)
+    break Some((line, last))
   }
 }
 
@@ -137,44 +130,43 @@ fn[A] open_tag(
   let start = tag_name_end + 1
   let span = { ..line, first: tag_start, last: tag_name_end }
   let spans = Ref::new([{ start: tag_start, span }])
-  loop lines, line, start {
-    lines, line, start => {
-      guard first_non_blank_over_nl1(
-          next_line~,
-          s,
-          lines,
-          line~,
-          spans.val,
-          start~,
-        )
-        is Some((line, last_blank)) else {
-        break None
+  for lines = lines, line = line, start = start {
+    guard first_non_blank_over_nl1(
+        next_line~,
+        s,
+        lines,
+        line~,
+        spans.val,
+        start~,
+      )
+      is Some((line, last_blank)) else {
+      break None
+    }
+    let next = last_blank + 1
+    break match s.charcode_at(next) {
+      '>' => {
+        push_span(line~, next, next, spans.val)
+        Some((line, spans.val, next))
       }
-      let next = last_blank + 1
-      match s.charcode_at(next) {
-        '>' => {
-          push_span(line~, next, next, spans.val)
-          Some((line, spans.val, next))
-        }
-        '/' => {
-          let last = next + 1
-          if last > line.last || s.charcode_at(last) != '>' {
-            break None
-          }
+      '/' => {
+        let last = next + 1
+        if last > line.last || s.charcode_at(last) != '>' {
+          None
+        } else {
           push_span(line~, next, last, spans.val)
           Some((line, spans.val, last))
         }
-        _c => {
-          if next == start {
-            break None
-          }
+      }
+      _c =>
+        if next == start {
+          None
+        } else {
           guard attribute(next_line~, s, lines, line~, spans, start=next)
             is Some((line, last)) else {
-            break None
+            None
           }
           continue lines, line, last + 1
         }
-      }
     }
   }
 }
@@ -231,24 +223,22 @@ fn[A] processing_instruction(
   start~ : CharCodePos
 ) -> (LineSpan, Array[Span], CharCodePos)? {
   let acc = []
-  loop lines, line, start, start + 2 {
-    lines, line, start, k => {
-      if k > line.last {
-        guard next_line(lines) is Some(new_line) else { break None }
-        push_span(line~, start, line.last, acc)
-        let start = first_non_blank_in_span(s, new_line)
-        continue lines, new_line, start, start
-      }
-      if s.charcode_at(k) != '?' {
-        continue lines, line, start, k + 1
-      }
-      let last = k + 1
-      if last <= line.last && s.charcode_at(last) == '>' { // ?>
-        push_span(line~, start, last, acc)
-        break Some((line, acc, last))
-      }
-      continue lines, line, start, last
+  for lines = lines, line = line, start = start, k = start + 2 {
+    if k > line.last {
+      guard next_line(lines) is Some(new_line) else { break None }
+      push_span(line~, start, line.last, acc)
+      let start = first_non_blank_in_span(s, new_line)
+      continue lines, new_line, start, start
     }
+    if s.charcode_at(k) != '?' {
+      continue lines, line, start, k + 1
+    }
+    let last = k + 1
+    if last <= line.last && s.charcode_at(last) == '>' { // ?>
+      push_span(line~, start, last, acc)
+      break Some((line, acc, last))
+    }
+    continue lines, line, start, last
   }
 }
 
@@ -274,27 +264,25 @@ fn[A] html_comment(
     return None
   }
   let acc = []
-  loop lines, line, start, start + 4 {
-    lines, line, start, k => {
-      if k > line.last {
-        guard next_line(lines) is Some(new_line) else { break None }
-        push_span(line~, start, line.last, acc)
-        let start = first_non_blank_in_span(s, new_line)
-        continue lines, new_line, start, start
-      }
-      if s.charcode_at(k) == '-' && s.charcode_at(k - 1) != '-' {
-        let last = k + 2
-        if last <= line.last && s.charcode_at(k + 1) == '-' {
-          break if s.charcode_at(last) == '>' { // And we do not end with - 
-            push_span(line~, start, last, acc)
-            Some((line, acc, last))
-          } else {
-            None // In the input
-          }
+  for lines = lines, line = line, start = start, k = start + 4 {
+    if k > line.last {
+      guard next_line(lines) is Some(new_line) else { break None }
+      push_span(line~, start, line.last, acc)
+      let start = first_non_blank_in_span(s, new_line)
+      continue lines, new_line, start, start
+    }
+    if s.charcode_at(k) == '-' && s.charcode_at(k - 1) != '-' {
+      let last = k + 2
+      if last <= line.last && s.charcode_at(k + 1) == '-' {
+        break if s.charcode_at(last) == '>' { // And we do not end with -
+          push_span(line~, start, last, acc)
+          Some((line, acc, last))
+        } else {
+          None // In the input
         }
       }
-      continue lines, line, start, k + 1
     }
+    continue lines, line, start, k + 1
   }
 }
 
@@ -314,26 +302,24 @@ fn[A] cdata_section(
     return None
   }
   let acc = []
-  loop lines, line, start, start + 9 {
-    lines, line, start, k => {
-      if k > line.last {
-        guard next_line(lines) is Some(new_line) else { break None }
-        push_span(line~, start, line.last, acc)
-        let start = first_non_blank_in_span(s, new_line)
-        continue lines, new_line, start, start
-      }
-      if s.charcode_at(k) != ']' {
-        continue lines, line, start, k + 1
-      }
-      let last = k + 2
-      if last <= line.last &&
-        s.charcode_at(k + 1) == ']' &&
-        s.charcode_at(last) == '>' { // ]>
-        push_span(line~, start, last, acc)
-        break Some((line, acc, last))
-      }
+  for lines = lines, line = line, start = start, k = start + 9 {
+    if k > line.last {
+      guard next_line(lines) is Some(new_line) else { break None }
+      push_span(line~, start, line.last, acc)
+      let start = first_non_blank_in_span(s, new_line)
+      continue lines, new_line, start, start
+    }
+    if s.charcode_at(k) != ']' {
       continue lines, line, start, k + 1
     }
+    let last = k + 2
+    if last <= line.last &&
+      s.charcode_at(k + 1) == ']' &&
+      s.charcode_at(last) == '>' { // ]>
+      push_span(line~, start, last, acc)
+      break Some((line, acc, last))
+    }
+    continue lines, line, start, k + 1
   }
 }
 

@@ -27,44 +27,42 @@ fn Parser::has_next_non_blank(self : Parser) -> Bool {
 
 ///|
 fn Parser::update_next_non_blank(self : Parser) -> Unit {
-  loop self.i, self.curr_line_last_char, self.curr_char, self.curr_char_col {
-    s, last, k, col =>
-      if k > last {
-        self.next_non_blank = k
-        self.next_non_blank_col = col
-      } else {
-        match s.charcode_at(k) {
-          ' ' => continue s, last, k + 1, col + 1
-          '\t' => continue s, last, k + 1, next_tab_stop(col)
-          _ => {
-            self.next_non_blank = k
-            self.next_non_blank_col = col
-          }
+  for s = self.i, last = self.curr_line_last_char, k = self.curr_char, col = self.curr_char_col {
+    break if k > last {
+      self.next_non_blank = k
+      self.next_non_blank_col = col
+    } else {
+      match s.charcode_at(k) {
+        ' ' => continue s, last, k + 1, col + 1
+        '\t' => continue s, last, k + 1, next_tab_stop(col)
+        _ => {
+          self.next_non_blank = k
+          self.next_non_blank_col = col
         }
       }
+    }
   }
 }
 
 ///|
 fn Parser::accept_cols(self : Parser, count~ : Int) -> Unit {
-  loop count, self.curr_char, self.curr_char_col {
-    count, k, col =>
-      if count == 0 {
-        self.curr_char = k
-        self.curr_char_col = col
-      } else if self.i.charcode_at(k) != '\t' {
-        continue count - 1, k + 1, col + 1
+  for count = count, k = self.curr_char, col = self.curr_char_col {
+    break if count == 0 {
+      self.curr_char = k
+      self.curr_char_col = col
+    } else if self.i.charcode_at(k) != '\t' {
+      continue count - 1, k + 1, col + 1
+    } else {
+      let col1 = next_tab_stop(col)
+      let tab_cols = col1 - (col + self.tab_consumed_cols)
+      if tab_cols > count {
+        self.tab_consumed_cols = count
+        continue 0, k, col
       } else {
-        let col1 = next_tab_stop(col)
-        let tab_cols = col1 - (col + self.tab_consumed_cols)
-        if tab_cols > count {
-          self.tab_consumed_cols = count
-          continue 0, k, col
-        } else {
-          self.tab_consumed_cols = 0
-          continue count - tab_cols, k + 1, col1
-        }
+        self.tab_consumed_cols = 0
+        continue count - tab_cols, k + 1, col1
       }
+    }
   }
   self.update_next_non_blank()
 }
@@ -1397,15 +1395,13 @@ fn Parser::parse_block(self : Parser) -> (String, Node[Array[BlockStruct]]) {
   }
 
   let nl = self.get_first_line()
-  let blocks = loop [] {
-    bs => {
-      self.add_line(bs)
-      if self.get_next_line() {
-        continue bs
-      }
-      self.end_doc(bs)
-      { v: bs, meta: meta() }
+  let blocks = for bs = [] {
+    self.add_line(bs)
+    if self.get_next_line() {
+      continue bs
     }
+    self.end_doc(bs)
+    break { v: bs, meta: meta() }
   }
   (nl, blocks)
 }
@@ -1568,8 +1564,8 @@ fn Parser::block_struct_to_table(
   rows : Array[(LineSpan, LineSpan)]
 ) -> Block {
   guard rows.last() is Some((last, _))
-  let (first, col_count, rows) = loop 0, false, [], rows[:] {
-    col_count, last_was_sep, acc, [.. rs, (row, blanks)] => {
+  let (first, col_count, rows) = loop (0, false, [], rows[:]) {
+    (col_count, last_was_sep, acc, [.. rs, (row, blanks)]) => {
       let meta = self.meta(self.text_loc_of_span(row))
       let row1 = { ..row, first: row.first + 1, last: row.last }
       let cols = self.parse_table_row(row1)
@@ -1583,9 +1579,9 @@ fn Parser::block_struct_to_table(
       }
       acc.push((r, self.layout_clean_raw_span1(blanks)))
       guard rs.length() != 0 else { break (row, col_count, acc) }
-      continue col_count, last_was_sep, acc, rs
+      continue (col_count, last_was_sep, acc, rs)
     }
-    _, _, _, [] => abort("unreachable")
+    (_, _, _, []) => abort("unreachable")
   }
   rows.rev_inplace()
   let meta = self.meta_of_spans(first~, last~)
@@ -1659,28 +1655,30 @@ fn Parser::block_struct_to_list_item(
   i : ListItemStruct
 ) -> (Node[ListItem], Bool) {
   fn go(bstate : BState, tight, acc : Array[_], bs : ArrayView[BlockStruct]) {
-    loop bstate, tight, acc, bs {
-      bstate, tight, acc, [BlankLine(_) as bl, .. bs] => {
+    loop (bstate, tight, acc, bs) {
+      (bstate, tight, acc, [BlankLine(_) as bl, .. bs]) => {
         let bstate = if bstate == TrailBlank { TrailBlank } else { Blank }
         acc.push(self.block_struct_to_block(bl))
-        continue bstate, tight, acc, bs
+        continue (bstate, tight, acc, bs)
       }
-      bstate,
-      _,
-      acc,
-      [
-        List({ items: [.., { blocks: [.., BlankLine(_)], .. }], .. }) as l,
-        .. bs,
-      ] => {
+      (
+        bstate,
+        _,
+        acc,
+        [
+          List({ items: [.., { blocks: [.., BlankLine(_)], .. }], .. }) as l,
+          .. bs,
+        ],
+      ) => {
         acc.push(self.block_struct_to_block(l))
-        continue bstate, false, acc, bs
+        continue (bstate, false, acc, bs)
       }
-      bstate, tight, acc, [b, .. bs] => {
+      (bstate, tight, acc, [b, .. bs]) => {
         let tight = tight && bstate != Blank
         acc.push(self.block_struct_to_block(b))
-        continue NonBlank, tight, acc, bs
+        continue (NonBlank, tight, acc, bs)
       }
-      _, tight, acc, [] => (tight, acc)
+      (_, tight, acc, []) => (tight, acc)
     }
   }
 
@@ -1721,12 +1719,12 @@ fn Parser::block_struct_to_list_item(
 fn Parser::block_struct_to_list(self : Parser, list : ListBlockStruct) -> Block {
   let items = list.items
   let (first, tight) = self.block_struct_to_list_item(items[0])
-  let (tight, items) = loop not(list.loose) && tight, [first], items[1:] {
-    tight, acc, [] => (tight, acc)
-    tight, acc, [item, .. items] => {
+  let (tight, items) = loop (not(list.loose) && tight, [first], items[1:]) {
+    (tight, acc, []) => (tight, acc)
+    (tight, acc, [item, .. items]) => {
       let (item, item_tight) = self.block_struct_to_list_item(item)
       acc.push(item)
-      continue tight && item_tight, acc, items
+      continue (tight && item_tight, acc, items)
     }
   }
   let meta = self.meta_of_metas(
