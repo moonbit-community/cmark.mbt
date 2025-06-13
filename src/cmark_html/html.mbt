@@ -69,15 +69,13 @@ fn init_context(
 ///|
 fn uid(c : Context, id : String) -> String {
   guard c.state is Some(EState({ ids, .. }))
-  loop ids, id, 0 {
-    ids, id, c => {
-      let id1 = if c == 0 { id } else { "\{id}-\{c}" }
-      if ids.contains(id1) {
-        continue ids, id, c + 1
-      }
-      ids.add(id1)
-      id1
+  for ids = ids, id = id, c = 0 {
+    let id1 = if c == 0 { id } else { "\{id}-\{c}" }
+    if ids.contains(id1) {
+      continue ids, id, c + 1
     }
+    ids.add(id1)
+    break id1
   }
 }
 
@@ -162,46 +160,44 @@ fn buffer_add_html_escaped_string(b : Buffer, s : String) -> Unit {
     }
   }
 
-  loop 0, 0 {
-    start, i => {
-      if i > max_idx {
+  for start = 0, i = 0 {
+    if i > max_idx {
+      flush(b, start, i)
+      break
+    }
+    let next = i + 1
+    match s.charcode_at(i) {
+      '\u{0}' => {
         flush(b, start, i)
-        break
+        b.write_char(@char.rep)
+        continue next, next
       }
-      let next = i + 1
-      match s.charcode_at(i) {
-        '\u{0}' => {
-          flush(b, start, i)
-          b.write_char(@char.rep)
-          continue next, next
-        }
-        '&' => {
-          flush(b, start, i)
-          b.write_string("&amp;")
-          continue next, next
-        }
-        '<' => {
-          flush(b, start, i)
-          b.write_string("&lt;")
-          continue next, next
-        }
-        '>' => {
-          flush(b, start, i)
-          b.write_string("&gt;")
-          continue next, next
-        }
-        // '\'' => {
-        //  flush(b, start, i)
-        //  b.write_string("&apos;")
-        //  continue next, next
-        //  }
-        '"' => {
-          flush(b, start, i)
-          b.write_string("&quot;")
-          continue next, next
-        }
-        _ => continue start, next
+      '&' => {
+        flush(b, start, i)
+        b.write_string("&amp;")
+        continue next, next
       }
+      '<' => {
+        flush(b, start, i)
+        b.write_string("&lt;")
+        continue next, next
+      }
+      '>' => {
+        flush(b, start, i)
+        b.write_string("&gt;")
+        continue next, next
+      }
+      // '\'' => {
+      //  flush(b, start, i)
+      //  b.write_string("&apos;")
+      //  continue next, next
+      //  }
+      '"' => {
+        flush(b, start, i)
+        b.write_string("&quot;")
+        continue next, next
+      }
+      _ => continue start, next
     }
   }
 }
@@ -246,36 +242,33 @@ fn buffer_add_pct_encoded_string(b : Buffer, s : String) -> Unit { // Percent en
       b.write_substring(s, start, i - start)
     }
   }
-  loop b, s, s.length() - 1, 0, 0 {
-    b, s, max, start, i => {
-      if i > max {
+  for b = b, s = s, max = s.length() - 1, start = 0, i = 0 {
+    if i > max {
+      flush(b, max, start, i)
+      break
+    }
+    let next = i + 1
+    match s.charcode_at(i) {
+      c if c.to_char() is Some(c) && (@char.is_ascii_alphanum(c) || is_delim(c)) =>
+        continue b, s, max, start, next
+      '&' => {
         flush(b, max, start, i)
-        break
+        b.write_string("&amp;")
+        continue b, s, max, next, next
       }
-      let next = i + 1
-      match s.charcode_at(i) {
-        c if c.to_char() is Some(c) &&
-          (@char.is_ascii_alphanum(c) || is_delim(c)) =>
-          continue b, s, max, start, next
-        '&' => {
-          flush(b, max, start, i)
-          b.write_string("&amp;")
-          continue b, s, max, next, next
-        }
-        '\'' => {
-          flush(b, max, start, i)
-          b.write_string("&apos;")
-          continue b, s, max, next, next
-        }
-        c => {
-          flush(b, max, start, i)
-          let hi = (c >> 4) & 0xF
-          let lo = c & 0xF
-          b.write_char('%')
-          b.write_char(unsafe_hexdigit(hi))
-          b.write_char(unsafe_hexdigit(lo))
-          continue b, s, max, next, next
-        }
+      '\'' => {
+        flush(b, max, start, i)
+        b.write_string("&apos;")
+        continue b, s, max, next, next
+      }
+      c => {
+        flush(b, max, start, i)
+        let hi = (c >> 4) & 0xF
+        let lo = c & 0xF
+        b.write_char('%')
+        b.write_char(unsafe_hexdigit(hi))
+        b.write_char(unsafe_hexdigit(lo))
+        continue b, s, max, next, next
       }
     }
   }
@@ -603,20 +596,21 @@ fn item_block(tight~ : Bool, c : Context, b : @cmark.Block) -> Unit raise {
     (BlankLine(_), _) => ()
     (Paragraph({ v, .. }), true) => c.inline(v.inline)
     (Blocks({ v, .. }), _) =>
-      loop c, true, v.to_array()[:], tight {
-        c, add_nl, [BlankLine(_), .. bs], tight => continue c, add_nl, bs, tight
-        c, _, [Paragraph({ v, .. }), .. bs], true as tight => {
+      loop (c, true, v.to_array()[:], tight) {
+        (c, add_nl, [BlankLine(_), .. bs], tight) =>
+          continue (c, add_nl, bs, tight)
+        (c, _, [Paragraph({ v, .. }), .. bs], true as tight) => {
           c.inline(v.inline)
-          continue c, true, bs, tight
+          continue (c, true, bs, tight)
         }
-        c, add_nl, [b, .. bs], tight => {
+        (c, add_nl, [b, .. bs], tight) => {
           if add_nl {
             c.b.write_char('\n')
           }
           c.block(b)
-          continue c, false, bs, tight
+          continue (c, false, bs, tight)
         }
-        _, _, _, _ => ()
+        _ => ()
       }
     _ => {
       c.b.write_char('\n')

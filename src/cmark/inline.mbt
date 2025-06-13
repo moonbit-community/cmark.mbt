@@ -166,43 +166,41 @@ pub fn Inline::id(
       buf.write_char('-')
     }
   }
-  loop s.length() - 1, '\u{0}', 0 {
-    max, prev, k => {
-      if k > max {
-        break buf.to_string()
+  for max = s.length() - 1, prev = '\u{0}', k = 0 {
+    if k > max {
+      break buf.to_string()
+    }
+    match s.char_at(k) {
+      ' ' | '\t' as prev_ccode => continue max, prev_ccode, k + 1
+      '_' | '-' as c => {
+        collapse_blanks(prev)
+        buf.write_char(c)
+        continue max, c, k + 1
       }
-      match s.char_at(k) {
-        ' ' | '\t' as prev_ccode => continue max, prev_ccode, k + 1
-        '_' | '-' as c => {
-          collapse_blanks(prev)
-          buf.write_char(c)
-          continue max, c, k + 1
+      c => {
+        collapse_blanks(prev)
+        let mut u = s.char_at(k)
+        if u == '\u{0000}' {
+          u = @char.rep
         }
-        c => {
-          collapse_blanks(prev)
-          let mut u = s.char_at(k)
-          if u == '\u{0000}' {
-            u = @char.rep
-          }
-          let k = k + @char.length_utf16(u.to_int())
-          if @char.is_ascii_punctuation(c) || @unicode.is_punctuation(c) {
-            continue max, '\u{0}', k
-          }
-          match @casefold.casefold_char(u) {
-            One(c) => buf.write_char(c)
-            Two(c1, c2) => {
-              buf.write_char(c1)
-              buf.write_char(c2)
-            }
-            Three(c1, c2, c3) => {
-              buf.write_char(c1)
-              buf.write_char(c2)
-              buf.write_char(c3)
-            }
-          }
-          let prev = c
-          continue max, prev, k
+        let k = k + @char.length_utf16(u.to_int())
+        if @char.is_ascii_punctuation(c) || @unicode.is_punctuation(c) {
+          continue max, '\u{0}', k
         }
+        match @casefold.casefold_char(u) {
+          One(c) => buf.write_char(c)
+          Two(c1, c2) => {
+            buf.write_char(c1)
+            buf.write_char(c2)
+          }
+          Three(c1, c2, c3) => {
+            buf.write_char(c1)
+            buf.write_char(c2)
+            buf.write_char(c3)
+          }
+        }
+        let prev = c
+        continue max, prev, k
       }
     }
   }
@@ -291,36 +289,34 @@ pub fn InlineCodeSpan::from_string(
   let max = s.length() - 1
   let need_sp = s is (['`', ..] | [.., '`'])
   let s = if need_sp { " \{s} " } else { s }
-  let (bt_counts, code_layout) = loop @sorted_set.new(), [], max, 0, 0, 0 {
-    bt_counts, acc, max, btc, start, k => {
-      if k > max {
-        // assert (btc = 0) because of [need_sp]
-        let layout = if acc.is_empty() {
-          [{ blanks: "", node: { v: s, meta } }]
-        } else {
-          BlockLine::flush_tight(meta~, s, start, max, acc)
-          acc
-        }
-        break (bt_counts, layout)
-      }
-      let sk = s.charcode_at(k)
-      if sk == '`' {
-        continue bt_counts, acc, max, btc + 1, start, k + 1
-      }
-      if btc > 0 {
-        bt_counts.add(btc)
-      }
-      guard sk is ('\n' | '\r') else {
-        continue bt_counts, acc, max, 0, start, k + 1
-      }
-      BlockLine::flush_tight(meta~, s, start, k - 1, acc)
-      let start = if k + 1 <= max && sk == '\r' && s.charcode_at(k + 1) == '\n' {
-        k + 2
+  let (bt_counts, code_layout) = for bt_counts = @sorted_set.new(), acc = [], max = max, btc = 0, start = 0, k = 0 {
+    if k > max {
+      // assert (btc = 0) because of [need_sp]
+      let layout = if acc.is_empty() {
+        [{ blanks: "", node: { v: s, meta } }]
       } else {
-        k + 1
+        BlockLine::flush_tight(meta~, s, start, max, acc)
+        acc
       }
-      continue bt_counts, acc, max, 0, start, start
+      break (bt_counts, layout)
     }
+    let sk = s.charcode_at(k)
+    if sk == '`' {
+      continue bt_counts, acc, max, btc + 1, start, k + 1
+    }
+    if btc > 0 {
+      bt_counts.add(btc)
+    }
+    guard sk is ('\n' | '\r') else {
+      continue bt_counts, acc, max, 0, start, k + 1
+    }
+    BlockLine::flush_tight(meta~, s, start, k - 1, acc)
+    let start = if k + 1 <= max && sk == '\r' && s.charcode_at(k + 1) == '\n' {
+      k + 2
+    } else {
+      k + 1
+    }
+    continue bt_counts, acc, max, 0, start, start
   }
   { code_layout, backticks: InlineCodeSpan::min_backticks(min=1, bt_counts) }
 }

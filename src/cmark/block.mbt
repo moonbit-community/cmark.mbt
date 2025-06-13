@@ -449,9 +449,9 @@ pub fn Table::new(
 fn Table::parse_sep_row(
   cs : ArrayView[(Inline, TableCellLayout)]
 ) -> Array[Node[TableSep]]? {
-  loop [], cs {
-    acc, [] => Some(acc)
-    acc, [(Text({ v, meta }), TableCellLayout(("", ""))), .. cs] => {
+  loop ([], cs) {
+    (acc, []) => Some(acc)
+    (acc, [(Text({ v, meta }), TableCellLayout(("", ""))), .. cs]) => {
       guard not(v.is_empty()) else { None }
       let max = v.length() - 1
       let first_colon = v.charcode_at(0) == ':'
@@ -469,9 +469,9 @@ fn Table::parse_sep_row(
           (false, true) => Some(Right)
         }
         acc.push({ v: (sep, count), meta })
-        continue acc, cs
+        continue (acc, cs)
       }
     }
-    _, _ => None
+    _ => None
   }
 }

@@ -16,56 +16,52 @@ pub fn link_destination(
   if s.charcode_at(start) == '<' {
     // delimited, i.e. start has '<'
     // https://spec.commonmark.org/current/#link-destination 1st
-    loop s, start, last, '\u{0}', start + 1 {
-      s, start, last, prev, k => {
-        if k > last {
-          break None
-        }
-        let c = s.charcode_at(k).unsafe_to_char()
-        match (c, prev) {
-          ('\n' | '\r', _) => break None
-          ('\\', '\\') => continue s, start, last, '\u{0}', k + 1
-          ('<', '\\') => ()
-          ('<', _) => break None
-          ('>', '\\') => ()
-          ('>', _) => break Some((true, start + 1, k - 1))
-          (_, _) => ()
-        }
-        continue s, start, last, c, k + 1
+    for s = s, start = start, last = last, prev = '\u{0}', k = start + 1 {
+      if k > last {
+        break None
       }
+      let c = s.charcode_at(k).unsafe_to_char()
+      match (c, prev) {
+        ('\n' | '\r', _) => break None
+        ('\\', '\\') => continue s, start, last, '\u{0}', k + 1
+        ('<', '\\') => ()
+        ('<', _) => break None
+        ('>', '\\') => ()
+        ('>', _) => break Some((true, start + 1, k - 1))
+        (_, _) => ()
+      }
+      continue s, start, last, c, k + 1
     }
   } else {
     // not_delimited
     // https://spec.commonmark.org/current/#link-destination 2nd
-    loop s, start, last, '\u{0}', 0, start {
-      s, start, last, prev, bal, k => {
-        if k > last {
-          break if bal == 0 { Some((false, start, k - 1)) } else { None }
-        }
-        let c = s.charcode_at(k).unsafe_to_char()
-        match (c, prev) {
-          ('\\', '\\') => continue s, start, last, '\u{0}', bal, k + 1
-          ('(', '\\') => ()
-          ('(', _) => continue s, start, last, c, bal + 1, k + 1
-          (')', '\\') => ()
-          (')', _) => {
-            let bal = bal - 1
-            if bal < 0 {
-              break Some((false, start, k - 1)) // hit inline link closing ')'
-            }
-            continue s, start, last, c, bal, k + 1
-          }
-          (c, _) =>
-            if c == ' ' || @char.is_ascii_control(c) {
-              break if k != start && bal == 0 {
-                Some((false, start, k - 1))
-              } else {
-                None
-              }
-            }
-        }
-        continue s, start, last, c, bal, k + 1
+    for s = s, start = start, last = last, prev = '\u{0}', bal = 0, k = start {
+      if k > last {
+        break if bal == 0 { Some((false, start, k - 1)) } else { None }
       }
+      let c = s.charcode_at(k).unsafe_to_char()
+      match (c, prev) {
+        ('\\', '\\') => continue s, start, last, '\u{0}', bal, k + 1
+        ('(', '\\') => ()
+        ('(', _) => continue s, start, last, c, bal + 1, k + 1
+        (')', '\\') => ()
+        (')', _) => {
+          let bal = bal - 1
+          if bal < 0 {
+            break Some((false, start, k - 1)) // hit inline link closing ')'
+          }
+          continue s, start, last, c, bal, k + 1
+        }
+        (c, _) =>
+          if c == ' ' || @char.is_ascii_control(c) {
+            break if k != start && bal == 0 {
+              Some((false, start, k - 1))
+            } else {
+              None
+            }
+          }
+      }
+      continue s, start, last, c, bal, k + 1
     }
   }
 }
@@ -96,28 +92,26 @@ pub fn[A] link_title(
     '(' => {
       let start = start + 1
       let acc = []
-      loop next_line, s, lines, line, false, start, start {
-        next_line, s, lines, line, prev_bslash, start, k => {
-          if k > line.last {
-            guard next_line(lines) is Some(newline) else { break None }
-            guard newline.first <= newline.last else { break None }
-            push_span(line~, start, line.last, acc)
-            let start = first_non_blank_in_span(s, newline)
-            let prev_bslash = false
-            continue next_line, s, lines, newline, prev_bslash, start, start
-          }
-          if not(prev_bslash) {
-            if s.charcode_at(k) == '(' {
-              break None
-            }
-            if s.charcode_at(k) == ')' {
-              push_span(line~, start, k - 1, acc)
-              break Some((line, acc, k))
-            }
-          }
-          let prev_bslash = s.charcode_at(k) == '\\' && not(prev_bslash)
-          continue next_line, s, lines, line, prev_bslash, start, k + 1
+      for next_line = next_line, s = s, lines = lines, line = line, prev_bslash = false, start = start, k = start {
+        if k > line.last {
+          guard next_line(lines) is Some(newline) else { break None }
+          guard newline.first <= newline.last else { break None }
+          push_span(line~, start, line.last, acc)
+          let start = first_non_blank_in_span(s, newline)
+          let prev_bslash = false
+          continue next_line, s, lines, newline, prev_bslash, start, start
         }
+        if not(prev_bslash) {
+          if s.charcode_at(k) == '(' {
+            break None
+          }
+          if s.charcode_at(k) == ')' {
+            push_span(line~, start, k - 1, acc)
+            break Some((line, acc, k))
+          }
+        }
+        let prev_bslash = s.charcode_at(k) == '\\' && not(prev_bslash)
+        continue next_line, s, lines, line, prev_bslash, start, k + 1
       }
     }
     _ => None
@@ -143,57 +137,55 @@ pub fn[A] link_label(
   let start = start + 1
   buf.reset()
   let acc = []
-  loop buf, next_line, s, lines, line, '\u{0}', start, 0, start {
-    b, next_line, s, lines, line, prev, start, count, k => {
-      if k > line.last {
-        guard next_line(lines) is Some(newline) else { break None }
-        if newline.first == newline.last {
-          break None
-        }
-        push_span(line~, start, line.last, acc)
-        let start = first_non_blank_in_span(s, newline)
-        if not(b.is_empty()) {
-          b.write_char(' ')
-        }
-        let prev = '\u{0}'
-        continue b, next_line, s, lines, newline, prev, start, count, start
-      }
-      if count > 999 {
+  for b = buf, next_line = next_line, s = s, lines = lines, line = line, prev = '\u{0}', start = start, count = 0, k = start {
+    if k > line.last {
+      guard next_line(lines) is Some(newline) else { break None }
+      if newline.first == newline.last {
         break None
       }
-      match (s.charcode_at(k).unsafe_to_char(), prev) {
-        ('\\', '\\') => {
-          b.write_char('\\')
-          let prev = '\u{0}'
-          continue b, next_line, s, lines, line, prev, start, count + 1, k + 1
-        }
-        (']', '\\') => ()
-        (']', _) => {
-          let key = b.to_string()
-          if key.iter().all(@char.is_ascii_whitespace) {
-            break None
-          }
-          push_span(line~, start, k - 1, acc)
-          break Some((line, acc, k, key))
-        }
-        ('[', '\\') => ()
-        ('[', _) => break None
-        (' ' | '\t' as prev, _) =>
-          continue b, next_line, s, lines, line, prev, start, count + 1, k + 1
-        _ => ()
-      }
-      // Collapse non initial whitespace
-      if @char.is_ascii_blank(prev) && not(b.is_empty()) {
+      push_span(line~, start, line.last, acc)
+      let start = first_non_blank_in_span(s, newline)
+      if not(b.is_empty()) {
         b.write_char(' ')
       }
-      let mut u = s.char_at(k)
-      if u == '\u{0}' {
-        u = @char.rep
-      }
-      let k1 = k + @char.length_utf8(u.to_int())
-      b.write_char(@char.to_ascii_lower(u))
-      let prev = s.charcode_at(k).unsafe_to_char()
-      continue b, next_line, s, lines, line, prev, start, count + 1, k1
+      let prev = '\u{0}'
+      continue b, next_line, s, lines, newline, prev, start, count, start
     }
+    if count > 999 {
+      break None
+    }
+    match (s.charcode_at(k).unsafe_to_char(), prev) {
+      ('\\', '\\') => {
+        b.write_char('\\')
+        let prev = '\u{0}'
+        continue b, next_line, s, lines, line, prev, start, count + 1, k + 1
+      }
+      (']', '\\') => ()
+      (']', _) => {
+        let key = b.to_string()
+        if key.iter().all(@char.is_ascii_whitespace) {
+          break None
+        }
+        push_span(line~, start, k - 1, acc)
+        break Some((line, acc, k, key))
+      }
+      ('[', '\\') => ()
+      ('[', _) => break None
+      (' ' | '\t' as prev, _) =>
+        continue b, next_line, s, lines, line, prev, start, count + 1, k + 1
+      _ => ()
+    }
+    // Collapse non initial whitespace
+    if @char.is_ascii_blank(prev) && not(b.is_empty()) {
+      b.write_char(' ')
+    }
+    let mut u = s.char_at(k)
+    if u == '\u{0}' {
+      u = @char.rep
+    }
+    let k1 = k + @char.length_utf8(u.to_int())
+    b.write_char(@char.to_ascii_lower(u))
+    let prev = s.charcode_at(k).unsafe_to_char()
+    continue b, next_line, s, lines, line, prev, start, count + 1, k1
   }
 }

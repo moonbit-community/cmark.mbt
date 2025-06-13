@@ -373,47 +373,44 @@ fn tokenize(
 ) -> (CloserIndex, Tokens, LineSpan) {
   guard lines is [line, .. lines] else { abort("expected at least one line") }
   let toks : Tokens = @deque.new()
-  let cidx = loop lines, line, false, line.first {
-    lines, line, prev_bslash, k => {
-      if k > line.last {
-        match lines {
-          [] => break make_closer_index(toks)
-          [newline, .. lines] => {
-            let t = Token::newline(s, line, newline)
-            toks.push(t)
-            continue lines, newline, false, newline.first
-          }
+  let cidx = for lines = lines, line = line, prev_bslash = false, k = line.first {
+    if k > line.last {
+      break match lines {
+        [] => make_closer_index(toks)
+        [newline, .. lines] => {
+          let t = Token::newline(s, line, newline)
+          toks.push(t)
+          continue lines, newline, false, newline.first
         }
       }
-      let next = match s.charcode_at(k) {
-        '\\' => continue lines, line, not(prev_bslash), k + 1
-        '`' => tokens_add_backtick(toks, s, line, prev_bslash~, start=k)
-        _ if prev_bslash => k + 1
-        '*' | '_' => tokens_try_add_emphasis(toks, s, line, start=k)
-        ']' => {
-          toks.push(RightBrack({ start: k }))
-          k + 1
-        }
-        '[' => {
-          toks.push(LinkStart({ start: k, image: false }))
-          k + 1
-        }
-        '!' => tokens_try_add_image_link_start(toks, s, line, start=k)
-        '<' => {
-          toks.push(AutolinkOrHtmlStart({ start: k }))
-          k + 1
-        }
-        ')' => {
-          toks.push(RightParen({ start: k }))
-          k + 1
-        }
-        '~' if exts =>
-          tokens_try_add_strikethrough_marks(toks, s, line, start=k)
-        '$' if exts => tokens_try_add_math_span_marks(toks, s, line, start=k)
-        _ => k + 1
-      }
-      continue lines, line, false, next
     }
+    let next = match s.charcode_at(k) {
+      '\\' => continue lines, line, not(prev_bslash), k + 1
+      '`' => tokens_add_backtick(toks, s, line, prev_bslash~, start=k)
+      _ if prev_bslash => k + 1
+      '*' | '_' => tokens_try_add_emphasis(toks, s, line, start=k)
+      ']' => {
+        toks.push(RightBrack({ start: k }))
+        k + 1
+      }
+      '[' => {
+        toks.push(LinkStart({ start: k, image: false }))
+        k + 1
+      }
+      '!' => tokens_try_add_image_link_start(toks, s, line, start=k)
+      '<' => {
+        toks.push(AutolinkOrHtmlStart({ start: k }))
+        k + 1
+      }
+      ')' => {
+        toks.push(RightParen({ start: k }))
+        k + 1
+      }
+      '~' if exts => tokens_try_add_strikethrough_marks(toks, s, line, start=k)
+      '$' if exts => tokens_try_add_math_span_marks(toks, s, line, start=k)
+      _ => k + 1
+    }
+    continue lines, line, false, next
   }
   (cidx, toks, line)
 }
@@ -1601,31 +1598,29 @@ fn Parser::finish_col(
   toks : Tokens,
   k : CharCodePos
 ) -> ((Inline, TableCellLayout), CharCodePos) {
-  loop k {
-    k => {
-      if toks._.is_empty() {
-        guard self.find_pipe(line, before=line.last + 1, k)
-          is Ok((text, after, k))
-        is_.push_iter(text.iter())
-        break ((self.make_col(is_), (blanks_before, after)), k)
-      }
-      guard toks._.front() is Some(Inline({ start, inline, next, .. }))
-      if k >= start {
-        toks._.unsafe_pop_front()
+  for k = k {
+    if toks._.is_empty() {
+      guard self.find_pipe(line, before=line.last + 1, k)
+        is Ok((text, after, k))
+      is_.push_iter(text.iter())
+      break ((self.make_col(is_), (blanks_before, after)), k)
+    }
+    guard toks._.front() is Some(Inline({ start, inline, next, .. }))
+    if k >= start {
+      toks._.unsafe_pop_front()
+      is_.push(inline)
+      continue k
+    }
+    break match self.find_pipe(line, before=start, k) {
+      Err(text) => {
+        is_.push(text)
         is_.push(inline)
-        continue k
+        toks._.unsafe_pop_front()
+        continue next
       }
-      match self.find_pipe(line, before=start, k) {
-        Err(text) => {
-          is_.push(text)
-          is_.push(inline)
-          toks._.unsafe_pop_front()
-          continue next
-        }
-        Ok((text, after, k)) => {
-          is_.push_iter(text.iter())
-          ((self.make_col(is_), (blanks_before, after)), k)
-        }
+      Ok((text, after, k)) => {
+        is_.push_iter(text.iter())
+        ((self.make_col(is_), (blanks_before, after)), k)
       }
     }
   }
@@ -1639,27 +1634,25 @@ fn Parser::parse_cols(
   toks : Tokens,
   k : CharCodePos
 ) -> Unit {
-  loop line, k {
-    line, k => {
-      if toks._.is_empty() {
-        guard k <= line.last else { break }
-        guard self.start_col(line, before=line.last + 1, k) is Col(col, k)
+  for line = line, k = k {
+    if toks._.is_empty() {
+      guard k <= line.last else { break }
+      guard self.start_col(line, before=line.last + 1, k) is Col(col, k)
+      acc.push(col)
+      continue line, k
+    }
+    guard toks._.front() is Some(Inline({ start, inline, next, .. }))
+    match self.start_col(line, before=start, k) {
+      Col(col, k) => {
         acc.push(col)
         continue line, k
       }
-      guard toks._.front() is Some(Inline({ start, inline, next, .. }))
-      match self.start_col(line, before=start, k) {
-        Col(col, k) => {
-          acc.push(col)
-          continue line, k
-        }
-        Start(before, is_) => {
-          toks._.unsafe_pop_front()
-          is_.push(inline)
-          let (col, k) = self.finish_col(line, before, is_, toks, next)
-          acc.push(col)
-          continue line, k
-        }
+      Start(before, is_) => {
+        toks._.unsafe_pop_front()
+        is_.push(inline)
+        let (col, k) = self.finish_col(line, before, is_, toks, next)
+        acc.push(col)
+        continue line, k
       }
     }
   }
