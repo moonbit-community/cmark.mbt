@@ -54,16 +54,15 @@ pub fn Tight::list_text_loc(ls : Seq[Tight]) -> TextLoc {
   }
 }
 
-///|
-fn BlockLine::flush(
-  meta~ : Meta = Meta::none(),
-  s : String,
-  start : Int,
-  last : Int,
-  acc : Array[StringNode]
-) -> Unit {
-  acc.push({ meta, v: s.substring(start~, end=last + 1) })
-}
+// fn BlockLine::flush(
+//   meta~ : Meta = Meta::none(),
+//   s : String,
+//   start : Int,
+//   last : Int,
+//   acc : Array[StringNode]
+// ) -> Unit {
+//   acc.push({ meta, v: s.substring(start~, end=last + 1) })
+// }
 
 ///|
 fn BlockLine::flush_tight(
