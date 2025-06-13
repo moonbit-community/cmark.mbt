@@ -88,7 +88,7 @@ test "renderer_error_handling_inline" {
   )
   let buf = StringBuilder::new(size_hint=0)
   let ctx = Context::new(r, buf)
-  let result = ctx.inline?(@cmark.Inline::empty())
+  let result = try? ctx.inline(@cmark.Inline::empty())
   inspect(
     result,
     content=
@@ -104,7 +104,7 @@ test "renderer_error_handling_block" {
   )
   let buf = StringBuilder::new(size_hint=0)
   let ctx = Context::new(r, buf)
-  let result = ctx.block?(@cmark.Block::empty())
+  let result = try? ctx.block(@cmark.Block::empty())
   inspect(
     result,
     content=
@@ -120,7 +120,7 @@ test "renderer_error_handling_doc" {
   )
   let buf = StringBuilder::new(size_hint=0)
   let ctx = Context::new(r, buf)
-  let result = ctx.doc?(@cmark.Doc::empty())
+  let result = try? ctx.doc(@cmark.Doc::empty())
   inspect(
     result,
     content=
