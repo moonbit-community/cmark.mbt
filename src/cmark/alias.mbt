@@ -46,10 +46,9 @@ fn Tokens::push(self : Tokens, t : Token) -> Unit {
   self._.push_back(t)
 }
 
-///|
-fn Tokens::pop(self : Tokens) -> Token? {
-  self._.pop_back()
-}
+// fn Tokens::pop(self : Tokens) -> Token? {
+//   self._.pop_back()
+// }
 
 ///|
 priv type RevTokens @deque.T[Token]

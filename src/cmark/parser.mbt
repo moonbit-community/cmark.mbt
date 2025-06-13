@@ -97,15 +97,13 @@ fn Parser::find_def_for_ref(
   (self.resolver)(Ref(kind, ref_, def))
 }
 
-///|
-fn Parser::debug_span(self : Parser, s : LineSpan) -> String {
-  self.i.substring(start=s.first, end=s.last + 1)
-}
+// fn Parser::debug_span(self : Parser, s : LineSpan) -> String {
+//   self.i.substring(start=s.first, end=s.last + 1)
+// }
 
-///|
-fn Parser::debug_line(self : Parser) -> String {
-  self.i.substring(start=self.curr_line_pos.1, end=self.curr_line_last_char)
-}
+// fn Parser::debug_line(self : Parser) -> String {
+//   self.i.substring(start=self.curr_line_pos.1, end=self.curr_line_last_char)
+// }
 
 ///|
 fn Parser::curr_line_span(
