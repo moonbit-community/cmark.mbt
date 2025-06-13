@@ -1,10 +1,7 @@
 ///| `autolink_email(s, last, start)` matches an email autolink starting at
 /// `start` in the range `[start;last]` (assumed on the same line).
-pub fn autolink_email(
-  s : String,
-  last~ : Int = s.length() - 1,
-  start~ : Int = 0
-) -> Last? {
+pub fn autolink_email(s : String, last~ : Int = -1, start~ : Int = 0) -> Last? {
+  let last = if last < 0 { s.length() + last } else { last }
   fn char_is_alphanum_or_hyp(c) {
     @char.is_ascii_alphanum(c) || c == '-'
   }
@@ -53,11 +50,8 @@ pub fn autolink_email(
 
 ///| `autolink_uri(s, last, start)` matches an URI autolink starting at
 /// `start` in the range `[start;last]` (assumed on the same line).
-pub fn autolink_uri(
-  s : String,
-  last~ : Int = s.length() - 1,
-  start~ : Int = 0
-) -> Last? {
+pub fn autolink_uri(s : String, last~ : Int = -1, start~ : Int = 0) -> Last? {
+  let last = if last < 0 { s.length() + last } else { last }
   let char_is_scheme = fn(c) {
     @char.is_ascii_alphanum(c) || c is ('+' | '-' | '.')
   }
