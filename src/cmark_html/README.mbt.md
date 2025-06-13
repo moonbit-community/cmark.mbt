@@ -11,8 +11,8 @@ test "basic rendering" {
     #|# Hello World
     #|
     #|This is a paragraph.
-  let rendered = @cmark_html.render!(safe=false, strict=false, doc)
-  inspect!(
+  let rendered = @cmark_html.render(safe=false, strict=false, doc)
+  inspect(
     rendered,
     content=
       #|<h1>Hello World</h1>
@@ -34,8 +34,8 @@ test "rendering from @cmark.Doc" {
     #|This is a paragraph.
     ,
   )
-  let rendered = @cmark_html.from_doc!(safe=false, doc)
-  inspect!(
+  let rendered = @cmark_html.from_doc(safe=false, doc)
+  inspect(
     rendered,
     content=
       #|<h1>Hello World</h1>

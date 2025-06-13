@@ -47,7 +47,7 @@ pub(all) enum LabelDef {
 } derive(Show, ToJson)
 
 ///|
-pub typealias LabelDefs = Map[LabelKey, LabelDef]
+pub typealias Map[LabelKey, LabelDef] as LabelDefs
 
 ///| `context` is:
 /// - `Def (prev, current)` when we just hit a

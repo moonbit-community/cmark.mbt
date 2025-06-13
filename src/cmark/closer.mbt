@@ -14,7 +14,7 @@ priv enum Closer {
 } derive(Eq, Compare, Hash, Show, ToJson)
 
 ///|
-typealias PosSet = Set[Int]
+typealias Set[Int] as PosSet
 
 ///|
 priv type CloserIndex Map[Closer, PosSet] derive(Show, ToJson)

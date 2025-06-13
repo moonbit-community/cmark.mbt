@@ -24,9 +24,9 @@ pub fn Renderer::compose(self : Renderer, other : Renderer) -> Renderer {
     (self.init_context)(c, d)
     (other.init_context)(c, d)
   }
-  let block = fn!(c, b) { (other.block)!(c, b) || (self.block)!(c, b) }
-  let inline = fn!(c, i) { (other.inline)!(c, i) || (self.inline)!(c, i) }
-  let doc = fn!(c, d) { (other.doc)!(c, d) || (self.doc)!(c, d) }
+  let block = fn(c, b) raise { (other.block)(c, b) || (self.block)(c, b) }
+  let inline = fn(c, i) raise { (other.inline)(c, i) || (self.inline)(c, i) }
+  let doc = fn(c, d) raise { (other.doc)(c, d) || (self.doc)(c, d) }
   { init_context, inline, block, doc }
 }
 
@@ -52,13 +52,13 @@ pub fn Context::init(self : Context, doc : Doc) -> Unit {
 pub(all) type InitContextFn (Context, Doc) -> Unit
 
 ///|
-pub(all) type InlineFn (Context, Inline) -> Bool!
+pub(all) type InlineFn (Context, Inline) -> Bool raise
 
 ///|
-pub(all) type BlockFn (Context, Block) -> Bool!
+pub(all) type BlockFn (Context, Block) -> Bool raise
 
 ///|
-pub(all) type DocFn (Context, Doc) -> Bool!
+pub(all) type DocFn (Context, Doc) -> Bool raise
 
 ///|
 pub fn Context::char(self : Context, ch : Char) -> Unit {
@@ -71,8 +71,8 @@ pub fn Context::string(self : Context, str : String) -> Unit {
 }
 
 ///|
-pub fn Context::inline!(self : Context, inline : Inline) -> Unit {
-  let _ = (self.renderer.inline)!(self, inline) ||
+pub fn Context::inline(self : Context, inline : Inline) -> Unit raise {
+  let _ = (self.renderer.inline)(self, inline) ||
     {
       raise RenderError("unknown inline type")
     }
@@ -80,8 +80,8 @@ pub fn Context::inline!(self : Context, inline : Inline) -> Unit {
 }
 
 ///|
-pub fn Context::block!(self : Context, block : Block) -> Unit {
-  let _ = (self.renderer.block)!(self, block) ||
+pub fn Context::block(self : Context, block : Block) -> Unit raise {
+  let _ = (self.renderer.block)(self, block) ||
     {
       raise RenderError("unknown block type")
     }
@@ -89,10 +89,10 @@ pub fn Context::block!(self : Context, block : Block) -> Unit {
 }
 
 ///|
-pub fn Context::doc!(self : Context, doc : Doc) -> Unit {
+pub fn Context::doc(self : Context, doc : Doc) -> Unit raise {
   self.doc = doc
   self.init(doc)
-  let _ = (self.renderer.doc)!(self, doc) ||
+  let _ = (self.renderer.doc)(self, doc) ||
     {
       raise RenderError("unhandled doc")
     }
@@ -100,17 +100,17 @@ pub fn Context::doc!(self : Context, doc : Doc) -> Unit {
 }
 
 ///|
-pub fn Renderer::doc_to_string!(self : Renderer, doc : Doc) -> String {
+pub fn Renderer::doc_to_string(self : Renderer, doc : Doc) -> String raise {
   let buf = Buffer::new(size_hint=1024)
-  self.buffer_add_doc!(buf, doc)
+  self.buffer_add_doc(buf, doc)
   buf.to_string()
 }
 
 ///|
-pub fn Renderer::buffer_add_doc!(
+pub fn Renderer::buffer_add_doc(
   self : Renderer,
   buf : Buffer,
   doc : Doc
-) -> Unit {
-  Context::new(self, buf).doc!(doc)
+) -> Unit raise {
+  Context::new(self, buf).doc(doc)
 }

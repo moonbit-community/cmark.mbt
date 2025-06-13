@@ -35,10 +35,10 @@ pub impl[A : ToJson] ToJson for Node[A] with to_json(self) {
 }
 
 ///|
-pub typealias StringNode = Node[String]
+pub typealias Node[String] as StringNode
 
 ///|
-pub typealias BlanksNode = Node[Blanks]
+pub typealias Node[Blanks] as BlanksNode
 
 ///|
 pub fn StringNode::empty(meta~ : Meta = Meta::none()) -> StringNode {

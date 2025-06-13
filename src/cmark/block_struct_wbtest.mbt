@@ -4,7 +4,7 @@ test "plain" {
     #|Basic tests
     #|===========
     #|Basic tests for all CommonMark constructs.
-  @json.inspect!(Doc::from_string(doc), content={
+  @json.inspect(Doc::from_string(doc), content={
     "nl": "\n",
     "block": {
       "$tag": "Blocks",
@@ -55,7 +55,7 @@ test "complex ref definitions" {
     #|  to [c    d][]
     #|> [c d]: /ha "Multi
     #|>   line titles"
-  @json.inspect!(Doc::from_string(doc), content={
+  @json.inspect(Doc::from_string(doc), content={
     "nl": "\n",
     "block": {
       "$tag": "Blocks",
@@ -184,7 +184,7 @@ test "HTML block" {
     #|</div>
     #|
     #| world
-  @json.inspect!(Doc::from_string(doc), content={
+  @json.inspect(Doc::from_string(doc), content={
     "nl": "\n",
     "block": {
       "$tag": "Blocks",
@@ -215,7 +215,7 @@ test "should tokenize inline image across multiple lines" {
     #|This is an ![inline image](
     #|  /heyho    (The
     #|    multiline title))
-  @json.inspect!(tokenize_only(doc), content=[
+  @json.inspect(tokenize_only(doc), content=[
     { "RightBrack": [25], "RightParen": [64, 65] },
     [
       { "$tag": "LinkStart", "0": { "start": 11, "image": true } },
@@ -253,7 +253,7 @@ test "should parse normal raw HTML block" {
     #|  <h2>Section Title</h2>
     #|  <p>This is a paragraph inside a custom HTML container.</p>
     #|</div>
-  @json.inspect!(Doc::from_string(doc), content={
+  @json.inspect(Doc::from_string(doc), content={
     "nl": "\n",
     "block": {
       "$tag": "Blocks",
@@ -316,7 +316,7 @@ test "should parse normal code block" {
     #| assert_false!(v[:].all(fn(elem) { elem % 2 == 0 }))
     #| assert_true!(v[1:4].all(fn(elem) { elem % 2 == 0 }))
     #| ```
-  @json.inspect!(Doc::from_string(doc), content={
+  @json.inspect(Doc::from_string(doc), content={
     "nl": "\n",
     "block": {
       "$tag": "Blocks",
@@ -384,7 +384,7 @@ test "should parse link refs" {
     #|
     #|[Extism PDK]: https://extism.org/docs/concepts/pdk
     #|[Extism Plug-ins]: https://extism.org/docs/concepts/plug-in
-  @json.inspect!(Doc::from_string(doc), content={
+  @json.inspect(Doc::from_string(doc), content={
     "nl": "\n",
     "block": {
       "$tag": "Blocks",
@@ -586,7 +586,7 @@ test "should parse indented code block" {
     #|
     #|    a
     #|       a b c
-  @json.inspect!(Doc::from_string(doc), content={
+  @json.inspect(Doc::from_string(doc), content={
     "nl": "\n",
     "block": {
       "$tag": "Blocks",
@@ -635,7 +635,7 @@ test "should parse quoted bullets" {
     #|* Well it's in the spec
     #|*
     #|Empty list item above
-  @json.inspect!(Doc::from_string(doc), content={
+  @json.inspect(Doc::from_string(doc), content={
     "nl": "\n",
     "block": {
       "$tag": "Blocks",
@@ -782,7 +782,7 @@ test "should parse list item with multiple inlines" {
     #|
     #|    (There are some relevant comments by John Gruber
     #|    [here](https://web.archive.org/web/20170611172104/http://article.gmane.org/gmane.text.markdown.general/2554).)
-  @json.inspect!(Doc::from_string(doc), content={
+  @json.inspect(Doc::from_string(doc), content={
     "nl": "\n",
     "block": {
       "$tag": "List",

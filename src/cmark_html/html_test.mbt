@@ -33,9 +33,9 @@ test "should render task list" (it : @test.T) {
     #|* [ ]
     #|          Code
     #|         Not code
-  let rendered = render!(safe=false, strict=false, doc)
+  let rendered = render(safe=false, strict=false, doc)
   it.write(rendered)
-  it.snapshot!(filename="task_list.html")
+  it.snapshot(filename="task_list.html")
 }
 
 ///|
@@ -52,9 +52,9 @@ test "should render strikethroughs" (it : @test.T) {
     #|
     #|* Here we have ~~stroken `code`~~.
     #|* Here we have ~~nested ~~stroken~~ ok~~
-  let rendered = render!(safe=false, strict=false, doc)
+  let rendered = render(safe=false, strict=false, doc)
   it.write(rendered)
-  it.snapshot!(filename="strikethrough.html")
+  it.snapshot(filename="strikethrough.html")
 }
 
 ///|
@@ -97,9 +97,9 @@ test "should render footnotes" (it : @test.T) {
     #|Not a footnote [^]
     #|
     #|[^]: not a footnote.
-  let rendered = render!(safe=false, strict=false, doc)
+  let rendered = render(safe=false, strict=false, doc)
   it.write(rendered)
-  it.snapshot!(filename="footnote.html")
+  it.snapshot(filename="footnote.html")
 }
 
 ///|
@@ -127,9 +127,9 @@ test "should render math" (it : @test.T) {
     #|
     #|But it can also be in $$ \left( \sum_{k=1}^n
     #|   a_k b_k \right)^2 < \Phi $$
-  let rendered = render!(safe=false, strict=false, doc)
+  let rendered = render(safe=false, strict=false, doc)
   it.write(rendered)
-  it.snapshot!(filename="math.html")
+  it.snapshot(filename="math.html")
 }
 
 ///|
@@ -203,23 +203,23 @@ test "should render tables" (it : @test.T) {
     #|This is an empty table with three columns:
     #|
     #| | |||
-  let rendered = render!(safe=false, strict=false, doc)
+  let rendered = render(safe=false, strict=false, doc)
   it.write(rendered)
-  it.snapshot!(filename="table.html")
+  it.snapshot(filename="table.html")
 }
 
 ///|
 test "basic" (it : @test.T) {
-  let rendered = from_doc!(safe=false, Doc::from_string(test_basic_md_str))
+  let rendered = from_doc(safe=false, Doc::from_string(test_basic_md_str))
   it.write(rendered)
-  it.snapshot!(filename="basic.html")
+  it.snapshot(filename="basic.html")
 }
 
 ///|
 test "spec" (it : @test.T) {
-  let rendered = from_doc!(safe=false, Doc::from_string(test_spec_md_str))
+  let rendered = from_doc(safe=false, Doc::from_string(test_spec_md_str))
   it.write(rendered)
-  it.snapshot!(filename="spec.html")
+  it.snapshot(filename="spec.html")
 }
 
 ///| Test for raw HTML handling in safe mode
@@ -234,9 +234,9 @@ test "raw html in safe mode" (it : @test.T) {
     #|Inline <span>HTML</span> elements.
 
   // Render with safe=true to test HTML omission
-  let rendered = from_doc!(safe=true, Doc::from_string(doc))
+  let rendered = from_doc(safe=true, Doc::from_string(doc))
   it.write(rendered)
-  it.snapshot!(filename="raw_html_safe_mode.html")
+  it.snapshot(filename="raw_html_safe_mode.html")
 }
 
 ///| Test for comments
@@ -251,9 +251,9 @@ test "html with comments" (it : @test.T) {
     #|<!-- 
     #|  Multi-line comment
     #|-->
-  let rendered = from_doc!(safe=false, Doc::from_string(doc))
+  let rendered = from_doc(safe=false, Doc::from_string(doc))
   it.write(rendered)
-  it.snapshot!(filename="html_comments.html")
+  it.snapshot(filename="html_comments.html")
 }
 
 ///| Test for strict mode HTML
@@ -266,9 +266,9 @@ test "strict mode html" (it : @test.T) {
     #|<div>
     #|  <p>Nested elements</p>
     #|</div>
-  let rendered = from_doc!(safe=false, Doc::from_string(doc, strict=true))
+  let rendered = from_doc(safe=false, Doc::from_string(doc, strict=true))
   it.write(rendered)
-  it.snapshot!(filename="strict_mode_html.html")
+  it.snapshot(filename="strict_mode_html.html")
 }
 
 ///| Test XHTML rendering
@@ -283,7 +283,7 @@ test "xhtml rendering" (it : @test.T) {
     #|___
 
   // Test xhtml rendering
-  let rendered = xhtml_renderer(safe=true).doc_to_string!(Doc::from_string(doc))
+  let rendered = xhtml_renderer(safe=true).doc_to_string(Doc::from_string(doc))
   it.write(rendered)
-  it.snapshot!(filename="xhtml_rendering.html")
+  it.snapshot(filename="xhtml_rendering.html")
 }
