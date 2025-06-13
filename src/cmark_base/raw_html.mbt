@@ -1,5 +1,6 @@
 ///| https://spec.commonmark.org/current/#tag-name
-fn tag_name(s : String, last~ : Int = s.length() - 1, start~ : Int = 0) -> Int? {
+fn tag_name(s : String, last~ : Int = -1, start~ : Int = 0) -> Int? {
+  let last = if last < 0 { s.length() + last } else { last }
   for s = s, last = last, k = start + 1 {
     guard k <= last &&
       s.charcode_at(k).to_char() is Some(c) &&
@@ -11,11 +12,8 @@ fn tag_name(s : String, last~ : Int = s.length() - 1, start~ : Int = 0) -> Int? 
 }
 
 ///| https://spec.commonmark.org/current/#attribute-name
-fn attribute_name(
-  s : String,
-  last~ : Int = s.length() - 1,
-  start~ : Int = 0
-) -> Next? {
+fn attribute_name(s : String, last~ : Int = -1, start~ : Int = 0) -> Next? {
+  let last = if last < 0 { s.length() + last } else { last }
   fn char_is_start(c : Char) -> Bool {
     match c {
       '_' | ':' => true
