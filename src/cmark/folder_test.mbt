@@ -1,14 +1,14 @@
 ///|
 test "folder_none" {
   let folder = Folder::new()
-  inspect!(Folder::none(folder, 1, "test"), content="Default")
+  inspect(Folder::none(folder, 1, "test"), content="Default")
 }
 
 ///|
 test "fold_block with blank line" {
   let folder = Folder::new()
   let block = Block::BlankLine(Node::new(""))
-  inspect!(folder.fold_block!(0, block), content="0")
+  inspect(folder.fold_block(0, block), content="0")
 }
 
 ///|
@@ -21,7 +21,7 @@ test "fold_block with paragraph" {
       trailing_blanks: "",
     }),
   )
-  inspect!(folder.fold_block!(0, block), content="0")
+  inspect(folder.fold_block(0, block), content="0")
 }
 
 ///|
@@ -35,7 +35,7 @@ test "fold_block with heading" {
       id: None,
     }),
   )
-  inspect!(folder.fold_block!(0, heading), content="0")
+  inspect(folder.fold_block(0, heading), content="0")
 }
 
 ///|
@@ -53,7 +53,7 @@ test "fold_block with blockquote" {
       ),
     }),
   )
-  inspect!(folder.fold_block!(0, quote), content="0")
+  inspect(folder.fold_block(0, quote), content="0")
 }
 
 ///|
@@ -79,14 +79,14 @@ test "fold_block with blocks" {
       ]),
     ),
   )
-  inspect!(folder.fold_block!(0, blocks), content="0")
+  inspect(folder.fold_block(0, blocks), content="0")
 }
 
 ///|
 test "fold_doc with empty block" {
   let folder = Folder::new()
   let empty_doc = Doc::empty()
-  let _ = folder.fold_doc!((), empty_doc)
+  let _ = folder.fold_doc((), empty_doc)
 
 }
 
@@ -94,7 +94,7 @@ test "fold_doc with empty block" {
 test "fold_doc with simple paragraph" {
   let folder = Folder::new()
   let doc = Doc::from_string("Hello world")
-  let _ = folder.fold_doc!((), doc)
+  let _ = folder.fold_doc((), doc)
 
 }
 
@@ -135,8 +135,8 @@ test "folder block with table" {
       ]),
     }),
   )
-  let result = folder.fold_block!(0, table)
-  inspect!(result, content="0")
+  let result = folder.fold_block(0, table)
+  inspect(result, content="0")
 }
 
 ///|
@@ -150,13 +150,13 @@ test "folder block with footnote definition" {
       block: Block::empty(),
     }),
   )
-  let result = folder.fold_block!(0, footnote)
-  inspect!(result, content="0")
+  let result = folder.fold_block(0, footnote)
+  inspect(result, content="0")
 }
 
 ///|
 test "folder fold_block with default block handler" {
   let folder = Folder::new(block=fn(_self, acc, _b) { Folder::ret(acc) })
   let block = Block::empty()
-  inspect!(folder.fold_block!(0, block), content="0")
+  inspect(folder.fold_block(0, block), content="0")
 }

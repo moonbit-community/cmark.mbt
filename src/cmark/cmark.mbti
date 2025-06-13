@@ -160,7 +160,7 @@ fn Doc::new(nl~ : String = .., defs~ : Map[String, LabelDef] = .., Block) -> Sel
 impl Show for Doc
 impl ToJson for Doc
 
-pub(all) type FoldFn[A, B] (Folder[B], B, A) -> B!FolderError
+pub(all) type FoldFn[A, B] (Folder[B], B, A) -> B raise FolderError
 
 pub(all) struct Folder[A] {
   inline_ext_default : FoldFn[Inline, A]
@@ -168,16 +168,16 @@ pub(all) struct Folder[A] {
   inline : FolderFn[Inline, A]
   block : FolderFn[Block, A]
 }
-fn[A] Folder::block_ext_none(Self[A], A, Block) -> A!FolderError
-fn[A] Folder::fold_block(Self[A], A, Block) -> A!FolderError
-fn[A] Folder::fold_doc(Self[A], A, Doc) -> A!FolderError
-fn[A] Folder::fold_inline(Self[A], A, Inline) -> A!FolderError
-fn[A] Folder::inline_ext_none(Self[A], A, Inline) -> A!FolderError
+fn[A] Folder::block_ext_none(Self[A], A, Block) -> A raise FolderError
+fn[A] Folder::fold_block(Self[A], A, Block) -> A raise FolderError
+fn[A] Folder::fold_doc(Self[A], A, Doc) -> A raise FolderError
+fn[A] Folder::fold_inline(Self[A], A, Inline) -> A raise FolderError
+fn[A] Folder::inline_ext_none(Self[A], A, Inline) -> A raise FolderError
 fn[A] Folder::new(inline_ext_default~ : FoldFn[Inline, A] = .., block_ext_default~ : FoldFn[Block, A] = .., inline~ : FolderFn[Inline, A] = .., block~ : FolderFn[Block, A] = ..) -> Self[A]
 fn[A, B] Folder::none(Self[A], A, B) -> FolderResult[A]
 fn[A] Folder::ret(A) -> FolderResult[A]
 
-pub(all) type! FolderError String
+pub(all) suberror FolderError String
 impl Show for FolderError
 
 pub(all) type FolderFn[A, B] (Folder[B], B, A) -> FolderResult[B]
@@ -390,7 +390,7 @@ pub(all) enum ListTaskStatus {
 }
 fn ListTaskStatus::from_marker(Char) -> Self
 
-pub(all) type MapFn[A] (Mapper, A) -> A?!MapperError
+pub(all) type MapFn[A] (Mapper, A) -> A? raise MapperError
 
 pub(all) struct Mapper {
   inline_ext_default : MapFn[Inline]
@@ -398,9 +398,9 @@ pub(all) struct Mapper {
   inline : MapperFn[Inline]
   block : MapperFn[Block]
 }
-fn[A] Mapper::block_ext_none(Self, A) -> A?!MapperError
+fn[A] Mapper::block_ext_none(Self, A) -> A? raise MapperError
 fn[A] Mapper::delete() -> MapperResult[A]
-fn[A] Mapper::inline_ext_none(Self, A) -> A?!MapperError
+fn[A] Mapper::inline_ext_none(Self, A) -> A? raise MapperError
 fn Mapper::map_block(Self, Block) -> Block?
 fn Mapper::map_doc(Self, Doc) -> Doc
 fn Mapper::map_inline(Self, Inline) -> Inline?
@@ -408,7 +408,7 @@ fn Mapper::new(inline_ext_default~ : MapFn[Inline] = .., block_ext_default~ : Ma
 fn[A] Mapper::none(Self, A) -> MapperResult[A]
 fn[A] Mapper::ret(A) -> MapperResult[A]
 
-pub(all) type! MapperError String
+pub(all) suberror MapperError String
 impl Show for MapperError
 
 pub(all) type MapperFn[A] (Mapper, A) -> MapperResult[A]

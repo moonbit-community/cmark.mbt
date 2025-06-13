@@ -18,7 +18,7 @@ pub(all) struct Mapper {
 }
 
 ///|
-pub(all) type MapFn[A] (Mapper, A) -> A?!MapperError
+pub(all) type MapFn[A] (Mapper, A) -> A? raise MapperError
 
 ///|
 pub(all) type MapperFn[A] (Mapper, A) -> MapperResult[A]
@@ -52,13 +52,16 @@ pub fn[A] Mapper::none(self : Mapper, _a : A) -> MapperResult[A] {
 }
 
 ///|
-pub fn[A] Mapper::inline_ext_none(self : Mapper, _a : A) -> A?!MapperError {
+pub fn[A] Mapper::inline_ext_none(
+  self : Mapper,
+  _a : A
+) -> A? raise MapperError {
   let _ = self
   raise MapperError("unknown inline extension")
 }
 
 ///|
-pub fn[A] Mapper::block_ext_none(self : Mapper, _a : A) -> A?!MapperError {
+pub fn[A] Mapper::block_ext_none(self : Mapper, _a : A) -> A? raise MapperError {
   let _ = self
   raise MapperError("unknown block extension")
 }

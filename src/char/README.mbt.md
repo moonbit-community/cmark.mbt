@@ -8,9 +8,9 @@ Test if a character belongs to certain ASCII categories:
 
 ```moonbit
 test "ascii classification" {
-  inspect!(@char.is_ascii_whitespace(' '), content="true")
-  inspect!(@char.is_ascii_punctuation('.'), content="true")
-  inspect!(@char.is_ascii_control('\u{0}'), content="true")
+  inspect(@char.is_ascii_whitespace(' '), content="true")
+  inspect(@char.is_ascii_punctuation('.'), content="true")
+  inspect(@char.is_ascii_control('\u{0}'), content="true")
 }
 ```
 
@@ -21,13 +21,13 @@ Convert between ASCII cases and get numeric values from ASCII digits:
 ```moonbit
 test "ascii conversion" {
   // Case conversion
-  inspect!(@char.to_ascii_upper('a'), content="A")
-  inspect!(@char.to_ascii_lower('Z'), content="z")
+  inspect(@char.to_ascii_upper('a'), content="A")
+  inspect(@char.to_ascii_lower('Z'), content="z")
 
   // Numeric conversion
-  inspect!(@char.ascii_digit_to_int('5'), content="5")
-  inspect!(@char.ascii_hexdigit_to_int('A'), content="10")
-  inspect!(@char.ascii_octdigit_to_int('7'), content="7")
+  inspect(@char.ascii_digit_to_int('5'), content="5")
+  inspect(@char.ascii_hexdigit_to_int('A'), content="10")
+  inspect(@char.ascii_octdigit_to_int('7'), content="7")
 }
 ```
 
@@ -40,8 +40,8 @@ test "string char access" {
   let s = "Hello, 🐰"
 
   // Safe checked access
-  inspect!(@char.at_checked(s, 0), content="Ok('H')")
-  inspect!(@char.at_checked(s, 7), content="Ok('🐰')")
+  inspect(@char.at_checked(s, 0), content="Ok('H')")
+  inspect(@char.at_checked(s, 7), content="Ok('🐰')")
 }
 ```
 
@@ -54,10 +54,10 @@ test "string navigation" {
   let s = "Hello, 世界"
 
   // Navigate to next character
-  inspect!(@char.next_char(s, last=0, after=7), content=" ")
+  inspect(@char.next_char(s, last=0, after=7), content=" ")
 
   // Navigate to previous character
-  inspect!(@char.prev_char(s, first=7, before=9), content="世")
+  inspect(@char.prev_char(s, first=7, before=9), content="世")
 }
 ```
 
@@ -69,9 +69,9 @@ Query Unicode properties of characters:
 test "unicode properties" {
   // UTF encoding lengths
   let c = '🐰'.to_int()
-  inspect!(@char.length_utf8(c), content="4")
-  inspect!(@char.length_utf16(c), content="2")
-  inspect!(@char.length_utf32(c), content="1")
+  inspect(@char.length_utf8(c), content="4")
+  inspect(@char.length_utf16(c), content="2")
+  inspect(@char.length_utf32(c), content="1")
 }
 ```
 
@@ -83,7 +83,7 @@ Utilities for string manipulation and character handling:
 test "string processing" {
   // Substring inclusion check
   let text = "Hello, World!"
-  inspect!(
+  inspect(
     @char.sub_includes(affix="World", text, first=0, last=13),
     content="true",
   )
@@ -91,30 +91,10 @@ test "string processing" {
   // UTF-16 cleaning (handles invalid sequences)
   let s = "&#xcab;&#XD800;"
   let buf = StringBuilder::new()
-  let cleaned = @char.utf_16_clean_unref(
-    buf,
-    s,
-    first=0,
-    last=6,
-  )
-  inspect!(
-    cleaned,
-    content=
-      "ಫ"
-    ,
-  )
-  let cleaned = @char.utf_16_clean_unref(
-    buf,
-    s,
-    first=7,
-    last=14,
-  )
-  inspect!(
-    cleaned,
-    content=
-      "�"
-    ,
-  )
+  let cleaned = @char.utf_16_clean_unref(buf, s, first=0, last=6)
+  inspect(cleaned, content="ಫ")
+  let cleaned = @char.utf_16_clean_unref(buf, s, first=7, last=14)
+  inspect(cleaned, content="�")
 }
 ```
 

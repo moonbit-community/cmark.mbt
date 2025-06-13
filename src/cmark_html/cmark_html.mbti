@@ -6,9 +6,9 @@ import(
 )
 
 // Values
-fn from_doc(backend_blocks~ : Bool = .., safe~ : Bool, @cmark.Doc) -> String!
+fn from_doc(backend_blocks~ : Bool = .., safe~ : Bool, @cmark.Doc) -> String raise
 
-fn render(backend_blocks~ : Bool = .., safe~ : Bool = .., strict~ : Bool = .., String) -> String!
+fn render(backend_blocks~ : Bool = .., safe~ : Bool = .., strict~ : Bool = .., String) -> String raise
 
 fn renderer(backend_blocks~ : Bool = .., safe~ : Bool) -> @cmark_renderer.Renderer
 

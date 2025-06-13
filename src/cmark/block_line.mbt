@@ -8,7 +8,7 @@
 pub(all) type BlockLine Node[String]
 
 ///|
-pub typealias BlockLineBlank = Node[Blanks]
+pub typealias Node[Blanks] as BlockLineBlank
 
 ///|
 pub fn BlockLine::to_string(self : BlockLine) -> String {

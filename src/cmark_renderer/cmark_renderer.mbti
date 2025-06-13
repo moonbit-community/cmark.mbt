@@ -7,7 +7,7 @@ import(
 // Values
 
 // Types and methods
-pub(all) type BlockFn (Context, @cmark.Block) -> Bool!
+pub(all) type BlockFn (Context, @cmark.Block) -> Bool raise
 
 pub(all) struct Context {
   renderer : Renderer
@@ -15,21 +15,21 @@ pub(all) struct Context {
   b : StringBuilder
   mut doc : @cmark.Doc
 }
-fn Context::block(Self, @cmark.Block) -> Unit!
+fn Context::block(Self, @cmark.Block) -> Unit raise
 fn Context::char(Self, Char) -> Unit
-fn Context::doc(Self, @cmark.Doc) -> Unit!
+fn Context::doc(Self, @cmark.Doc) -> Unit raise
 fn Context::init(Self, @cmark.Doc) -> Unit
-fn Context::inline(Self, @cmark.Inline) -> Unit!
+fn Context::inline(Self, @cmark.Inline) -> Unit raise
 fn Context::new(Renderer, StringBuilder) -> Self
 fn Context::string(Self, String) -> Unit
 
-pub(all) type DocFn (Context, @cmark.Doc) -> Bool!
+pub(all) type DocFn (Context, @cmark.Doc) -> Bool raise
 
 pub(all) type InitContextFn (Context, @cmark.Doc) -> Unit
 
-pub(all) type InlineFn (Context, @cmark.Inline) -> Bool!
+pub(all) type InlineFn (Context, @cmark.Inline) -> Bool raise
 
-pub(all) type! RenderError String
+pub(all) suberror RenderError String
 impl Show for RenderError
 
 pub(all) struct Renderer {
@@ -38,9 +38,9 @@ pub(all) struct Renderer {
   block : BlockFn
   doc : DocFn
 }
-fn Renderer::buffer_add_doc(Self, StringBuilder, @cmark.Doc) -> Unit!
+fn Renderer::buffer_add_doc(Self, StringBuilder, @cmark.Doc) -> Unit raise
 fn Renderer::compose(Self, Self) -> Self
-fn Renderer::doc_to_string(Self, @cmark.Doc) -> String!
+fn Renderer::doc_to_string(Self, @cmark.Doc) -> String raise
 fn Renderer::new(init_context~ : InitContextFn = .., inline~ : InlineFn = .., block~ : BlockFn = .., doc~ : DocFn = ..) -> Self
 
 // Type aliases

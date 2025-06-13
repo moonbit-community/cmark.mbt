@@ -2,25 +2,25 @@
 test "mapper ret function" {
   // Test ret function by passing in different types of values
   let int_result = Mapper::ret(42)
-  inspect!(int_result, content="Map(Some(42))")
+  inspect(int_result, content="Map(Some(42))")
   let str_result = Mapper::ret("hello")
-  inspect!(str_result, content="Map(Some(\"hello\"))")
+  inspect(str_result, content="Map(Some(\"hello\"))")
   let bool_result = Mapper::ret(true)
-  inspect!(bool_result, content="Map(Some(true))")
+  inspect(bool_result, content="Map(Some(true))")
 }
 
 ///|
 test "mapper delete function" {
   // Test delete function to ensure it returns None
   let delete_result : MapperResult[Unit] = Mapper::delete()
-  inspect!(delete_result, content="Map(None)")
+  inspect(delete_result, content="Map(None)")
 }
 
 ///|
 test "Default for MapperResult" {
   // Test Default impl
   let default_result : MapperResult[Int] = MapperResult::default()
-  inspect!(default_result, content="Default")
+  inspect(default_result, content="Default")
 }
 
 ///|
@@ -28,7 +28,7 @@ test "mapper_none" {
   // Create a new Mapper with default parameters
   let mapper = Mapper::new()
   // Call none with any value to trigger line 44
-  inspect!(mapper.none(42), content="Default")
+  inspect(mapper.none(42), content="Default")
 }
 
 ///|
@@ -43,7 +43,7 @@ test "map_inline with Link returns None when text is None" {
   let reference = ReferenceKind::Inline(Node::new(link_def))
   let link = Inline::Link(Node::new(InlineLink::new(text, reference)))
   let result = mapper.map_inline(link)
-  inspect!(result, content="None")
+  inspect(result, content="None")
 }
 
 ///|
@@ -52,7 +52,7 @@ test "map_inline with StrongEmphasis" {
   let text = Inline::Text(Node::new("strongly emphasized text"))
   let strong = Inline::StrongEmphasis(Node::new({ delim: '*', inline: text }))
   let result = mapper.map_inline(strong)
-  inspect!(
+  inspect(
     result,
     content=
       #|Some(StrongEmphasis(Node::new({delim: '*', inline: Text(Node::new("strongly emphasized text"))})))
@@ -70,7 +70,7 @@ test "map_inline with StrongEmphasis returns None when inner inline is None" {
   let text = Inline::Text(Node::new("strongly emphasized text"))
   let strong = Inline::StrongEmphasis(Node::new({ delim: '*', inline: text }))
   let result = mapper.map_inline(strong)
-  inspect!(result, content="None")
+  inspect(result, content="None")
 }
 
 ///|
@@ -80,7 +80,7 @@ test "map_inline with Emphasis" {
   // Create Emphasis with the correct structure
   let emphasis = Inline::Emphasis(Node::new({ delim: '*', inline: text }))
   let result = mapper.map_inline(emphasis)
-  inspect!(
+  inspect(
     result,
     content=
       #|Some(Emphasis(Node::new({delim: '*', inline: Text(Node::new("emphasized text"))})))
@@ -98,14 +98,14 @@ test "map_inline with Emphasis returns None when inner text is None" {
   let text = Inline::Text(Node::new("emphasized text"))
   let emphasis = Inline::Emphasis(Node::new({ delim: '*', inline: text }))
   let result = mapper.map_inline(emphasis)
-  inspect!(result, content="None")
+  inspect(result, content="None")
 }
 
 ///|
 test "panic block_ext_none raises error" {
   let mapper = Mapper::new()
   let block = Block::empty()
-  let _ = mapper.block_ext_none!(block)
+  let _ = mapper.block_ext_none(block)
 
 }
 
@@ -113,7 +113,7 @@ test "panic block_ext_none raises error" {
 test "panic inline_ext_none raises error" {
   let mapper = Mapper::new()
   let inline = Inline::empty()
-  let _ = mapper.inline_ext_none!(inline)
+  let _ = mapper.inline_ext_none(inline)
 
 }
 
@@ -121,7 +121,7 @@ test "panic inline_ext_none raises error" {
 test "map_inline default case" {
   let mapper = Mapper::new()
   let text = Inline::Text(Node::new("hello"))
-  inspect!(mapper.map_inline(text), content="Some(Text(Node::new(\"hello\")))")
+  inspect(mapper.map_inline(text), content="Some(Text(Node::new(\"hello\")))")
 }
 
 ///|
@@ -129,7 +129,7 @@ test "map_doc with empty document" {
   let mapper = Mapper::new()
   let doc = Doc::empty()
   let result = mapper.map_doc(doc)
-  inspect!(result.block, content="Blocks(Node::new(Seq([])))")
+  inspect(result.block, content="Blocks(Node::new(Seq([])))")
 }
 
 ///|
@@ -137,7 +137,7 @@ test "map_block blocks" {
   // Test blocks mapping
   let mapper = Mapper::new()
   let blocks = Block::Blocks(Node::new(Seq::empty()))
-  inspect!(mapper.map_block(blocks), content="None")
+  inspect(mapper.map_block(blocks), content="None")
 }
 
 ///|
@@ -145,7 +145,7 @@ test "map_block with default case" {
   let mapper = Mapper::new()
   let block = Block::BlankLine(Node::new(""))
   let result = mapper.map_block(block)
-  inspect!(result, content="Some(BlankLine(Node::new(\"\")))")
+  inspect(result, content="Some(BlankLine(Node::new(\"\")))")
 }
 
 ///|
@@ -155,7 +155,7 @@ test "map_block with blocks" {
     Node::new(Seq::from_array([Block::BlankLine(Node::new(""))])),
   )
   let result = mapper.map_block(block)
-  inspect!(
+  inspect(
     result,
     content=
       #|Some(Blocks(Node::new(Seq([BlankLine(Node::new(""))]))))
@@ -174,7 +174,7 @@ test "map_block with paragraph" {
     }),
   )
   let result = mapper.map_block(paragraph)
-  @json.inspect!(result, content=[
+  @json.inspect(result, content=[
     {
       "$tag": "Paragraph",
       "0": [
@@ -204,14 +204,14 @@ test "map_block with paragraph with empty inline" {
   }
   let mapper = Mapper::new(inline=inline_fn)
   let result = mapper.map_block(paragraph)
-  inspect!(result, content="None")
+  inspect(result, content="None")
 }
 
 ///|
 test "mapper map_inline identity" {
   let text = Inline::Text(Node::new("text"))
   let mapper = Mapper::new()
-  inspect!(
+  inspect(
     mapper.map_inline(text),
     content=
       #|Some(Text(Node::new("text")))
@@ -223,7 +223,7 @@ test "mapper map_inline identity" {
 test "mapper map_block identity" {
   let block = Block::BlankLine(Node::new(""))
   let mapper = Mapper::new()
-  inspect!(
+  inspect(
     mapper.map_block(block),
     content=
       #|Some(BlankLine(Node::new("")))
@@ -240,7 +240,7 @@ test "map_inline with Image" {
   let reference = ReferenceKind::Inline(Node::new(link_def))
   let image = Inline::Image(Node::new(InlineLink::new(text, reference)))
   let result = mapper.map_inline(image)
-  inspect!(
+  inspect(
     result,
     content=
       #|Some(Image(Node::new({text: Text(Node::new("alt text")), reference: Inline(Node::new({layout: {indent: 0, angled_dest: false, before_dest: Seq([]), after_dest: Seq([]), title_open_delim: '"', after_title: Seq([])}, label: None, defined_label: None, dest: None, title: None}))})))
@@ -256,7 +256,7 @@ test "map_inline with Link" {
   let reference = ReferenceKind::Inline(Node::new(link_def))
   let link = Inline::Link(Node::new(InlineLink::new(text, reference)))
   let result = mapper.map_inline(link)
-  inspect!(
+  inspect(
     result,
     content=
       #|Some(Link(Node::new({text: Text(Node::new("link text")), reference: Inline(Node::new({layout: {indent: 0, angled_dest: false, before_dest: Seq([]), after_dest: Seq([]), title_open_delim: '"', after_title: Seq([])}, label: None, defined_label: None, dest: None, title: None}))})))
@@ -271,7 +271,7 @@ test "map_inline with Emphasis" {
   // Create Emphasis with the correct structure
   let emphasis = Inline::Emphasis(Node::new({ delim: '*', inline: text }))
   let result = mapper.map_inline(emphasis)
-  inspect!(
+  inspect(
     result,
     content=
       #|Some(Emphasis(Node::new({delim: '*', inline: Text(Node::new("emphasized text"))})))
@@ -291,7 +291,7 @@ test "map_inline with StrongEmphasis with None inline result" {
   }
   let mapper = Mapper::new(inline=inline_fn)
   let result = mapper.map_inline(strong)
-  inspect!(result, content="None")
+  inspect(result, content="None")
 }
 
 ///|
@@ -303,7 +303,7 @@ test "map_inline with Inlines" {
   ])
   let inlines = Inline::Inlines(Node::new(seq))
   let result = mapper.map_inline(inlines)
-  inspect!(
+  inspect(
     result,
     content="Some(Inlines(Node::new(Seq([Text(Node::new(\"text 1\")), Text(Node::new(\"text 2\"))]))))",
   )
@@ -323,7 +323,7 @@ test "map_inline with Inlines that becomes empty" {
   }
   let mapper = Mapper::new(inline=inline_fn)
   let result = mapper.map_inline(inlines)
-  inspect!(result, content="None")
+  inspect(result, content="None")
 }
 
 ///|
@@ -333,7 +333,7 @@ test "map_inline with ExtStrikethrough" {
     Node::new(Inline::Text(Node::new("strikethrough text"))),
   )
   let result = mapper.map_inline(strikethrough)
-  inspect!(
+  inspect(
     result,
     content=
       #|Some(ExtStrikethrough(Node::new(InlineStrikethrough(Text(Node::new("strikethrough text"))))))
@@ -353,7 +353,7 @@ test "map_inline with ExtStrikethrough with None inline result" {
   }
   let mapper = Mapper::new(inline=inline_fn)
   let result = mapper.map_inline(strikethrough)
-  inspect!(result, content="None")
+  inspect(result, content="None")
 }
 
 ///|
@@ -373,7 +373,7 @@ test "map_block with Heading" {
     }),
   )
   let result = mapper.map_block(heading)
-  inspect!(
+  inspect(
     result,
     content=
       #|Some(Heading(Node::new({layout: Atx({indent: 0, after_opening: "", closing: ""}), level: 1, inline: Text(Node::new("Heading")), id: None})))
@@ -393,7 +393,7 @@ test "map_block with BlockQuote" {
   )
   let blockquote = Block::BlockQuote(Node::new({ indent: 0, block: para }))
   let result = mapper.map_block(blockquote)
-  inspect!(
+  inspect(
     result,
     content="Some(BlockQuote(Node::new({indent: 0, block: Paragraph(Node::new({leading_indent: 0, inline: Text(Node::new(\"quoted text\")), trailing_blanks: \"\"}))})))",
   )
