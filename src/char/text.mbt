@@ -202,8 +202,8 @@ fn _utf_16_clean_unesc_unref(
 ) -> String {
   let flush = fn(last, start, k) { flush(buf, s, last, start, k) }
 
-  // https://spec.commonmark.org/current/#hexadecimal-numeric-character-references
-  fn try_entity_hex(last, start, num_start, k, u) {
+  /// https://spec.commonmark.org/current/#hexadecimal-numeric-character-references
+  letrec try_entity_hex = fn(last, start, num_start, k, u) {
     for last = last, start = start, num_start = num_start, k = k, u = u {
       if k > last || k > num_start + 6 {
         return resolve(last, start, k)
@@ -231,8 +231,7 @@ fn _utf_16_clean_unesc_unref(
       }
     }
   }
-
-  fn try_entity_dec(last, start, num_start, k, u) {
+  and try_entity_dec = fn(last, start, num_start, k, u) {
     for last = last, start = start, num_start = num_start, k = k, u = u {
       if k > last || k > num_start + 7 {
         return resolve(last, start, k)
@@ -260,9 +259,8 @@ fn _utf_16_clean_unesc_unref(
       }
     }
   }
-
-  // https://spec.commonmark.org/current/#entity-and-numeric-character-references 
-  fn try_entity_named(last, start, name_start, k) {
+  /// https://spec.commonmark.org/current/#entity-and-numeric-character-references 
+  and try_entity_named = fn(last, start, name_start, k) {
     for last = last, start = start, name_start = name_start, k = k {
       if k > last {
         return resolve(last, start, k)
@@ -288,8 +286,7 @@ fn _utf_16_clean_unesc_unref(
       }
     }
   }
-
-  fn resolve(last, start, k) {
+  and resolve = fn(last, start, k) {
     for last = last, start = start, k = k {
       if k > last {
         flush(last, start, k)

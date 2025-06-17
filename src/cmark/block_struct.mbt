@@ -1709,8 +1709,9 @@ fn Parser::block_struct_to_list_item(
   let before_marker = i.before_marker
   let after_marker = i.after_marker
   let marker = self.clean_raw_span(i.marker)
-  let ext_task_marker = i.ext_task_marker.map(fn {
-    (v, span) => { v, meta: self.meta(self.text_loc_of_span(span)) }
+  let ext_task_marker = i.ext_task_marker.map(v_span => {
+    v: v_span.0,
+    meta: self.meta(self.text_loc_of_span(v_span.1)),
   })
   let v = { before_marker, marker, after_marker, block, ext_task_marker }
   let meta = self.meta_of_metas(first=marker.meta, last=last_meta)
