@@ -113,8 +113,8 @@ pub(all) struct LineSpan {
   last : CharCodePos
 } derive(Show, ToJson, Eq, Compare)
 
-// A line span with the byte position on where the line starts (inside a CommonMark container).  The [line_start] is the start of line in the container, the [line_span] has the actual data. The characters in the \[[line_start];[line_span.first - 1]\] are blanks.
 ///|
+///  A line span with the byte position on where the line starts (inside a CommonMark container).  The [line_start] is the start of line in the container, the [line_span] has the actual data. The characters in the \[[line_start];[line_span.first - 1]\] are blanks.
 pub(all) struct Span {
   start : CharCodePos
   span : LineSpan

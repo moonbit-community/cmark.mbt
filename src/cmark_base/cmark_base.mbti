@@ -63,6 +63,7 @@ impl Show for HtmlBlockEndCond
 impl ToJson for HtmlBlockEndCond
 
 pub(all) type LinePos (Int, Int)
+fn LinePos::inner(Self) -> (Int, Int)
 impl Compare for LinePos
 impl Eq for LinePos
 impl Show for LinePos
@@ -132,6 +133,7 @@ impl Show for Meta
 impl ToJson for Meta
 
 pub(all) type NextLineFn[A] (A) -> LineSpan?
+fn[A] NextLineFn::inner(Self[A]) -> (A) -> LineSpan?
 
 pub(all) enum NextLineResult {
   ThisLine(Int)
@@ -171,21 +173,21 @@ impl ToJson for TextLoc
 impl @json.FromJson for TextLoc
 
 // Type aliases
-pub typealias CharCodePos = Int
+pub typealias Int as CharCodePos
 
-pub typealias FilePath = String
+pub typealias String as FilePath
 
-pub typealias First = Int
+pub typealias Int as First
 
-pub typealias HeadingLevel = Int
+pub typealias Int as HeadingLevel
 
-pub typealias Indent = Int
+pub typealias Int as Indent
 
-pub typealias Last = Int
+pub typealias Int as Last
 
-pub typealias LineNum = Int
+pub typealias Int as LineNum
 
-pub typealias Next = Int
+pub typealias Int as Next
 
 // Traits
 

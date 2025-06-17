@@ -521,8 +521,8 @@ pub fn LineType::ext_footnote_label(
   ExtFootnoteLabel(spans, colon, key)
 }
 
-// https://spec.commonmark.org/current/#link-reference-definition
 ///|
+/// https://spec.commonmark.org/current/#link-reference-definition
 pub fn could_be_link_ref_definition(
   s : String,
   last~ : CharCodePos,
@@ -542,8 +542,8 @@ pub fn could_be_link_ref_definition(
 
 // Container blocks
 
-// https://spec.commonmark.org/current/#list-marker
 ///|
+/// https://spec.commonmark.org/current/#list-marker
 pub fn LineType::list_marker(
   s : String,
   last~ : CharCodePos,

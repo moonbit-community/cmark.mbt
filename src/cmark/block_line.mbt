@@ -12,12 +12,12 @@ pub typealias Node[Blanks] as BlockLineBlank
 
 ///|
 pub fn BlockLine::to_string(self : BlockLine) -> String {
-  self._.v
+  self.inner().v
 }
 
 ///|
 pub fn BlockLine::list_text_loc(ls : Seq[BlockLine]) -> TextLoc {
-  match ls._ {
+  match ls.inner() {
     [] => TextLoc::none()
     [head] => head.meta.loc
     [head, .., last] => head.meta.loc.reloc(last.meta.loc)
@@ -47,7 +47,7 @@ pub fn Tight::to_string(self : Tight) -> String {
 
 ///|
 pub fn Tight::list_text_loc(ls : Seq[Tight]) -> TextLoc {
-  match ls._ {
+  match ls.inner() {
     [] => TextLoc::none()
     [head] => head.node.meta.loc
     [head, .., last] => head.node.meta.loc.reloc(last.node.meta.loc)
