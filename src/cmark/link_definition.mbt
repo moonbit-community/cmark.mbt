@@ -1,8 +1,8 @@
-// The type for representing
-// {{:https://spec.commonmark.org/0.30/#link-reference-definitions}
-// link references definitions} and
-// {{:https://spec.commonmark.org/0.30/#inline-link}inline links}.
 ///|
+/// The type for representing
+/// {{:https://spec.commonmark.org/0.30/#link-reference-definitions}
+/// link references definitions} and
+/// {{:https://spec.commonmark.org/0.30/#inline-link}inline links}.
 pub(all) struct LinkDefinition {
   layout : LinkDefinitionLayout
   label : Label?

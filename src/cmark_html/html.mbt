@@ -460,11 +460,11 @@ fn raw_html(c : Context, h : @cmark.InlineRawHtml) -> Unit {
     comment(c, "CommonMark raw HTML omitted")
     return
   }
-  if h._.is_empty() {
+  if h.inner().is_empty() {
     return
   }
-  c.b.write_string(h._[0].node.v)
-  for x in h._.to_array()[1:] {
+  c.b.write_string(h.inner()[0].node.v)
+  for x in h.inner().to_array()[1:] {
     c.b.write_char('\n')
     c.b.write_string(x.node.v)
   }
@@ -473,7 +473,7 @@ fn raw_html(c : Context, h : @cmark.InlineRawHtml) -> Unit {
 ///|
 fn strikethrough(c : Context, s : @cmark.InlineStrikethrough) -> Unit raise {
   c.b.write_string("<del>")
-  c.inline(s._)
+  c.inline(s.inner())
   c.b.write_string("</del>")
 }
 
@@ -690,7 +690,7 @@ fn html_block(c : Context, html : @cmark.HtmlBlock) -> Unit {
     c.b.write_char('\n')
     return
   }
-  for l in html._ {
+  for l in html.inner() {
     c.b.write_string(l.v)
     c.b.write_char('\n')
   }
@@ -739,13 +739,13 @@ fn table(c : Context, t : @cmark.Table) -> Unit raise {
   ) raise {
     match (align, cs) {
       ([{ v, .. }, .. align], [(col, _), .. cs]) => {
-        start(c, v._.0, tag)
+        start(c, v.inner().0, tag)
         c.inline(col)
         close(c, tag)
         cols(c, tag, align, count - 1, cs)
       }
       ([{ v, .. }, .. align], []) => {
-        start(c, v._.0, tag)
+        start(c, v.inner().0, tag)
         close(c, tag)
         cols(c, tag, align, count - 1, [][:])
       }

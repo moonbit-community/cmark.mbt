@@ -33,17 +33,17 @@ priv type Tokens @deque.T[Token]
 
 ///|
 impl Show for Tokens with output(self, logger) {
-  logger.write_object(self._)
+  logger.write_object(self.inner())
 }
 
 ///|
 impl ToJson for Tokens with to_json(self) {
-  Json::array(Array::from_iter(self._.iter().map(ToJson::to_json)))
+  Json::array(Array::from_iter(self.inner().iter().map(ToJson::to_json)))
 }
 
 ///|
 fn Tokens::push(self : Tokens, t : Token) -> Unit {
-  self._.push_back(t)
+  self.inner().push_back(t)
 }
 
 // fn Tokens::pop(self : Tokens) -> Token? {
@@ -55,22 +55,22 @@ priv type RevTokens @deque.T[Token]
 
 ///|
 impl Show for RevTokens with output(self, logger) {
-  logger.write_object(self._)
+  logger.write_object(self.inner())
 }
 
 ///|
 impl ToJson for RevTokens with to_json(self) {
-  Json::array(Array::from_iter(self._.iter().map(ToJson::to_json)))
+  Json::array(Array::from_iter(self.inner().iter().map(ToJson::to_json)))
 }
 
 ///|
 fn RevTokens::push(self : RevTokens, t : Token) -> Unit {
-  self._.push_front(t)
+  self.inner().push_front(t)
 }
 
 ///|
 fn RevTokens::pop(self : RevTokens) -> Token? {
-  self._.pop_front()
+  self.inner().pop_front()
 }
 
 ///|

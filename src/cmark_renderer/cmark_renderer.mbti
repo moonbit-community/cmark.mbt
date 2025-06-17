@@ -8,6 +8,7 @@ import(
 
 // Types and methods
 pub(all) type BlockFn (Context, @cmark.Block) -> Bool raise
+fn BlockFn::inner(Self) -> (Context, @cmark.Block) -> Bool raise
 
 pub(all) struct Context {
   renderer : Renderer
@@ -24,10 +25,13 @@ fn Context::new(Renderer, StringBuilder) -> Self
 fn Context::string(Self, String) -> Unit
 
 pub(all) type DocFn (Context, @cmark.Doc) -> Bool raise
+fn DocFn::inner(Self) -> (Context, @cmark.Doc) -> Bool raise
 
 pub(all) type InitContextFn (Context, @cmark.Doc) -> Unit
+fn InitContextFn::inner(Self) -> (Context, @cmark.Doc) -> Unit
 
 pub(all) type InlineFn (Context, @cmark.Inline) -> Bool raise
+fn InlineFn::inner(Self) -> (Context, @cmark.Inline) -> Bool raise
 
 pub(all) suberror RenderError String
 impl Show for RenderError

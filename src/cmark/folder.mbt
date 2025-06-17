@@ -91,7 +91,7 @@ pub fn[A] Folder::fold_inline(
       }
       acc
     }
-    ExtStrikethrough({ v, .. }) => self.fold_inline(acc, v._)
+    ExtStrikethrough({ v, .. }) => self.fold_inline(acc, v.inner())
     // ext => (self.inline_ext_default)!(self, acc, ext)
   }
 }

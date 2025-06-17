@@ -120,7 +120,9 @@ fn Parser::accept_code_indent(
 // order. We don't extract data from the input here. We just store
 // line spans. See:
 // https://spec.commonmark.org/current/#phase-1-block-structure
-///| Number of space characters to pad content with
+
+///| 
+/// Number of space characters to pad content with
 typealias Int as SpacePad
 
 ///|

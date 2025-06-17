@@ -55,7 +55,7 @@ pub fn Block::normalize(self : Block) -> Block {
       let acc = [bs.pop().unwrap().normalize()]
       for {
         match bs.pop() {
-          Some(Blocks({ v: bs1, .. })) => bs += bs1._
+          Some(Blocks({ v: bs1, .. })) => bs += bs1.inner()
           Some(b) => acc.push(b.normalize())
           None => break
         }

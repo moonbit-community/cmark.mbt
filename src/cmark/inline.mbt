@@ -80,7 +80,7 @@ pub fn Inline::normalize(self : Inline) -> Inline {
     StrongEmphasis({ v: raw, meta }) =>
       StrongEmphasis({ v: { ..raw, inline: raw.inline.normalize() }, meta })
     ExtStrikethrough({ v: raw, meta }) =>
-      ExtStrikethrough({ v: raw._.normalize(), meta })
+      ExtStrikethrough({ v: raw.inner().normalize(), meta })
     Inlines({ v: Seq([i]), .. }) => i
     Inlines({ v: Seq([i, .. is_]), meta }) => {
       let acc = [i.normalize()]
@@ -89,7 +89,7 @@ pub fn Inline::normalize(self : Inline) -> Inline {
         guard is_.pop() is Some(curr) else { break }
         match curr {
           Inlines({ v: is1, .. }) =>
-            for i1 in is1._.rev() {
+            for i1 in is1.inner().rev() {
               is_.push(i1)
             }
           Text({ v: t1, meta: meta1 }) as i1 =>
@@ -121,8 +121,8 @@ pub fn Inline::to_plain_text(
   break_on_soft~ : Bool
 ) -> Seq[Seq[String]] {
   let acc = Seq::from_array([Seq::empty()])
-  let push = fn(s) { acc[acc.length() - 1]._.push(s) }
-  let newline = fn() { acc._.push([]) }
+  let push = fn(s) { acc[acc.length() - 1].inner().push(s) }
+  let newline = fn() { acc.inner().push([]) }
   let st = [self]
   for {
     guard st.pop() is Some(curr) else { break }
@@ -139,13 +139,13 @@ pub fn Inline::to_plain_text(
       Emphasis({ v: { inline, .. }, .. })
       | StrongEmphasis({ v: { inline, .. }, .. }) => st.push(inline)
       Inlines({ v: is1, .. }) =>
-        for i in is1._.rev() {
+        for i in is1.inner().rev() {
           st.push(i)
         }
       Link(l) => st.push(l.v.text)
       RawHtml(_) => ()
       Text(t) => push(t.v)
-      ExtStrikethrough(i) => st.push(i.v._)
+      ExtStrikethrough(i) => st.push(i.v.inner())
       ExtMathSpan(m) => push(m.v.tex())
       i => st.push(i)
     }
@@ -159,7 +159,7 @@ pub fn Inline::id(
   buf~ : Buffer = Buffer::new(size_hint=256)
 ) -> String {
   let text = self.to_plain_text(break_on_soft=false)
-  let s = text._.map(fn(l) { l._.join("") }).join("\n")
+  let s = text.inner().map(fn(l) { l.inner().join("") }).join("\n")
   // Collapses non initial white 
   let collapse_blanks = fn(prev) {
     if @char.is_ascii_blank(prev) && not(buf.is_empty()) {
@@ -361,8 +361,8 @@ pub(all) enum ReferenceKind {
   Ref(ReferenceLayout, Label, Label)
 } derive(Eq, Show, ToJson)
 
-// The type for reference link layouts.
 ///|
+/// The type for reference link layouts.
 pub(all) enum ReferenceLayout {
   /// https://spec.commonmark.org/0.30/#collapsed-reference-link
   Collapsed
@@ -452,5 +452,5 @@ pub(all) struct InlineMathSpan {
 
 ///|
 pub fn tex(self : InlineMathSpan) -> String {
-  self.tex_layout._.map(Tight::to_string).join(" ")
+  self.tex_layout.inner().map(Tight::to_string).join(" ")
 }

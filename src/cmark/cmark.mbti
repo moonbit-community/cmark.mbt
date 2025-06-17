@@ -81,6 +81,7 @@ impl Show for BlockHeadingSetextLayout
 impl ToJson for BlockHeadingSetextLayout
 
 pub(all) type BlockLine Node[String]
+fn BlockLine::inner(Self) -> Node[String]
 fn BlockLine::list_text_loc(Seq[Self]) -> @cmark_base.TextLoc
 fn BlockLine::to_string(Self) -> String
 
@@ -161,6 +162,7 @@ impl Show for Doc
 impl ToJson for Doc
 
 pub(all) type FoldFn[A, B] (Folder[B], B, A) -> B raise FolderError
+fn[A, B] FoldFn::inner(Self[A, B]) -> (Folder[B], B, A) -> B raise FolderError
 
 pub(all) struct Folder[A] {
   inline_ext_default : FoldFn[Inline, A]
@@ -181,6 +183,7 @@ pub(all) suberror FolderError String
 impl Show for FolderError
 
 pub(all) type FolderFn[A, B] (Folder[B], B, A) -> FolderResult[B]
+fn[A, B] FolderFn::inner(Self[A, B]) -> (Folder[B], B, A) -> FolderResult[B]
 
 pub(all) enum FolderResult[A] {
   Default
@@ -204,6 +207,7 @@ impl Show for Footnote
 impl ToJson for Footnote
 
 pub(all) type HtmlBlock Seq[Node[String]]
+fn HtmlBlock::inner(Self) -> Seq[Node[String]]
 impl Show for HtmlBlock
 impl ToJson for HtmlBlock
 
@@ -302,11 +306,13 @@ impl Show for InlineMathSpan
 impl ToJson for InlineMathSpan
 
 pub(all) type InlineRawHtml Seq[Tight]
+fn InlineRawHtml::inner(Self) -> Seq[Tight]
 impl Eq for InlineRawHtml
 impl Show for InlineRawHtml
 impl ToJson for InlineRawHtml
 
 pub(all) type InlineStrikethrough Inline
+fn InlineStrikethrough::inner(Self) -> Inline
 impl Eq for InlineStrikethrough
 impl Show for InlineStrikethrough
 impl ToJson for InlineStrikethrough
@@ -337,6 +343,7 @@ impl Show for LabelDef
 impl ToJson for LabelDef
 
 pub(all) type LabelResolverFn (LabelContext) -> Label?
+fn LabelResolverFn::inner(Self) -> (LabelContext) -> Label?
 
 pub(all) struct LinkDefinition {
   layout : LinkDefinitionLayout
@@ -391,6 +398,7 @@ pub(all) enum ListTaskStatus {
 fn ListTaskStatus::from_marker(Char) -> Self
 
 pub(all) type MapFn[A] (Mapper, A) -> A? raise MapperError
+fn[A] MapFn::inner(Self[A]) -> (Mapper, A) -> A? raise MapperError
 
 pub(all) struct Mapper {
   inline_ext_default : MapFn[Inline]
@@ -412,6 +420,7 @@ pub(all) suberror MapperError String
 impl Show for MapperError
 
 pub(all) type MapperFn[A] (Mapper, A) -> MapperResult[A]
+fn[A] MapperFn::inner(Self[A]) -> (Mapper, A) -> MapperResult[A]
 
 pub(all) enum MapperResult[A] {
   Default
@@ -488,6 +497,7 @@ impl ToJson for TableAlign
 impl @json.FromJson for TableAlign
 
 pub(all) type TableCellLayout (String, String)
+fn TableCellLayout::inner(Self) -> (String, String)
 impl Compare for TableCellLayout
 impl Eq for TableCellLayout
 impl Show for TableCellLayout
@@ -502,6 +512,7 @@ impl Show for TableRow
 impl ToJson for TableRow
 
 pub(all) type TableSep (TableAlign?, Int)
+fn TableSep::inner(Self) -> (TableAlign?, Int)
 impl Show for TableSep
 impl ToJson for TableSep
 
@@ -517,25 +528,25 @@ impl Show for Tight
 impl ToJson for Tight
 
 // Type aliases
-pub typealias Blanks = String
+pub typealias String as Blanks
 
-pub typealias BlanksNode = Node[String]
+pub typealias Node[String] as BlanksNode
 
-pub typealias BlockBlankLine = String
+pub typealias String as BlockBlankLine
 
-pub typealias BlockLineBlank = Node[String]
+pub typealias Node[String] as BlockLineBlank
 
-pub typealias Count = Int
+pub typealias Int as Count
 
-pub typealias InlineText = String
+pub typealias String as InlineText
 
-pub typealias LabelDefs = Map[String, LabelDef]
+pub typealias Map[String, LabelDef] as LabelDefs
 
-pub typealias LabelKey = String
+pub typealias String as LabelKey
 
-pub typealias ListItemBlock = ListItem
+pub typealias ListItem as ListItemBlock
 
-pub typealias StringNode = Node[String]
+pub typealias Node[String] as StringNode
 
 // Traits
 
