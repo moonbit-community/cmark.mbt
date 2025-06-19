@@ -451,6 +451,6 @@ pub(all) struct InlineMathSpan {
 } derive(Eq, Show, ToJson)
 
 ///|
-pub fn tex(self : InlineMathSpan) -> String {
+pub fn InlineMathSpan::tex(self : Self) -> String {
   self.tex_layout.inner().map(Tight::to_string).join(" ")
 }

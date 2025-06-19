@@ -10,8 +10,6 @@ let layout_empty : Node[String]
 
 fn layout_of_string(meta~ : @cmark_base.Meta = .., String) -> Node[String]
 
-fn tex(InlineMathSpan) -> String
-
 // Types and methods
 pub(all) enum Block {
   BlankLine(Node[String])
