@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1750303884914,
+  "lastUpdate": 1750384312571,
   "repoUrl": "https://github.com/moonbit-community/cmark.mbt",
   "entries": {
     "Benchmark.js Benchmark": [
@@ -6876,6 +6876,86 @@ window.BENCHMARK_DATA = {
             "name": "cmarkNative(spec * 200)",
             "value": 0.47,
             "range": "±3.78%",
+            "unit": "ops/sec",
+            "extra": "5 samples"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "rami3l@outlook.com",
+            "name": "rami3l",
+            "username": "rami3l"
+          },
+          "committer": {
+            "email": "rami3l@outlook.com",
+            "name": "rami3l",
+            "username": "rami3l"
+          },
+          "distinct": true,
+          "id": "ee35fd090c138f6f389e30bbd002c7a0c4d5352a",
+          "message": "refactor(cmark): convert InlineMathSpan tex function to method\n\nConvert the standalone `tex` function to a proper method `InlineMathSpan::tex`\non the `InlineMathSpan` type for better encapsulation and consistency with\nMoonBit method conventions.\n\nChanges:\n- Remove standalone `tex` function from public interface (cmark.mbti)\n- Convert to `InlineMathSpan::tex` method with proper Self type annotation\n- Maintains the same functionality while improving type safety",
+          "timestamp": "2025-06-20T09:48:59+08:00",
+          "tree_id": "30fc95e441ec1c5ab258fa5ab6ec29663691daa9",
+          "url": "https://github.com/moonbit-community/cmark.mbt/commit/ee35fd090c138f6f389e30bbd002c7a0c4d5352a"
+        },
+        "date": 1750384312214,
+        "tool": "benchmarkjs",
+        "benches": [
+          {
+            "name": "cmarkJS(spec * 100)",
+            "value": 0.48,
+            "range": "±11.93%",
+            "unit": "ops/sec",
+            "extra": "5 samples"
+          },
+          {
+            "name": "cmarkJS(spec * 200)",
+            "value": 0.23,
+            "range": "±44.96%",
+            "unit": "ops/sec",
+            "extra": "5 samples"
+          },
+          {
+            "name": "cmarkWASM1(spec * 100)",
+            "value": 0.48,
+            "range": "±1.65%",
+            "unit": "ops/sec",
+            "extra": "5 samples"
+          },
+          {
+            "name": "cmarkWASM1(spec * 200)",
+            "value": 0.24,
+            "range": "±1.05%",
+            "unit": "ops/sec",
+            "extra": "5 samples"
+          },
+          {
+            "name": "cmarkWASM(spec * 100)",
+            "value": 0.87,
+            "range": "±6.95%",
+            "unit": "ops/sec",
+            "extra": "5 samples"
+          },
+          {
+            "name": "cmarkWASM(spec * 200)",
+            "value": 0.41,
+            "range": "±8.59%",
+            "unit": "ops/sec",
+            "extra": "5 samples"
+          },
+          {
+            "name": "cmarkNative(spec * 100)",
+            "value": 0.98,
+            "range": "±4.15%",
+            "unit": "ops/sec",
+            "extra": "5 samples"
+          },
+          {
+            "name": "cmarkNative(spec * 200)",
+            "value": 0.47,
+            "range": "±4.43%",
             "unit": "ops/sec",
             "extra": "5 samples"
           }
