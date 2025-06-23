@@ -328,7 +328,7 @@ test "tables" {
     #||----------|----------|
     #|| Cell 1   | Cell 2   |
   let doc = @cmark.Doc::from_string(input, strict=false)
-  let null = Null
+  let null = Json::null()
   @json.inspect(doc, content={
     "nl": "\n",
     "block": {
