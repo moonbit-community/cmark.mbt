@@ -2,7 +2,7 @@
 fn parse_only(
   txt : String,
   strict~ : Bool = true,
-  polish~ : (Parser) -> Parser = fn(p) { p }
+  polish~ : (Parser) -> Parser = fn(p) { p },
 ) -> ((Col, String), Inline) {
   let p = Parser::new(txt, strict~) |> polish()
   let lines = txt.split("\n")
@@ -24,7 +24,7 @@ fn parse_only(
 ///|
 fn tokenize_only(
   txt : String,
-  strict~ : Bool = true
+  strict~ : Bool = true,
 ) -> (CloserIndex, Tokens, LineSpan) {
   let p = Parser::new(txt, strict~)
   let lines = txt.split("\n")
@@ -48,21 +48,23 @@ fn tokenize_only(
 test "should parse entity and numeric char references" {
   @json.inspect(
     parse_only(
-      #|&nbsp; &amp; &copy; &AElig; &Dcaron; &frac34; &HilbertSpace; &DifferentialD; &ClockwiseContourIntegral; &ngE; &#35; &#1234; &#992; &#0; &#X22; &#XD06; &#xcab;
-      ,
+      (
+        #|&nbsp; &amp; &copy; &AElig; &Dcaron; &frac34; &HilbertSpace; &DifferentialD; &ClockwiseContourIntegral; &ngE; &#35; &#1234; &#992; &#0; &#X22; &#XD06; &#xcab;
+      ),
     ),
     content=[
       [0, ""],
       {
         "$tag": "Text",
-        "0": ["  & © Æ Ď ¾ ℋ ⅆ ∲ ≧̸ # Ӓ Ϡ � \" ആ ಫ"],
+        "0": ["  & © Æ Ď ¾ ℋ ⅆ ∲ ≧̸ # Ӓ Ϡ � \" ആ ಫ"],
       },
     ],
   )
   @json.inspect(
     parse_only(
-      #|&nbsp &x; &#; &#x; &#87654321; &#abcdef0; &ThisIsNotDefined; &hi?; &copy &MadeUpEntity;
-      ,
+      (
+        #|&nbsp &x; &#; &#x; &#87654321; &#abcdef0; &ThisIsNotDefined; &hi?; &copy &MadeUpEntity;
+      ),
     ),
     content=[
       [0, ""],
@@ -98,10 +100,11 @@ test "should parse autolinks" {
 test "should parse breaks" {
   @json.inspect(
     parse_only(
-      #|A line ending (not in a code span or HTML tag) that is preceded by two
-      #|   or more spaces and does not occur at the end of a block is parsed as a
-      #| hard line break.
-      ,
+      (
+        #|A line ending (not in a code span or HTML tag) that is preceded by two
+        #|   or more spaces and does not occur at the end of a block is parsed as a
+        #| hard line break.
+      ),
     ),
     content=[
       [0, ""],
@@ -149,10 +152,11 @@ test "should parse breaks" {
   )
   @json.inspect(
     parse_only(
-      #|So this means we had softbreaks so far and now we get  \
-      #|  a hard break     
-      #| and another one.
-      ,
+      (
+        #|So this means we had softbreaks so far and now we get  \
+        #|  a hard break     
+        #| and another one.
+      ),
     ),
     content=[
       [0, ""],
@@ -195,48 +199,44 @@ test "should parse breaks" {
 
 ///|
 test "should tokenize codespans" {
-  @json.inspect(
-    tokenize_only(
-      #|This is a multi-line code`
-      #|    code span `` it has backticks
-      #|  in there`
-      ,
-    ),
-    content=[
-      { "Backticks(1)": [25, 71], "Backticks(2)": [41] },
-      [
-        {
-          "$tag": "Backticks",
-          "0": { "start": 25, "count": 1, "escaped": false },
+  let input =
+    #|This is a multi-line code`
+    #|    code span `` it has backticks
+    #|  in there`
+  @json.inspect(tokenize_only(input), content=[
+    { "Backticks(1)": [25, 71], "Backticks(2)": [41] },
+    [
+      {
+        "$tag": "Backticks",
+        "0": { "start": 25, "count": 1, "escaped": false },
+      },
+      {
+        "$tag": "Newline",
+        "0": {
+          "start": 26,
+          "break_ty": { "$tag": "Soft" },
+          "newline": { "pos": [2, 0], "first": 27, "last": 59 },
         },
-        {
-          "$tag": "Newline",
-          "0": {
-            "start": 26,
-            "break_ty": { "$tag": "Soft" },
-            "newline": { "pos": [2, 0], "first": 27, "last": 59 },
-          },
+      },
+      {
+        "$tag": "Backticks",
+        "0": { "start": 41, "count": 2, "escaped": false },
+      },
+      {
+        "$tag": "Newline",
+        "0": {
+          "start": 60,
+          "break_ty": { "$tag": "Soft" },
+          "newline": { "pos": [3, 0], "first": 61, "last": 71 },
         },
-        {
-          "$tag": "Backticks",
-          "0": { "start": 41, "count": 2, "escaped": false },
-        },
-        {
-          "$tag": "Newline",
-          "0": {
-            "start": 60,
-            "break_ty": { "$tag": "Soft" },
-            "newline": { "pos": [3, 0], "first": 61, "last": 71 },
-          },
-        },
-        {
-          "$tag": "Backticks",
-          "0": { "start": 71, "count": 1, "escaped": false },
-        },
-      ],
-      { "pos": [1, 0], "first": 0, "last": 25 },
+      },
+      {
+        "$tag": "Backticks",
+        "0": { "start": 71, "count": 1, "escaped": false },
+      },
     ],
-  )
+    { "pos": [1, 0], "first": 0, "last": 25 },
+  ])
 }
 
 ///|
@@ -268,9 +268,10 @@ test "should parse codespans on a single line" {
 test "should parse codespans across multiple lines" {
   @json.inspect(
     parse_only(
-      #|wow code`
-      #|    stuff` !
-      ,
+      (
+        #|wow code`
+        #|    stuff` !
+      ),
     ),
     content=[
       [0, ""],
@@ -299,10 +300,11 @@ test "should parse codespans across multiple lines" {
   )
   @json.inspect(
     parse_only(
-      #|This is a multi-line code`
-      #|    code span `` it has backticks
-      #|  in there`
-      ,
+      (
+        #|This is a multi-line code`
+        #|    code span `` it has backticks
+        #|  in there`
+      ),
     ),
     content=[
       [0, ""],
@@ -331,11 +333,12 @@ test "should parse codespans across multiple lines" {
   )
   @json.inspect(
     parse_only(
-      #|Sometimes code spans `` `can have
-      #|   really ```
-      #| strange
-      #|      layout ``. Do you fancy `` `A_polymorphic_variant `` ? 
-      ,
+      (
+        #|Sometimes code spans `` `can have
+        #|   really ```
+        #| strange
+        #|      layout ``. Do you fancy `` `A_polymorphic_variant `` ? 
+      ),
     ),
     content=[
       [0, ""],
@@ -487,8 +490,9 @@ test "should parse emphases" {
 test "should parse links/images/refs" {
   @json.inspect(
     parse_only(
-      #|[a link](http://example.org)
-      ,
+      (
+        #|[a link](http://example.org)
+      ),
     ),
     content=[
       [0, ""],
@@ -520,8 +524,9 @@ test "should parse links/images/refs" {
   )
   @json.inspect(
     parse_only(
-      #|![an image](http://example.org)
-      ,
+      (
+        #|![an image](http://example.org)
+      ),
     ),
     content=[
       [0, ""],
@@ -553,8 +558,9 @@ test "should parse links/images/refs" {
   )
   @json.inspect(
     parse_only(
-      #|[a link](http://example.org "a title")
-      ,
+      (
+        #|[a link](http://example.org "a title")
+      ),
     ),
     content=[
       [0, ""],
@@ -587,8 +593,9 @@ test "should parse links/images/refs" {
   )
   @json.inspect(
     parse_only(
-      #|![an image](http://example.org "a title")
-      ,
+      (
+        #|![an image](http://example.org "a title")
+      ),
     ),
     content=[
       [0, ""],
@@ -621,10 +628,11 @@ test "should parse links/images/refs" {
   )
   @json.inspect(
     parse_only(
-      #|This is an ![inline image](
-      #|  /heyho    (The
-      #|    multiline title))
-      ,
+      (
+        #|This is an ![inline image](
+        #|  /heyho    (The
+        #|    multiline title))
+      ),
     ),
     content=[
       [0, ""],
@@ -670,70 +678,63 @@ test "should parse links/images/refs" {
 
 ///|
 test "should tokenize broken links across lines" {
-  @json.inspect(
-    tokenize_only(
-      #|and the [end
-      #|condition], wow
-      ,
-    ),
-    content=[
-      { "RightBrack": [22] },
-      [
-        { "$tag": "LinkStart", "0": { "start": 8, "image": false } },
-        {
-          "$tag": "Newline",
-          "0": {
-            "start": 12,
-            "break_ty": { "$tag": "Soft" },
-            "newline": { "pos": [2, 0], "first": 13, "last": 27 },
-          },
+  let input =
+    #|and the(end
+    #|condition), wow
+  @json.inspect(tokenize_only(input), content=[
+    { "RightBrack": [22] },
+    [
+      { "$tag": "LinkStart", "0": { "start": 8, "image": false } },
+      {
+        "$tag": "Newline",
+        "0": {
+          "start": 12,
+          "break_ty": { "$tag": "Soft" },
+          "newline": { "pos": [2, 0], "first": 13, "last": 27 },
         },
-        { "$tag": "RightBrack", "0": { "start": 22 } },
-      ],
-      { "pos": [1, 0], "first": 0, "last": 11 },
+      },
+      { "$tag": "RightBrack", "0": { "start": 22 } },
     ],
-  )
+    { "pos": [1, 0], "first": 0, "last": 11 },
+  ])
 }
 
 ///|
 test "should parse broken links across lines" {
-  @json.inspect(
-    parse_only(
-      #|and the [end
-      #|condition], wow
-      ,
-    ),
-    content=[
-      [0, ""],
-      {
-        "$tag": "Inlines",
-        "0": [
-          [
-            { "$tag": "Text", "0": ["and the [end"] },
-            {
-              "$tag": "Break",
-              "0": [
-                {
-                  "layout_before": [""],
-                  "ty": { "$tag": "Soft" },
-                  "layout_after": [""],
-                },
-              ],
-            },
-            { "$tag": "Text", "0": ["condition], wow"] },
-          ],
+  let input =
+    #|and the(end
+    #|condition), wow
+  @json.inspect(parse_only(input), content=[
+    [0, ""],
+    {
+      "$tag": "Inlines",
+      "0": [
+        [
+          { "$tag": "Text", "0": ["and the [end"] },
+          {
+            "$tag": "Break",
+            "0": [
+              {
+                "layout_before": [""],
+                "ty": { "$tag": "Soft" },
+                "layout_after": [""],
+              },
+            ],
+          },
+          { "$tag": "Text", "0": ["condition], wow"] },
         ],
-      },
-    ],
-  )
+      ],
+    },
+  ])
 }
 
 ///|
 test "should parse raw HTML" {
   @json.inspect(
     parse_only(
-      #|<div><p>Some text</p></div>
-      ,
+      (
+        #|<div><p>Some text</p></div>
+      ),
     ),
     content=[
       [0, ""],
@@ -753,8 +754,9 @@ test "should parse raw HTML" {
   )
   @json.inspect(
     parse_only(
-      #|foo <a href="\*" />u</a>
-      ,
+      (
+        #|foo <a href="\*" />u</a>
+      ),
     ),
     content=[
       [0, ""],
@@ -776,9 +778,10 @@ test "should parse raw HTML" {
   )
   @json.inspect(
     parse_only(
-      #|Haha <a>a</a><b2
-      #|       data="foo" > hihi this is not the end yet.
-      ,
+      (
+        #|Haha <a>a</a><b2
+        #|       data="foo" > hihi this is not the end yet.
+      ),
     ),
     content=[
       [0, ""],
@@ -898,8 +901,9 @@ test "should parse strikethroughs" {
   @json.inspect(
     parse_only(
       strict=false,
-      #|Nesting the nest ~~*emph2* ~~stroke~~ *emph3 **emph4  ~~strikeagain~~***~~
-      ,
+      (
+        #|Nesting the nest ~~*emph2* ~~stroke~~ *emph3 **emph4  ~~strikeagain~~***~~
+      ),
     ),
     content=[
       [0, ""],
@@ -991,8 +995,9 @@ test "should tokenize inline math" {
   @json.inspect(
     tokenize_only(
       strict=false,
-      #| This is $\LaTeX$ !!
-      ,
+      (
+        #| This is $\LaTeX$ !!
+      ),
     ),
     content=[
       { "MathSpanMarks(1)": [16] },
@@ -1016,8 +1021,9 @@ test "should parse inline math" {
   @json.inspect(
     parse_only(
       strict=false,
-      #| This is $\LaTeX$ !!
-      ,
+      (
+        #| This is $\LaTeX$ !!
+      ),
     ),
     content=[
       [1, ""],

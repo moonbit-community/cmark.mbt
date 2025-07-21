@@ -17,7 +17,7 @@ pub fn LinkDefinition::new(
   label~ : Label? = None,
   defined_label~ : Label? = None,
   dest~ : StringNode? = None,
-  title~ : Seq[Tight]? = None
+  title~ : Seq[Tight]? = None,
 ) -> LinkDefinition {
   { layout, label, defined_label, dest, title }
 }

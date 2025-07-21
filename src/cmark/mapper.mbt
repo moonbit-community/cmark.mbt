@@ -54,7 +54,7 @@ pub fn[A] Mapper::none(self : Mapper, _a : A) -> MapperResult[A] {
 ///|
 pub fn[A] Mapper::inline_ext_none(
   self : Mapper,
-  _a : A
+  _a : A,
 ) -> A? raise MapperError {
   let _ = self
   raise MapperError("unknown inline extension")
@@ -71,7 +71,7 @@ pub fn Mapper::new(
   inline_ext_default~ : MapFn[Inline] = Mapper::inline_ext_none,
   block_ext_default~ : MapFn[Block] = Mapper::block_ext_none,
   inline~ : MapperFn[Inline] = Mapper::none,
-  block~ : MapperFn[Block] = Mapper::none
+  block~ : MapperFn[Block] = Mapper::none,
 ) -> Mapper {
   { inline_ext_default, block_ext_default, inline, block }
 }
@@ -147,7 +147,7 @@ pub fn Mapper::map_block(self : Mapper, b : Block) -> Block? {
         v => Some(Blocks({ v, meta }))
       }
     List({ v, meta }) => {
-      fn map_list_item(i : Node[ListItem]) {
+      fn map_list_item(i : Node[ListItem] {
         let { v, meta } = i
         guard self.map_block(i.v.block) is Some(block) else { None }
         Some({ v: { ..v, block, }, meta })

@@ -16,7 +16,7 @@ pub fn BlockLine::to_string(self : BlockLine) -> String {
 }
 
 ///|
-pub fn BlockLine::list_text_loc(ls : Seq[BlockLine]) -> TextLoc {
+pub fn BlockLine::list_text_loc(ls : Seq[BlockLine] -> TextLoc {
   match ls.inner() {
     [] => TextLoc::none()
     [head] => head.meta.loc
@@ -46,7 +46,7 @@ pub fn Tight::to_string(self : Tight) -> String {
 }
 
 ///|
-pub fn Tight::list_text_loc(ls : Seq[Tight]) -> TextLoc {
+pub fn Tight::list_text_loc(ls : Seq[Tight] -> TextLoc {
   match ls.inner() {
     [] => TextLoc::none()
     [head] => head.node.meta.loc
@@ -70,7 +70,7 @@ fn BlockLine::flush_tight(
   s : String,
   start : Int,
   last : Int,
-  acc : Array[Tight]
+  acc : Array[Tight],
 ) -> Unit {
   // If [s] has newlines, blanks after newlines are layout
   if start > last {

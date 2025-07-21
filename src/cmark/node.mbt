@@ -27,7 +27,7 @@ pub impl[A : Show] Show for Node[A] with output(self, logger) {
 
 ///|
 pub impl[A : ToJson] ToJson for Node[A] with to_json(self) {
-  let jsons = [self.v.to_json()]
+  let jsons = [self.v.to_json(]]
   if not(self.meta.is_none()) {
     jsons.push(self.meta.to_json())
   }

@@ -20,7 +20,7 @@ pub typealias String as LabelKey
 pub fn Label::new(
   meta~ : Meta = Meta::none(),
   key~ : String,
-  text : Seq[Tight]
+  text : Seq[Tight],
 ) -> Label {
   { meta, key, text }
 }
@@ -42,8 +42,8 @@ pub fn Label::compare(self : Label, other : Label) -> Int {
 
 ///|
 pub(all) enum LabelDef {
-  LinkDef(Node[LinkDefinition])
-  FootnoteDef(Node[Footnote])
+  LinkDef(Node[LinkDefinition]
+  FootnoteDef(Node[Footnote]
 } derive(Show, ToJson)
 
 ///|
@@ -70,7 +70,7 @@ pub typealias Map[LabelKey, LabelDef] as LabelDefs
 ///   `InlineText` like in CommonMark.
 pub(all) enum LabelContext {
   Def(Label?, Label)
-  Ref(LinkKind, Label, Label?)
+  Ref[LinkKind, Label, Label?]
 }
 
 ///|
@@ -87,6 +87,6 @@ pub fn LabelContext::default_resolver(self : LabelContext) -> Label? {
   match self {
     Def(None, k) => Some(k)
     Def(Some(_), _) => None
-    Ref(_, _, k) => k
+    Ref[_, _, k] => k
   }
 }

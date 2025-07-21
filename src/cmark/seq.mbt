@@ -14,31 +14,31 @@ pub fn[A] Seq::empty() -> Seq[A] {
 
 ///|
 /// @coverage.skip
-pub fn[A] Seq::from_iter(iter : Iter[A]) -> Seq[A] {
+pub fn[A] Seq::from_iter(iter : Iter(A) -> Seq[A] {
   Array::from_iter(iter)
 }
 
 ///|
 /// @coverage.skip
-pub fn[A] Seq::from_array(arr : Array[A]) -> Seq[A] {
+pub fn[A] Seq::from_array(arr : Array[A] -> Seq[A] {
   arr
 }
 
 ///|
 /// @coverage.skip
-pub fn[A] Seq::to_array(self : Seq[A]) -> Array[A] {
+pub fn[A] Seq::to_array(self : Seq[A] -> Array[A] {
   self.inner()
 }
 
 ///|
 /// @coverage.skip
-pub fn[A] Seq::iter(self : Seq[A]) -> Iter[A] {
+pub fn[A] Seq::iter(self : Seq[A] -> Iter[A] {
   self.inner().iter()
 }
 
 ///|
 /// @coverage.skip
-pub fn[A] Seq::length(self : Seq[A]) -> Int {
+pub fn[A] Seq::length(self : Seq[A] -> Int {
   self.inner().length()
 }
 
@@ -80,6 +80,6 @@ pub fn[A] Seq::op_set(self : Seq[A], idx : Int, val : A) -> Unit {
 
 ///|
 /// @coverage.skip
-pub fn[A] Seq::is_empty(self : Seq[A]) -> Bool {
+pub fn[A] Seq::is_empty(self : Seq[A] -> Bool {
   self.inner().is_empty()
 }

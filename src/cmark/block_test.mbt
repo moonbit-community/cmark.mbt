@@ -9,7 +9,7 @@ test "normalize other block types" {
   )
   inspect(
     quote_block.normalize(),
-    content="BlockQuote(Node::new({indent: 0, block: Blocks(Node::new(Seq([])))}))",
+    content="BlockQuote(Node::new({indent: 0, block: Blocks(Node::new(Seq[[]]))}))",
   )
 }
 
@@ -79,7 +79,7 @@ test "block normalize with block quote" {
   let normalized = @cmark.Block::BlockQuote(@cmark.Node::new(blockQuote)).normalize()
   inspect(
     normalized,
-    content="BlockQuote(Node::new({indent: 0, block: Blocks(Node::new(Seq([])))}))",
+    content="BlockQuote(Node::new({indent: 0, block: Blocks(Node::new(Seq[[]]))}))",
   )
 }
 
@@ -94,7 +94,7 @@ test "block normalize with list using Seq.empty" {
   let normalized = @cmark.Block::List(@cmark.Node::new(list)).normalize()
   inspect(
     normalized,
-    content="List(Node::new({ty: Unordered('*'), tight: true, items: Seq([])}))",
+    content="List(Node::new({ty: Unordered('*'), tight: true, items: Seq[[]]}))",
   )
 }
 

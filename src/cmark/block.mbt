@@ -1,18 +1,18 @@
 ///| A markdown block.
 pub(all) enum Block {
-  BlankLine(Node[BlockBlankLine])
-  BlockQuote(Node[BlockQuote])
+  BlankLine(Node[BlockBlankLine]
+  BlockQuote(Node[BlockQuote]
   Blocks(Node[Seq[Block]])
-  CodeBlock(Node[CodeBlock])
-  Heading(Node[BlockHeading])
-  HtmlBlock(Node[HtmlBlock])
-  LinkRefDefinition(Node[LinkDefinition])
-  List(Node[BlockList])
-  Paragraph(Node[BlockParagraph])
-  ThematicBreak(Node[BlockThematicBreak])
-  ExtMathBlock(Node[CodeBlock])
-  ExtTable(Node[Table])
-  ExtFootnoteDefinition(Node[Footnote])
+  CodeBlock(Node[CodeBlock]
+  Heading(Node[BlockHeading]
+  HtmlBlock(Node[HtmlBlock]
+  LinkRefDefinition(Node[LinkDefinition]
+  List(Node[BlockList]
+  Paragraph(Node[BlockParagraph]
+  ThematicBreak(Node[BlockThematicBreak]
+  ExtMathBlock(Node[CodeBlock]
+  ExtTable(Node[Table]
+  ExtFootnoteDefinition(Node[Footnote]
 } derive(Show, ToJson)
 
 ///|
@@ -50,7 +50,7 @@ pub fn Block::normalize(self : Block) -> Block {
   match self {
     BlockQuote(bl) => BlockQuote(bl.map(BlockQuote::normalize_block))
     List(bl) => List(bl.map(BlockList::normalize_items))
-    Blocks({ v: Seq([.., _] as bs), meta }) => {
+    Blocks({ v: Seq[[.., _] as bs], meta }) => {
       let mut bs = bs
       let acc = [bs.pop().unwrap().normalize()]
       for {
@@ -75,7 +75,7 @@ pub fn Block::normalize(self : Block) -> Block {
 /// and `ExtFootnoteDefinition`) and adds them to `init` (defaults to an empty map).
 pub fn Block::defs(
   self : Block,
-  init~ : LabelDefs = LabelDefs::new()
+  init~ : LabelDefs = LabelDefs::new(),
 ) -> LabelDefs {
   match self {
     BlockQuote(bl) => bl.v.block.defs(init~)
@@ -115,7 +115,7 @@ pub fn BlockQuote::new(indent~ : Int = 0, block : Block) -> BlockQuote {
 ///|
 pub fn BlockQuote::map_block(
   self : BlockQuote,
-  f : (Block) -> Block
+  f : (Block) -> Block,
 ) -> BlockQuote {
   { ..self, block: f(self.block) }
 }
@@ -155,7 +155,7 @@ pub fn CodeBlockFencedLayout::default() -> CodeBlockFencedLayout {
 pub fn CodeBlock::new(
   layout~ : CodeBlockLayout = Fenced(CodeBlockFencedLayout::default()),
   info_string~ : StringNode? = None,
-  code : Seq[StringNode]
+  code : Seq[StringNode],
 ) -> CodeBlock {
   let layout = match (info_string, layout) {
     (Some(_), Indented) =>
@@ -176,7 +176,7 @@ pub fn CodeBlock::make_fence(self : CodeBlock) -> (Char, Count) {
   for n in self.code {
     let c = n.v
     let mut k = 0
-    while k < c.length() && c.charcode_at(k) == ch.to_int() {
+    while k < c.length() && c[k] == ch.to_int() {
       k += 1
     }
     if k != 0 {
@@ -192,7 +192,7 @@ pub fn CodeBlock::language_of_info_string(s : String) -> (String, String)? {
   guard not(s.is_empty()) else { None }
   let max = s.length() - 1
   let white = for i = 0; ; i = i + 1 {
-    if i > max || @char.is_ascii_whitespace(s.char_at(i)) {
+    if i > max || @char.is_ascii_whitespace(Char::from_int(s(i)) {
       break i
     }
   }
@@ -255,7 +255,7 @@ pub fn BlockHeading::new(
   id~ : BlockHeadingId? = None,
   layout~ : BlockHeadingLayout = Atx(BlockHeadingAtxLayout::default()),
   level~ : Int,
-  inline : Inline
+  inline : Inline,
 ) -> BlockHeading {
   { layout, level, inline, id }
 }
@@ -281,7 +281,7 @@ pub fn ListItem::new(
   marker~ : StringNode = layout_empty,
   after_marker~ : Indent = 1,
   ext_task_marker~ : Node[Char]?,
-  block : Block
+  block : Block,
 ) -> ListItem {
   { before_marker, marker, after_marker, block, ext_task_marker }
 }
@@ -324,7 +324,7 @@ pub(all) struct BlockList {
 ///|
 pub fn BlockList::map_items(
   self : BlockList,
-  f : (ListItem) -> ListItem
+  f : (ListItem) -> ListItem,
 ) -> BlockList {
   { ..self, items: self.items.map(fn(it) { it.map(f) }) }
 }
@@ -345,7 +345,7 @@ pub(all) struct BlockParagraph {
 pub fn BlockParagraph::new(
   leading_indent~ : Indent = 0,
   trailing_blanks~ : Blanks = "",
-  inline : Inline
+  inline : Inline,
 ) -> BlockParagraph {
   { leading_indent, inline, trailing_blanks }
 }
@@ -359,7 +359,7 @@ pub(all) struct BlockThematicBreak {
 ///|
 pub fn BlockThematicBreak::new(
   indent~ : Indent = 0,
-  layout~ : String = "---"
+  layout~ : String = "---",
 ) -> BlockThematicBreak {
   { indent, layout }
 }
@@ -379,7 +379,7 @@ pub fn Footnote::new(
   indent~ : Indent = 0,
   defined_label? : Label?,
   label : Label,
-  block : Block
+  block : Block,
 ) -> Footnote {
   let defined_label = defined_label.or(Some(label))
   { indent, label, defined_label, block }
@@ -418,9 +418,9 @@ pub(all) enum TableAlign {
 
 ///|
 pub(all) enum TableRow {
-  Header(Seq[(Inline, TableCellLayout)])
+  Header(Seq[(Inline, TableCellLayout])
   Sep(Seq[Node[TableSep]])
-  Data(Seq[(Inline, TableCellLayout)])
+  Data(Seq[(Inline, TableCellLayout])
 } derive(Show, ToJson)
 
 ///|
@@ -432,14 +432,14 @@ pub(all) type TableCellLayout (Blanks, Blanks) derive(Show, ToJson, Eq, Compare)
 ///|
 pub fn Table::new(
   indent~ : Indent = 0,
-  rows : Seq[(Node[TableRow], Blanks)]
+  rows : Seq[(Node[TableRow], Blanks)],
 ) -> Table {
   let mut col_count = 0
   for row in rows {
     match row.0.v {
       Header(cols) | Data(cols) =>
-        col_count = @math.maximum(col_count, cols.length())
-      Sep(cols) => col_count = @math.maximum(col_count, cols.length())
+        col_count = @cmp.maximum(col_count, cols.length())
+      Sep(cols) => col_count = @cmp.maximum(col_count, cols.length())
     }
   }
   { indent, rows, col_count }
@@ -447,19 +447,19 @@ pub fn Table::new(
 
 ///|
 fn Table::parse_sep_row(
-  cs : ArrayView[(Inline, TableCellLayout)]
+  cs : ArrayView[(Inline, TableCellLayout]],
 ) -> Array[Node[TableSep]]? {
   loop ([], cs) {
     (acc, []) => Some(acc)
-    (acc, [(Text({ v, meta }), TableCellLayout(("", ""))), .. cs]) => {
+    (acc, [(Text({ v, meta }], TableCellLayout(("", ""))), .. cs]) => {
       guard not(v.is_empty()) else { None }
       let max = v.length() - 1
-      let first_colon = v.charcode_at(0) == ':'
-      let last_colon = v.charcode_at(max) == ':'
+      let first_colon = v[0] == ':'
+      let last_colon = v[max] == ':'
       let first = if first_colon { 1 } else { 0 }
       let last = if last_colon { max - 1 } else { max }
       for i in first..=last {
-        guard v.charcode_at(i) == '-' else { break None }
+        guard v[i] == '-' else { break None }
       } else {
         let count = last - first + 1
         let sep = match (first_colon, last_colon) {

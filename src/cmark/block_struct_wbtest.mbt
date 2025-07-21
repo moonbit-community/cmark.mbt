@@ -974,7 +974,7 @@ test "should parse list item with multiple inlines" {
                                       },
                                     ],
                                   },
-                                  { "$tag": "Text", "0": [".)"] },
+                                  { "$tag": "Text", "0": [".]"] },
                                 ],
                               ],
                             },

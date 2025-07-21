@@ -118,7 +118,7 @@ test "folder block with table" {
         ),
         (
           Node::new(
-            Sep(Seq::from_array([Node::new((Some(TableAlign::Left), 3))])),
+            Sep(Seq::from_array([Node::new((Some(TableAlign::Left], 3))])),
           ),
           "",
         ),

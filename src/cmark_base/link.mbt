@@ -8,19 +8,19 @@
 pub fn link_destination(
   s : String,
   last~ : CharCodePos,
-  start~ : CharCodePos
+  start~ : CharCodePos,
 ) -> (Bool, First, Last)? {
   if start > last {
     return None
   }
-  if s.charcode_at(start) == '<' {
+  if s[start] == '<' {
     // delimited, i.e. start has '<'
     // https://spec.commonmark.org/current/#link-destination 1st
     for s = s, start = start, last = last, prev = '\u{0}', k = start + 1 {
       if k > last {
         break None
       }
-      let c = s.charcode_at(k).unsafe_to_char()
+      let c = s[k].unsafe_to_char()
       match (c, prev) {
         ('\n' | '\r', _) => break None
         ('\\', '\\') => continue s, start, last, '\u{0}', k + 1
@@ -39,7 +39,7 @@ pub fn link_destination(
       if k > last {
         break if bal == 0 { Some((false, start, k - 1)) } else { None }
       }
-      let c = s.charcode_at(k).unsafe_to_char()
+      let c = s[k].unsafe_to_char()
       match (c, prev) {
         ('\\', '\\') => continue s, start, last, '\u{0}', bal, k + 1
         ('(', '\\') => ()
@@ -73,16 +73,16 @@ pub fn link_destination(
 ///
 /// See: https://spec.commonmark.org/current/#link-title 
 pub fn[A] link_title(
-  next_line~ : NextLineFn[A],
+  next_line~ : NextLineFn(A),
   s : String,
   lines : A,
   line~ : LineSpan,
-  start~ : CharCodePos
+  start~ : CharCodePos,
 ) -> (LineSpan, Array[Span], Last)? {
   if start > line.last {
     return None
   }
-  match s.charcode_at(start).unsafe_to_char() {
+  match s[start].unsafe_to_char() {
     '"' | '\'' as char => {
       let spans = []
       accept_upto(char~, next_line~, s, lines, line~, spans, after=start).map(span_last => (
@@ -104,15 +104,15 @@ pub fn[A] link_title(
           continue next_line, s, lines, newline, prev_bslash, start, start
         }
         if not(prev_bslash) {
-          if s.charcode_at(k) == '(' {
+          if s[k] == '(' {
             break None
           }
-          if s.charcode_at(k) == ')' {
+          if s[k] == ')' {
             push_span(line~, start, k - 1, acc)
             break Some((line, acc, k))
           }
         }
-        let prev_bslash = s.charcode_at(k) == '\\' && not(prev_bslash)
+        let prev_bslash = s[k] == '\\' && not(prev_bslash)
         continue next_line, s, lines, line, prev_bslash, start, k + 1
       }
     }
@@ -127,13 +127,13 @@ pub fn[A] link_title(
 /// See: https://spec.commonmark.org/current/#link-label
 pub fn[A] link_label(
   buf : Buffer,
-  next_line~ : NextLineFn[A],
+  next_line~ : NextLineFn(A),
   s : String,
   lines : A,
   line~ : LineSpan,
-  start~ : CharCodePos
+  start~ : CharCodePos,
 ) -> (LineSpan, Array[Span], Last, String)? {
-  if start > line.last || s.charcode_at(start) != '[' {
+  if start > line.last || s[start] != '[' {
     return None
   }
   let start = start + 1
@@ -156,7 +156,7 @@ pub fn[A] link_label(
     if count > 999 {
       break None
     }
-    match (s.charcode_at(k).unsafe_to_char(), prev) {
+    match (s[k].unsafe_to_char(), prev) {
       ('\\', '\\') => {
         b.write_char('\\')
         let prev = '\u{0}'
@@ -187,7 +187,7 @@ pub fn[A] link_label(
     }
     let k1 = k + @char.length_utf8(u.to_int())
     b.write_char(@char.to_ascii_lower(u))
-    let prev = s.charcode_at(k).unsafe_to_char()
+    let prev = s[k].unsafe_to_char()
     continue b, next_line, s, lines, line, prev, start, count + 1, k1
   }
 }

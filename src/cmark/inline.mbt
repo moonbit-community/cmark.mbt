@@ -3,18 +3,18 @@
 
 ///|
 pub(all) enum Inline {
-  Autolink(Node[InlineAutolink])
-  Break(Node[InlineBreak])
-  CodeSpan(Node[InlineCodeSpan])
-  Emphasis(Node[InlineEmphasis])
-  Image(Node[InlineLink])
+  Autolink(Node[InlineAutolink]
+  Break(Node[InlineBreak]
+  CodeSpan(Node[InlineCodeSpan]
+  Emphasis(Node[InlineEmphasis]
+  Image(Node[InlineLink]
   Inlines(Node[Seq[Inline]])
-  Link(Node[InlineLink])
-  RawHtml(Node[InlineRawHtml])
-  StrongEmphasis(Node[InlineEmphasis])
-  Text(Node[InlineText])
-  ExtStrikethrough(Node[InlineStrikethrough])
-  ExtMathSpan(Node[InlineMathSpan])
+  Link(Node[InlineLink]
+  RawHtml(Node[InlineRawHtml]
+  StrongEmphasis(Node[InlineEmphasis]
+  Text(Node[InlineText]
+  ExtStrikethrough(Node[InlineStrikethrough]
+  ExtMathSpan(Node[InlineMathSpan]
 } derive(Eq, Show, ToJson)
 
 ///|
@@ -33,7 +33,7 @@ pub fn Inline::is_empty(self : Inline) -> Bool {
 
 ///| `meta(i)` is the metadata of `i`.
 pub fn Inline::meta(
-  self : Inline
+  self : Inline,
   // ext~ : (Inline) -> Meta!InvalidArgumentError = fn(_i) {
   //   raise InvalidArgumentError("Inline.meta")
   // }
@@ -69,7 +69,7 @@ pub fn Inline::normalize(self : Inline) -> Inline {
     | CodeSpan(_)
     | RawHtml(_)
     | Text(_)
-    | Inlines({ v: Seq([]), .. })
+    | Inlines({ v: Seq[[]], .. })
     | ExtMathSpan(_) as i => i
     Image({ v: raw, meta }) =>
       Image({ v: { ..raw, text: raw.text.normalize() }, meta })
@@ -81,9 +81,9 @@ pub fn Inline::normalize(self : Inline) -> Inline {
       StrongEmphasis({ v: { ..raw, inline: raw.inline.normalize() }, meta })
     ExtStrikethrough({ v: raw, meta }) =>
       ExtStrikethrough({ v: raw.inner().normalize(), meta })
-    Inlines({ v: Seq([i]), .. }) => i
-    Inlines({ v: Seq([i, .. is_]), meta }) => {
-      let acc = [i.normalize()]
+    Inlines({ v: Seq[[i]], .. }) => i
+    Inlines({ v: Seq[[i, .. is_]], meta }) => {
+      let acc = [i.normalize(]]
       let is_ = Array::from_iter(is_.iter())
       for {
         guard is_.pop() is Some(curr) else { break }
@@ -94,7 +94,7 @@ pub fn Inline::normalize(self : Inline) -> Inline {
             }
           Text({ v: t1, meta: meta1 }) as i1 =>
             match acc {
-              [.., Text({ v: t, meta })] =>
+              [.., Text({ v: t, meta }]] =>
                 acc[acc.length() - 1] = Text({
                   v: t + t1,
                   meta: { ..meta, loc: meta.loc.span(meta1.loc) },
@@ -118,9 +118,9 @@ pub fn Inline::normalize(self : Inline) -> Inline {
 /// are turned into hard line breaks.
 pub fn Inline::to_plain_text(
   self : Inline,
-  break_on_soft~ : Bool
+  break_on_soft~ : Bool,
 ) -> Seq[Seq[String]] {
-  let acc = Seq::from_array([Seq::empty()])
+  let acc = Seq::from_array([Seq::empty(]])
   let push = fn(s) { acc[acc.length() - 1].inner().push(s) }
   let newline = fn() { acc.inner().push([]) }
   let st = [self]
@@ -156,7 +156,7 @@ pub fn Inline::to_plain_text(
 ///|
 pub fn Inline::id(
   self : Inline,
-  buf~ : Buffer = Buffer::new(size_hint=256)
+  buf~ : Buffer = Buffer::new(size_hint=256),
 ) -> String {
   let text = self.to_plain_text(break_on_soft=false)
   let s = text.inner().map(fn(l) { l.inner().join("") }).join("\n")
@@ -170,7 +170,7 @@ pub fn Inline::id(
     if k > max {
       break buf.to_string()
     }
-    match s.char_at(k) {
+    match Char::from_int(s(k) {
       ' ' | '\t' as prev_ccode => continue max, prev_ccode, k + 1
       '_' | '-' as c => {
         collapse_blanks(prev)
@@ -179,11 +179,11 @@ pub fn Inline::id(
       }
       c => {
         collapse_blanks(prev)
-        let mut u = s.char_at(k)
+        let mut u = Char::from_int(s(k)
         if u == '\u{0000}' {
           u = @char.rep
         }
-        let k = k + @char.length_utf16(u.to_int())
+        let k = k + @char.length_utf16(s(k)
         if @char.is_ascii_punctuation(c) || @unicode.is_punctuation(c) {
           continue max, '\u{0}', k
         }
@@ -232,7 +232,7 @@ pub(all) struct InlineBreak {
 pub fn InlineBreak::new(
   layout_before~ : BlanksNode = layout_empty,
   layout_after~ : BlanksNode = layout_empty,
-  ty : InlineBreakType
+  ty : InlineBreakType,
 ) -> InlineBreak {
   { layout_before, ty, layout_after }
 }
@@ -252,7 +252,7 @@ pub(all) struct InlineCodeSpan {
 ///|
 pub fn InlineCodeSpan::new(
   backticks~ : Count,
-  code_layout : Seq[Tight]
+  code_layout : Seq[Tight],
 ) -> InlineCodeSpan {
   { backticks, code_layout }
 }
@@ -260,7 +260,7 @@ pub fn InlineCodeSpan::new(
 ///|
 fn InlineCodeSpan::min_backticks(
   min~ : Count,
-  counts : @sorted_set.T[Count]
+  counts : @sorted_set.T(Count),
 ) -> Count {
   let mut min = min
   for c in counts {
@@ -279,10 +279,10 @@ fn InlineCodeSpan::min_backticks(
 /// the resulting code layout (see `code_layout`).
 pub fn InlineCodeSpan::from_string(
   meta~ : Meta = Meta::none(),
-  s : String
+  s : String,
 ) -> InlineCodeSpan {
   if s.is_empty() {
-    return { backticks: 1, code_layout: [Tight::empty(meta~)] }
+    return { backticks: 1, code_layout: [Tight::empty(meta~]] }
   }
   // This finds out the needed backtick count, whether spaces are needed,
   // and treats blanks after newline as layout 
@@ -300,7 +300,7 @@ pub fn InlineCodeSpan::from_string(
       }
       break (bt_counts, layout)
     }
-    let sk = s.charcode_at(k)
+    let sk = s[k]
     if sk == '`' {
       continue bt_counts, acc, max, btc + 1, start, k + 1
     }
@@ -311,7 +311,7 @@ pub fn InlineCodeSpan::from_string(
       continue bt_counts, acc, max, 0, start, k + 1
     }
     BlockLine::flush_tight(meta~, s, start, k - 1, acc)
-    let start = if k + 1 <= max && sk == '\r' && s.charcode_at(k + 1) == '\n' {
+    let start = if k + 1 <= max && sk == '\r' && s[k + 1] == '\n' {
       k + 2
     } else {
       k + 1
@@ -341,7 +341,7 @@ pub(all) struct InlineEmphasis {
 ///|
 pub fn InlineEmphasis::new(
   delim~ : Char = '*',
-  inline : Inline
+  inline : Inline,
 ) -> InlineEmphasis {
   { delim, inline }
 }
@@ -355,10 +355,10 @@ pub(all) struct InlineLink {
 ///|
 pub(all) enum ReferenceKind {
   /// https://spec.commonmark.org/0.30/#inline-link
-  Inline(Node[LinkDefinition])
+  Inline(Node[LinkDefinition]
   /// https://spec.commonmark.org/0.30/#reference-link
   /// First label is the label of the reference, second label is the label of the referenced definition.
-  Ref(ReferenceLayout, Label, Label)
+  Ref[ReferenceLayout, Label, Label]
 } derive(Eq, Show, ToJson)
 
 ///|
@@ -378,11 +378,11 @@ pub fn InlineLink::new(text : Inline, reference : ReferenceKind) -> InlineLink {
 }
 
 ///| `referenced_label(l)` is the label referenced by the label of `l`.
-/// This is the second label of `Ref(_)` or `None` on inline references.
+/// This is the second label of `Ref[_]` or `None` on inline references.
 pub fn InlineLink::referenced_label(self : InlineLink) -> Label? {
   match self.reference {
     Inline(_) => None
-    Ref(_, _, label) => Some(label)
+    Ref[_, _, label] => Some(label)
   }
 }
 
@@ -392,11 +392,11 @@ pub fn InlineLink::referenced_label(self : InlineLink) -> Label? {
 /// `referenced_label` in `defs`.
 pub fn InlineLink::reference_definition(
   self : InlineLink,
-  defs : LabelDefs
+  defs : LabelDefs,
 ) -> LabelDef? {
   match self.reference {
     Inline(ld) => Some(LinkDef(ld))
-    Ref(_, _, def) => defs.get(def.key)
+    Ref[_, _, def] => defs.get(def.key)
   }
 }
 
@@ -420,7 +420,7 @@ pub fn InlineLink::is_unsafe(l : String) -> Bool {
       None => j
     }
     let allowed = ["image/gif", "image/png", "image/jpeg", "image/webp"]
-    allowed.contains(l.substring(start=5, end=@math.minimum(j, k)))
+    allowed.contains(l.substring(start=5, end=@cmp.minimum(j, k)))
   }
   let lower = @casefold.casefold(l)
   lower.has_prefix("javascript:") ||

@@ -85,7 +85,7 @@ test "inline id with text containing backticks" {
   let inline = Inline::CodeSpan(
     Node::new({
       backticks: 1,
-      code_layout: Seq::from_array([{ blanks: "", node: Node::new("`text`") }]),
+      code_layout: Seq::from_array([{ blanks: "", node: Node::new("`text`"] }]),
     }),
   )
   inspect(inline.id(), content="text")
@@ -264,9 +264,9 @@ test "Inline::normalize with ExtStrikethrough type" {
   let normalized = strikethrough.normalize()
   inspect(
     normalized,
-    content=
+    content=(
       #|ExtStrikethrough(Node::new(InlineStrikethrough(Text(Node::new("strikethrough")))))
-    ,
+    ),
   )
 }
 
@@ -428,7 +428,7 @@ test "Inline::to_plain_text with raw html and strikethrough" {
   let meta = @cmark_base.Meta::none()
 
   // Test with RawHtml
-  let raw_content = Seq::from_array([Tight::empty(meta~)])
+  let raw_content = Seq::from_array([Tight::empty(meta~]])
   let raw_html = Inline::RawHtml(Node::new(raw_content, meta~))
   let raw_html_result = raw_html.to_plain_text(break_on_soft=false)
   inspect(raw_html_result.length(), content="1")

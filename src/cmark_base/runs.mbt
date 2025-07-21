@@ -4,9 +4,9 @@ pub fn run_of(
   char~ : Char,
   s : String,
   last~ : CharCodePos,
-  start~ : CharCodePos
+  start~ : CharCodePos,
 ) -> Last {
-  if start > last || s.charcode_at(start).unsafe_to_char() != char {
+  if start > last || s[start].unsafe_to_char() != char {
     return start - 1
   }
   run_of(char~, s, last~, start=start + 1)
@@ -17,10 +17,10 @@ pub fn run_of(
 pub fn first_non_blank(
   s : String,
   last~ : CharCodePos,
-  start~ : CharCodePos
+  start~ : CharCodePos,
 ) -> CharCodePos {
   for k in start..=last {
-    guard s.charcode_at(k).to_char() is Some(c) && @char.is_ascii_blank(c) else {
+    guard s[k].to_char() is Some(c) && @char.is_ascii_blank(c) else {
       return k
     }
   }
@@ -37,12 +37,12 @@ pub fn first_non_blank_in_span(s : String, span : LineSpan) -> CharCodePos {
 pub fn last_non_blank(
   s : String,
   first~ : CharCodePos,
-  start~ : CharCodePos
+  start~ : CharCodePos,
 ) -> CharCodePos {
   if start < first {
     return first - 1
   }
-  match s.charcode_at(start) {
+  match s[start] {
     ' ' | '\t' => last_non_blank(s, first~, start=start - 1)
     _ => start
   }
@@ -53,12 +53,12 @@ pub fn last_non_blank(
 pub fn rev_drop_spaces(
   s : String,
   first~ : CharCodePos,
-  start~ : CharCodePos
+  start~ : CharCodePos,
 ) -> CharCodePos {
   if start < first {
     return first - 1
   }
-  match s.charcode_at(start) {
+  match s[start] {
     ' ' => rev_drop_spaces(s, first~, start=start - 1)
     _ => start
   }
@@ -69,7 +69,7 @@ fn push_span(
   line~ : LineSpan,
   first : CharCodePos,
   last : CharCodePos,
-  spans : Array[Span]
+  spans : Array[Span],
 ) -> Unit {
   let first1 = first
   let last1 = last
@@ -89,12 +89,12 @@ fn push_span(
 ///| Includes final `char` in spans.
 fn[A] accept_to(
   char~ : Char,
-  next_line~ : NextLineFn[A],
+  next_line~ : NextLineFn(A),
   s : String,
   lines : A,
   line~ : LineSpan,
   spans : Array[Span],
-  after~ : CharCodePos
+  after~ : CharCodePos,
 ) -> (LineSpan, Int)? {
   for lines = lines, line = line, start = after, k = after + 1 {
     if k > line.last {
@@ -103,7 +103,7 @@ fn[A] accept_to(
       let start = first_non_blank_in_span(s, new_line)
       continue lines, new_line, start, start
     }
-    if s.charcode_at(k).unsafe_to_char() == char {
+    if s[k].unsafe_to_char() == char {
       push_span(line~, start, k, spans)
       break Some((line, k))
     }
@@ -114,12 +114,12 @@ fn[A] accept_to(
 ///| Does not not include final `char` in spans and continues on backslashed `char`.
 fn[A] accept_upto(
   char~ : Char,
-  next_line~ : NextLineFn[A],
+  next_line~ : NextLineFn(A),
   s : String,
   lines : A,
   line~ : LineSpan,
   spans : Array[Span],
-  after~ : CharCodePos
+  after~ : CharCodePos,
 ) -> (LineSpan, Int)? {
   let start = after + 1
   for char = char, next_line = next_line, s = s, lines = lines, line = line, prev_bslash = false, start = start, acc = spans, k = start {
@@ -133,11 +133,11 @@ fn[A] accept_upto(
       let prev_bslash = false
       continue char, next_line, s, lines, newline, prev_bslash, start, acc, start
     } else {
-      if s.charcode_at(k) == char.to_int() && not(prev_bslash) {
+      if s[k] == char.to_int() && not(prev_bslash) {
         push_span(line~, start, k - 1, acc)
         break Some((line, k))
       }
-      let prev_bslash = s.charcode_at(k) == '\\' && not(prev_bslash)
+      let prev_bslash = s[k] == '\\' && not(prev_bslash)
       continue char, next_line, s, lines, line, prev_bslash, start, acc, k + 1
     }
   }
@@ -147,11 +147,11 @@ fn[A] accept_upto(
 /// that is not blank in `line` or on the next line as determined by `next_line`.
 /// Returns `None` if there is no such position.
 pub fn[A] first_non_blank_over_nl(
-  next_line~ : NextLineFn[A],
+  next_line~ : NextLineFn(A),
   s : String,
   lines : A,
   line~ : LineSpan,
-  start~ : CharCodePos
+  start~ : CharCodePos,
 ) -> NextLineResult? {
   let nb = first_non_blank(s, last=line.last, start~)
   if nb <= line.last {
@@ -167,12 +167,12 @@ pub fn[A] first_non_blank_over_nl(
 
 ///| Same as `first_non_blank_over_nl()` but pushes skipped data on `spans`.
 fn[A] first_non_blank_over_nl1(
-  next_line~ : NextLineFn[A],
+  next_line~ : NextLineFn(A),
   s : String,
   lines : A,
   line~ : LineSpan,
   spans : Array[Span],
-  start~ : CharCodePos
+  start~ : CharCodePos,
 ) -> (LineSpan, CharCodePos)? {
   match first_non_blank_over_nl(next_line~, s, lines, line~, start~) {
     None => None
@@ -195,13 +195,13 @@ pub fn first_non_escaped_char(
   c : Char,
   s : String,
   last~ : CharCodePos,
-  start~ : CharCodePos
+  start~ : CharCodePos,
 ) -> CharCodePos {
   for k = start; ; k = k + 1 {
     if k > last ||
       (
-        s.charcode_at(k) == c.to_int() &&
-        (k == start || s.charcode_at(k - 1) != '\\')
+        s[k] == c.to_int() &&
+        (k == start || s[k - 1] != '\\')
       ) {
       break k
     }

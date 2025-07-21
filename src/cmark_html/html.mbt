@@ -54,7 +54,7 @@ fn init_context(
   backend_blocks~ : Bool = false,
   safe~ : Bool,
   c : Context,
-  _doc : Doc
+  _doc : Doc,
 ) -> Unit {
   let st = {
     safe,
@@ -96,14 +96,14 @@ fn footnote_id(l : String) -> String {
 
 ///|
 fn footnote_ref_id(fnid : String, c : Int) -> String {
-  ["ref", c.to_string(), fnid].join("-")
+  ["ref", c.to_string(], fnid].join("-")
 }
 
 ///|
 fn make_footnote_ref_ids(
   c : Context,
   label : String,
-  f : @cmark.Footnote
+  f : @cmark.Footnote,
 ) -> (String, String, String) {
   guard c.state is Some(EState({ footnotes, footnote_count, .. } as st))
   guard footnotes.get(label) is Some({ text, id, .. } as rf) else {
@@ -121,7 +121,7 @@ fn make_footnote_ref_ids(
 // Escaping
 
 ///|
-fn joined_string(c : Context, join : Joined[String]) -> Unit {
+fn joined_string(c : Context, join : Joined(String) -> Unit {
   let mut first = true
   for s in join.iter {
     if not(first) {
@@ -166,7 +166,7 @@ fn buffer_add_html_escaped_string(b : Buffer, s : String) -> Unit {
       break
     }
     let next = i + 1
-    match s.charcode_at(i) {
+    match s[i] {
       '\u{0}' => {
         flush(b, start, i)
         b.write_char(@char.rep)
@@ -248,7 +248,7 @@ fn buffer_add_pct_encoded_string(b : Buffer, s : String) -> Unit { // Percent en
       break
     }
     let next = i + 1
-    match s.charcode_at(i) {
+    match s[i] {
       c if c.to_char() is Some(c) && (@char.is_ascii_alphanum(c) || is_delim(c)) =>
         continue b, s, max, start, next
       '&' => {
@@ -306,7 +306,7 @@ fn comment_footnote_image(c : Context, l : @cmark.InlineLink) -> Unit {
 }
 
 ///|
-fn block_lines(c : Context, ls : Array[@cmark.StringNode]) -> Unit {
+fn block_lines(c : Context, ls : Array[@cmark.StringNode] -> Unit {
   guard ls.get(0) is Some({ v, .. }) else { return }
   c.b.write_string(v)
   for l in ls[1:] {
@@ -361,7 +361,7 @@ fn strong_emphasis(c : Context, e : @cmark.InlineEmphasis) -> Unit raise {
 ///|
 fn link_dest_and_title(
   c : Context,
-  ld : @cmark.LinkDefinition
+  ld : @cmark.LinkDefinition,
 ) -> (String, Joined[String]?) {
   let dest = match ld.dest {
     None => ""
@@ -409,11 +409,11 @@ fn image(c : Context, i : @cmark.InlineLink, close~ : String = " >") -> Unit {
 fn link_footnote(
   c : Context,
   l : @cmark.InlineLink,
-  f : @cmark.Footnote
+  f : @cmark.Footnote,
 ) -> Unit raise {
   let key = l.referenced_label().unwrap().key
   let (text, label, ref_) = make_footnote_ref_ids(c, key, f)
-  let is_full_ref = l.reference is Ref(Full, _, _)
+  let is_full_ref = l.reference is Ref[Full, _, _]
   if is_full_ref {
     c.b.write_string("<a href=\"#")
     pct_encoded_string(c, label)
@@ -483,7 +483,7 @@ fn math_span(c : Context, ms : @cmark.InlineMathSpan) -> Unit {
     html_escaped_string(c, l.to_string())
   }
 
-  fn tex_lines(c : Context, ls : ArrayView[@cmark.Tight]) {
+  fn tex_lines(c : Context, ls : ArrayView[@cmark.Tight] {
     guard ls.length() != 0 else { return }
     let head = ls[0]
     tex_line(c, head)
@@ -542,7 +542,7 @@ fn code_block(c : Context, cb : @cmark.CodeBlock) -> Unit {
     c.b.write_char('\n')
   }
   if lang is Some((lang, _env)) {
-    if backend_blocks(c) && lang.charcode_at(0) == '=' {
+    if backend_blocks(c) && lang[0] == '=' {
       if lang == "=html" && not(safe(c)) {
         block_lines(c, cb.code.to_array())
       }
@@ -597,9 +597,9 @@ fn item_block(tight~ : Bool, c : Context, b : @cmark.Block) -> Unit raise {
     (Paragraph({ v, .. }), true) => c.inline(v.inline)
     (Blocks({ v, .. }), _) =>
       loop (c, true, v.to_array()[:], tight) {
-        (c, add_nl, [BlankLine(_), .. bs], tight) =>
+        (c, add_nl, [BlankLine(_], .. bs], tight) =>
           continue (c, add_nl, bs, tight)
-        (c, _, [Paragraph({ v, .. }), .. bs], true as tight) => {
+        (c, _, [Paragraph({ v, .. }], .. bs], true as tight) => {
           c.inline(v.inline)
           continue (c, true, bs, tight)
         }
@@ -623,7 +623,7 @@ fn item_block(tight~ : Bool, c : Context, b : @cmark.Block) -> Unit raise {
 fn list_item(
   tight~ : Bool,
   c : Context,
-  i : @cmark.Node[@cmark.ListItem]
+  i : @cmark.Node[@cmark.ListItem],
 ) -> Unit raise {
   c.b.write_string("<li>")
   guard i.v.ext_task_marker is Some(mark) else {
@@ -703,7 +703,7 @@ fn thematic_break(c : Context) -> Unit {
 
 ///|
 fn math_block(c : Context, cb : @cmark.CodeBlock) -> Unit {
-  c.b.write_string("\\[\n")
+  c.b.write_string("\\[\n"]
   for l in cb.code {
     html_escaped_string(c, l.v)
     c.b.write_char('\n')
@@ -735,10 +735,10 @@ fn table(c : Context, t : @cmark.Table) -> Unit raise {
     tag,
     align : ArrayView[@cmark.Node[@cmark.TableSep]],
     count,
-    cs : ArrayView[(_, _)]
+    cs : ArrayView[(_, _]],
   ) raise {
     match (align, cs) {
-      ([{ v, .. }, .. align], [(col, _), .. cs]) => {
+      ([{ v, .. }, .. align], [(col, _], .. cs]) => {
         start(c, v.inner().0, tag)
         c.inline(col)
         close(c, tag)
@@ -749,7 +749,7 @@ fn table(c : Context, t : @cmark.Table) -> Unit raise {
         close(c, tag)
         cols(c, tag, align, count - 1, [][:])
       }
-      ([], [(col, _), .. cs]) => {
+      ([], [(col, _], .. cs]) => {
         start(c, None, tag)
         c.inline(col)
         close(c, tag)
@@ -781,22 +781,22 @@ fn table(c : Context, t : @cmark.Table) -> Unit raise {
     c : Context,
     col_count,
     align : ArrayView[_],
-    rs : ArrayView[(@cmark.Node[@cmark.TableRow], _)]
+    rs : ArrayView[(@cmark.Node[@cmark.TableRow], _)],
   ) raise {
     match rs {
-      [({ v: Header(cols), .. }, _), .. rs] => {
+      [({ v: Header(cols], .. }, _), .. rs] => {
         let (align, rs) = match rs {
-          [({ v: Sep(align), .. }, _), .. rs] => (align.to_array()[:], rs)
+          [({ v: Sep(align], .. }, _), .. rs] => (align.to_array()[:], rs)
           _ => (align, rs)
         }
         header(c, col_count, align, cols.to_array()[:])
         rows(c, col_count, align, rs)
       }
-      [({ v: Data(cols), .. }, _), .. rs] => {
+      [({ v: Data(cols], .. }, _), .. rs] => {
         data(c, col_count, align, cols.to_array()[:])
         rows(c, col_count, align, rs)
       }
-      [({ v: Sep(align), .. }, _), .. rs] =>
+      [({ v: Sep(align], .. }, _), .. rs] =>
         rows(c, col_count, align.to_array()[:], rs)
       [] => ()
     }
@@ -861,7 +861,7 @@ fn xhtml_inline(c : Context, i : @cmark.Inline) -> Bool raise {
 // Document rendering
 
 ///|
-fn footnotes(c : Context, fs : Map[LabelKey, HtmlRenderFootnote]) -> Unit raise {
+fn footnotes(c : Context, fs : Map(LabelKey, HtmlRenderFootnote) -> Unit raise {
   let fs = fs.values().to_array()
   fs.sort()
   c.b.write_string("<section role=\"doc-endnotes\"><ol>\n")
@@ -906,7 +906,7 @@ fn doc(c : Context, d : Doc) -> Bool raise {
 ///|
 pub fn renderer(
   backend_blocks~ : Bool = false,
-  safe~ : Bool
+  safe~ : Bool,
 ) -> @cmark_renderer.Renderer {
   @cmark_renderer.Renderer::new(
     init_context=fn(ctx, doc) { init_context(backend_blocks~, safe~, ctx, doc) },
@@ -919,7 +919,7 @@ pub fn renderer(
 ///|
 pub fn xhtml_renderer(
   backend_blocks~ : Bool = false,
-  safe~ : Bool
+  safe~ : Bool,
 ) -> @cmark_renderer.Renderer {
   @cmark_renderer.Renderer::new(
     init_context=fn(ctx, doc) { init_context(backend_blocks~, safe~, ctx, doc) },
@@ -933,7 +933,7 @@ pub fn xhtml_renderer(
 pub fn from_doc(
   backend_blocks~ : Bool = false,
   safe~ : Bool,
-  doc : Doc
+  doc : Doc,
 ) -> String raise {
   renderer(backend_blocks~, safe~).doc_to_string(doc)
 }
@@ -946,7 +946,7 @@ pub fn render(
   backend_blocks~ : Bool = false,
   safe~ : Bool = false,
   strict~ : Bool = true,
-  s : String
+  s : String,
 ) -> String raise {
   from_doc(backend_blocks~, safe~, @cmark.Doc::from_string(s, strict~))
 }
