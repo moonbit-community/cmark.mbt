@@ -324,7 +324,7 @@ fn[A] cdata_section(
 }
 
 ///| https://spec.commonmark.org/current/#html-tag
-pub fn[A : Show] raw_html(
+pub fn[A] raw_html(
   next_line~ : NextLineFn[A],
   s : String,
   lines : A,

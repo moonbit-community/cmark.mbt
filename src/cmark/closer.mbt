@@ -11,13 +11,27 @@ priv enum Closer {
   EmphasisMarks(Char)
   StrikethroughMarks
   MathSpanMarks(Int)
-} derive(Eq, Compare, Hash, Show, ToJson)
+} derive(Eq, Hash, Show, ToJson)
+
+///|
+test {
+  // Prevent warning about unused Show and ToJson
+  (fn(c : Closer) { c.to_string() }) |> ignore()
+  (fn(c : Closer) { c.to_json() }) |> ignore()
+}
 
 ///|
 typealias Set[Int] as PosSet
 
 ///|
 priv type CloserIndex Map[Closer, PosSet] derive(Show, ToJson)
+
+///|
+test {
+  // Prevent warning about unused Show and ToJson
+  (fn(c : CloserIndex) { c.to_string() }) |> ignore()
+  (fn(c : CloserIndex) { c.to_json() }) |> ignore()
+}
 
 ///|
 fn CloserIndex::new() -> CloserIndex {

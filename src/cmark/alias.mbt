@@ -42,6 +42,13 @@ impl ToJson for Tokens with to_json(self) {
 }
 
 ///|
+test {
+  // Prevent warning about unused Show and ToJson
+  (fn(t : Tokens) { t.to_string() }) |> ignore()
+  (fn(t : Tokens) { t.to_json() }) |> ignore()
+}
+
+///|
 fn Tokens::push(self : Tokens, t : Token) -> Unit {
   self.inner().push_back(t)
 }
@@ -61,6 +68,13 @@ impl Show for RevTokens with output(self, logger) {
 ///|
 impl ToJson for RevTokens with to_json(self) {
   Json::array(Array::from_iter(self.inner().iter().map(ToJson::to_json)))
+}
+
+///|
+test {
+  // Prevent warning about unused Show and ToJson
+  (fn(t : RevTokens) { t.to_string() }) |> ignore()
+  (fn(t : RevTokens) { t.to_json() }) |> ignore()
 }
 
 ///|
