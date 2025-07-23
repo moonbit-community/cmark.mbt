@@ -33,7 +33,7 @@ pub fn Inline::is_empty(self : Inline) -> Bool {
 
 ///| `meta(i)` is the metadata of `i`.
 pub fn Inline::meta(
-  self : Inline
+  self : Inline,
   // ext~ : (Inline) -> Meta!InvalidArgumentError = fn(_i) {
   //   raise InvalidArgumentError("Inline.meta")
   // }
@@ -118,7 +118,7 @@ pub fn Inline::normalize(self : Inline) -> Inline {
 /// are turned into hard line breaks.
 pub fn Inline::to_plain_text(
   self : Inline,
-  break_on_soft~ : Bool
+  break_on_soft~ : Bool,
 ) -> Seq[Seq[String]] {
   let acc = Seq::from_array([Seq::empty()])
   let push = fn(s) { acc[acc.length() - 1].inner().push(s) }
@@ -156,7 +156,7 @@ pub fn Inline::to_plain_text(
 ///|
 pub fn Inline::id(
   self : Inline,
-  buf~ : Buffer = Buffer::new(size_hint=256)
+  buf~ : Buffer = Buffer::new(size_hint=256),
 ) -> String {
   let text = self.to_plain_text(break_on_soft=false)
   let s = text.inner().map(fn(l) { l.inner().join("") }).join("\n")
@@ -232,7 +232,7 @@ pub(all) struct InlineBreak {
 pub fn InlineBreak::new(
   layout_before~ : BlanksNode = layout_empty,
   layout_after~ : BlanksNode = layout_empty,
-  ty : InlineBreakType
+  ty : InlineBreakType,
 ) -> InlineBreak {
   { layout_before, ty, layout_after }
 }
@@ -252,7 +252,7 @@ pub(all) struct InlineCodeSpan {
 ///|
 pub fn InlineCodeSpan::new(
   backticks~ : Count,
-  code_layout : Seq[Tight]
+  code_layout : Seq[Tight],
 ) -> InlineCodeSpan {
   { backticks, code_layout }
 }
@@ -260,7 +260,7 @@ pub fn InlineCodeSpan::new(
 ///|
 fn InlineCodeSpan::min_backticks(
   min~ : Count,
-  counts : @sorted_set.T[Count]
+  counts : @sorted_set.T[Count],
 ) -> Count {
   let mut min = min
   for c in counts {
@@ -279,7 +279,7 @@ fn InlineCodeSpan::min_backticks(
 /// the resulting code layout (see `code_layout`).
 pub fn InlineCodeSpan::from_string(
   meta~ : Meta = Meta::none(),
-  s : String
+  s : String,
 ) -> InlineCodeSpan {
   if s.is_empty() {
     return { backticks: 1, code_layout: [Tight::empty(meta~)] }
@@ -341,7 +341,7 @@ pub(all) struct InlineEmphasis {
 ///|
 pub fn InlineEmphasis::new(
   delim~ : Char = '*',
-  inline : Inline
+  inline : Inline,
 ) -> InlineEmphasis {
   { delim, inline }
 }
@@ -392,7 +392,7 @@ pub fn InlineLink::referenced_label(self : InlineLink) -> Label? {
 /// `referenced_label` in `defs`.
 pub fn InlineLink::reference_definition(
   self : InlineLink,
-  defs : LabelDefs
+  defs : LabelDefs,
 ) -> LabelDef? {
   match self.reference {
     Inline(ld) => Some(LinkDef(ld))

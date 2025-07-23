@@ -9,7 +9,7 @@ pub(all) struct Doc {
 pub fn Doc::new(
   nl~ : String = "\n",
   defs~ : LabelDefs = LabelDefs::new(),
-  block : Block
+  block : Block,
 ) -> Doc {
   { nl, block, defs }
 }
@@ -29,7 +29,7 @@ pub fn Doc::from_string(
   locs~ : Bool = false,
   file~ : FilePath = file_path_none,
   strict~ : Bool = true,
-  s : String
+  s : String,
 ) -> Doc {
   let p = Parser::new(
     defs~,

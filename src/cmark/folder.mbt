@@ -39,7 +39,7 @@ pub fn[A, B] Folder::none(self : Folder[A], _a : A, _b : B) -> FolderResult[A] {
 pub fn[A] Folder::inline_ext_none(
   self : Folder[A],
   _a : A,
-  _b : Inline
+  _b : Inline,
 ) -> A raise FolderError {
   let _ = self
   raise FolderError("unknown inline extension")
@@ -49,7 +49,7 @@ pub fn[A] Folder::inline_ext_none(
 pub fn[A] Folder::block_ext_none(
   self : Folder[A],
   _a : A,
-  _b : Block
+  _b : Block,
 ) -> A raise FolderError {
   let _ = self
   raise FolderError("unknown block extension")
@@ -60,7 +60,7 @@ pub fn[A] Folder::new(
   inline_ext_default~ : FoldFn[Inline, A] = Folder::inline_ext_none,
   block_ext_default~ : FoldFn[Block, A] = Folder::block_ext_none,
   inline~ : FolderFn[Inline, A] = Folder::none,
-  block~ : FolderFn[Block, A] = Folder::none
+  block~ : FolderFn[Block, A] = Folder::none,
 ) -> Folder[A] {
   { inline_ext_default, block_ext_default, inline, block }
 }
@@ -69,7 +69,7 @@ pub fn[A] Folder::new(
 pub fn[A] Folder::fold_inline(
   self : Folder[A],
   acc : A,
-  i : Inline
+  i : Inline,
 ) -> A raise FolderError {
   if (self.inline)(self, acc, i) is Fold(acc) {
     return acc
@@ -100,7 +100,7 @@ pub fn[A] Folder::fold_inline(
 pub fn[A] Folder::fold_block(
   self : Folder[A],
   acc : A,
-  b : Block
+  b : Block,
 ) -> A raise FolderError {
   if (self.block)(self, acc, b) is Fold(acc) {
     return acc
@@ -149,7 +149,7 @@ pub fn[A] Folder::fold_block(
 pub fn[A] Folder::fold_doc(
   self : Folder[A],
   acc : A,
-  doc : Doc
+  doc : Doc,
 ) -> A raise FolderError {
   self.fold_block(acc, doc.block)
 }

@@ -4,7 +4,7 @@ pub fn run_of(
   char~ : Char,
   s : String,
   last~ : CharCodePos,
-  start~ : CharCodePos
+  start~ : CharCodePos,
 ) -> Last {
   if start > last || s.charcode_at(start).unsafe_to_char() != char {
     return start - 1
@@ -17,7 +17,7 @@ pub fn run_of(
 pub fn first_non_blank(
   s : String,
   last~ : CharCodePos,
-  start~ : CharCodePos
+  start~ : CharCodePos,
 ) -> CharCodePos {
   for k in start..=last {
     guard s.charcode_at(k).to_char() is Some(c) && @char.is_ascii_blank(c) else {
@@ -37,7 +37,7 @@ pub fn first_non_blank_in_span(s : String, span : LineSpan) -> CharCodePos {
 pub fn last_non_blank(
   s : String,
   first~ : CharCodePos,
-  start~ : CharCodePos
+  start~ : CharCodePos,
 ) -> CharCodePos {
   if start < first {
     return first - 1
@@ -53,7 +53,7 @@ pub fn last_non_blank(
 pub fn rev_drop_spaces(
   s : String,
   first~ : CharCodePos,
-  start~ : CharCodePos
+  start~ : CharCodePos,
 ) -> CharCodePos {
   if start < first {
     return first - 1
@@ -69,7 +69,7 @@ fn push_span(
   line~ : LineSpan,
   first : CharCodePos,
   last : CharCodePos,
-  spans : Array[Span]
+  spans : Array[Span],
 ) -> Unit {
   let first1 = first
   let last1 = last
@@ -94,7 +94,7 @@ fn[A] accept_to(
   lines : A,
   line~ : LineSpan,
   spans : Array[Span],
-  after~ : CharCodePos
+  after~ : CharCodePos,
 ) -> (LineSpan, Int)? {
   for lines = lines, line = line, start = after, k = after + 1 {
     if k > line.last {
@@ -119,7 +119,7 @@ fn[A] accept_upto(
   lines : A,
   line~ : LineSpan,
   spans : Array[Span],
-  after~ : CharCodePos
+  after~ : CharCodePos,
 ) -> (LineSpan, Int)? {
   let start = after + 1
   for char = char, next_line = next_line, s = s, lines = lines, line = line, prev_bslash = false, start = start, acc = spans, k = start {
@@ -151,7 +151,7 @@ pub fn[A] first_non_blank_over_nl(
   s : String,
   lines : A,
   line~ : LineSpan,
-  start~ : CharCodePos
+  start~ : CharCodePos,
 ) -> NextLineResult? {
   let nb = first_non_blank(s, last=line.last, start~)
   if nb <= line.last {
@@ -172,7 +172,7 @@ fn[A] first_non_blank_over_nl1(
   lines : A,
   line~ : LineSpan,
   spans : Array[Span],
-  start~ : CharCodePos
+  start~ : CharCodePos,
 ) -> (LineSpan, CharCodePos)? {
   match first_non_blank_over_nl(next_line~, s, lines, line~, start~) {
     None => None
@@ -195,7 +195,7 @@ pub fn first_non_escaped_char(
   c : Char,
   s : String,
   last~ : CharCodePos,
-  start~ : CharCodePos
+  start~ : CharCodePos,
 ) -> CharCodePos {
   for k = start; ; k = k + 1 {
     if k > last ||

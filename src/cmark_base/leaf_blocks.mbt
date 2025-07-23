@@ -45,7 +45,7 @@ pub(all) enum LineType {
 pub fn LineType::thematic_break(
   s : String,
   last~ : CharCodePos,
-  start~ : CharCodePos
+  start~ : CharCodePos,
 ) -> LineType {
   if start > last {
     return Nomatch
@@ -75,7 +75,7 @@ pub fn LineType::thematic_break(
 pub fn LineType::atx_heading(
   s : String,
   last~ : CharCodePos,
-  start~ : CharCodePos
+  start~ : CharCodePos,
 ) -> LineType {
   fn skip_hashes(s : String, last, k) {
     for k = k; k <= last && s.charcode_at(k) == '#'; k = k + 1 {
@@ -150,7 +150,7 @@ pub fn LineType::atx_heading(
 pub fn LineType::setext_heading_underline(
   s : String,
   last~ : CharCodePos,
-  start~ : CharCodePos
+  start~ : CharCodePos,
 ) -> LineType {
   let level = fn(c) { 2 - (c == '=').to_int() }
   fn underline(s : String, last, start, k) {
@@ -187,7 +187,7 @@ pub fn LineType::setext_heading_underline(
 pub fn LineType::fenced_code_block_start(
   s : String,
   last~ : CharCodePos,
-  start~ : CharCodePos
+  start~ : CharCodePos,
 ) -> LineType {
   fn info(s : String, last, nobt, info_first, k) {
     let sk = s.charcode_at(k)
@@ -256,7 +256,7 @@ pub fn FencedCodeBlockContinue::new(
   s : String,
   fence~ : (Char, Int),
   last~ : CharCodePos,
-  start~ : CharCodePos
+  start~ : CharCodePos,
 ) -> FencedCodeBlockContinue {
   if start > last {
     return Code
@@ -306,7 +306,7 @@ let html_start_cond_6_set : Set[String] = Set::of([
 fn LineType::html_block_start_5(
   s : String,
   last~ : CharCodePos,
-  start~ : CharCodePos
+  start~ : CharCodePos,
 ) -> LineType {
   let next = start + 3 // 3 first chars checked
   let sub = "CDATA["
@@ -320,7 +320,7 @@ fn LineType::html_block_start_5(
 fn LineType::html_block_start_2(
   s : String,
   last~ : CharCodePos,
-  start~ : CharCodePos
+  start~ : CharCodePos,
 ) -> LineType {
   let next = start + 3 // 3 first chars checked
   if next > last || s.charcode_at(next) != '-' {
@@ -333,7 +333,7 @@ fn LineType::html_block_start_2(
 fn LineType::html_block_start_7_open_tag(
   s : String,
   last~ : CharCodePos,
-  start~ : CharCodePos
+  start~ : CharCodePos,
 ) -> LineType {
   // Has to be on the same line we fake one and use the inline parser
   let line = { pos: line_pos_none, first: start, last }
@@ -353,7 +353,7 @@ fn LineType::html_block_start_7_open_tag(
 fn LineType::html_block_start_7_close_tag(
   s : String,
   last~ : CharCodePos,
-  start~ : CharCodePos
+  start~ : CharCodePos,
 ) -> LineType {
   let line = { pos: line_pos_none, first: start, last }
   guard closing_tag(next_line=fn(_x) { None }, s, (), line~, start~)
@@ -372,7 +372,7 @@ fn LineType::html_block_start_7_close_tag(
 pub fn LineType::html_block_start(
   s : String,
   last~ : CharCodePos,
-  start~ : CharCodePos
+  start~ : CharCodePos,
 ) -> LineType {
   let next = start + 1
   if next > last || s.charcode_at(start) != '<' {
@@ -437,7 +437,7 @@ pub fn LineType::html_block_start(
 fn LineType::html_block_end_cond_1(
   s : String,
   last~ : CharCodePos,
-  start~ : CharCodePos
+  start~ : CharCodePos,
 ) -> Bool {
   let lower_s = s.to_lower()
   for last = last, k = start {
@@ -470,7 +470,7 @@ pub fn LineType::html_block_end(
   s : String,
   end_cond~ : HtmlBlockEndCond,
   last~ : CharCodePos,
-  start~ : CharCodePos
+  start~ : CharCodePos,
 ) -> Bool {
   match end_cond {
     EndStr(str) => @char.sub_includes(s, affix=str, first=start, last~)
@@ -483,7 +483,7 @@ pub fn LineType::html_block_end(
 pub fn LineType::ext_table_row(
   s : String,
   last~ : CharCodePos,
-  start~ : CharCodePos
+  start~ : CharCodePos,
 ) -> LineType {
   guard start <= last && s.charcode_at(start) == '|' else { Nomatch }
   let first = start + 1
@@ -500,7 +500,7 @@ pub fn LineType::ext_footnote_label(
   s : String,
   line_pos~ : LinePos,
   last~ : CharCodePos,
-  start~ : CharCodePos
+  start~ : CharCodePos,
 ) -> LineType {
   guard start <= last &&
     s.charcode_at(start) == '[' &&
@@ -526,7 +526,7 @@ pub fn LineType::ext_footnote_label(
 pub fn could_be_link_ref_definition(
   s : String,
   last~ : CharCodePos,
-  start~ : CharCodePos
+  start~ : CharCodePos,
 ) -> Bool {
   if start > last {
     return false
@@ -547,7 +547,7 @@ pub fn could_be_link_ref_definition(
 pub fn LineType::list_marker(
   s : String,
   last~ : CharCodePos,
-  start~ : CharCodePos
+  start~ : CharCodePos,
 ) -> LineType {
   if start > last {
     return Nomatch
@@ -598,7 +598,7 @@ pub fn LineType::list_marker(
 pub fn ext_task_marker(
   s : String,
   last~ : CharCodePos,
-  start~ : CharCodePos
+  start~ : CharCodePos,
 ) -> (Char, CharCodePos)? {
   guard start < last else { None }
   guard s.charcode_at(start) == '[' else { None }

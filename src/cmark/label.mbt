@@ -20,7 +20,7 @@ pub typealias String as LabelKey
 pub fn Label::new(
   meta~ : Meta = Meta::none(),
   key~ : String,
-  text : Seq[Tight]
+  text : Seq[Tight],
 ) -> Label {
   { meta, key, text }
 }

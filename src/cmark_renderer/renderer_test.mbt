@@ -91,9 +91,9 @@ test "renderer_error_handling_inline" {
   let result = try? ctx.inline(@cmark.Inline::empty())
   inspect(
     result,
-    content=
+    content=(
       #|Err(RenderError("unknown inline type"))
-    ,
+    ),
   )
 }
 
@@ -107,9 +107,9 @@ test "renderer_error_handling_block" {
   let result = try? ctx.block(@cmark.Block::empty())
   inspect(
     result,
-    content=
+    content=(
       #|Err(RenderError("unknown block type"))
-    ,
+    ),
   )
 }
 
@@ -123,9 +123,9 @@ test "renderer_error_handling_doc" {
   let result = try? ctx.doc(@cmark.Doc::empty())
   inspect(
     result,
-    content=
+    content=(
       #|Err(RenderError("unhandled doc"))
-    ,
+    ),
   )
 }
 
@@ -151,7 +151,7 @@ test "renderer_fallback" {
   // Test case where first renderer returns false but second one returns true
   let r1 = Renderer::new(inline=fn(_, _) { false }, block=fn(_, _) { false }, doc=fn(
     _,
-    _
+    _,
   ) {
     false
   })

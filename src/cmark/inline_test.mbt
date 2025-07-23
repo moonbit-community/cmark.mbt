@@ -264,9 +264,9 @@ test "Inline::normalize with ExtStrikethrough type" {
   let normalized = strikethrough.normalize()
   inspect(
     normalized,
-    content=
+    content=(
       #|ExtStrikethrough(Node::new(InlineStrikethrough(Text(Node::new("strikethrough")))))
-    ,
+    ),
   )
 }
 

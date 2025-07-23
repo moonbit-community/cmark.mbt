@@ -75,7 +75,7 @@ pub fn Block::normalize(self : Block) -> Block {
 /// and `ExtFootnoteDefinition`) and adds them to `init` (defaults to an empty map).
 pub fn Block::defs(
   self : Block,
-  init~ : LabelDefs = LabelDefs::new()
+  init~ : LabelDefs = LabelDefs::new(),
 ) -> LabelDefs {
   match self {
     BlockQuote(bl) => bl.v.block.defs(init~)
@@ -115,7 +115,7 @@ pub fn BlockQuote::new(indent~ : Int = 0, block : Block) -> BlockQuote {
 ///|
 pub fn BlockQuote::map_block(
   self : BlockQuote,
-  f : (Block) -> Block
+  f : (Block) -> Block,
 ) -> BlockQuote {
   { ..self, block: f(self.block) }
 }
@@ -155,7 +155,7 @@ pub fn CodeBlockFencedLayout::default() -> CodeBlockFencedLayout {
 pub fn CodeBlock::new(
   layout~ : CodeBlockLayout = Fenced(CodeBlockFencedLayout::default()),
   info_string~ : StringNode? = None,
-  code : Seq[StringNode]
+  code : Seq[StringNode],
 ) -> CodeBlock {
   let layout = match (info_string, layout) {
     (Some(_), Indented) =>
@@ -255,7 +255,7 @@ pub fn BlockHeading::new(
   id~ : BlockHeadingId? = None,
   layout~ : BlockHeadingLayout = Atx(BlockHeadingAtxLayout::default()),
   level~ : Int,
-  inline : Inline
+  inline : Inline,
 ) -> BlockHeading {
   { layout, level, inline, id }
 }
@@ -281,7 +281,7 @@ pub fn ListItem::new(
   marker~ : StringNode = layout_empty,
   after_marker~ : Indent = 1,
   ext_task_marker~ : Node[Char]?,
-  block : Block
+  block : Block,
 ) -> ListItem {
   { before_marker, marker, after_marker, block, ext_task_marker }
 }
@@ -324,7 +324,7 @@ pub(all) struct BlockList {
 ///|
 pub fn BlockList::map_items(
   self : BlockList,
-  f : (ListItem) -> ListItem
+  f : (ListItem) -> ListItem,
 ) -> BlockList {
   { ..self, items: self.items.map(fn(it) { it.map(f) }) }
 }
@@ -345,7 +345,7 @@ pub(all) struct BlockParagraph {
 pub fn BlockParagraph::new(
   leading_indent~ : Indent = 0,
   trailing_blanks~ : Blanks = "",
-  inline : Inline
+  inline : Inline,
 ) -> BlockParagraph {
   { leading_indent, inline, trailing_blanks }
 }
@@ -359,7 +359,7 @@ pub(all) struct BlockThematicBreak {
 ///|
 pub fn BlockThematicBreak::new(
   indent~ : Indent = 0,
-  layout~ : String = "---"
+  layout~ : String = "---",
 ) -> BlockThematicBreak {
   { indent, layout }
 }
@@ -379,7 +379,7 @@ pub fn Footnote::new(
   indent~ : Indent = 0,
   defined_label? : Label?,
   label : Label,
-  block : Block
+  block : Block,
 ) -> Footnote {
   let defined_label = defined_label.or(Some(label))
   { indent, label, defined_label, block }
@@ -432,7 +432,7 @@ pub(all) type TableCellLayout (Blanks, Blanks) derive(Show, ToJson, Eq, Compare)
 ///|
 pub fn Table::new(
   indent~ : Indent = 0,
-  rows : Seq[(Node[TableRow], Blanks)]
+  rows : Seq[(Node[TableRow], Blanks)],
 ) -> Table {
   let mut col_count = 0
   for row in rows {
@@ -447,7 +447,7 @@ pub fn Table::new(
 
 ///|
 fn Table::parse_sep_row(
-  cs : ArrayView[(Inline, TableCellLayout)]
+  cs : ArrayView[(Inline, TableCellLayout)],
 ) -> Array[Node[TableSep]]? {
   loop ([], cs) {
     (acc, []) => Some(acc)

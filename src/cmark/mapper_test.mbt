@@ -54,9 +54,9 @@ test "map_inline with StrongEmphasis" {
   let result = mapper.map_inline(strong)
   inspect(
     result,
-    content=
+    content=(
       #|Some(StrongEmphasis(Node::new({delim: '*', inline: Text(Node::new("strongly emphasized text"))})))
-    ,
+    ),
   )
 }
 
@@ -82,9 +82,9 @@ test "map_inline with Emphasis" {
   let result = mapper.map_inline(emphasis)
   inspect(
     result,
-    content=
+    content=(
       #|Some(Emphasis(Node::new({delim: '*', inline: Text(Node::new("emphasized text"))})))
-    ,
+    ),
   )
 }
 
@@ -157,9 +157,9 @@ test "map_block with blocks" {
   let result = mapper.map_block(block)
   inspect(
     result,
-    content=
+    content=(
       #|Some(Blocks(Node::new(Seq([BlankLine(Node::new(""))]))))
-    ,
+    ),
   )
 }
 
@@ -213,9 +213,9 @@ test "mapper map_inline identity" {
   let mapper = Mapper::new()
   inspect(
     mapper.map_inline(text),
-    content=
+    content=(
       #|Some(Text(Node::new("text")))
-    ,
+    ),
   )
 }
 
@@ -225,9 +225,9 @@ test "mapper map_block identity" {
   let mapper = Mapper::new()
   inspect(
     mapper.map_block(block),
-    content=
+    content=(
       #|Some(BlankLine(Node::new("")))
-    ,
+    ),
   )
 }
 
@@ -242,9 +242,9 @@ test "map_inline with Image" {
   let result = mapper.map_inline(image)
   inspect(
     result,
-    content=
+    content=(
       #|Some(Image(Node::new({text: Text(Node::new("alt text")), reference: Inline(Node::new({layout: {indent: 0, angled_dest: false, before_dest: Seq([]), after_dest: Seq([]), title_open_delim: '"', after_title: Seq([])}, label: None, defined_label: None, dest: None, title: None}))})))
-    ,
+    ),
   )
 }
 
@@ -258,9 +258,9 @@ test "map_inline with Link" {
   let result = mapper.map_inline(link)
   inspect(
     result,
-    content=
+    content=(
       #|Some(Link(Node::new({text: Text(Node::new("link text")), reference: Inline(Node::new({layout: {indent: 0, angled_dest: false, before_dest: Seq([]), after_dest: Seq([]), title_open_delim: '"', after_title: Seq([])}, label: None, defined_label: None, dest: None, title: None}))})))
-    ,
+    ),
   )
 }
 
@@ -273,9 +273,9 @@ test "map_inline with Emphasis" {
   let result = mapper.map_inline(emphasis)
   inspect(
     result,
-    content=
+    content=(
       #|Some(Emphasis(Node::new({delim: '*', inline: Text(Node::new("emphasized text"))})))
-    ,
+    ),
   )
 }
 
@@ -335,9 +335,9 @@ test "map_inline with ExtStrikethrough" {
   let result = mapper.map_inline(strikethrough)
   inspect(
     result,
-    content=
+    content=(
       #|Some(ExtStrikethrough(Node::new(InlineStrikethrough(Text(Node::new("strikethrough text"))))))
-    ,
+    ),
   )
 }
 
@@ -375,9 +375,9 @@ test "map_block with Heading" {
   let result = mapper.map_block(heading)
   inspect(
     result,
-    content=
+    content=(
       #|Some(Heading(Node::new({layout: Atx({indent: 0, after_opening: "", closing: ""}), level: 1, inline: Text(Node::new("Heading")), id: None})))
-    ,
+    ),
   )
 }
 

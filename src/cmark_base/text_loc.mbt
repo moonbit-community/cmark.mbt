@@ -55,12 +55,12 @@ pub fn TextLoc::after(self : TextLoc) -> TextLoc {
 ///|
 pub fn TextLoc::span(self : TextLoc, other : TextLoc) -> TextLoc {
   let { first_ccode, first_line, .. } = @cmp.minimum_by_key(self, other, fn(
-    it
+    it,
   ) {
     it.first_ccode
   })
   let { file, last_ccode, last_line, .. } = @cmp.maximum_by_key(self, other, fn(
-    it
+    it,
   ) {
     it.last_ccode
   })
