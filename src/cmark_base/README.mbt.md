@@ -18,9 +18,9 @@ test "text location handling" {
   let after_loc = loc.after()
   inspect(
     after_loc,
-    content=
+    content=(
       #|{file: "test.md", first_ccode: 1, last_ccode: -1, first_line: LinePos((1, 10)), last_line: LinePos((-1, -1))}
-    ,
+    ),
   )
   let none_loc = @cmark_base.TextLoc::none()
   inspect(none_loc.is_none(), content="true")
