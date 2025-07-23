@@ -32,14 +32,9 @@ typealias @cmark_base.LineSpan
 priv type Tokens @deque.T[Token]
 
 ///|
-impl Show for Tokens with output(self, logger) {
-  logger.write_object(self.inner())
-}
+impl ToJson for Tokens with to_json(self) { self.inner().to_json() }
 
 ///|
-impl ToJson for Tokens with to_json(self) {
-  Json::array(Array::from_iter(self.inner().iter().map(ToJson::to_json)))
-}
 
 ///|
 fn Tokens::push(self : Tokens, t : Token) -> Unit {
@@ -59,9 +54,6 @@ impl Show for RevTokens with output(self, logger) {
 }
 
 ///|
-impl ToJson for RevTokens with to_json(self) {
-  Json::array(Array::from_iter(self.inner().iter().map(ToJson::to_json)))
-}
 
 ///|
 fn RevTokens::push(self : RevTokens, t : Token) -> Unit {

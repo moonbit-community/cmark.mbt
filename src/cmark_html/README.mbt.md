@@ -14,11 +14,11 @@ test "basic rendering" {
   let rendered = @cmark_html.render(safe=false, strict=false, doc)
   inspect(
     rendered,
-    content=
+    content=(
       #|<h1>Hello World</h1>
       #|<p>This is a paragraph.</p>
       #|
-    ,
+    ),
   )
 }
 ```
@@ -29,19 +29,20 @@ To convert a `cmark` syntax tree to HTML, you can use the `@cmark_html.from_doc`
 test "rendering from @cmark.Doc" {
   let doc = @cmark.Doc::from_string(
     strict=false,
-    #|# Hello World
-    #|
-    #|This is a paragraph.
-    ,
+    (
+      #|# Hello World
+      #|
+      #|This is a paragraph.
+    ),
   )
   let rendered = @cmark_html.from_doc(safe=false, doc)
   inspect(
     rendered,
-    content=
+    content=(
       #|<h1>Hello World</h1>
       #|<p>This is a paragraph.</p>
       #|
-    ,
+    ),
   )
 }
 ```

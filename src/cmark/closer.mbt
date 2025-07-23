@@ -11,13 +11,13 @@ priv enum Closer {
   EmphasisMarks(Char)
   StrikethroughMarks
   MathSpanMarks(Int)
-} derive(Eq, Compare, Hash, Show, ToJson)
+} derive(Eq, Hash, Show, ToJson)
 
 ///|
 typealias Set[Int] as PosSet
 
 ///|
-priv type CloserIndex Map[Closer, PosSet] derive(Show, ToJson)
+priv type CloserIndex Map[Closer, PosSet]
 
 ///|
 fn CloserIndex::new() -> CloserIndex {
@@ -48,3 +48,6 @@ fn CloserIndex::pos(self : CloserIndex, key : Closer, after~ : Int) -> Int? {
 fn CloserIndex::exists(self : CloserIndex, key : Closer, after~ : Int) -> Bool {
   not(self.pos(key, after~).is_empty())
 }
+
+///|
+impl ToJson for CloserIndex with to_json(self) { self.inner().to_json() }
