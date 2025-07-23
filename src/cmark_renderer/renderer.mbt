@@ -13,7 +13,7 @@ pub fn Renderer::new(
   init_context~ : InitContextFn = fn(_c, _d) {  },
   inline~ : InlineFn = fn(_c, _i) { false },
   block~ : BlockFn = fn(_c, _b) { false },
-  doc~ : DocFn = fn(_c, _d) { false }
+  doc~ : DocFn = fn(_c, _d) { false },
 ) -> Renderer {
   { init_context, inline, block, doc }
 }
@@ -110,7 +110,7 @@ pub fn Renderer::doc_to_string(self : Renderer, doc : Doc) -> String raise {
 pub fn Renderer::buffer_add_doc(
   self : Renderer,
   buf : Buffer,
-  doc : Doc
+  doc : Doc,
 ) -> Unit raise {
   Context::new(self, buf).doc(doc)
 }

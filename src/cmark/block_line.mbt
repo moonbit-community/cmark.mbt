@@ -70,7 +70,7 @@ fn BlockLine::flush_tight(
   s : String,
   start : Int,
   last : Int,
-  acc : Array[Tight]
+  acc : Array[Tight],
 ) -> Unit {
   // If [s] has newlines, blanks after newlines are layout
   if start > last {

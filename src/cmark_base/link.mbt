@@ -8,7 +8,7 @@
 pub fn link_destination(
   s : String,
   last~ : CharCodePos,
-  start~ : CharCodePos
+  start~ : CharCodePos,
 ) -> (Bool, First, Last)? {
   if start > last {
     return None
@@ -77,7 +77,7 @@ pub fn[A] link_title(
   s : String,
   lines : A,
   line~ : LineSpan,
-  start~ : CharCodePos
+  start~ : CharCodePos,
 ) -> (LineSpan, Array[Span], Last)? {
   if start > line.last {
     return None
@@ -131,7 +131,7 @@ pub fn[A] link_label(
   s : String,
   lines : A,
   line~ : LineSpan,
-  start~ : CharCodePos
+  start~ : CharCodePos,
 ) -> (LineSpan, Array[Span], Last, String)? {
   if start > line.last || s.charcode_at(start) != '[' {
     return None

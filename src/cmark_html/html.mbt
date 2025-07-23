@@ -54,7 +54,7 @@ fn init_context(
   backend_blocks~ : Bool = false,
   safe~ : Bool,
   c : Context,
-  _doc : Doc
+  _doc : Doc,
 ) -> Unit {
   let st = {
     safe,
@@ -103,7 +103,7 @@ fn footnote_ref_id(fnid : String, c : Int) -> String {
 fn make_footnote_ref_ids(
   c : Context,
   label : String,
-  f : @cmark.Footnote
+  f : @cmark.Footnote,
 ) -> (String, String, String) {
   guard c.state is Some(EState({ footnotes, footnote_count, .. } as st))
   guard footnotes.get(label) is Some({ text, id, .. } as rf) else {
@@ -361,7 +361,7 @@ fn strong_emphasis(c : Context, e : @cmark.InlineEmphasis) -> Unit raise {
 ///|
 fn link_dest_and_title(
   c : Context,
-  ld : @cmark.LinkDefinition
+  ld : @cmark.LinkDefinition,
 ) -> (String, Joined[String]?) {
   let dest = match ld.dest {
     None => ""
@@ -409,7 +409,7 @@ fn image(c : Context, i : @cmark.InlineLink, close~ : String = " >") -> Unit {
 fn link_footnote(
   c : Context,
   l : @cmark.InlineLink,
-  f : @cmark.Footnote
+  f : @cmark.Footnote,
 ) -> Unit raise {
   let key = l.referenced_label().unwrap().key
   let (text, label, ref_) = make_footnote_ref_ids(c, key, f)
@@ -623,7 +623,7 @@ fn item_block(tight~ : Bool, c : Context, b : @cmark.Block) -> Unit raise {
 fn list_item(
   tight~ : Bool,
   c : Context,
-  i : @cmark.Node[@cmark.ListItem]
+  i : @cmark.Node[@cmark.ListItem],
 ) -> Unit raise {
   c.b.write_string("<li>")
   guard i.v.ext_task_marker is Some(mark) else {
@@ -735,7 +735,7 @@ fn table(c : Context, t : @cmark.Table) -> Unit raise {
     tag,
     align : ArrayView[@cmark.Node[@cmark.TableSep]],
     count,
-    cs : ArrayView[(_, _)]
+    cs : ArrayView[(_, _)],
   ) raise {
     match (align, cs) {
       ([{ v, .. }, .. align], [(col, _), .. cs]) => {
@@ -781,7 +781,7 @@ fn table(c : Context, t : @cmark.Table) -> Unit raise {
     c : Context,
     col_count,
     align : ArrayView[_],
-    rs : ArrayView[(@cmark.Node[@cmark.TableRow], _)]
+    rs : ArrayView[(@cmark.Node[@cmark.TableRow], _)],
   ) raise {
     match rs {
       [({ v: Header(cols), .. }, _), .. rs] => {
@@ -906,7 +906,7 @@ fn doc(c : Context, d : Doc) -> Bool raise {
 ///|
 pub fn renderer(
   backend_blocks~ : Bool = false,
-  safe~ : Bool
+  safe~ : Bool,
 ) -> @cmark_renderer.Renderer {
   @cmark_renderer.Renderer::new(
     init_context=fn(ctx, doc) { init_context(backend_blocks~, safe~, ctx, doc) },
@@ -919,7 +919,7 @@ pub fn renderer(
 ///|
 pub fn xhtml_renderer(
   backend_blocks~ : Bool = false,
-  safe~ : Bool
+  safe~ : Bool,
 ) -> @cmark_renderer.Renderer {
   @cmark_renderer.Renderer::new(
     init_context=fn(ctx, doc) { init_context(backend_blocks~, safe~, ctx, doc) },
@@ -933,7 +933,7 @@ pub fn xhtml_renderer(
 pub fn from_doc(
   backend_blocks~ : Bool = false,
   safe~ : Bool,
-  doc : Doc
+  doc : Doc,
 ) -> String raise {
   renderer(backend_blocks~, safe~).doc_to_string(doc)
 }
@@ -946,7 +946,7 @@ pub fn render(
   backend_blocks~ : Bool = false,
   safe~ : Bool = false,
   strict~ : Bool = true,
-  s : String
+  s : String,
 ) -> String raise {
   from_doc(backend_blocks~, safe~, @cmark.Doc::from_string(s, strict~))
 }

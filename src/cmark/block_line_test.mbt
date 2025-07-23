@@ -17,9 +17,9 @@ test "BlockLine::list_text_loc handles empty sequence" {
   let empty_seq = Seq::empty()
   inspect(
     BlockLine::list_text_loc(empty_seq),
-    content=
+    content=(
       #|{file: "-", first_ccode: -1, last_ccode: -1, first_line: LinePos((-1, -1)), last_line: LinePos((-1, -1))}
-    ,
+    ),
   )
 }
 
@@ -38,9 +38,9 @@ test "BlockLine::list_text_loc handles single element sequence" {
   let result = BlockLine::list_text_loc(single_seq)
   inspect(
     result,
-    content=
+    content=(
       #|{file: "-", first_ccode: 0, last_ccode: 5, first_line: LinePos((1, 0)), last_line: LinePos((1, 5))}
-    ,
+    ),
   )
 }
 
@@ -73,9 +73,9 @@ test "BlockLine::list_text_loc handles multiple element sequence" {
   // Should span from first_ccode of first node to last_ccode of last node
   inspect(
     result,
-    content=
+    content=(
       #|{file: "-", first_ccode: 0, last_ccode: 11, first_line: LinePos((1, 0)), last_line: LinePos((2, 5))}
-    ,
+    ),
   )
 }
 
@@ -84,9 +84,9 @@ test "Tight::list_text_loc handles empty sequence" {
   let empty_seq = Seq::empty()
   inspect(
     Tight::list_text_loc(empty_seq),
-    content=
+    content=(
       #|{file: "-", first_ccode: -1, last_ccode: -1, first_line: LinePos((-1, -1)), last_line: LinePos((-1, -1))}
-    ,
+    ),
   )
 }
 
@@ -105,9 +105,9 @@ test "Tight::list_text_loc handles single element sequence" {
   let seq = Seq::from_array([t])
   inspect(
     Tight::list_text_loc(seq),
-    content=
+    content=(
       #|{file: "-", first_ccode: 0, last_ccode: 5, first_line: LinePos((1, 0)), last_line: LinePos((1, 5))}
-    ,
+    ),
   )
 }
 
@@ -139,8 +139,8 @@ test "Tight::list_text_loc handles multiple element sequence" {
   let seq = Seq::from_array([t1, t2])
   inspect(
     Tight::list_text_loc(seq),
-    content=
+    content=(
       #|{file: "-", first_ccode: 0, last_ccode: 11, first_line: LinePos((1, 0)), last_line: LinePos((2, 5))}
-    ,
+    ),
   )
 }

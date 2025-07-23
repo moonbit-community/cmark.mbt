@@ -33,7 +33,7 @@ pub fn sub_includes(
   affix~ : String,
   s : String,
   first~ : Int,
-  last~ : Int
+  last~ : Int,
 ) -> Bool {
   let len_a = affix.length()
   let len_s = last - first + 1
@@ -78,7 +78,7 @@ pub fn utf_16_clean_raw(
   buf : Buffer,
   s : String,
   first~ : Int,
-  last~ : Int
+  last~ : Int,
 ) -> String {
   fn pad_it() {
     for _ in 0..<pad {
@@ -170,7 +170,7 @@ pub fn utf_16_clean_unesc_unref(
   buf : Buffer,
   s : String,
   first~ : Int,
-  last~ : Int
+  last~ : Int,
 ) -> String {
   _utf_16_clean_unesc_unref(do_unesc=true, buf, s, first~, last~)
 }
@@ -180,7 +180,7 @@ pub fn utf_16_clean_unref(
   buf : Buffer,
   s : String,
   first~ : Int,
-  last~ : Int
+  last~ : Int,
 ) -> String {
   _utf_16_clean_unesc_unref(do_unesc=false, buf, s, first~, last~)
 }
@@ -198,7 +198,7 @@ fn _utf_16_clean_unesc_unref(
   buf : Buffer,
   s : String,
   first~ : Int,
-  last~ : Int
+  last~ : Int,
 ) -> String {
   let flush = fn(last, start, k) { flush(buf, s, last, start, k) }
 

@@ -43,7 +43,7 @@ fn Parser::new(
   locs~ : Bool = false,
   file~ : FilePath = file_path_none,
   strict~ : Bool = true,
-  i : String
+  i : String,
 ) -> Parser {
   {
     file,
@@ -90,7 +90,7 @@ fn Parser::def_label(self : Parser, l : Label) -> Label? {
 fn Parser::find_def_for_ref(
   self : Parser,
   image~ : Bool,
-  ref_ : Label
+  ref_ : Label,
 ) -> Label? {
   let kind : LinkKind = if image { Image } else { Link }
   let def = self.find_label_defining_key(ref_.key)
@@ -109,7 +109,7 @@ fn Parser::find_def_for_ref(
 fn Parser::curr_line_span(
   self : Parser,
   first~ : CharCodePos,
-  last~ : CharCodePos
+  last~ : CharCodePos,
 ) -> LineSpan {
   { first, last, pos: self.curr_line_pos }
 }
@@ -146,7 +146,7 @@ fn Parser::text_loc_of_lines(
   first~ : CharCodePos,
   last~ : CharCodePos,
   first_line~ : LineSpan,
-  last_line~ : LineSpan
+  last_line~ : LineSpan,
 ) -> TextLoc {
   if self.no_locs {
     return TextLoc::none()
@@ -164,7 +164,7 @@ fn Parser::text_loc_of_lines(
 fn Parser::meta_of_spans(
   self : Parser,
   first~ : LineSpan,
-  last~ : LineSpan
+  last~ : LineSpan,
 ) -> Meta {
   if self.no_locs {
     return Meta::none()
@@ -191,7 +191,7 @@ fn Parser::meta_of_metas(self : Parser, first~ : Meta, last~ : Meta) -> Meta {
 fn Parser::clean_raw_span(
   self : Parser,
   pad~ : Int = 0,
-  span : LineSpan
+  span : LineSpan,
 ) -> StringNode {
   {
     v: @char.utf_16_clean_raw(
@@ -235,7 +235,7 @@ fn Parser::clean_unesc_unref_span(self : Parser, span : LineSpan) -> StringNode 
 fn Parser::layout_clean_raw_span(
   self : Parser,
   pad~ : Int = 0,
-  span : LineSpan
+  span : LineSpan,
 ) -> StringNode {
   if self.no_layouts {
     return layout_empty
@@ -250,7 +250,7 @@ fn Parser::layout_clean_raw_span(
 fn Parser::layout_clean_raw_span1(
   self : Parser,
   pad~ : Int = 0,
-  span : LineSpan
+  span : LineSpan,
 ) -> String {
   if self.no_layouts {
     return ""
@@ -267,7 +267,7 @@ fn Parser::layout_clean_raw_span1(
 ///|
 fn Parser::tight_block_lines(
   self : Parser,
-  spans~ : ArrayView[Span]
+  spans~ : ArrayView[Span],
 ) -> Array[Tight] {
   self._tight_block_lines(Parser::clean_unesc_unref_span, spans~)
 }
@@ -275,7 +275,7 @@ fn Parser::tight_block_lines(
 ///|
 fn Parser::raw_tight_block_lines(
   self : Parser,
-  spans~ : ArrayView[Span]
+  spans~ : ArrayView[Span],
 ) -> Array[Tight] {
   self._tight_block_lines(fn(p, s) { p.clean_raw_span(s) }, spans~)
 }
@@ -287,7 +287,7 @@ priv type ParserCleanSpanFn (Parser, LineSpan) -> StringNode
 fn Parser::_tight_block_lines(
   self : Parser,
   f : ParserCleanSpanFn,
-  spans~ : ArrayView[Span]
+  spans~ : ArrayView[Span],
 ) -> Array[Tight] {
   let acc = []
   for i, span in spans {
@@ -315,7 +315,7 @@ fn Parser::_tight_block_lines(
 ///|
 fn Parser::first_non_blank_in_span(
   self : Parser,
-  span : LineSpan
+  span : LineSpan,
 ) -> CharCodePos {
   @cmark_base.first_non_blank_in_span(self.i, span)
 }
@@ -326,7 +326,7 @@ fn[A] Parser::first_non_blank_over_nl(
   next_line~ : NextLineFn[A],
   lines : A,
   line : LineSpan,
-  start~ : CharCodePos
+  start~ : CharCodePos,
 ) -> (LineSpan, Array[StringNode], Int)? {
   match
     @cmark_base.first_non_blank_over_nl(

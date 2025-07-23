@@ -34,9 +34,9 @@ test "test case TextLoc::reloc" {
   let loc2 = TextLoc::none()
   inspect(
     loc1.reloc(loc2),
-    content=
+    content=(
       #|{file: "-", first_ccode: -1, last_ccode: -1, first_line: LinePos((-1, -1)), last_line: LinePos((-1, -1))}
-    ,
+    ),
   )
 }
 
