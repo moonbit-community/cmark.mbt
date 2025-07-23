@@ -8,12 +8,24 @@ priv struct State {
 } derive(Show)
 
 ///|
+test {
+  // Prevent warning about unused Show
+  (fn(s : State) { s.to_string() }) |> ignore()
+}
+
+///|
 priv struct HtmlRenderFootnote {
   text : String
   id : String
   mut count : Int
   footnote : @cmark.Footnote
 } derive(Show, ToJson)
+
+///|
+test {
+  // Prevent warning about unused ToJson
+  (fn(h : HtmlRenderFootnote) { h.to_json() }) |> ignore()
+}
 
 ///|
 impl Eq for HtmlRenderFootnote with op_equal(self, other) {

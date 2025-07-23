@@ -38,7 +38,7 @@ fn[A] link_label(StringBuilder, next_line~ : NextLineFn[A], String, A, line~ : L
 
 fn[A] link_title(next_line~ : NextLineFn[A], String, A, line~ : LineSpan, start~ : Int) -> (LineSpan, Array[Span], Int)?
 
-fn[A : Show] raw_html(next_line~ : NextLineFn[A], String, A, line~ : LineSpan, start~ : Int) -> (LineSpan, Array[Span], Int)?
+fn[A] raw_html(next_line~ : NextLineFn[A], String, A, line~ : LineSpan, start~ : Int) -> (LineSpan, Array[Span], Int)?
 
 fn rev_drop_spaces(String, first~ : Int, start~ : Int) -> Int
 

@@ -1594,6 +1594,13 @@ priv enum StartColResult {
 } derive(Show, ToJson)
 
 ///|
+test {
+  // Prevent warning about unused Show and ToJson
+  (fn(s : StartColResult) { s.to_string() }) |> ignore()
+  (fn(s : StartColResult) { s.to_json() }) |> ignore()
+}
+
+///|
 fn Parser::finish_col(
   self : Parser,
   line : LineSpan,
