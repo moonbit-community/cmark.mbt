@@ -1,13 +1,13 @@
 ///| https://spec.commonmark.org/current/#tag-name
 fn tag_name(s : String, last~ : Int = -1, start~ : Int = 0) -> Int? {
   let last = if last < 0 { s.length() + last } else { last }
-  for s = s, last = last, k = start + 1 {
+  for k = start + 1 {
     guard k <= last &&
       s.charcode_at(k).to_char() is Some(c) &&
       (@char.is_ascii_alphanum(c) || c == '-') else {
       break Some(k - 1)
     }
-    continue s, last, k + 1
+    continue k + 1
   }
 }
 
@@ -32,11 +32,11 @@ fn attribute_name(s : String, last~ : Int = -1, start~ : Int = 0) -> Next? {
     not(s.charcode_at(start).to_char() is Some(c) && char_is_start(c)) {
     return None
   }
-  for s = s, last = last, k = start + 1 {
+  for k = start + 1 {
     if k > last || not(s.charcode_at(k).to_char() is Some(c) && char_is_cont(c)) {
       break Some(k - 1)
     }
-    continue s, last, k + 1
+    continue k + 1
   }
 }
 
@@ -47,7 +47,7 @@ fn[A] attribute_value(
   lines : A,
   line~ : LineSpan,
   spans : Array[Span],
-  start~ : Int
+  start~ : Int,
 ) -> (LineSpan, Int)? {
   if start > line.last {
     return None
@@ -63,9 +63,9 @@ fn[A] attribute_value(
     not(c is (' ' | '\t' | '"' | '\'' | '=' | '<' | '>' | '`'))
   }
 
-  for s = s, last = line.last, k = start + 1 {
-    if k <= last && s.charcode_at(k).to_char() is Some(c) && is_cont(c) {
-      continue s, last, k + 1
+  for k = start + 1 {
+    if k <= line.last && s.charcode_at(k).to_char() is Some(c) && is_cont(c) {
+      continue k + 1
     }
     let last = k - 1
     push_span(line~, start, last, spans)
@@ -81,7 +81,7 @@ fn[A] attribute(
   lines : A,
   line~ : LineSpan,
   spans : Ref[Array[Span]],
-  start~ : Int
+  start~ : Int,
 ) -> (LineSpan, Last)? {
   guard attribute_name(s, last=line.last, start~) is Some(end_name) else {
     return None
@@ -119,7 +119,7 @@ fn[A] open_tag(
   s : String,
   lines : A,
   line~ : LineSpan,
-  start~ : CharCodePos
+  start~ : CharCodePos,
 ) -> (LineSpan, Array[Span], CharCodePos)? {
   let tag_start = start
   guard tag_name(s, last=line.last, start=tag_start + 1) is Some(tag_name_end) else {
@@ -128,7 +128,7 @@ fn[A] open_tag(
   let start = tag_name_end + 1
   let span = { ..line, first: tag_start, last: tag_name_end }
   let spans = Ref::new([{ start: tag_start, span }])
-  for lines = lines, line = line, start = start {
+  for line = line, start = start {
     guard first_non_blank_over_nl1(
         next_line~,
         s,
@@ -163,7 +163,7 @@ fn[A] open_tag(
             is Some((line, last)) else {
             None
           }
-          continue lines, line, last + 1
+          continue line, last + 1
         }
     }
   }
@@ -176,7 +176,7 @@ fn[A] closing_tag(
   s : String,
   lines : A,
   line~ : LineSpan,
-  start~ : CharCodePos
+  start~ : CharCodePos,
 ) -> (LineSpan, Array[Span], CharCodePos)? {
   let tag_start = start
   guard tag_name(s, last=line.last, start=start + 2) is Some(tag_name_end) else {
@@ -204,7 +204,7 @@ fn[A] declaration(
   s : String,
   lines : A,
   line~ : LineSpan,
-  start~ : CharCodePos
+  start~ : CharCodePos,
 ) -> (LineSpan, Array[Span], CharCodePos)? {
   let spans = []
   accept_to(char='>', next_line~, s, lines, line~, spans, after=start).map(line_k => (
@@ -220,25 +220,25 @@ fn[A] processing_instruction(
   s : String,
   lines : A,
   line~ : LineSpan,
-  start~ : CharCodePos
+  start~ : CharCodePos,
 ) -> (LineSpan, Array[Span], CharCodePos)? {
   let acc = []
-  for lines = lines, line = line, start = start, k = start + 2 {
+  for line = line, start = start, k = start + 2 {
     if k > line.last {
       guard next_line(lines) is Some(new_line) else { break None }
       push_span(line~, start, line.last, acc)
       let start = first_non_blank_in_span(s, new_line)
-      continue lines, new_line, start, start
+      continue new_line, start, start
     }
     if s.charcode_at(k) != '?' {
-      continue lines, line, start, k + 1
+      continue line, start, k + 1
     }
     let last = k + 1
     if last <= line.last && s.charcode_at(last) == '>' { // ?>
       push_span(line~, start, last, acc)
       break Some((line, acc, last))
     }
-    continue lines, line, start, last
+    continue line, start, last
   }
 }
 
@@ -249,7 +249,7 @@ fn[A] html_comment(
   s : String,
   lines : A,
   line~ : LineSpan,
-  start~ : CharCodePos
+  start~ : CharCodePos,
 ) -> (LineSpan, Array[Span], CharCodePos)? {
   // Check we have at least <!-- and not <!--> or <!--->.
   if start + 3 > line.last || s.charcode_at(start + 3) != '-' {
@@ -264,12 +264,12 @@ fn[A] html_comment(
     return None
   }
   let acc = []
-  for lines = lines, line = line, start = start, k = start + 4 {
+  for line = line, start = start, k = start + 4 {
     if k > line.last {
       guard next_line(lines) is Some(new_line) else { break None }
       push_span(line~, start, line.last, acc)
       let start = first_non_blank_in_span(s, new_line)
-      continue lines, new_line, start, start
+      continue new_line, start, start
     }
     if s.charcode_at(k) == '-' && s.charcode_at(k - 1) != '-' {
       let last = k + 2
@@ -282,7 +282,7 @@ fn[A] html_comment(
         }
       }
     }
-    continue lines, line, start, k + 1
+    continue line, start, k + 1
   }
 }
 
@@ -293,7 +293,7 @@ fn[A] cdata_section(
   s : String,
   lines : A,
   line~ : LineSpan,
-  start~ : CharCodePos
+  start~ : CharCodePos,
 ) -> (LineSpan, Array[Span], CharCodePos)? {
   if start + 8 > line.last {
     return None
@@ -302,15 +302,15 @@ fn[A] cdata_section(
     return None
   }
   let acc = []
-  for lines = lines, line = line, start = start, k = start + 9 {
+  for line = line, start = start, k = start + 9 {
     if k > line.last {
       guard next_line(lines) is Some(new_line) else { break None }
       push_span(line~, start, line.last, acc)
       let start = first_non_blank_in_span(s, new_line)
-      continue lines, new_line, start, start
+      continue new_line, start, start
     }
     if s.charcode_at(k) != ']' {
-      continue lines, line, start, k + 1
+      continue line, start, k + 1
     }
     let last = k + 2
     if last <= line.last &&
@@ -319,7 +319,7 @@ fn[A] cdata_section(
       push_span(line~, start, last, acc)
       break Some((line, acc, last))
     }
-    continue lines, line, start, k + 1
+    continue line, start, k + 1
   }
 }
 
@@ -329,7 +329,7 @@ pub fn[A : Show] raw_html(
   s : String,
   lines : A,
   line~ : LineSpan,
-  start~ : CharCodePos
+  start~ : CharCodePos,
 ) -> (LineSpan, Array[Span], CharCodePos)? {
   let next = start + 1
   let { last, .. } = line
