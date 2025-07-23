@@ -176,7 +176,7 @@ pub fn CodeBlock::make_fence(self : CodeBlock) -> (Char, Count) {
   for n in self.code {
     let c = n.v
     let mut k = 0
-    while k < c.length() && c.charcode_at(k) == ch.to_int() {
+    while k < c.length() && c[k] == ch.to_int() {
       k += 1
     }
     if k != 0 {
@@ -192,7 +192,7 @@ pub fn CodeBlock::language_of_info_string(s : String) -> (String, String)? {
   guard not(s.is_empty()) else { None }
   let max = s.length() - 1
   let white = for i = 0; ; i = i + 1 {
-    if i > max || @char.is_ascii_whitespace(s.char_at(i)) {
+    if i > max || @char.is_ascii_whitespace(s.get_char(i).unwrap()) {
       break i
     }
   }
@@ -381,7 +381,7 @@ pub fn Footnote::new(
   label : Label,
   block : Block
 ) -> Footnote {
-  let defined_label = defined_label.or(Some(label))
+  let defined_label = defined_label.unwrap_or(Some(label))
   { indent, label, defined_label, block }
 }
 
@@ -438,8 +438,8 @@ pub fn Table::new(
   for row in rows {
     match row.0.v {
       Header(cols) | Data(cols) =>
-        col_count = @math.maximum(col_count, cols.length())
-      Sep(cols) => col_count = @math.maximum(col_count, cols.length())
+        col_count = @cmp.maximum(col_count, cols.length())
+      Sep(cols) => col_count = @cmp.maximum(col_count, cols.length())
     }
   }
   { indent, rows, col_count }
@@ -454,12 +454,12 @@ fn Table::parse_sep_row(
     (acc, [(Text({ v, meta }), TableCellLayout(("", ""))), .. cs]) => {
       guard not(v.is_empty()) else { None }
       let max = v.length() - 1
-      let first_colon = v.charcode_at(0) == ':'
-      let last_colon = v.charcode_at(max) == ':'
+      let first_colon = v[0] == ':'
+      let last_colon = v[max] == ':'
       let first = if first_colon { 1 } else { 0 }
       let last = if last_colon { max - 1 } else { max }
       for i in first..=last {
-        guard v.charcode_at(i) == '-' else { break None }
+        guard v[i] == '-' else { break None }
       } else {
         let count = last - first + 1
         let sep = match (first_colon, last_colon) {

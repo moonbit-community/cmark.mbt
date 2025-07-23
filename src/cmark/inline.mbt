@@ -170,7 +170,7 @@ pub fn Inline::id(
     if k > max {
       break buf.to_string()
     }
-    match s.char_at(k) {
+    match s.get_char(k).unwrap() {
       ' ' | '\t' as prev_ccode => continue max, prev_ccode, k + 1
       '_' | '-' as c => {
         collapse_blanks(prev)
@@ -179,7 +179,7 @@ pub fn Inline::id(
       }
       c => {
         collapse_blanks(prev)
-        let mut u = s.char_at(k)
+        let mut u = s.get_char(k).unwrap()
         if u == '\u{0000}' {
           u = @char.rep
         }
@@ -300,7 +300,7 @@ pub fn InlineCodeSpan::from_string(
       }
       break (bt_counts, layout)
     }
-    let sk = s.charcode_at(k)
+    let sk = s[k]
     if sk == '`' {
       continue bt_counts, acc, max, btc + 1, start, k + 1
     }
@@ -311,7 +311,7 @@ pub fn InlineCodeSpan::from_string(
       continue bt_counts, acc, max, 0, start, k + 1
     }
     BlockLine::flush_tight(meta~, s, start, k - 1, acc)
-    let start = if k + 1 <= max && sk == '\r' && s.charcode_at(k + 1) == '\n' {
+    let start = if k + 1 <= max && sk == '\r' && s[k + 1] == '\n' {
       k + 2
     } else {
       k + 1
@@ -420,7 +420,7 @@ pub fn InlineLink::is_unsafe(l : String) -> Bool {
       None => j
     }
     let allowed = ["image/gif", "image/png", "image/jpeg", "image/webp"]
-    allowed.contains(l.substring(start=5, end=@math.minimum(j, k)))
+    allowed.contains(l.substring(start=5, end=@cmp.minimum(j, k)))
   }
   let lower = @casefold.casefold(l)
   lower.has_prefix("javascript:") ||

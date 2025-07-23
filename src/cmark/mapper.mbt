@@ -89,7 +89,7 @@ pub fn Mapper::map_inline(self : Mapper, i : Inline) -> Inline? {
     | Text(_)
     | ExtMathSpan(_) => Some(i)
     Image({ v, meta }) => {
-      let text = self.map_inline(v.text).or(Inline::empty())
+      let text = self.map_inline(v.text).unwrap_or(Inline::empty())
       Some(Image({ v: { ..v, text, }, meta }))
     }
     Link({ v, meta }) => {
@@ -132,13 +132,13 @@ pub fn Mapper::map_block(self : Mapper, b : Block) -> Block? {
     Heading({ v, meta }) => {
       let inline = self
         .map_inline(v.inline)
-        .or(Inlines({ v: [], meta: Meta::none() }))
+        .unwrap_or(Inlines({ v: [], meta: Meta::none() }))
       Some(Heading({ v: { ..v, inline, }, meta }))
     }
     BlockQuote({ v, meta }) => {
       let block = self
         .map_block(v.block)
-        .or(Blocks({ v: [], meta: Meta::none() }))
+        .unwrap_or(Blocks({ v: [], meta: Meta::none() }))
       Some(BlockQuote({ v: { ..v, block, }, meta }))
     }
     Blocks({ v, meta }) =>
@@ -196,7 +196,7 @@ pub fn Mapper::map_block(self : Mapper, b : Block) -> Block? {
 
 ///|
 pub fn Mapper::map_doc(self : Mapper, d : Doc) -> Doc {
-  let map_block = fn(b) { self.map_block(b).or(Block::empty()) }
+  let map_block = fn(b) { self.map_block(b).unwrap_or(Block::empty()) }
   let map_def = fn(b : LabelDef) {
     guard b is FootnoteDef({ v, meta }) else { b }
     let block = map_block(v.block)
