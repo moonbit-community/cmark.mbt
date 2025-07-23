@@ -8,5 +8,6 @@
       "output": "entities.mbt",
       "command": "python3 $input $output"
     }
-  ]
+  ],
+  "warn-list": "+52-52"
 }
