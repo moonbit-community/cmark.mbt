@@ -1,6 +1,5 @@
 {
   "import": [
     "rami3l/cmark/char"
-  ],
-  "warn-list": "+52-52"
+  ]
 }
