@@ -1,6 +1,6 @@
 ///|
-pub fn render(md : String) -> String! {
-  @cmark_html.render!(md)
+pub fn render(md : String) -> String raise {
+  @cmark_html.render(md)
 }
 
 ///|
