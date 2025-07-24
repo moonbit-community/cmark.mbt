@@ -1,33 +1,34 @@
 ///|
 fn main {
-  let doc : String = @fs.read_file_to_string?("./src/data/test/spec.md").unwrap()
+  let doc : String = try! @fs.read_file_to_string("./src/data/test/spec.md")
   let count = 5
   let cases = Map::new()
-    ..set("\{ident}(spec * 100)", doc.repeat(100))
-    ..set("\{ident}(spec * 200)", doc.repeat(200))
+  cases
+  ..set("\{ident}(spec * 100)", doc.repeat(100))
+  ..set("\{ident}(spec * 200)", doc.repeat(200))
   let summaries = []
   let b = @bench.new()
   for k, input in cases {
     summaries.push(
-      @bench.single_bench(name=k, count=count.reinterpret_as_uint(), fn() {
-        b.keep(@lib.render?(input))
-      }),
+      @bench.single_bench(name=k, count=count.reinterpret_as_uint(), () => b.keep(
+        try? @lib.render(input),
+      )),
     )
   }
   let us_per_s = 1_000_000.0
   for v in summaries {
     let v = v.to_json().as_object().unwrap()
-    let k = v["name"].unwrap().as_string().unwrap()
-    // let max = 1.0 / v["min"].unwrap().as_number().unwrap()
-    // let min = 1.0 / v["max"].unwrap().as_number().unwrap()
-    let avg = us_per_s / v["mean"].unwrap().as_number().unwrap()
+    let k = v.get("name").unwrap().as_string().unwrap()
+    // let max = 1.0 / v.get("min").unwrap().as_number().unwrap()
+    // let min = 1.0 / v.get("max").unwrap().as_number().unwrap()
+    let avg = us_per_s / v.get("mean").unwrap().as_number().unwrap()
     let moe_estm = {
-      let sigma = v["std_dev"].unwrap().as_number().unwrap()
+      let sigma = v.get("std_dev").unwrap().as_number().unwrap()
       let sem = sigma / us_per_s / count.to_double().sqrt()
       let df = count - 1
       let critical = {
         let len = t_table.length()
-        t_table.get(df).or(t_table[len - 1])
+        t_table.get(df).unwrap_or(t_table[len - 1])
       }
       sem * critical
     }
