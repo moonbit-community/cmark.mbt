@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1753331501541,
+  "lastUpdate": 1753336611457,
   "repoUrl": "https://github.com/moonbit-community/cmark.mbt",
   "entries": {
     "Benchmark.js Benchmark": [
@@ -7571,6 +7571,85 @@ window.BENCHMARK_DATA = {
             "name": "cmarkNative(spec * 200)",
             "value": 0.47,
             "range": "±3.69%",
+            "unit": "ops/sec",
+            "extra": "5 samples"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "agent@moonbitlang.com",
+            "name": "moonagent"
+          },
+          "committer": {
+            "email": "rami3l@outlook.com",
+            "name": "rami3l",
+            "username": "rami3l"
+          },
+          "distinct": true,
+          "id": "193918cc74eaff2ce4005cf3696ae37be8eee74d",
+          "message": "Fix all deprecation warnings in the codebase\n\n- Replace deprecated charcode_at() calls with s[i] syntax\n- Replace deprecated char_at() calls with s.get_char(i).unwrap()\n- Replace deprecated .or() with .unwrap_or()\n- Replace deprecated .or_else() with .unwrap_or_else()\n- Replace deprecated Char::from_int with Int::to_char\n- Replace deprecated .to_uint() with appropriate character comparisons\n\nAll tests pass (370/370) and the project builds without warnings.",
+          "timestamp": "2025-07-24T07:53:55+02:00",
+          "tree_id": "61f1c031543f6958af9a021055af96e08c3cc92a",
+          "url": "https://github.com/moonbit-community/cmark.mbt/commit/193918cc74eaff2ce4005cf3696ae37be8eee74d"
+        },
+        "date": 1753336610515,
+        "tool": "benchmarkjs",
+        "benches": [
+          {
+            "name": "cmarkJS(spec * 100)",
+            "value": 0.47,
+            "range": "±28.58%",
+            "unit": "ops/sec",
+            "extra": "5 samples"
+          },
+          {
+            "name": "cmarkJS(spec * 200)",
+            "value": 0.23,
+            "range": "±26.31%",
+            "unit": "ops/sec",
+            "extra": "5 samples"
+          },
+          {
+            "name": "cmarkWASM1(spec * 100)",
+            "value": 0.48,
+            "range": "±2.61%",
+            "unit": "ops/sec",
+            "extra": "5 samples"
+          },
+          {
+            "name": "cmarkWASM1(spec * 200)",
+            "value": 0.24,
+            "range": "±1.92%",
+            "unit": "ops/sec",
+            "extra": "5 samples"
+          },
+          {
+            "name": "cmarkWASM(spec * 100)",
+            "value": 0.87,
+            "range": "±6.92%",
+            "unit": "ops/sec",
+            "extra": "5 samples"
+          },
+          {
+            "name": "cmarkWASM(spec * 200)",
+            "value": 0.4,
+            "range": "±6.11%",
+            "unit": "ops/sec",
+            "extra": "5 samples"
+          },
+          {
+            "name": "cmarkNative(spec * 100)",
+            "value": 0.99,
+            "range": "±3.81%",
+            "unit": "ops/sec",
+            "extra": "5 samples"
+          },
+          {
+            "name": "cmarkNative(spec * 200)",
+            "value": 0.47,
+            "range": "±4.16%",
             "unit": "ops/sec",
             "extra": "5 samples"
           }
