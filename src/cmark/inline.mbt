@@ -166,16 +166,17 @@ pub fn Inline::id(
       buf.write_char('-')
     }
   }
-  for max = s.length() - 1, prev = '\u{0}', k = 0 {
+  let max = s.length() - 1
+  for prev = '\u{0}', k = 0 {
     if k > max {
       break buf.to_string()
     }
     match s.get_char(k).unwrap() {
-      ' ' | '\t' as prev_ccode => continue max, prev_ccode, k + 1
+      ' ' | '\t' as prev_ccode => continue prev_ccode, k + 1
       '_' | '-' as c => {
         collapse_blanks(prev)
         buf.write_char(c)
-        continue max, c, k + 1
+        continue c, k + 1
       }
       c => {
         collapse_blanks(prev)
@@ -185,7 +186,7 @@ pub fn Inline::id(
         }
         let k = k + @char.length_utf16(u.to_int())
         if @char.is_ascii_punctuation(c) || @unicode.is_punctuation(c) {
-          continue max, '\u{0}', k
+          continue '\u{0}', k
         }
         match @casefold.casefold_char(u) {
           One(c) => buf.write_char(c)
@@ -200,7 +201,7 @@ pub fn Inline::id(
           }
         }
         let prev = c
-        continue max, prev, k
+        continue prev, k
       }
     }
   }
@@ -289,7 +290,9 @@ pub fn InlineCodeSpan::from_string(
   let max = s.length() - 1
   let need_sp = s is (['`', ..] | [.., '`'])
   let s = if need_sp { " \{s} " } else { s }
-  let (bt_counts, code_layout) = for bt_counts = @sorted_set.new(), acc = [], max = max, btc = 0, start = 0, k = 0 {
+  let bt_counts = @sorted_set.new()
+  let acc = []
+  let code_layout = for btc = 0, start = 0, k = 0 {
     if k > max {
       // assert (btc = 0) because of [need_sp]
       let layout = if acc.is_empty() {
@@ -298,25 +301,23 @@ pub fn InlineCodeSpan::from_string(
         BlockLine::flush_tight(meta~, s, start, max, acc)
         acc
       }
-      break (bt_counts, layout)
+      break layout
     }
     let sk = s[k]
     if sk == '`' {
-      continue bt_counts, acc, max, btc + 1, start, k + 1
+      continue btc + 1, start, k + 1
     }
     if btc > 0 {
       bt_counts.add(btc)
     }
-    guard sk is ('\n' | '\r') else {
-      continue bt_counts, acc, max, 0, start, k + 1
-    }
+    guard sk is ('\n' | '\r') else { continue 0, start, k + 1 }
     BlockLine::flush_tight(meta~, s, start, k - 1, acc)
     let start = if k + 1 <= max && sk == '\r' && s[k + 1] == '\n' {
       k + 2
     } else {
       k + 1
     }
-    continue bt_counts, acc, max, 0, start, start
+    continue 0, start, start
   }
   { code_layout, backticks: InlineCodeSpan::min_backticks(min=1, bt_counts) }
 }

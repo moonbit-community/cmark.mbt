@@ -52,7 +52,7 @@ pub fn LineType::thematic_break(
   }
   match s[start] {
     '-' | '_' | '*' =>
-      for s = s, last = last, count = 1, prev = start, k = start + 1 {
+      for count = 1, prev = start, k = start + 1 {
         break if k > last {
           if count < 3 {
             Nomatch
@@ -60,9 +60,9 @@ pub fn LineType::thematic_break(
             ThematicBreakLine(prev)
           }
         } else if s[k] == s[prev] {
-          continue s, last, count + 1, k, k + 1
+          continue count + 1, k, k + 1
         } else if s[k] is (' ' | '\t') {
-          continue s, last, count, prev, k + 1
+          continue count, prev, k + 1
         } else {
           Nomatch
         }
@@ -100,12 +100,12 @@ pub fn LineType::atx_heading(
   }
 
   fn content(s : String, last, k) {
-    for s = s, last = last, k = k {
+    for k = k {
       guard k <= last else { break k - 1 }
-      guard s[k] is (' ' | '\t') else { continue s, last, k + 1 }
+      guard s[k] is (' ' | '\t') else { continue k + 1 }
       let end1 = find_end(s, last, k)
       guard end1 <= last else { break k - 1 }
-      continue s, last, end1
+      continue end1
     }
   }
 
@@ -194,9 +194,9 @@ pub fn LineType::fenced_code_block_start(
   }
 
   fn fence(s : String, last, fence_first, k) {
-    for s = s, last = last, fence_first = fence_first, k = k {
+    for k = k {
       if k <= last && s[k] == s[fence_first] {
-        continue s, last, fence_first, k + 1
+        continue k + 1
       }
       let fence_last = k - 1
       let fcount = fence_last - fence_first + 1
@@ -220,10 +220,10 @@ pub fn LineType::fenced_code_block_start(
   if start > last {
     return Nomatch
   }
-  for s = s, first = start, last = last, k = start {
+  for k = start {
     guard k <= last else { break Nomatch }
-    if k - first + 1 < 4 && s[k] == ' ' {
-      continue s, first, last, k + 1
+    if k - start + 1 < 4 && s[k] == ' ' {
+      continue k + 1
     }
     guard s[k] is ('~' | '`') else { break Nomatch }
     break fence(s, last, k, k + 1).unwrap_or(Nomatch)
@@ -251,9 +251,9 @@ pub fn FencedCodeBlockContinue::new(
   }
   let (fc, fcount) = fence
   fn fence(s : String, last, fence_first, k) {
-    for s = s, last = last, fence_first = fence_first, k = k {
+    for k = k {
       if k <= last && s[k].unsafe_to_char() == fc {
-        continue s, last, fence_first, k + 1
+        continue k + 1
       }
       let fence_last = k - 1
       guard fence_last - fence_first + 1 >= fcount else { break None } // Not closing
@@ -263,11 +263,11 @@ pub fn FencedCodeBlockContinue::new(
     }
   }
 
-  for s = s, first = start, last = last, k = start {
+  for k = start {
     guard k <= last else { break Code } // Short blank line
     let sk = s[k].unsafe_to_char()
-    if k - first + 1 < 4 && sk == ' ' {
-      continue s, first, last, k + 1
+    if k - start + 1 < 4 && sk == ' ' {
+      continue k + 1
     }
     guard sk == fc else { break Code }
     break fence(s, last, k, k + 1).unwrap_or(Code)
@@ -387,11 +387,11 @@ pub fn LineType::html_block_start(
     c => {
       guard c.is_ascii_alphabetic() || c == '/' else { return Nomatch }
       let tag_first = if c == '/' { next + 1 } else { next }
-      let tag_last = for s = s, last = last, i = tag_first {
+      let tag_last = for i = tag_first {
         if i > last || not(s[i].unsafe_to_char().is_ascii_alphabetic()) {
           break i - 1
         }
-        continue s, last, i + 1
+        continue i + 1
       }
       let tag = s.substring(start=tag_first, end=tag_last + 1).to_lower()
       let is_open_end = {
@@ -432,9 +432,9 @@ fn LineType::html_block_end_cond_1(
   start~ : CharCodePos,
 ) -> Bool {
   let lower_s = s.to_lower()
-  for last = last, k = start {
+  for k = start {
     guard k + 3 <= last else { break false }
-    guard s[k] == '<' && s[k + 1] == '/' else { continue last, k + 1 }
+    guard s[k] == '<' && s[k + 1] == '/' else { continue k + 1 }
     let next = k + 2
     let is_end_tag = {
       let lower_s_sub = lower_s.substring(start=next)
@@ -451,7 +451,7 @@ fn LineType::html_block_end_cond_1(
       }
     }
     guard not(is_end_tag) else { break true }
-    continue last, k + 1
+    continue k + 1
   }
 }
 
@@ -517,10 +517,10 @@ pub fn could_be_link_ref_definition(
   if start > last {
     return false
   }
-  for s = s, first = start, last = last, k = start {
+  for k = start {
     guard k <= last else { break false }
-    if k - first + 1 < 4 && s[k] == ' ' {
-      continue s, first, last, k + 1
+    if k - start + 1 < 4 && s[k] == ' ' {
+      continue k + 1
     }
     break s[k] == '['
   }
@@ -549,18 +549,13 @@ pub fn LineType::list_marker(
       }
     }
     '0'..='9' as c =>
-      for s = s, last = last, count = 1, acc = @char.ascii_digit_to_int(c), k = start +
-            1 {
+      for count = 1, acc = @char.ascii_digit_to_int(c), k = start + 1 {
         if k > last || count > 9 {
           return Nomatch
         }
         break match s[k].unsafe_to_char() {
           '0'..='9' as c =>
-            continue s,
-              last,
-              count + 1,
-              acc * 10 + @char.ascii_digit_to_int(c),
-              k + 1
+            continue count + 1, acc * 10 + @char.ascii_digit_to_int(c), k + 1
           '.' | ')' as c => {
             let next = k + 1
             if next > last ||

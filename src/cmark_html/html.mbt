@@ -81,10 +81,10 @@ fn init_context(
 ///|
 fn uid(c : Context, id : String) -> String {
   guard c.state is Some(EState({ ids, .. }))
-  for ids = ids, id = id, c = 0 {
-    let id1 = if c == 0 { id } else { "\{id}-\{c}" }
+  for counter = 0 {
+    let id1 = if counter == 0 { id } else { "\{id}-\{counter}" }
     if ids.contains(id1) {
-      continue ids, id, c + 1
+      continue counter + 1
     }
     ids.add(id1)
     break id1
@@ -254,7 +254,8 @@ fn buffer_add_pct_encoded_string(b : Buffer, s : String) -> Unit { // Percent en
       b.write_substring(s, start, i - start)
     }
   }
-  for b = b, s = s, max = s.length() - 1, start = 0, i = 0 {
+  let max = s.length() - 1
+  for start = 0, i = 0 {
     if i > max {
       flush(b, max, start, i)
       break
@@ -262,16 +263,16 @@ fn buffer_add_pct_encoded_string(b : Buffer, s : String) -> Unit { // Percent en
     let next = i + 1
     match s[i] {
       c if c.to_char() is Some(c) && (@char.is_ascii_alphanum(c) || is_delim(c)) =>
-        continue b, s, max, start, next
+        continue start, next
       '&' => {
         flush(b, max, start, i)
         b.write_string("&amp;")
-        continue b, s, max, next, next
+        continue next, next
       }
       '\'' => {
         flush(b, max, start, i)
         b.write_string("&apos;")
-        continue b, s, max, next, next
+        continue next, next
       }
       c => {
         flush(b, max, start, i)
@@ -280,7 +281,7 @@ fn buffer_add_pct_encoded_string(b : Buffer, s : String) -> Unit { // Percent en
         b.write_char('%')
         b.write_char(unsafe_hexdigit(hi))
         b.write_char(unsafe_hexdigit(lo))
-        continue b, s, max, next, next
+        continue next, next
       }
     }
   }

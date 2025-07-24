@@ -27,14 +27,16 @@ fn Parser::has_next_non_blank(self : Parser) -> Bool {
 
 ///|
 fn Parser::update_next_non_blank(self : Parser) -> Unit {
-  for s = self.i, last = self.curr_line_last_char, k = self.curr_char, col = self.curr_char_col {
+  let s = self.i
+  let last = self.curr_line_last_char
+  for k = self.curr_char, col = self.curr_char_col {
     break if k > last {
       self.next_non_blank = k
       self.next_non_blank_col = col
     } else {
       match s[k] {
-        ' ' => continue s, last, k + 1, col + 1
-        '\t' => continue s, last, k + 1, next_tab_stop(col)
+        ' ' => continue k + 1, col + 1
+        '\t' => continue k + 1, next_tab_stop(col)
         _ => {
           self.next_non_blank = k
           self.next_non_blank_col = col
@@ -1395,18 +1397,19 @@ fn Parser::parse_block(self : Parser) -> (String, Node[Array[BlockStruct]]) {
   }
 
   let nl = self.get_first_line()
-  let blocks = for bs = [] {
-    self.add_line(bs)
-    if self.get_next_line() {
-      continue bs
+  let bs = []
+  let blocks = {
+    while true {
+      self.add_line(bs)
+      if not(self.get_next_line()) {
+        self.end_doc(bs)
+        break
+      }
     }
-    self.end_doc(bs)
-    break { v: bs, meta: meta() }
+    { v: bs, meta: meta() }
   }
   (nl, blocks)
 }
-
-// Building the final AST, invokes inline parsing.
 
 ///|
 fn Parser::block_struct_to_blank_line(
