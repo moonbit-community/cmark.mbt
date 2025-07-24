@@ -32,7 +32,7 @@ fn Parser::update_next_non_blank(self : Parser) -> Unit {
       self.next_non_blank = k
       self.next_non_blank_col = col
     } else {
-      match s.charcode_at(k) {
+      match s[k] {
         ' ' => continue s, last, k + 1, col + 1
         '\t' => continue s, last, k + 1, next_tab_stop(col)
         _ => {
@@ -50,7 +50,7 @@ fn Parser::accept_cols(self : Parser, count~ : Int) -> Unit {
     break if count == 0 {
       self.curr_char = k
       self.curr_char_col = col
-    } else if self.i.charcode_at(k) != '\t' {
+    } else if self.i[k] != '\t' {
       continue count - 1, k + 1, col + 1
     } else {
       let col1 = next_tab_stop(col)
@@ -69,13 +69,13 @@ fn Parser::accept_cols(self : Parser, count~ : Int) -> Unit {
 
 ///| https://spec.commonmark.org/current/#block-quote-marker
 fn Parser::match_and_accept_block_quote(self : Parser) -> Bool {
-  if self.end_of_line() || self.i.charcode_at(self.curr_char) != '>' {
+  if self.end_of_line() || self.i[self.curr_char] != '>' {
     return false
   }
   let next_is_blank = {
     let next = self.curr_char + 1
     next <= self.curr_line_last_char &&
-    @char.is_ascii_blank(self.i.char_at(next))
+    @char.is_ascii_blank(self.i.get_char(next).unwrap())
   }
   self.accept_cols(
     count=1 + next_is_blank.to_int(), // We eat a space
@@ -95,7 +95,7 @@ fn Parser::accept_list_marker_and_indent(
   let min_indent = if self.only_blanks() || indent > 4 {
     1
   } else {
-    @math.minimum(indent, 4)
+    @cmp.minimum(indent, 4)
   }
   self.accept_cols(count=min_indent)
   min_indent
@@ -305,7 +305,7 @@ fn Parser::fenced_code_block(
   }
   let opening_fence = self.curr_line_span(first=fence_first, last=layout_last)
   let fence = (
-    self.i.charcode_at(fence_first).unsafe_to_char(),
+    self.i[fence_first].unsafe_to_char(),
     fence_last - fence_first + 1,
   )
   let fence = { indent, opening_fence, fence, info_string, closing_fence: None }
@@ -416,7 +416,7 @@ fn Parser::parse_link_ref_definition(
     None
   }
   let colon = last + 1
-  guard colon <= line.last && self.i.charcode_at(colon) == ':' else { None }
+  guard colon <= line.last && self.i[colon] == ':' else { None }
   let label = Parser::label_of_spans(self, key~, spans[:])
   let (lines, line, label, start) = (lines, line, label, colon + 1)
   guard self.first_non_blank_over_nl(next_line~, lines, line, start~)
@@ -477,7 +477,7 @@ fn Parser::parse_link_ref_definition(
       (
         lines1,
         after_dest,
-        self.i.charcode_at(start1).unsafe_to_char(),
+        self.i[start1].unsafe_to_char(),
         Some(t),
         after_title,
         { ..line1, last, },
@@ -699,7 +699,7 @@ fn Parser::match_line_type(
   }
   let start = self.curr_char
   let last = self.curr_line_last_char
-  match self.i.charcode_at(start) {
+  match self.i[start] {
     // Early dispatch shaves a few ms but may not be worth doing vs 
     // testing all the cases in sequences.
     '>' => {
@@ -1068,7 +1068,7 @@ fn Parser::try_add_to_fenced_code_block(
       match
         @cmark_base.FencedCodeBlockContinue::new(self.i, fence~, last~, start~) {
         Code => {
-          let strip = @math.minimum(indent, self.curr_indent())
+          let strip = @cmp.minimum(indent, self.curr_indent())
           let (pad, first) = self.accept_code_indent(count=strip)
           ls.push((pad, self.curr_line_span(first~, last~)))
           bs.push(CodeBlock(Fenced({ ..b, code: ls })))
@@ -1329,9 +1329,7 @@ fn Parser::add_line(self : Parser, bs : Array[BlockStruct]) -> Unit {
 fn Parser::get_first_line(self : Parser) -> String {
   let max = self.i.length() - 1
   let mut k = 0
-  let last_char = while k <= max &&
-                        self.i.charcode_at(k) != '\r' &&
-                        self.i.charcode_at(k) != '\n' {
+  let last_char = while k <= max && self.i[k] != '\r' && self.i[k] != '\n' {
     k += 1
   } else {
     // If the line is empty, we have -1
@@ -1340,11 +1338,11 @@ fn Parser::get_first_line(self : Parser) -> String {
   self.curr_line_last_char = last_char
   self.update_next_non_blank()
   // Return first used newline (or "\n" if there is none)
-  if k > max || self.i.charcode_at(k) == '\n' {
+  if k > max || self.i[k] == '\n' {
     return "\n"
   }
   let next = k + 1
-  if next <= max && self.i.charcode_at(next) == '\n' {
+  if next <= max && self.i[next] == '\n' {
     return "\r\n"
   }
   "\r"
@@ -1358,18 +1356,18 @@ fn Parser::get_next_line(self : Parser) -> Bool {
   }
   let first_char = {
     let nl = self.curr_line_last_char + 1
-    if self.i.charcode_at(nl) == '\n' {
+    if self.i[nl] == '\n' {
       nl + 1
     } else {
       let mut next = nl + 1
-      if next <= max && self.i.charcode_at(next) == '\n' {
+      if next <= max && self.i[next] == '\n' {
         next += 1
       }
       next
     }
   }
   let last_char = for k = first_char
-                      k <= max && not(self.i.charcode_at(k) is ('\r' | '\n'))
+                      k <= max && not(self.i[k] is ('\r' | '\n'))
                       k = k + 1 {
 
   } else {
@@ -1571,7 +1569,7 @@ fn Parser::block_struct_to_table(
       let meta = self.meta(self.text_loc_of_span(row))
       let row1 = { ..row, first: row.first + 1, last: row.last }
       let cols = self.parse_table_row(row1)
-      let col_count = @math.maximum(col_count, cols.length())
+      let col_count = @cmp.maximum(col_count, cols.length())
       let (r, last_was_sep) = match Table::parse_sep_row(cols[:]) {
         Some(seps) => ({ v: Sep(seps), meta }, true)
         None => {
