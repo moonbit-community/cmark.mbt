@@ -7,19 +7,17 @@ pub fn autolink_email(s : String, last~ : Int = -1, start~ : Int = 0) -> Last? {
   }
 
   fn label_seq(last : Int, k : Int) -> Int? {
-    guard k <= last &&
-      s.charcode_at(k).to_char() is Some(c) &&
-      @char.is_ascii_alphanum(c) else {
+    guard k <= last && s[k].to_char() is Some(c) && @char.is_ascii_alphanum(c) else {
       return None
     }
     for c = 1, k = k + 1 {
       guard k <= last else { break None }
-      let sk = s.charcode_at(k).unsafe_to_char()
+      let sk = s[k].unsafe_to_char()
       if char_is_alphanum_or_hyp(sk) && c <= 63 {
         continue c + 1, k + 1
       }
       guard c <= 63 &&
-        s.charcode_at(k - 1).to_char() is Some(c) &&
+        s[k - 1].to_char() is Some(c) &&
         @char.is_ascii_alphanum(c) else {
         break None
       }
@@ -31,15 +29,13 @@ pub fn autolink_email(s : String, last~ : Int = -1, start~ : Int = 0) -> Last? {
     }
   }
 
-  guard start <= last || s.charcode_at(start) == '<' else { None }
+  guard start <= last || s[start] == '<' else { None }
   for k in (start + 1)..=last {
-    let sk = s.charcode_at(k).unsafe_to_char()
+    let sk = s[k].unsafe_to_char()
     if char_is_atext_plus_dot(sk) {
       continue
     }
-    if sk == '@' &&
-      s.charcode_at(k - 1).to_char() is Some(c) &&
-      char_is_atext_plus_dot(c) {
+    if sk == '@' && s[k - 1].to_char() is Some(c) && char_is_atext_plus_dot(c) {
       break label_seq(last, k + 1)
     }
     break None
@@ -60,7 +56,7 @@ pub fn autolink_uri(s : String, last~ : Int = -1, start~ : Int = 0) -> Last? {
   }
   let rest = fn(s : String, last, k) {
     for k in k..=last {
-      let sk = s.charcode_at(k).unsafe_to_char()
+      let sk = s[k].unsafe_to_char()
       guard not(char_is_uri(sk)) else { continue }
       break if sk == '>' { Some(k) } else { None }
     } else {
@@ -69,13 +65,13 @@ pub fn autolink_uri(s : String, last~ : Int = -1, start~ : Int = 0) -> Last? {
   }
   let next = start + 1
   guard next <= last &&
-    s.charcode_at(start) == '<' &&
-    s.charcode_at(next).unsafe_to_char().is_ascii_alphabetic() else {
+    s[start] == ('<' : Char).to_int() &&
+    s[next].unsafe_to_char().is_ascii_alphabetic() else {
     return None
   }
   for c = 1, k = next + 1 {
     guard k <= last else { break None }
-    let sk = s.charcode_at(k).unsafe_to_char()
+    let sk = s[k].unsafe_to_char()
     if char_is_scheme(sk) && c <= 32 {
       continue c + 1, k + 1
     }
