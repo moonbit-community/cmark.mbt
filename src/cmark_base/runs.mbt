@@ -94,18 +94,18 @@ fn[A] accept_to(
   spans : Array[Span],
   after~ : CharCodePos,
 ) -> (LineSpan, Int)? {
-  for lines = lines, line = line, start = after, k = after + 1 {
+  for line = line, start = after, k = after + 1 {
     if k > line.last {
       guard next_line(lines) is Some(new_line) else { break None }
       push_span(line~, start, line.last, spans)
       let start = first_non_blank_in_span(s, new_line)
-      continue lines, new_line, start, start
+      continue new_line, start, start
     }
     if s[k] == char.to_int() {
       push_span(line~, start, k, spans)
       break Some((line, k))
     }
-    continue lines, line, start, k + 1
+    continue line, start, k + 1
   }
 }
 
@@ -120,23 +120,23 @@ fn[A] accept_upto(
   after~ : CharCodePos,
 ) -> (LineSpan, Int)? {
   let start = after + 1
-  for char = char, next_line = next_line, s = s, lines = lines, line = line, prev_bslash = false, start = start, acc = spans, k = start {
+  for line = line, prev_bslash = false, start = start, k = start {
     if k > line.last {
       guard next_line(lines) is Some(newline) else { break None }
       if newline.first > newline.last { // Empty
         break None
       }
-      push_span(line~, start, line.last, acc)
+      push_span(line~, start, line.last, spans)
       let start = first_non_blank_in_span(s, newline)
       let prev_bslash = false
-      continue char, next_line, s, lines, newline, prev_bslash, start, acc, start
+      continue newline, prev_bslash, start, start
     } else {
       if s[k] == char.to_int() && not(prev_bslash) {
-        push_span(line~, start, k - 1, acc)
+        push_span(line~, start, k - 1, spans)
         break Some((line, k))
       }
       let prev_bslash = s[k] == '\\' && not(prev_bslash)
-      continue char, next_line, s, lines, line, prev_bslash, start, acc, k + 1
+      continue line, prev_bslash, start, k + 1
     }
   }
 }

@@ -1644,25 +1644,25 @@ fn Parser::parse_cols(
   toks : Tokens,
   k : CharCodePos,
 ) -> Unit {
-  for line = line, k = k {
+  for k = k {
     if toks.inner().is_empty() {
       guard k <= line.last else { break }
       guard self.start_col(line, before=line.last + 1, k) is Col(col, k)
       acc.push(col)
-      continue line, k
+      continue k
     }
     guard toks.inner().front() is Some(Inline({ start, inline, next, .. }))
     match self.start_col(line, before=start, k) {
       Col(col, k) => {
         acc.push(col)
-        continue line, k
+        continue k
       }
       Start(before, is_) => {
         toks.inner().unsafe_pop_front()
         is_.push(inline)
         let (col, k) = self.finish_col(line, before, is_, toks, next)
         acc.push(col)
-        continue line, k
+        continue k
       }
     }
   }

@@ -16,41 +16,41 @@ pub fn link_destination(
   if s[start] == '<'.to_int() {
     // delimited, i.e. start has '<'
     // https://spec.commonmark.org/current/#link-destination 1st
-    for s = s, start = start, last = last, prev = '\u{0}', k = start + 1 {
+    for prev = '\u{0}', k = start + 1 {
       if k > last {
         break None
       }
       let c = Int::unsafe_to_char(s[k])
       match (c, prev) {
         ('\n' | '\r', _) => break None
-        ('\\', '\\') => continue s, start, last, '\u{0}', k + 1
+        ('\\', '\\') => continue '\u{0}', k + 1
         ('<', '\\') => ()
         ('<', _) => break None
         ('>', '\\') => ()
         ('>', _) => break Some((true, start + 1, k - 1))
         (_, _) => ()
       }
-      continue s, start, last, c, k + 1
+      continue c, k + 1
     }
   } else {
     // not_delimited
     // https://spec.commonmark.org/current/#link-destination 2nd
-    for s = s, start = start, last = last, prev = '\u{0}', bal = 0, k = start {
+    for prev = '\u{0}', bal = 0, k = start {
       if k > last {
         break if bal == 0 { Some((false, start, k - 1)) } else { None }
       }
       let c = Int::unsafe_to_char(s[k])
       match (c, prev) {
-        ('\\', '\\') => continue s, start, last, '\u{0}', bal, k + 1
+        ('\\', '\\') => continue '\u{0}', bal, k + 1
         ('(', '\\') => ()
-        ('(', _) => continue s, start, last, c, bal + 1, k + 1
+        ('(', _) => continue c, bal + 1, k + 1
         (')', '\\') => ()
         (')', _) => {
           let bal = bal - 1
           if bal < 0 {
             break Some((false, start, k - 1)) // hit inline link closing ')'
           }
-          continue s, start, last, c, bal, k + 1
+          continue c, bal, k + 1
         }
         (c, _) =>
           if c == ' ' || @char.is_ascii_control(c) {
@@ -61,7 +61,7 @@ pub fn link_destination(
             }
           }
       }
-      continue s, start, last, c, bal, k + 1
+      continue c, bal, k + 1
     }
   }
 }
@@ -94,14 +94,14 @@ pub fn[A] link_title(
     '(' => {
       let start = start + 1
       let acc = []
-      for next_line = next_line, s = s, lines = lines, line = line, prev_bslash = false, start = start, k = start {
+      for line = line, prev_bslash = false, start = start, k = start {
         if k > line.last {
           guard next_line(lines) is Some(newline) else { break None }
           guard newline.first <= newline.last else { break None }
           push_span(line~, start, line.last, acc)
           let start = first_non_blank_in_span(s, newline)
           let prev_bslash = false
-          continue next_line, s, lines, newline, prev_bslash, start, start
+          continue newline, prev_bslash, start, start
         }
         if not(prev_bslash) {
           if s[k] == '(' {
@@ -113,7 +113,7 @@ pub fn[A] link_title(
           }
         }
         let prev_bslash = s[k] == '\\' && not(prev_bslash)
-        continue next_line, s, lines, line, prev_bslash, start, k + 1
+        continue line, prev_bslash, start, k + 1
       }
     }
     _ => None
@@ -139,7 +139,8 @@ pub fn[A] link_label(
   let start = start + 1
   buf.reset()
   let acc = []
-  for b = buf, next_line = next_line, s = s, lines = lines, line = line, prev = '\u{0}', start = start, count = 0, k = start {
+  let b = buf
+  for line = line, prev = '\u{0}', start = start, count = 0, k = start {
     if k > line.last {
       guard next_line(lines) is Some(newline) else { break None }
       if newline.first == newline.last {
@@ -151,7 +152,7 @@ pub fn[A] link_label(
         b.write_char(' ')
       }
       let prev = '\u{0}'
-      continue b, next_line, s, lines, newline, prev, start, count, start
+      continue newline, prev, start, count, start
     }
     if count > 999 {
       break None
@@ -160,7 +161,7 @@ pub fn[A] link_label(
       ('\\', '\\') => {
         b.write_char('\\')
         let prev = '\u{0}'
-        continue b, next_line, s, lines, line, prev, start, count + 1, k + 1
+        continue line, prev, start, count + 1, k + 1
       }
       (']', '\\') => ()
       (']', _) => {
@@ -173,8 +174,7 @@ pub fn[A] link_label(
       }
       ('[', '\\') => ()
       ('[', _) => break None
-      (' ' | '\t' as prev, _) =>
-        continue b, next_line, s, lines, line, prev, start, count + 1, k + 1
+      (' ' | '\t' as prev, _) => continue line, prev, start, count + 1, k + 1
       _ => ()
     }
     // Collapse non initial whitespace
@@ -188,6 +188,6 @@ pub fn[A] link_label(
     let k1 = k + @char.length_utf8(u.to_int())
     b.write_char(@char.to_ascii_lower(u))
     let prev = s[k].unsafe_to_char()
-    continue b, next_line, s, lines, line, prev, start, count + 1, k1
+    continue line, prev, start, count + 1, k1
   }
 }

@@ -93,7 +93,7 @@ pub fn utf_16_clean_raw(
       }
     }
     flush(last, first, dirty)
-    for last = last, start = dirty, k = dirty {
+    for start = dirty, k = dirty {
       if k > last {
         flush(last, start, k)
         break buf.to_string()
@@ -102,40 +102,40 @@ pub fn utf_16_clean_raw(
         let next = k + 1
         flush(last, start, k)
         buf.write_char(rep)
-        continue last, next, next
+        continue next, next
       }
       if s[k].to_char() is Some(c) && c.is_ascii() {
-        continue last, start, k + 1
+        continue start, k + 1
       }
       match at_checked(s, k) {
         Ok(d) => {
           let next = k + length_utf16(d.to_int())
-          continue last, start, next
+          continue start, next
         }
         Err(d) => {
           let next = k + length_utf16(d)
           flush(last, start, k)
           buf.write_char(rep)
-          continue last, next, next
+          continue next, next
         }
       }
     }
   }
 
   fn check(last, first, k) {
-    for last = last, first = first, k = k {
+    for k = k {
       break if k > last {
         s.substring(start=first, end=last + 1)
       } else if s[k] == '\u{0}' {
         buf.reset()
         clean(last, first, k)
       } else if s[k].to_char() is Some(c) && c.is_ascii() {
-        continue last, first, k + 1
+        continue k + 1
       } else {
         match at_checked(s, k) {
           Ok(d) => {
             let next = k + length_utf16(d.to_int())
-            continue last, first, next
+            continue next
           }
           Err(_d) => {
             buf.reset()
@@ -204,7 +204,7 @@ fn _utf_16_clean_unesc_unref(
 
   /// https://spec.commonmark.org/current/#hexadecimal-numeric-character-references
   letrec try_entity_hex = fn(last, start, num_start, k, u) {
-    for last = last, start = start, num_start = num_start, k = k, u = u {
+    for k = k, u = u {
       if k > last || k > num_start + 6 {
         return resolve(last, start, k)
       }
@@ -226,13 +226,13 @@ fn _utf_16_clean_unesc_unref(
           let c = c.unsafe_to_char()
           guard c.is_ascii_hexdigit() else { return resolve(last, start, k) }
           let u = u * 16 + ascii_hexdigit_to_int(c)
-          continue last, start, num_start, k + 1, u
+          continue k + 1, u
         }
       }
     }
   }
   and try_entity_dec = fn(last, start, num_start, k, u) {
-    for last = last, start = start, num_start = num_start, k = k, u = u {
+    for k = k, u = u {
       if k > last || k > num_start + 7 {
         return resolve(last, start, k)
       }
@@ -254,14 +254,14 @@ fn _utf_16_clean_unesc_unref(
           let c = c.unsafe_to_char()
           guard c.is_ascii_digit() else { return resolve(last, start, k) }
           let u = u * 10 + ascii_digit_to_int(c)
-          continue last, start, num_start, k + 1, u
+          continue k + 1, u
         }
       }
     }
   }
   /// https://spec.commonmark.org/current/#entity-and-numeric-character-references 
   and try_entity_named = fn(last, start, name_start, k) {
-    for last = last, start = start, name_start = name_start, k = k {
+    for k = k {
       if k > last {
         return resolve(last, start, k)
       }
@@ -281,13 +281,13 @@ fn _utf_16_clean_unesc_unref(
         c => {
           let c = c.unsafe_to_char()
           guard is_ascii_alphanum(c) else { return resolve(last, start, k) }
-          continue last, start, name_start, k + 1
+          continue k + 1
         }
       }
     }
   }
   and resolve = fn(last, start, k) {
-    for last = last, start = start, k = k {
+    for start = start, k = k {
       if k > last {
         flush(last, start, k)
         return buf.to_string()
@@ -297,24 +297,24 @@ fn _utf_16_clean_unesc_unref(
         ('\u{0}', _) => {
           flush(last, start, k)
           buf.write_char(rep)
-          continue last, next, next
+          continue next, next
         }
         ('\\', true) => {
           if next > last {
-            continue last, start, next
+            continue start, next
           }
           let nc = s[next].unsafe_to_char()
           if not(is_ascii_punctuation(nc)) {
-            continue last, start, next
+            continue start, next
           }
           let next1 = next + 1
           flush(last, start, k)
           buf.write_char(nc)
-          continue last, next1, next1
+          continue next1, next1
         }
         ('&', _) => {
           if k + 2 > last {
-            continue last, start, next
+            continue start, next
           }
           match s[next] {
             '#' => {
@@ -328,7 +328,7 @@ fn _utf_16_clean_unesc_unref(
                   if c.to_char() is Some(c) && c.is_ascii_digit() {
                     return try_entity_dec(last, start, next, next, 0)
                   }
-                  continue last, start, next
+                  continue start, next
                 }
               }
             }
@@ -336,24 +336,24 @@ fn _utf_16_clean_unesc_unref(
               if c.to_char() is Some(c) && c.is_ascii_alphabetic() {
                 return try_entity_named(last, start, next, next)
               }
-              continue last, start, next
+              continue start, next
             }
           }
         }
         (b, _) => {
           if b.to_char() is Some(c) && c.is_ascii() {
-            continue last, start, next
+            continue start, next
           }
           match at_checked(s, k) {
             Ok(d) => {
               let next = k + length_utf16(d.to_int())
-              continue last, start, next
+              continue start, next
             }
             Err(d) => {
               let next = k + length_utf16(d)
               flush(last, start, k)
               buf.write_char(rep)
-              continue last, next, next
+              continue next, next
             }
           }
         }
@@ -365,27 +365,25 @@ fn _utf_16_clean_unesc_unref(
   let max = s.length() - 1
   let last = @cmp.minimum(last, max)
   let first = @cmp.maximum(first, 0)
-  for start = first, k = first {
-    guard k <= last else {
-      break s.substring(start=first, end=first + last - start + 1)
-    }
+  for k = first {
+    guard k <= last else { break s.substring(start=first, end=last + 1) }
     match (s[k], do_unesc) {
       ('\\', true) | ('&', _) | ('\u{0}', _) => {
         buf.reset()
-        break resolve(last, start, k)
+        break resolve(last, first, k)
       }
       (b, _) => {
         if b.to_char() is Some(c) && c.is_ascii() {
-          continue start, k + 1
+          continue k + 1
         }
         match at_checked(s, k) {
           Ok(d) => {
             let next = k + length_utf16(d.to_int())
-            continue start, next
+            continue next
           }
           Err(_d) => {
             buf.reset()
-            break resolve(last, start, k)
+            break resolve(last, first, k)
           }
         }
       }
