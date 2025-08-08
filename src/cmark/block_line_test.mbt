@@ -18,7 +18,7 @@ test "BlockLine::list_text_loc handles empty sequence" {
   inspect(
     BlockLine::list_text_loc(empty_seq),
     content=(
-      #|{file: "-", first_ccode: -1, last_ccode: -1, first_line: LinePos((-1, -1)), last_line: LinePos((-1, -1))}
+      #|{file: "-", first_ccode: -1, last_ccode: -1, first_line: LinePos(-1, -1), last_line: LinePos(-1, -1)}
     ),
   )
 }
@@ -29,8 +29,8 @@ test "BlockLine::list_text_loc handles single element sequence" {
     file: @cmark_base.file_path_none,
     first_ccode: 0,
     last_ccode: 5,
-    first_line: (1, 0),
-    last_line: (1, 5),
+    first_line: LinePos(1, 0),
+    last_line: LinePos(1, 5),
   }
   let meta = @cmark_base.Meta::new(loc~)
   let single_node : BlockLine = { v: "hello", meta }
@@ -39,7 +39,7 @@ test "BlockLine::list_text_loc handles single element sequence" {
   inspect(
     result,
     content=(
-      #|{file: "-", first_ccode: 0, last_ccode: 5, first_line: LinePos((1, 0)), last_line: LinePos((1, 5))}
+      #|{file: "-", first_ccode: 0, last_ccode: 5, first_line: LinePos(1, 0), last_line: LinePos(1, 5)}
     ),
   )
 }
@@ -51,8 +51,8 @@ test "BlockLine::list_text_loc handles multiple element sequence" {
     file: @cmark_base.file_path_none,
     first_ccode: 0,
     last_ccode: 5,
-    first_line: (1, 0),
-    last_line: (1, 5),
+    first_line: LinePos(1, 0),
+    last_line: LinePos(1, 5),
   }
   let meta1 = @cmark_base.Meta::new(loc=loc1)
   let node1 : BlockLine = { v: "hello", meta: meta1 }
@@ -62,8 +62,8 @@ test "BlockLine::list_text_loc handles multiple element sequence" {
     file: @cmark_base.file_path_none,
     first_ccode: 6,
     last_ccode: 11,
-    first_line: (2, 0),
-    last_line: (2, 5),
+    first_line: LinePos(2, 0),
+    last_line: LinePos(2, 5),
   }
   let meta2 = @cmark_base.Meta::new(loc=loc2)
   let node2 : BlockLine = { v: "world", meta: meta2 }
@@ -74,7 +74,7 @@ test "BlockLine::list_text_loc handles multiple element sequence" {
   inspect(
     result,
     content=(
-      #|{file: "-", first_ccode: 0, last_ccode: 11, first_line: LinePos((1, 0)), last_line: LinePos((2, 5))}
+      #|{file: "-", first_ccode: 0, last_ccode: 11, first_line: LinePos(1, 0), last_line: LinePos(2, 5)}
     ),
   )
 }
@@ -85,7 +85,7 @@ test "Tight::list_text_loc handles empty sequence" {
   inspect(
     Tight::list_text_loc(empty_seq),
     content=(
-      #|{file: "-", first_ccode: -1, last_ccode: -1, first_line: LinePos((-1, -1)), last_line: LinePos((-1, -1))}
+      #|{file: "-", first_ccode: -1, last_ccode: -1, first_line: LinePos(-1, -1), last_line: LinePos(-1, -1)}
     ),
   )
 }
@@ -96,8 +96,8 @@ test "Tight::list_text_loc handles single element sequence" {
     file: @cmark_base.file_path_none,
     first_ccode: 0,
     last_ccode: 5,
-    first_line: (1, 0),
-    last_line: (1, 5),
+    first_line: LinePos(1, 0),
+    last_line: LinePos(1, 5),
   }
   let meta = @cmark_base.Meta::new(loc~)
   let node : StringNode = { v: "hello", meta }
@@ -106,7 +106,7 @@ test "Tight::list_text_loc handles single element sequence" {
   inspect(
     Tight::list_text_loc(seq),
     content=(
-      #|{file: "-", first_ccode: 0, last_ccode: 5, first_line: LinePos((1, 0)), last_line: LinePos((1, 5))}
+      #|{file: "-", first_ccode: 0, last_ccode: 5, first_line: LinePos(1, 0), last_line: LinePos(1, 5)}
     ),
   )
 }
@@ -118,8 +118,8 @@ test "Tight::list_text_loc handles multiple element sequence" {
     file: @cmark_base.file_path_none,
     first_ccode: 0,
     last_ccode: 5,
-    first_line: (1, 0),
-    last_line: (1, 5),
+    first_line: LinePos(1, 0),
+    last_line: LinePos(1, 5),
   }
   let meta1 = @cmark_base.Meta::new(loc=loc1)
   let node1 : StringNode = { v: "hello", meta: meta1 }
@@ -130,8 +130,8 @@ test "Tight::list_text_loc handles multiple element sequence" {
     file: @cmark_base.file_path_none,
     first_ccode: 6,
     last_ccode: 11,
-    first_line: (2, 0),
-    last_line: (2, 5),
+    first_line: LinePos(2, 0),
+    last_line: LinePos(2, 5),
   }
   let meta2 = @cmark_base.Meta::new(loc=loc2)
   let node2 : StringNode = { v: "world", meta: meta2 }
@@ -140,7 +140,7 @@ test "Tight::list_text_loc handles multiple element sequence" {
   inspect(
     Tight::list_text_loc(seq),
     content=(
-      #|{file: "-", first_ccode: 0, last_ccode: 11, first_line: LinePos((1, 0)), last_line: LinePos((2, 5))}
+      #|{file: "-", first_ccode: 0, last_ccode: 11, first_line: LinePos(1, 0), last_line: LinePos(2, 5)}
     ),
   )
 }

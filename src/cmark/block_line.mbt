@@ -5,7 +5,7 @@
 /// paragraph in a block quote are the lines stripped from the block
 /// quote markers.  We call the line resulting from stripping the
 /// block structure preceeding a given block a {e block line}.
-pub(all) type BlockLine Node[String]
+pub(all) struct BlockLine(Node[String])
 
 ///|
 pub typealias Node[Blanks] as BlockLineBlank

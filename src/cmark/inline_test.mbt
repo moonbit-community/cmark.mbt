@@ -124,12 +124,10 @@ test "Inline::normalize with Emphasis type" {
 
   // Normalize and check result
   let normalized = emphasis.normalize()
-  @json.inspect(normalized, content={
-    "$tag": "Emphasis",
-    "0": [
-      { "delim": "*", "inline": { "$tag": "Text", "0": ["emphasized text"] } },
-    ],
-  })
+  @json.inspect(normalized, content=[
+    "Emphasis",
+    [{ "delim": "*", "inline": ["Text", ["emphasized text"]] }],
+  ])
 }
 
 ///|
@@ -144,10 +142,10 @@ test "Inline::normalize with StrongEmphasis type" {
 
   // Normalize and check result
   let normalized = strong.normalize()
-  @json.inspect(normalized, content={
-    "$tag": "StrongEmphasis",
-    "0": [{ "delim": "*", "inline": { "$tag": "Text", "0": ["strong text"] } }],
-  })
+  @json.inspect(normalized, content=[
+    "StrongEmphasis",
+    [{ "delim": "*", "inline": ["Text", ["strong text"]] }],
+  ])
 }
 
 ///|
@@ -209,7 +207,7 @@ test "Inline::normalize with more complex Inlines structure" {
 
   // The normalization should flatten the nested Inlines and concat consecutive texts
   let normalized = outer_inlines.normalize()
-  @json.inspect(normalized, content={ "$tag": "Text", "0": ["firstsecond"] })
+  @json.inspect(normalized, content=["Text", ["firstsecond"]])
 }
 
 ///|
@@ -225,14 +223,14 @@ test "Inline::normalize with nested structures" {
 
   // Normalize and check that it correctly processed nested elements
   let normalized = image.normalize()
-  @json.inspect(normalized, content={
-    "$tag": "Image",
-    "0": [
+  @json.inspect(normalized, content=[
+    "Image",
+    [
       {
-        "text": { "$tag": "Text", "0": ["alt text"] },
-        "reference": {
-          "$tag": "Inline",
-          "0": [
+        "text": ["Text", ["alt text"]],
+        "reference": [
+          "Inline",
+          [
             {
               "layout": {
                 "indent": 0,
@@ -244,10 +242,10 @@ test "Inline::normalize with nested structures" {
               },
             },
           ],
-        },
+        ],
       },
     ],
-  })
+  ])
 }
 
 ///|

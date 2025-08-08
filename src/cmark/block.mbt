@@ -13,7 +13,7 @@ pub(all) enum Block {
   ExtMathBlock(Node[CodeBlock])
   ExtTable(Node[Table])
   ExtFootnoteDefinition(Node[Footnote])
-} derive(Show, ToJson)
+} derive(Show, ToJson(style="flat"))
 
 ///|
 pub fn Block::empty() -> Block {
@@ -137,7 +137,7 @@ pub(all) struct CodeBlock {
 pub(all) enum CodeBlockLayout {
   Indented
   Fenced(CodeBlockFencedLayout)
-} derive(Show, ToJson)
+} derive(Show, ToJson(style="flat"))
 
 ///|
 pub(all) struct CodeBlockFencedLayout {
@@ -221,7 +221,7 @@ pub(all) struct BlockHeading {
 pub(all) enum BlockHeadingLayout {
   Atx(BlockHeadingAtxLayout)
   Setext(BlockHeadingSetextLayout)
-} derive(Show, ToJson)
+} derive(Show, ToJson(style="flat"))
 
 ///|
 pub(all) struct BlockHeadingAtxLayout {
@@ -248,7 +248,7 @@ pub(all) struct BlockHeadingSetextLayout {
 pub(all) enum BlockHeadingId {
   Auto(String)
   Id(String)
-} derive(Show, FromJson, ToJson)
+} derive(Show, FromJson(style="flat"), ToJson(style="flat"))
 
 ///|
 pub fn BlockHeading::new(
@@ -261,7 +261,7 @@ pub fn BlockHeading::new(
 }
 
 ///| The type for [HTML blocks](https://spec.commonmark.org/0.30/#html-blocks).
-pub(all) type HtmlBlock Seq[StringNode] derive(Show, ToJson)
+pub(all) struct HtmlBlock(Seq[StringNode]) derive(Show, ToJson)
 
 ///|
 pub(all) struct ListItem {
@@ -414,20 +414,25 @@ pub(all) enum TableAlign {
   Left
   Center
   Right
-} derive(Show, FromJson, ToJson)
+} derive(Show, FromJson(style="flat"), ToJson(style="flat"))
 
 ///|
 pub(all) enum TableRow {
   Header(Seq[(Inline, TableCellLayout)])
   Sep(Seq[Node[TableSep]])
   Data(Seq[(Inline, TableCellLayout)])
-} derive(Show, ToJson)
+} derive(Show, ToJson(style="flat"))
 
 ///|
-pub(all) type TableSep (TableAlign?, Count) derive(Show, ToJson)
+pub(all) struct TableSep((TableAlign?, Count)) derive(Show, ToJson)
 
 ///|
-pub(all) type TableCellLayout (Blanks, Blanks) derive(Show, ToJson, Eq, Compare)
+pub(all) struct TableCellLayout((Blanks, Blanks)) derive (
+  Show,
+  ToJson,
+  Eq,
+  Compare,
+)
 
 ///|
 pub fn Table::new(

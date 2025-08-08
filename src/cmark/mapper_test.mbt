@@ -175,16 +175,16 @@ test "map_block with paragraph" {
   )
   let result = mapper.map_block(paragraph)
   @json.inspect(result, content=[
-    {
-      "$tag": "Paragraph",
-      "0": [
+    [
+      "Paragraph",
+      [
         {
           "leading_indent": 0,
-          "inline": { "$tag": "Text", "0": ["paragraph"] },
+          "inline": ["Text", ["paragraph"]],
           "trailing_blanks": "",
         },
       ],
-    },
+    ],
   ])
 }
 

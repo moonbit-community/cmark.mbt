@@ -9,7 +9,14 @@ import(
 // Values
 let layout_empty : Node[String]
 
-fn layout_of_string(meta~ : @cmark_base.Meta = .., String) -> Node[String]
+fn layout_of_string(meta? : @cmark_base.Meta, String) -> Node[String]
+
+// Errors
+pub(all) suberror FolderError String
+impl Show for FolderError
+
+pub(all) suberror MapperError String
+impl Show for MapperError
 
 // Types and methods
 pub(all) enum Block {
@@ -27,7 +34,7 @@ pub(all) enum Block {
   ExtTable(Node[Table])
   ExtFootnoteDefinition(Node[Footnote])
 }
-fn Block::defs(Self, init~ : Map[String, LabelDef] = ..) -> Map[String, LabelDef]
+fn Block::defs(Self, init? : Map[String, LabelDef]) -> Map[String, LabelDef]
 fn Block::empty() -> Self
 fn Block::meta(Self) -> @cmark_base.Meta
 fn Block::normalize(Self) -> Self
@@ -40,7 +47,7 @@ pub(all) struct BlockHeading {
   inline : Inline
   id : BlockHeadingId?
 }
-fn BlockHeading::new(id~ : BlockHeadingId? = .., layout~ : BlockHeadingLayout = .., level~ : Int, Inline) -> Self
+fn BlockHeading::new(id? : BlockHeadingId?, layout? : BlockHeadingLayout, level~ : Int, Inline) -> Self
 impl Show for BlockHeading
 impl ToJson for BlockHeading
 
@@ -79,7 +86,7 @@ pub(all) struct BlockHeadingSetextLayout {
 impl Show for BlockHeadingSetextLayout
 impl ToJson for BlockHeadingSetextLayout
 
-pub(all) type BlockLine Node[String]
+pub(all) struct BlockLine(Node[String])
 fn BlockLine::inner(Self) -> Node[String]
 fn BlockLine::list_text_loc(Seq[Self]) -> @cmark_base.TextLoc
 fn BlockLine::to_string(Self) -> String
@@ -99,7 +106,7 @@ pub(all) struct BlockParagraph {
   inline : Inline
   trailing_blanks : String
 }
-fn BlockParagraph::new(leading_indent~ : Int = .., trailing_blanks~ : String = .., Inline) -> Self
+fn BlockParagraph::new(leading_indent? : Int, trailing_blanks? : String, Inline) -> Self
 impl Show for BlockParagraph
 impl ToJson for BlockParagraph
 
@@ -108,7 +115,7 @@ pub(all) struct BlockQuote {
   block : Block
 }
 fn BlockQuote::map_block(Self, (Block) -> Block) -> Self
-fn BlockQuote::new(indent~ : Int = .., Block) -> Self
+fn BlockQuote::new(indent? : Int, Block) -> Self
 fn BlockQuote::normalize_block(Self) -> Self
 impl Show for BlockQuote
 impl ToJson for BlockQuote
@@ -117,7 +124,7 @@ pub(all) struct BlockThematicBreak {
   indent : Int
   layout : String
 }
-fn BlockThematicBreak::new(indent~ : Int = .., layout~ : String = ..) -> Self
+fn BlockThematicBreak::new(indent? : Int, layout? : String) -> Self
 impl Show for BlockThematicBreak
 impl ToJson for BlockThematicBreak
 impl @json.FromJson for BlockThematicBreak
@@ -129,7 +136,7 @@ pub(all) struct CodeBlock {
 }
 fn CodeBlock::language_of_info_string(String) -> (String, String)?
 fn CodeBlock::make_fence(Self) -> (Char, Int)
-fn CodeBlock::new(layout~ : CodeBlockLayout = .., info_string~ : Node[String]? = .., Seq[Node[String]]) -> Self
+fn CodeBlock::new(layout? : CodeBlockLayout, info_string? : Node[String]?, Seq[Node[String]]) -> Self
 impl Show for CodeBlock
 impl ToJson for CodeBlock
 
@@ -155,12 +162,12 @@ pub(all) struct Doc {
   defs : Map[String, LabelDef]
 }
 fn Doc::empty() -> Self
-fn Doc::from_string(defs~ : Map[String, LabelDef] = .., resolver~ : LabelResolverFn = .., nested_links~ : Bool = .., heading_auto_ids~ : Bool = .., layout~ : Bool = .., locs~ : Bool = .., file~ : String = .., strict~ : Bool = .., String) -> Self
-fn Doc::new(nl~ : String = .., defs~ : Map[String, LabelDef] = .., Block) -> Self
+fn Doc::from_string(defs? : Map[String, LabelDef], resolver? : LabelResolverFn, nested_links? : Bool, heading_auto_ids? : Bool, layout? : Bool, locs? : Bool, file? : String, strict? : Bool, String) -> Self
+fn Doc::new(nl? : String, defs? : Map[String, LabelDef], Block) -> Self
 impl Show for Doc
 impl ToJson for Doc
 
-pub(all) type FoldFn[A, B] (Folder[B], B, A) -> B raise FolderError
+pub(all) struct FoldFn[A, B]((Folder[B], B, A) -> B raise FolderError)
 fn[A, B] FoldFn::inner(Self[A, B]) -> (Folder[B], B, A) -> B raise FolderError
 
 pub(all) struct Folder[A] {
@@ -174,14 +181,11 @@ fn[A] Folder::fold_block(Self[A], A, Block) -> A raise FolderError
 fn[A] Folder::fold_doc(Self[A], A, Doc) -> A raise FolderError
 fn[A] Folder::fold_inline(Self[A], A, Inline) -> A raise FolderError
 fn[A] Folder::inline_ext_none(Self[A], A, Inline) -> A raise FolderError
-fn[A] Folder::new(inline_ext_default~ : FoldFn[Inline, A] = .., block_ext_default~ : FoldFn[Block, A] = .., inline~ : FolderFn[Inline, A] = .., block~ : FolderFn[Block, A] = ..) -> Self[A]
+fn[A] Folder::new(inline_ext_default? : FoldFn[Inline, A], block_ext_default? : FoldFn[Block, A], inline? : FolderFn[Inline, A], block? : FolderFn[Block, A]) -> Self[A]
 fn[A, B] Folder::none(Self[A], A, B) -> FolderResult[A]
 fn[A] Folder::ret(A) -> FolderResult[A]
 
-pub(all) suberror FolderError String
-impl Show for FolderError
-
-pub(all) type FolderFn[A, B] (Folder[B], B, A) -> FolderResult[B]
+pub(all) struct FolderFn[A, B]((Folder[B], B, A) -> FolderResult[B])
 fn[A, B] FolderFn::inner(Self[A, B]) -> (Folder[B], B, A) -> FolderResult[B]
 
 pub(all) enum FolderResult[A] {
@@ -200,12 +204,12 @@ pub(all) struct Footnote {
   block : Block
 }
 fn Footnote::map_block(Self, (Block) -> Block) -> Self
-fn Footnote::new(indent~ : Int = .., defined_label? : Label?, Label, Block) -> Self
+fn Footnote::new(indent? : Int, defined_label? : Label?, Label, Block) -> Self
 fn Footnote::normalize_block(Self) -> Self
 impl Show for Footnote
 impl ToJson for Footnote
 
-pub(all) type HtmlBlock Seq[Node[String]]
+pub(all) struct HtmlBlock(Seq[Node[String]])
 fn HtmlBlock::inner(Self) -> Seq[Node[String]]
 impl Show for HtmlBlock
 impl ToJson for HtmlBlock
@@ -225,7 +229,7 @@ pub(all) enum Inline {
   ExtMathSpan(Node[InlineMathSpan])
 }
 fn Inline::empty() -> Self
-fn Inline::id(Self, buf~ : StringBuilder = ..) -> String
+fn Inline::id(Self, buf? : StringBuilder) -> String
 fn Inline::is_empty(Self) -> Bool
 fn Inline::meta(Self) -> @cmark_base.Meta
 fn Inline::normalize(Self) -> Self
@@ -248,7 +252,7 @@ pub(all) struct InlineBreak {
   ty : InlineBreakType
   layout_after : Node[String]
 }
-fn InlineBreak::new(layout_before~ : Node[String] = .., layout_after~ : Node[String] = .., InlineBreakType) -> Self
+fn InlineBreak::new(layout_before? : Node[String], layout_after? : Node[String], InlineBreakType) -> Self
 impl Eq for InlineBreak
 impl Show for InlineBreak
 impl ToJson for InlineBreak
@@ -268,7 +272,7 @@ pub(all) struct InlineCodeSpan {
   code_layout : Seq[Tight]
 }
 fn InlineCodeSpan::code(Self) -> String
-fn InlineCodeSpan::from_string(meta~ : @cmark_base.Meta = .., String) -> Self
+fn InlineCodeSpan::from_string(meta? : @cmark_base.Meta, String) -> Self
 fn InlineCodeSpan::new(backticks~ : Int, Seq[Tight]) -> Self
 impl Eq for InlineCodeSpan
 impl Show for InlineCodeSpan
@@ -278,7 +282,7 @@ pub(all) struct InlineEmphasis {
   delim : Char
   inline : Inline
 }
-fn InlineEmphasis::new(delim~ : Char = .., Inline) -> Self
+fn InlineEmphasis::new(delim? : Char, Inline) -> Self
 impl Eq for InlineEmphasis
 impl Show for InlineEmphasis
 impl ToJson for InlineEmphasis
@@ -304,13 +308,13 @@ impl Eq for InlineMathSpan
 impl Show for InlineMathSpan
 impl ToJson for InlineMathSpan
 
-pub(all) type InlineRawHtml Seq[Tight]
+pub(all) struct InlineRawHtml(Seq[Tight])
 fn InlineRawHtml::inner(Self) -> Seq[Tight]
 impl Eq for InlineRawHtml
 impl Show for InlineRawHtml
 impl ToJson for InlineRawHtml
 
-pub(all) type InlineStrikethrough Inline
+pub(all) struct InlineStrikethrough(Inline)
 fn InlineStrikethrough::inner(Self) -> Inline
 impl Eq for InlineStrikethrough
 impl Show for InlineStrikethrough
@@ -322,7 +326,7 @@ pub(all) struct Label {
   text : Seq[Tight]
 }
 fn Label::compare(Self, Self) -> Int
-fn Label::new(meta~ : @cmark_base.Meta = .., key~ : String, Seq[Tight]) -> Self
+fn Label::new(meta? : @cmark_base.Meta, key~ : String, Seq[Tight]) -> Self
 fn Label::text_loc(Self) -> @cmark_base.TextLoc
 impl Eq for Label
 impl Show for Label
@@ -341,7 +345,7 @@ pub(all) enum LabelDef {
 impl Show for LabelDef
 impl ToJson for LabelDef
 
-pub(all) type LabelResolverFn (LabelContext) -> Label?
+pub(all) struct LabelResolverFn((LabelContext) -> Label?)
 fn LabelResolverFn::inner(Self) -> (LabelContext) -> Label?
 
 pub(all) struct LinkDefinition {
@@ -351,7 +355,7 @@ pub(all) struct LinkDefinition {
   dest : Node[String]?
   title : Seq[Tight]?
 }
-fn LinkDefinition::new(layout~ : LinkDefinitionLayout = .., label~ : Label? = .., defined_label~ : Label? = .., dest~ : Node[String]? = .., title~ : Seq[Tight]? = ..) -> Self
+fn LinkDefinition::new(layout? : LinkDefinitionLayout, label? : Label?, defined_label? : Label?, dest? : Node[String]?, title? : Seq[Tight]?) -> Self
 impl Eq for LinkDefinition
 impl Show for LinkDefinition
 impl ToJson for LinkDefinition
@@ -383,7 +387,7 @@ pub(all) struct ListItem {
   ext_task_marker : Node[Char]?
 }
 fn ListItem::map_block(Self, (Block) -> Block) -> Self
-fn ListItem::new(before_marker~ : Int = .., marker~ : Node[String] = .., after_marker~ : Int = .., ext_task_marker~ : Node[Char]?, Block) -> Self
+fn ListItem::new(before_marker? : Int, marker? : Node[String], after_marker? : Int, ext_task_marker~ : Node[Char]?, Block) -> Self
 fn ListItem::normalize_block(Self) -> Self
 impl Show for ListItem
 impl ToJson for ListItem
@@ -396,7 +400,7 @@ pub(all) enum ListTaskStatus {
 }
 fn ListTaskStatus::from_marker(Char) -> Self
 
-pub(all) type MapFn[A] (Mapper, A) -> A? raise MapperError
+pub(all) struct MapFn[A]((Mapper, A) -> A? raise MapperError)
 fn[A] MapFn::inner(Self[A]) -> (Mapper, A) -> A? raise MapperError
 
 pub(all) struct Mapper {
@@ -411,14 +415,11 @@ fn[A] Mapper::inline_ext_none(Self, A) -> A? raise MapperError
 fn Mapper::map_block(Self, Block) -> Block?
 fn Mapper::map_doc(Self, Doc) -> Doc
 fn Mapper::map_inline(Self, Inline) -> Inline?
-fn Mapper::new(inline_ext_default~ : MapFn[Inline] = .., block_ext_default~ : MapFn[Block] = .., inline~ : MapperFn[Inline] = .., block~ : MapperFn[Block] = ..) -> Self
+fn Mapper::new(inline_ext_default? : MapFn[Inline], block_ext_default? : MapFn[Block], inline? : MapperFn[Inline], block? : MapperFn[Block]) -> Self
 fn[A] Mapper::none(Self, A) -> MapperResult[A]
 fn[A] Mapper::ret(A) -> MapperResult[A]
 
-pub(all) suberror MapperError String
-impl Show for MapperError
-
-pub(all) type MapperFn[A] (Mapper, A) -> MapperResult[A]
+pub(all) struct MapperFn[A]((Mapper, A) -> MapperResult[A])
 fn[A] MapperFn::inner(Self[A]) -> (Mapper, A) -> MapperResult[A]
 
 pub(all) enum MapperResult[A] {
@@ -434,9 +435,9 @@ pub(all) struct Node[A] {
   v : A
   meta : @cmark_base.Meta
 }
-fn Node::empty(meta~ : @cmark_base.Meta = ..) -> Self[String]
+fn Node::empty(meta? : @cmark_base.Meta) -> Self[String]
 fn[A, B] Node::map(Self[A], (A) -> B) -> Self[B]
-fn[A] Node::new(A, meta~ : @cmark_base.Meta = ..) -> Self[A]
+fn[A] Node::new(A, meta? : @cmark_base.Meta) -> Self[A]
 impl[A : Eq] Eq for Node[A]
 impl[A : Show] Show for Node[A]
 impl[A : ToJson] ToJson for Node[A]
@@ -482,7 +483,7 @@ pub(all) struct Table {
   col_count : Int
   rows : Seq[(Node[TableRow], String)]
 }
-fn Table::new(indent~ : Int = .., Seq[(Node[TableRow], String)]) -> Self
+fn Table::new(indent? : Int, Seq[(Node[TableRow], String)]) -> Self
 impl Show for Table
 impl ToJson for Table
 
@@ -495,7 +496,7 @@ impl Show for TableAlign
 impl ToJson for TableAlign
 impl @json.FromJson for TableAlign
 
-pub(all) type TableCellLayout (String, String)
+pub(all) struct TableCellLayout((String, String))
 fn TableCellLayout::inner(Self) -> (String, String)
 impl Compare for TableCellLayout
 impl Eq for TableCellLayout
@@ -510,7 +511,7 @@ pub(all) enum TableRow {
 impl Show for TableRow
 impl ToJson for TableRow
 
-pub(all) type TableSep (TableAlign?, Int)
+pub(all) struct TableSep((TableAlign?, Int))
 fn TableSep::inner(Self) -> (TableAlign?, Int)
 impl Show for TableSep
 impl ToJson for TableSep
@@ -519,7 +520,7 @@ pub(all) struct Tight {
   blanks : String
   node : Node[String]
 }
-fn Tight::empty(meta~ : @cmark_base.Meta = ..) -> Self
+fn Tight::empty(meta? : @cmark_base.Meta) -> Self
 fn Tight::list_text_loc(Seq[Self]) -> @cmark_base.TextLoc
 fn Tight::to_string(Self) -> String
 impl Eq for Tight

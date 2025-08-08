@@ -7,17 +7,17 @@ pub(all) struct Folder[A] {
 }
 
 ///|
-pub(all) type FoldFn[A, B] (Folder[B], B, A) -> B raise FolderError
+pub(all) struct FoldFn[A, B]((Folder[B], B, A) -> B raise FolderError)
 
 ///|
-pub(all) type FolderFn[A, B] (Folder[B], B, A) -> FolderResult[B]
+pub(all) struct FolderFn[A, B]((Folder[B], B, A) -> FolderResult[B])
 
 ///| The type for folder results.
 /// `Default` means doing the default fold.
 pub(all) enum FolderResult[A] {
   Default
   Fold(A)
-} derive(Eq, Show, ToJson)
+} derive(Eq, Show, ToJson(style="flat"))
 
 ///|
 pub impl[A] Default for FolderResult[A] with default() {

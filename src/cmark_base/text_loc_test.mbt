@@ -24,8 +24,8 @@ test "TextLoc::after basic functionality" {
   let after_loc = loc.after()
   inspect(after_loc.first_ccode, content="0")
   inspect(after_loc.last_ccode, content="-1")
-  inspect(after_loc.first_line, content="LinePos((-1, -1))")
-  inspect(after_loc.last_line, content="LinePos((-1, -1))")
+  inspect(after_loc.first_line, content="LinePos(-1, -1)")
+  inspect(after_loc.last_line, content="LinePos(-1, -1)")
 }
 
 ///|
@@ -35,7 +35,7 @@ test "test case TextLoc::reloc" {
   inspect(
     loc1.reloc(loc2),
     content=(
-      #|{file: "-", first_ccode: -1, last_ccode: -1, first_line: LinePos((-1, -1)), last_line: LinePos((-1, -1))}
+      #|{file: "-", first_ccode: -1, last_ccode: -1, first_line: LinePos(-1, -1), last_line: LinePos(-1, -1)}
     ),
   )
 }
@@ -46,8 +46,8 @@ test "TextLoc to_first method test" {
     file: "dummy_file",
     first_ccode: 10,
     last_ccode: 20,
-    first_line: (1, 10),
-    last_line: (2, 20),
+    first_line: LinePos(1, 10),
+    last_line: LinePos(2, 20),
   }
   let modified_loc = initial_loc.to_first()
   inspect(modified_loc.last_ccode, content="10")
@@ -61,10 +61,10 @@ test "TextLoc to_last method" {
     file: "test_file",
     first_ccode: 10,
     last_ccode: 20,
-    first_line: (1, 10),
-    last_line: (1, 20),
+    first_line: LinePos(1, 10),
+    last_line: LinePos(1, 20),
   }
   let loc_transformed = loc_initial.to_last()
   inspect(loc_transformed.first_ccode, content="20")
-  inspect(loc_transformed.first_line, content="LinePos((1, 20))")
+  inspect(loc_transformed.first_line, content="LinePos(1, 20)")
 }

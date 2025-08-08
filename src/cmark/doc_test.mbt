@@ -3,289 +3,287 @@ test "basic" {
   let rendered = Doc::from_string(test_base_md_str)
   @json.inspect(rendered, content={
     "nl": "\n",
-    "block": {
-      "$tag": "Blocks",
-      "0": [
+    "block": [
+      "Blocks",
+      [
         [
-          {
-            "$tag": "Heading",
-            "0": [
+          [
+            "Heading",
+            [
               {
-                "layout": {
-                  "$tag": "Setext",
-                  "0": {
+                "layout": [
+                  "Setext",
+                  {
                     "leading_indent": 0,
                     "trailing_blanks": "",
                     "underline_indent": 0,
                     "underline_count": [11],
                     "underline_blanks": "",
                   },
-                },
+                ],
                 "level": 1,
-                "inline": { "$tag": "Text", "0": ["Basic tests"] },
+                "inline": ["Text", ["Basic tests"]],
               },
             ],
-          },
-          { "$tag": "BlankLine", "0": [""] },
-          {
-            "$tag": "Paragraph",
-            "0": [
+          ],
+          ["BlankLine", [""]],
+          [
+            "Paragraph",
+            [
               {
                 "leading_indent": 0,
-                "inline": {
-                  "$tag": "Text",
-                  "0": ["Basic tests for all CommonMark constructs."],
-                },
+                "inline": [
+                  "Text",
+                  ["Basic tests for all CommonMark constructs."],
+                ],
                 "trailing_blanks": "",
               },
             ],
-          },
-          { "$tag": "BlankLine", "0": [""] },
-          {
-            "$tag": "Heading",
-            "0": [
+          ],
+          ["BlankLine", [""]],
+          [
+            "Heading",
+            [
               {
-                "layout": {
-                  "$tag": "Atx",
-                  "0": { "indent": 0, "after_opening": "", "closing": "" },
-                },
+                "layout": [
+                  "Atx",
+                  { "indent": 0, "after_opening": "", "closing": "" },
+                ],
                 "level": 2,
-                "inline": { "$tag": "Text", "0": ["Testing autolinks"] },
+                "inline": ["Text", ["Testing autolinks"]],
               },
             ],
-          },
-          { "$tag": "BlankLine", "0": [""] },
-          {
-            "$tag": "Paragraph",
-            "0": [
+          ],
+          ["BlankLine", [""]],
+          [
+            "Paragraph",
+            [
               {
                 "leading_indent": 0,
-                "inline": {
-                  "$tag": "Inlines",
-                  "0": [
+                "inline": [
+                  "Inlines",
+                  [
                     [
-                      { "$tag": "Text", "0": ["This is an "] },
-                      {
-                        "$tag": "Autolink",
-                        "0": [
-                          { "is_email": false, "link": ["http://example.org"] },
-                        ],
-                      },
-                      { "$tag": "Text", "0": [" and another one "] },
-                      {
-                        "$tag": "Autolink",
-                        "0": [{ "is_email": true, "link": ["you@example.org"] }],
-                      },
-                      { "$tag": "Text", "0": ["."] },
+                      ["Text", ["This is an "]],
+                      [
+                        "Autolink",
+                        [{ "is_email": false, "link": ["http://example.org"] }],
+                      ],
+                      ["Text", [" and another one "]],
+                      [
+                        "Autolink",
+                        [{ "is_email": true, "link": ["you@example.org"] }],
+                      ],
+                      ["Text", ["."]],
                     ],
                   ],
-                },
+                ],
                 "trailing_blanks": "",
               },
             ],
-          },
-          { "$tag": "BlankLine", "0": [""] },
-          { "$tag": "BlankLine", "0": [""] },
-          {
-            "$tag": "Heading",
-            "0": [
+          ],
+          ["BlankLine", [""]],
+          ["BlankLine", [""]],
+          [
+            "Heading",
+            [
               {
-                "layout": {
-                  "$tag": "Atx",
-                  "0": { "indent": 0, "after_opening": "", "closing": "" },
-                },
+                "layout": [
+                  "Atx",
+                  { "indent": 0, "after_opening": "", "closing": "" },
+                ],
                 "level": 2,
-                "inline": { "$tag": "Text", "0": ["Testing breaks"] },
+                "inline": ["Text", ["Testing breaks"]],
               },
             ],
-          },
-          { "$tag": "BlankLine", "0": [""] },
-          {
-            "$tag": "Paragraph",
-            "0": [
+          ],
+          ["BlankLine", [""]],
+          [
+            "Paragraph",
+            [
               {
                 "leading_indent": 0,
-                "inline": {
-                  "$tag": "Inlines",
-                  "0": [
+                "inline": [
+                  "Inlines",
+                  [
                     [
-                      {
-                        "$tag": "Text",
-                        "0": [
+                      [
+                        "Text",
+                        [
                           "A line ending (not in a code span or HTML tag) that is preceded by two",
                         ],
-                      },
-                      {
-                        "$tag": "Break",
-                        "0": [
+                      ],
+                      [
+                        "Break",
+                        [
                           {
                             "layout_before": [""],
-                            "ty": { "$tag": "Soft" },
+                            "ty": "Soft",
                             "layout_after": [""],
                           },
                         ],
-                      },
-                      {
-                        "$tag": "Text",
-                        "0": [
+                      ],
+                      [
+                        "Text",
+                        [
                           "or more spaces and does not occur at the end of a block is parsed as a",
                         ],
-                      },
-                      {
-                        "$tag": "Break",
-                        "0": [
+                      ],
+                      [
+                        "Break",
+                        [
                           {
                             "layout_before": [""],
-                            "ty": { "$tag": "Soft" },
+                            "ty": "Soft",
                             "layout_after": [""],
                           },
                         ],
-                      },
-                      { "$tag": "Text", "0": ["hard line break."] },
+                      ],
+                      ["Text", ["hard line break."]],
                     ],
                   ],
-                },
+                ],
                 "trailing_blanks": "",
               },
             ],
-          },
-          { "$tag": "BlankLine", "0": [""] },
-          {
-            "$tag": "Paragraph",
-            "0": [
+          ],
+          ["BlankLine", [""]],
+          [
+            "Paragraph",
+            [
               {
                 "leading_indent": 0,
-                "inline": {
-                  "$tag": "Inlines",
-                  "0": [
+                "inline": [
+                  "Inlines",
+                  [
                     [
-                      {
-                        "$tag": "Text",
-                        "0": [
+                      [
+                        "Text",
+                        [
                           "So this means we had softbreaks so far and now we get  ",
                         ],
-                      },
-                      {
-                        "$tag": "Break",
-                        "0": [
+                      ],
+                      [
+                        "Break",
+                        [
                           {
                             "layout_before": [""],
-                            "ty": { "$tag": "Hard" },
+                            "ty": "Hard",
                             "layout_after": [""],
                           },
                         ],
-                      },
-                      { "$tag": "Text", "0": ["a hard break"] },
-                      {
-                        "$tag": "Break",
-                        "0": [
+                      ],
+                      ["Text", ["a hard break"]],
+                      [
+                        "Break",
+                        [
                           {
                             "layout_before": [""],
-                            "ty": { "$tag": "Hard" },
+                            "ty": "Hard",
                             "layout_after": [""],
                           },
                         ],
-                      },
-                      { "$tag": "Text", "0": ["and another one."] },
+                      ],
+                      ["Text", ["and another one."]],
                     ],
                   ],
-                },
+                ],
                 "trailing_blanks": "",
               },
             ],
-          },
-          { "$tag": "BlankLine", "0": [""] },
-          {
-            "$tag": "BlockQuote",
-            "0": [
+          ],
+          ["BlankLine", [""]],
+          [
+            "BlockQuote",
+            [
               {
                 "indent": 0,
-                "block": {
-                  "$tag": "Paragraph",
-                  "0": [
+                "block": [
+                  "Paragraph",
+                  [
                     {
                       "leading_indent": 0,
-                      "inline": {
-                        "$tag": "Inlines",
-                        "0": [
+                      "inline": [
+                        "Inlines",
+                        [
                           [
-                            {
-                              "$tag": "Text",
-                              "0": [
+                            [
+                              "Text",
+                              [
                                 "So this means we had softbreaks so far and now we get  ",
                               ],
-                            },
-                            {
-                              "$tag": "Break",
-                              "0": [
+                            ],
+                            [
+                              "Break",
+                              [
                                 {
                                   "layout_before": [""],
-                                  "ty": { "$tag": "Hard" },
+                                  "ty": "Hard",
                                   "layout_after": [""],
                                 },
                               ],
-                            },
-                            { "$tag": "Text", "0": ["a hard break"] },
-                            {
-                              "$tag": "Break",
-                              "0": [
+                            ],
+                            ["Text", ["a hard break"]],
+                            [
+                              "Break",
+                              [
                                 {
                                   "layout_before": [""],
-                                  "ty": { "$tag": "Hard" },
+                                  "ty": "Hard",
                                   "layout_after": [""],
                                 },
                               ],
-                            },
-                            { "$tag": "Text", "0": ["and another one."] },
-                            {
-                              "$tag": "Break",
-                              "0": [
+                            ],
+                            ["Text", ["and another one."]],
+                            [
+                              "Break",
+                              [
                                 {
                                   "layout_before": [""],
-                                  "ty": { "$tag": "Soft" },
+                                  "ty": "Soft",
                                   "layout_after": [""],
                                 },
                               ],
-                            },
-                            { "$tag": "Text", "0": ["This is very soooft."] },
+                            ],
+                            ["Text", ["This is very soooft."]],
                           ],
                         ],
-                      },
+                      ],
                       "trailing_blanks": "",
                     },
                   ],
-                },
+                ],
               },
             ],
-          },
-          { "$tag": "BlankLine", "0": [""] },
-          {
-            "$tag": "Heading",
-            "0": [
+          ],
+          ["BlankLine", [""]],
+          [
+            "Heading",
+            [
               {
-                "layout": {
-                  "$tag": "Atx",
-                  "0": { "indent": 0, "after_opening": "", "closing": "" },
-                },
+                "layout": [
+                  "Atx",
+                  { "indent": 0, "after_opening": "", "closing": "" },
+                ],
                 "level": 2,
-                "inline": { "$tag": "Text", "0": ["Testing code spans"] },
+                "inline": ["Text", ["Testing code spans"]],
               },
             ],
-          },
-          { "$tag": "BlankLine", "0": [""] },
-          {
-            "$tag": "Paragraph",
-            "0": [
+          ],
+          ["BlankLine", [""]],
+          [
+            "Paragraph",
+            [
               {
                 "leading_indent": 0,
-                "inline": {
-                  "$tag": "Inlines",
-                  "0": [
+                "inline": [
+                  "Inlines",
+                  [
                     [
-                      { "$tag": "Text", "0": ["This is a multi-line code"] },
-                      {
-                        "$tag": "CodeSpan",
-                        "0": [
+                      ["Text", ["This is a multi-line code"]],
+                      [
+                        "CodeSpan",
+                        [
                           {
                             "backticks": 1,
                             "code_layout": [
@@ -298,28 +296,28 @@ test "basic" {
                             ],
                           },
                         ],
-                      },
+                      ],
                     ],
                   ],
-                },
+                ],
                 "trailing_blanks": "",
               },
             ],
-          },
-          { "$tag": "BlankLine", "0": [""] },
-          {
-            "$tag": "Paragraph",
-            "0": [
+          ],
+          ["BlankLine", [""]],
+          [
+            "Paragraph",
+            [
               {
                 "leading_indent": 0,
-                "inline": {
-                  "$tag": "Inlines",
-                  "0": [
+                "inline": [
+                  "Inlines",
+                  [
                     [
-                      { "$tag": "Text", "0": ["Sometimes code spans "] },
-                      {
-                        "$tag": "CodeSpan",
-                        "0": [
+                      ["Text", ["Sometimes code spans "]],
+                      [
+                        "CodeSpan",
+                        [
                           {
                             "backticks": 2,
                             "code_layout": [
@@ -330,11 +328,11 @@ test "basic" {
                             ],
                           },
                         ],
-                      },
-                      { "$tag": "Text", "0": [". Do you fancy "] },
-                      {
-                        "$tag": "CodeSpan",
-                        "0": [
+                      ],
+                      ["Text", [". Do you fancy "]],
+                      [
+                        "CodeSpan",
+                        [
                           {
                             "backticks": 2,
                             "code_layout": [
@@ -345,196 +343,169 @@ test "basic" {
                             ],
                           },
                         ],
-                      },
-                      { "$tag": "Text", "0": [" ?"] },
+                      ],
+                      ["Text", [" ?"]],
                     ],
                   ],
-                },
+                ],
                 "trailing_blanks": "",
               },
             ],
-          },
-          { "$tag": "BlankLine", "0": [""] },
-          { "$tag": "BlankLine", "0": [""] },
-          {
-            "$tag": "Heading",
-            "0": [
+          ],
+          ["BlankLine", [""]],
+          ["BlankLine", [""]],
+          [
+            "Heading",
+            [
               {
-                "layout": {
-                  "$tag": "Atx",
-                  "0": { "indent": 0, "after_opening": "", "closing": "" },
-                },
+                "layout": [
+                  "Atx",
+                  { "indent": 0, "after_opening": "", "closing": "" },
+                ],
                 "level": 2,
-                "inline": { "$tag": "Text", "0": ["Testing emphasis"] },
+                "inline": ["Text", ["Testing emphasis"]],
               },
             ],
-          },
-          { "$tag": "BlankLine", "0": [""] },
-          {
-            "$tag": "Paragraph",
-            "0": [
+          ],
+          ["BlankLine", [""]],
+          [
+            "Paragraph",
+            [
               {
                 "leading_indent": 0,
-                "inline": {
-                  "$tag": "Inlines",
-                  "0": [
+                "inline": [
+                  "Inlines",
+                  [
                     [
-                      { "$tag": "Text", "0": ["There is "] },
-                      {
-                        "$tag": "Emphasis",
-                        "0": [
-                          {
-                            "delim": "_",
-                            "inline": { "$tag": "Text", "0": ["more"] },
-                          },
-                        ],
-                      },
-                      { "$tag": "Text", "0": [" than "] },
-                      {
-                        "$tag": "Emphasis",
-                        "0": [
-                          {
-                            "delim": "*",
-                            "inline": { "$tag": "Text", "0": ["one syntax"] },
-                          },
-                        ],
-                      },
-                      { "$tag": "Text", "0": [" for "] },
-                      {
-                        "$tag": "StrongEmphasis",
-                        "0": [
-                          {
-                            "delim": "_",
-                            "inline": { "$tag": "Text", "0": ["emphasis"] },
-                          },
-                        ],
-                      },
-                      { "$tag": "Text", "0": [" and "] },
-                      {
-                        "$tag": "StrongEmphasis",
-                        "0": [
+                      ["Text", ["There is "]],
+                      [
+                        "Emphasis",
+                        [{ "delim": "_", "inline": ["Text", ["more"]] }],
+                      ],
+                      ["Text", [" than "]],
+                      [
+                        "Emphasis",
+                        [{ "delim": "*", "inline": ["Text", ["one syntax"]] }],
+                      ],
+                      ["Text", [" for "]],
+                      [
+                        "StrongEmphasis",
+                        [{ "delim": "_", "inline": ["Text", ["emphasis"]] }],
+                      ],
+                      ["Text", [" and "]],
+                      [
+                        "StrongEmphasis",
+                        [
                           {
                             "delim": "*",
-                            "inline": {
-                              "$tag": "Inlines",
-                              "0": [
+                            "inline": [
+                              "Inlines",
+                              [
                                 [
-                                  { "$tag": "Text", "0": ["strong"] },
-                                  {
-                                    "$tag": "Break",
-                                    "0": [
+                                  ["Text", ["strong"]],
+                                  [
+                                    "Break",
+                                    [
                                       {
                                         "layout_before": [""],
-                                        "ty": { "$tag": "Soft" },
+                                        "ty": "Soft",
                                         "layout_after": [""],
                                       },
                                     ],
-                                  },
-                                  { "$tag": "Text", "0": ["emphasis"] },
+                                  ],
+                                  ["Text", ["emphasis"]],
                                 ],
                               ],
-                            },
+                            ],
                           },
                         ],
-                      },
-                      {
-                        "$tag": "Text",
-                        "0": [".  We should be careful about "],
-                      },
-                      {
-                        "$tag": "StrongEmphasis",
-                        "0": [
+                      ],
+                      ["Text", [".  We should be careful about "]],
+                      [
+                        "StrongEmphasis",
+                        [
                           {
                             "delim": "*",
-                            "inline": {
-                              "$tag": "Text",
-                              "0": ["embedded * marker"],
-                            },
+                            "inline": ["Text", ["embedded * marker"]],
                           },
                         ],
-                      },
-                      { "$tag": "Text", "0": [". This"] },
-                      {
-                        "$tag": "Break",
-                        "0": [
+                      ],
+                      ["Text", [". This"]],
+                      [
+                        "Break",
+                        [
                           {
                             "layout_before": [""],
-                            "ty": { "$tag": "Soft" },
+                            "ty": "Soft",
                             "layout_after": [""],
                           },
                         ],
-                      },
-                      { "$tag": "Text", "0": ["will be "] },
-                      {
-                        "$tag": "StrongEmphasis",
-                        "0": [
+                      ],
+                      ["Text", ["will be "]],
+                      [
+                        "StrongEmphasis",
+                        [
                           {
                             "delim": "*",
-                            "inline": {
-                              "$tag": "Text",
-                              "0": ["tricky * to handle"],
-                            },
+                            "inline": ["Text", ["tricky * to handle"]],
                           },
                         ],
-                      },
-                      { "$tag": "Text", "0": [". This "] },
-                      {
-                        "$tag": "Emphasis",
-                        "0": [
+                      ],
+                      ["Text", [". This "]],
+                      [
+                        "Emphasis",
+                        [
                           {
                             "delim": "*",
-                            "inline": {
-                              "$tag": "Text",
-                              "0": ["is not ** what"],
-                            },
+                            "inline": ["Text", ["is not ** what"]],
                           },
                         ],
-                      },
-                      { "$tag": "Text", "0": [" you want ?"] },
+                      ],
+                      ["Text", [" you want ?"]],
                     ],
                   ],
-                },
+                ],
                 "trailing_blanks": "",
               },
             ],
-          },
-          { "$tag": "BlankLine", "0": [""] },
-          { "$tag": "BlankLine", "0": [""] },
-          {
-            "$tag": "Heading",
-            "0": [
+          ],
+          ["BlankLine", [""]],
+          ["BlankLine", [""]],
+          [
+            "Heading",
+            [
               {
-                "layout": {
-                  "$tag": "Atx",
-                  "0": { "indent": 0, "after_opening": "", "closing": "" },
-                },
+                "layout": [
+                  "Atx",
+                  { "indent": 0, "after_opening": "", "closing": "" },
+                ],
                 "level": 2,
-                "inline": {
-                  "$tag": "Text",
-                  "0": ["Testing links, images and link reference definitions"],
-                },
+                "inline": [
+                  "Text",
+                  ["Testing links, images and link reference definitions"],
+                ],
               },
             ],
-          },
-          { "$tag": "BlankLine", "0": [""] },
-          {
-            "$tag": "Paragraph",
-            "0": [
+          ],
+          ["BlankLine", [""]],
+          [
+            "Paragraph",
+            [
               {
                 "leading_indent": 0,
-                "inline": {
-                  "$tag": "Inlines",
-                  "0": [
+                "inline": [
+                  "Inlines",
+                  [
                     [
-                      { "$tag": "Text", "0": ["This is an "] },
-                      {
-                        "$tag": "Image",
-                        "0": [
+                      ["Text", ["This is an "]],
+                      [
+                        "Image",
+                        [
                           {
-                            "text": { "$tag": "Text", "0": ["inline image"] },
-                            "reference": {
-                              "$tag": "Inline",
-                              "0": [
+                            "text": ["Text", ["inline image"]],
+                            "reference": [
+                              "Inline",
+                              [
                                 {
                                   "layout": {
                                     "indent": 0,
@@ -554,73 +525,73 @@ test "basic" {
                                   ],
                                 },
                               ],
-                            },
+                            ],
                           },
                         ],
-                      },
+                      ],
                     ],
                   ],
-                },
+                ],
                 "trailing_blanks": "",
               },
             ],
-          },
-          { "$tag": "BlankLine", "0": [""] },
-          {
-            "$tag": "Paragraph",
-            "0": [
+          ],
+          ["BlankLine", [""]],
+          [
+            "Paragraph",
+            [
               {
                 "leading_indent": 2,
-                "inline": {
-                  "$tag": "Inlines",
-                  "0": [
+                "inline": [
+                  "Inlines",
+                  [
                     [
-                      { "$tag": "Text", "0": ["That is totally "] },
-                      {
-                        "$tag": "Link",
-                        "0": [
+                      ["Text", ["That is totally "]],
+                      [
+                        "Link",
+                        [
                           {
-                            "text": { "$tag": "Text", "0": ["colla    psed"] },
-                            "reference": {
-                              "$tag": "Ref",
-                              "0": { "$tag": "Collapsed" },
-                              "1": {
+                            "text": ["Text", ["colla    psed"]],
+                            "reference": [
+                              "Ref",
+                              "Collapsed",
+                              {
                                 "meta": {},
                                 "key": "colla psed",
                                 "text": [
                                   { "blanks": "", "node": ["colla    psed"] },
                                 ],
                               },
-                              "2": {
+                              {
                                 "meta": {},
                                 "key": "colla psed",
                                 "text": [
                                   { "blanks": "", "node": ["colla psed"] },
                                 ],
                               },
-                            },
+                            ],
                           },
                         ],
-                      },
-                      { "$tag": "Text", "0": [" and"] },
-                      {
-                        "$tag": "Break",
-                        "0": [
+                      ],
+                      ["Text", [" and"]],
+                      [
+                        "Break",
+                        [
                           {
                             "layout_before": [""],
-                            "ty": { "$tag": "Soft" },
+                            "ty": "Soft",
                             "layout_after": [""],
                           },
                         ],
-                      },
-                      { "$tag": "Text", "0": ["that is "] },
-                      {
-                        "$tag": "Link",
-                        "0": [
+                      ],
+                      ["Text", ["that is "]],
+                      [
+                        "Link",
+                        [
                           {
-                            "text": {
-                              "$tag": "CodeSpan",
-                              "0": [
+                            "text": [
+                              "CodeSpan",
+                              [
                                 {
                                   "backticks": 1,
                                   "code_layout": [
@@ -628,55 +599,55 @@ test "basic" {
                                   ],
                                 },
                               ],
-                            },
-                            "reference": {
-                              "$tag": "Ref",
-                              "0": { "$tag": "Shortcut" },
-                              "1": {
+                            ],
+                            "reference": [
+                              "Ref",
+                              "Shortcut",
+                              {
                                 "meta": {},
                                 "key": "`short cuted`",
                                 "text": [
                                   { "blanks": "", "node": ["`short cuted`"] },
                                 ],
                               },
-                              "2": {
+                              {
                                 "meta": {},
                                 "key": "`short cuted`",
                                 "text": [
                                   { "blanks": "", "node": ["`short cuted`"] },
                                 ],
                               },
-                            },
+                            ],
                           },
                         ],
-                      },
+                      ],
                     ],
                   ],
-                },
+                ],
                 "trailing_blanks": "",
               },
             ],
-          },
-          { "$tag": "BlankLine", "0": [""] },
-          {
-            "$tag": "Paragraph",
-            "0": [
+          ],
+          ["BlankLine", [""]],
+          [
+            "Paragraph",
+            [
               {
                 "leading_indent": 0,
-                "inline": {
-                  "$tag": "Inlines",
-                  "0": [
+                "inline": [
+                  "Inlines",
+                  [
                     [
-                      { "$tag": "Text", "0": ["Shortcuts can be better than "] },
-                      {
-                        "$tag": "Link",
-                        "0": [
+                      ["Text", ["Shortcuts can be better than "]],
+                      [
+                        "Link",
+                        [
                           {
-                            "text": { "$tag": "Text", "0": ["full references"] },
-                            "reference": {
-                              "$tag": "Ref",
-                              "0": { "$tag": "Full" },
-                              "1": {
+                            "text": ["Text", ["full references"]],
+                            "reference": [
+                              "Ref",
+                              "Full",
+                              {
                                 "meta": {},
                                 "key": "`short cuted`",
                                 "text": [
@@ -684,75 +655,72 @@ test "basic" {
                                   { "blanks": "", "node": ["cuted`"] },
                                 ],
                               },
-                              "2": {
+                              {
                                 "meta": {},
                                 "key": "`short cuted`",
                                 "text": [
                                   { "blanks": "", "node": ["`short cuted`"] },
                                 ],
                               },
-                            },
+                            ],
                           },
                         ],
-                      },
-                      { "$tag": "Text", "0": [" but not"] },
-                      {
-                        "$tag": "Break",
-                        "0": [
+                      ],
+                      ["Text", [" but not"]],
+                      [
+                        "Break",
+                        [
                           {
                             "layout_before": [""],
-                            "ty": { "$tag": "Soft" },
+                            "ty": "Soft",
                             "layout_after": [""],
                           },
                         ],
-                      },
-                      {
-                        "$tag": "Text",
-                        "0": ["always and we'd like to trip their "],
-                      },
-                      {
-                        "$tag": "Link",
-                        "0": [
+                      ],
+                      ["Text", ["always and we'd like to trip their "]],
+                      [
+                        "Link",
+                        [
                           {
-                            "text": { "$tag": "Text", "0": ["label"] },
-                            "reference": {
-                              "$tag": "Ref",
-                              "0": { "$tag": "Full" },
-                              "1": {
+                            "text": ["Text", ["label"]],
+                            "reference": [
+                              "Ref",
+                              "Full",
+                              {
                                 "meta": {},
                                 "key": "`short cuted`",
                                 "text": [
                                   { "blanks": "", "node": ["`short    cuted`"] },
                                 ],
                               },
-                              "2": {
+                              {
                                 "meta": {},
                                 "key": "`short cuted`",
                                 "text": [
                                   { "blanks": "", "node": ["`short cuted`"] },
                                 ],
                               },
-                            },
+                            ],
                           },
                         ],
-                      },
-                      { "$tag": "Text", "0": ["."] },
+                      ],
+                      ["Text", ["."]],
                     ],
                   ],
-                },
+                ],
                 "trailing_blanks": "",
               },
             ],
-          },
-          { "$tag": "BlankLine", "0": [""] },
-          {
-            "$tag": "BlockQuote",
-            "0": [
+          ],
+          ["BlankLine", [""]],
+          [
+            "BlockQuote",
+            [
               {
                 "indent": 0,
-                "block": {
-                  "$tag": "LinkRefDefinition",
-                  "0": [
+                "block": [
+                  "LinkRefDefinition",
+                  [
                     {
                       "layout": {
                         "indent": 0,
@@ -780,14 +748,14 @@ test "basic" {
                       ],
                     },
                   ],
-                },
+                ],
               },
             ],
-          },
-          { "$tag": "BlankLine", "0": [""] },
-          {
-            "$tag": "LinkRefDefinition",
-            "0": [
+          ],
+          ["BlankLine", [""]],
+          [
+            "LinkRefDefinition",
+            [
               {
                 "layout": {
                   "indent": 1,
@@ -814,372 +782,375 @@ test "basic" {
                 ],
               },
             ],
-          },
-          { "$tag": "BlankLine", "0": ["  "] },
-          { "$tag": "BlankLine", "0": [""] },
-          {
-            "$tag": "Heading",
-            "0": [
+          ],
+          ["BlankLine", ["  "]],
+          ["BlankLine", [""]],
+          [
+            "Heading",
+            [
               {
-                "layout": {
-                  "$tag": "Atx",
-                  "0": { "indent": 0, "after_opening": "", "closing": "" },
-                },
+                "layout": [
+                  "Atx",
+                  { "indent": 0, "after_opening": "", "closing": "" },
+                ],
                 "level": 2,
-                "inline": { "$tag": "Text", "0": ["Testing raw HTML"] },
+                "inline": ["Text", ["Testing raw HTML"]],
               },
             ],
-          },
-          { "$tag": "BlankLine", "0": [""] },
-          {
-            "$tag": "Paragraph",
-            "0": [
+          ],
+          ["BlankLine", [""]],
+          [
+            "Paragraph",
+            [
               {
                 "leading_indent": 0,
-                "inline": {
-                  "$tag": "Inlines",
-                  "0": [
+                "inline": [
+                  "Inlines",
+                  [
                     [
-                      { "$tag": "Text", "0": ["Haha "] },
-                      {
-                        "$tag": "RawHtml",
-                        "0": [[{ "blanks": "", "node": ["<a>"] }]],
-                      },
-                      { "$tag": "Text", "0": ["a"] },
-                      {
-                        "$tag": "RawHtml",
-                        "0": [[{ "blanks": "", "node": ["</a>"] }]],
-                      },
-                      {
-                        "$tag": "RawHtml",
-                        "0": [
+                      ["Text", ["Haha "]],
+                      [
+                        "RawHtml",
+                        [["InlineRawHtml", [{ "blanks": "", "node": ["<a>"] }]]],
+                      ],
+                      ["Text", ["a"]],
+                      [
+                        "RawHtml",
+                        [
                           [
-                            { "blanks": "", "node": ["<b2"] },
-                            { "blanks": "", "node": ["data=\"foo\" >"] },
+                            "InlineRawHtml",
+                            [{ "blanks": "", "node": ["</a>"] }],
                           ],
                         ],
-                      },
-                      {
-                        "$tag": "Text",
-                        "0": [" hihi this is not the end yet."],
-                      },
+                      ],
+                      [
+                        "RawHtml",
+                        [
+                          [
+                            "InlineRawHtml",
+                            [
+                              { "blanks": "", "node": ["<b2"] },
+                              { "blanks": "", "node": ["data=\"foo\" >"] },
+                            ],
+                          ],
+                        ],
+                      ],
+                      ["Text", [" hihi this is not the end yet."]],
                     ],
                   ],
-                },
+                ],
                 "trailing_blanks": "",
               },
             ],
-          },
-          { "$tag": "BlankLine", "0": [""] },
-          {
-            "$tag": "Paragraph",
-            "0": [
+          ],
+          ["BlankLine", [""]],
+          [
+            "Paragraph",
+            [
               {
                 "leading_indent": 0,
-                "inline": {
-                  "$tag": "Inlines",
-                  "0": [
+                "inline": [
+                  "Inlines",
+                  [
                     [
-                      { "$tag": "Text", "0": ["foo "] },
-                      {
-                        "$tag": "RawHtml",
-                        "0": [
-                          [{ "blanks": "", "node": ["<a href=\"\\*\" />"] }],
+                      ["Text", ["foo "]],
+                      [
+                        "RawHtml",
+                        [
+                          [
+                            "InlineRawHtml",
+                            [{ "blanks": "", "node": ["<a href=\"\\*\" />"] }],
+                          ],
                         ],
-                      },
-                      { "$tag": "Text", "0": ["u"] },
-                      {
-                        "$tag": "RawHtml",
-                        "0": [[{ "blanks": "", "node": ["</a>"] }]],
-                      },
+                      ],
+                      ["Text", ["u"]],
+                      [
+                        "RawHtml",
+                        [
+                          [
+                            "InlineRawHtml",
+                            [{ "blanks": "", "node": ["</a>"] }],
+                          ],
+                        ],
+                      ],
                     ],
                   ],
-                },
+                ],
                 "trailing_blanks": "",
               },
             ],
-          },
-          { "$tag": "BlankLine", "0": [""] },
-          {
-            "$tag": "BlockQuote",
-            "0": [
+          ],
+          ["BlankLine", [""]],
+          [
+            "BlockQuote",
+            [
               {
                 "indent": 0,
-                "block": {
-                  "$tag": "Paragraph",
-                  "0": [
+                "block": [
+                  "Paragraph",
+                  [
                     {
                       "leading_indent": 1,
-                      "inline": {
-                        "$tag": "Inlines",
-                        "0": [
+                      "inline": [
+                        "Inlines",
+                        [
                           [
-                            { "$tag": "Text", "0": ["Haha "] },
-                            {
-                              "$tag": "RawHtml",
-                              "0": [[{ "blanks": "", "node": ["<a>"] }]],
-                            },
-                            { "$tag": "Text", "0": ["a"] },
-                            {
-                              "$tag": "RawHtml",
-                              "0": [[{ "blanks": "", "node": ["</a>"] }]],
-                            },
-                            {
-                              "$tag": "RawHtml",
-                              "0": [
+                            ["Text", ["Haha "]],
+                            [
+                              "RawHtml",
+                              [
                                 [
-                                  { "blanks": "", "node": ["<b2"] },
-                                  { "blanks": "", "node": ["data=\"foo\" >"] },
+                                  "InlineRawHtml",
+                                  [{ "blanks": "", "node": ["<a>"] }],
                                 ],
                               ],
-                            },
-                            {
-                              "$tag": "Text",
-                              "0": [" hihi this is not the end yet."],
-                            },
+                            ],
+                            ["Text", ["a"]],
+                            [
+                              "RawHtml",
+                              [
+                                [
+                                  "InlineRawHtml",
+                                  [{ "blanks": "", "node": ["</a>"] }],
+                                ],
+                              ],
+                            ],
+                            [
+                              "RawHtml",
+                              [
+                                [
+                                  "InlineRawHtml",
+                                  [
+                                    { "blanks": "", "node": ["<b2"] },
+                                    { "blanks": "", "node": ["data=\"foo\" >"] },
+                                  ],
+                                ],
+                              ],
+                            ],
+                            ["Text", [" hihi this is not the end yet."]],
                           ],
                         ],
-                      },
+                      ],
                       "trailing_blanks": "",
                     },
                   ],
-                },
+                ],
               },
             ],
-          },
-          { "$tag": "BlankLine", "0": [""] },
-          {
-            "$tag": "Heading",
-            "0": [
+          ],
+          ["BlankLine", [""]],
+          [
+            "Heading",
+            [
               {
-                "layout": {
-                  "$tag": "Atx",
-                  "0": { "indent": 0, "after_opening": "", "closing": "" },
-                },
+                "layout": [
+                  "Atx",
+                  { "indent": 0, "after_opening": "", "closing": "" },
+                ],
                 "level": 2,
-                "inline": { "$tag": "Text", "0": ["Testing blank lines"] },
+                "inline": ["Text", ["Testing blank lines"]],
               },
             ],
-          },
-          { "$tag": "BlankLine", "0": [""] },
-          { "$tag": "BlankLine", "0": ["    "] },
-          { "$tag": "BlankLine", "0": ["     "] },
-          {
-            "$tag": "Paragraph",
-            "0": [
+          ],
+          ["BlankLine", [""]],
+          ["BlankLine", ["    "]],
+          ["BlankLine", ["     "]],
+          [
+            "Paragraph",
+            [
               {
                 "leading_indent": 0,
-                "inline": { "$tag": "Text", "0": ["Impressive isn't it ?"] },
+                "inline": ["Text", ["Impressive isn't it ?"]],
                 "trailing_blanks": "",
               },
             ],
-          },
-          { "$tag": "BlankLine", "0": [""] },
-          {
-            "$tag": "Heading",
-            "0": [
+          ],
+          ["BlankLine", [""]],
+          [
+            "Heading",
+            [
               {
-                "layout": {
-                  "$tag": "Atx",
-                  "0": { "indent": 0, "after_opening": "", "closing": "" },
-                },
+                "layout": [
+                  "Atx",
+                  { "indent": 0, "after_opening": "", "closing": "" },
+                ],
                 "level": 2,
-                "inline": { "$tag": "Text", "0": ["Testing block quotes"] },
+                "inline": ["Text", ["Testing block quotes"]],
               },
             ],
-          },
-          { "$tag": "BlankLine", "0": [""] },
-          { "$tag": "BlankLine", "0": [""] },
-          {
-            "$tag": "BlockQuote",
-            "0": [
+          ],
+          ["BlankLine", [""]],
+          ["BlankLine", [""]],
+          [
+            "BlockQuote",
+            [
               {
                 "indent": 2,
-                "block": {
-                  "$tag": "BlockQuote",
-                  "0": [
+                "block": [
+                  "BlockQuote",
+                  [
                     {
                       "indent": 2,
-                      "block": {
-                        "$tag": "Paragraph",
-                        "0": [
+                      "block": [
+                        "Paragraph",
+                        [
                           {
                             "leading_indent": 0,
-                            "inline": {
-                              "$tag": "Inlines",
-                              "0": [
+                            "inline": [
+                              "Inlines",
+                              [
                                 [
-                                  { "$tag": "Text", "0": ["How is"] },
-                                  {
-                                    "$tag": "Break",
-                                    "0": [
+                                  ["Text", ["How is"]],
+                                  [
+                                    "Break",
+                                    [
                                       {
                                         "layout_before": [""],
-                                        "ty": { "$tag": "Soft" },
+                                        "ty": "Soft",
                                         "layout_after": [""],
                                       },
                                     ],
-                                  },
-                                  {
-                                    "$tag": "Text",
-                                    "0": ["Nestyfing going on"],
-                                  },
-                                  {
-                                    "$tag": "Break",
-                                    "0": [
+                                  ],
+                                  ["Text", ["Nestyfing going on"]],
+                                  [
+                                    "Break",
+                                    [
                                       {
                                         "layout_before": [""],
-                                        "ty": { "$tag": "Soft" },
+                                        "ty": "Soft",
                                         "layout_after": [""],
                                       },
                                     ],
-                                  },
-                                  {
-                                    "$tag": "Text",
-                                    "0": ["These irregularities "],
-                                  },
-                                  {
-                                    "$tag": "StrongEmphasis",
-                                    "0": [
+                                  ],
+                                  ["Text", ["These irregularities "]],
+                                  [
+                                    "StrongEmphasis",
+                                    [
                                       {
                                         "delim": "*",
-                                        "inline": {
-                                          "$tag": "Text",
-                                          "0": ["will"],
-                                        },
+                                        "inline": ["Text", ["will"]],
                                       },
                                     ],
-                                  },
-                                  { "$tag": "Text", "0": [" normalize"] },
-                                  {
-                                    "$tag": "Break",
-                                    "0": [
+                                  ],
+                                  ["Text", [" normalize"]],
+                                  [
+                                    "Break",
+                                    [
                                       {
                                         "layout_before": [""],
-                                        "ty": { "$tag": "Soft" },
+                                        "ty": "Soft",
                                         "layout_after": [""],
                                       },
                                     ],
-                                  },
-                                  {
-                                    "$tag": "Text",
-                                    "0": [
+                                  ],
+                                  [
+                                    "Text",
+                                    [
                                       "We keep only the first block quote indent",
                                     ],
-                                  },
+                                  ],
                                 ],
                               ],
-                            },
+                            ],
                             "trailing_blanks": "",
                           },
                         ],
-                      },
+                      ],
                     },
                   ],
-                },
+                ],
               },
             ],
-          },
-          { "$tag": "BlankLine", "0": [""] },
-          {
-            "$tag": "BlockQuote",
-            "0": [
+          ],
+          ["BlankLine", [""]],
+          [
+            "BlockQuote",
+            [
               {
                 "indent": 0,
-                "block": {
-                  "$tag": "Heading",
-                  "0": [
+                "block": [
+                  "Heading",
+                  [
                     {
-                      "layout": {
-                        "$tag": "Atx",
-                        "0": { "indent": 1, "after_opening": "", "closing": "" },
-                      },
+                      "layout": [
+                        "Atx",
+                        { "indent": 1, "after_opening": "", "closing": "" },
+                      ],
                       "level": 2,
-                      "inline": { "$tag": "Text", "0": ["Further tests"] },
+                      "inline": ["Text", ["Further tests"]],
                     },
                   ],
-                },
+                ],
               },
             ],
-          },
-          { "$tag": "BlankLine", "0": [""] },
-          {
-            "$tag": "Paragraph",
-            "0": [
+          ],
+          ["BlankLine", [""]],
+          [
+            "Paragraph",
+            [
               {
                 "leading_indent": 2,
-                "inline": {
-                  "$tag": "Text",
-                  "0": ["We need a little quote here"],
-                },
+                "inline": ["Text", ["We need a little quote here"]],
                 "trailing_blanks": "",
               },
             ],
-          },
-          {
-            "$tag": "BlockQuote",
-            "0": [
+          ],
+          [
+            "BlockQuote",
+            [
               {
                 "indent": 0,
-                "block": {
-                  "$tag": "Paragraph",
-                  "0": [
+                "block": [
+                  "Paragraph",
+                  [
                     {
                       "leading_indent": 1,
-                      "inline": { "$tag": "Text", "0": ["It's warranted."] },
+                      "inline": ["Text", ["It's warranted."]],
                       "trailing_blanks": "",
                     },
                   ],
-                },
+                ],
               },
             ],
-          },
-          { "$tag": "BlankLine", "0": [""] },
-          { "$tag": "BlankLine", "0": [""] },
-          {
-            "$tag": "Heading",
-            "0": [
+          ],
+          ["BlankLine", [""]],
+          ["BlankLine", [""]],
+          [
+            "Heading",
+            [
               {
-                "layout": {
-                  "$tag": "Atx",
-                  "0": { "indent": 0, "after_opening": "", "closing": "" },
-                },
+                "layout": [
+                  "Atx",
+                  { "indent": 0, "after_opening": "", "closing": "" },
+                ],
                 "level": 2,
-                "inline": { "$tag": "Text", "0": ["Testing code blocks"] },
+                "inline": ["Text", ["Testing code blocks"]],
               },
             ],
-          },
-          { "$tag": "BlankLine", "0": [""] },
-          {
-            "$tag": "CodeBlock",
-            "0": [
+          ],
+          ["BlankLine", [""]],
+          [
+            "CodeBlock",
+            [
               {
-                "layout": {
-                  "$tag": "Fenced",
-                  "0": {
-                    "indent": 0,
-                    "opening_fence": [""],
-                    "closing_fence": [""],
-                  },
-                },
+                "layout": [
+                  "Fenced",
+                  { "indent": 0, "opening_fence": [""], "closing_fence": [""] },
+                ],
                 "info_string": ["layout after info is not kept"],
                 "code": [],
               },
             ],
-          },
-          { "$tag": "BlankLine", "0": [""] },
-          {
-            "$tag": "CodeBlock",
-            "0": [
+          ],
+          ["BlankLine", [""]],
+          [
+            "CodeBlock",
+            [
               {
-                "layout": {
-                  "$tag": "Fenced",
-                  "0": {
-                    "indent": 1,
-                    "opening_fence": [""],
-                    "closing_fence": [""],
-                  },
-                },
+                "layout": [
+                  "Fenced",
+                  { "indent": 1, "opening_fence": [""], "closing_fence": [""] },
+                ],
                 "info_string": ["ocaml module M"],
                 "code": [
                   [""],
@@ -1191,24 +1162,24 @@ test "basic" {
                 ],
               },
             ],
-          },
-          { "$tag": "BlankLine", "0": [""] },
-          {
-            "$tag": "Paragraph",
-            "0": [
+          ],
+          ["BlankLine", [""]],
+          [
+            "Paragraph",
+            [
               {
                 "leading_indent": 0,
-                "inline": { "$tag": "Text", "0": ["The indented code block:"] },
+                "inline": ["Text", ["The indented code block:"]],
                 "trailing_blanks": "",
               },
             ],
-          },
-          { "$tag": "BlankLine", "0": [""] },
-          {
-            "$tag": "CodeBlock",
-            "0": [
+          ],
+          ["BlankLine", [""]],
+          [
+            "CodeBlock",
+            [
               {
-                "layout": { "$tag": "Indented" },
+                "layout": "Indented",
                 "code": [
                   ["a b c d "],
                   [" a b c d"],
@@ -1220,26 +1191,26 @@ test "basic" {
                 ],
               },
             ],
-          },
-          { "$tag": "BlankLine", "0": [""] },
-          { "$tag": "BlankLine", "0": [""] },
-          {
-            "$tag": "BlockQuote",
-            "0": [
+          ],
+          ["BlankLine", [""]],
+          ["BlankLine", [""]],
+          [
+            "BlockQuote",
+            [
               {
                 "indent": 0,
-                "block": {
-                  "$tag": "CodeBlock",
-                  "0": [
+                "block": [
+                  "CodeBlock",
+                  [
                     {
-                      "layout": {
-                        "$tag": "Fenced",
-                        "0": {
+                      "layout": [
+                        "Fenced",
+                        {
                           "indent": 0,
                           "opening_fence": [""],
                           "closing_fence": [""],
                         },
-                      },
+                      ],
                       "info_string": ["ocaml module M"],
                       "code": [
                         [""],
@@ -1251,92 +1222,92 @@ test "basic" {
                       ],
                     },
                   ],
-                },
+                ],
               },
             ],
-          },
-          { "$tag": "BlankLine", "0": [""] },
-          { "$tag": "BlankLine", "0": [""] },
-          {
-            "$tag": "Heading",
-            "0": [
+          ],
+          ["BlankLine", [""]],
+          ["BlankLine", [""]],
+          [
+            "Heading",
+            [
               {
-                "layout": {
-                  "$tag": "Atx",
-                  "0": { "indent": 0, "after_opening": "", "closing": "" },
-                },
+                "layout": [
+                  "Atx",
+                  { "indent": 0, "after_opening": "", "closing": "" },
+                ],
                 "level": 2,
-                "inline": { "$tag": "Text", "0": ["Testing headings"] },
+                "inline": ["Text", ["Testing headings"]],
               },
             ],
-          },
-          { "$tag": "BlankLine", "0": [""] },
-          {
-            "$tag": "Heading",
-            "0": [
+          ],
+          ["BlankLine", [""]],
+          [
+            "Heading",
+            [
               {
-                "layout": {
-                  "$tag": "Setext",
-                  "0": {
+                "layout": [
+                  "Setext",
+                  {
                     "leading_indent": 0,
                     "trailing_blanks": "",
                     "underline_indent": 0,
                     "underline_count": [8],
                     "underline_blanks": "",
                   },
-                },
+                ],
                 "level": 1,
-                "inline": {
-                  "$tag": "Inlines",
-                  "0": [
+                "inline": [
+                  "Inlines",
+                  [
                     [
-                      { "$tag": "Text", "0": ["aaa"] },
-                      {
-                        "$tag": "Break",
-                        "0": [
+                      ["Text", ["aaa"]],
+                      [
+                        "Break",
+                        [
                           {
                             "layout_before": [""],
-                            "ty": { "$tag": "Soft" },
+                            "ty": "Soft",
                             "layout_after": [""],
                           },
                         ],
-                      },
-                      { "$tag": "Text", "0": ["aaaa"] },
+                      ],
+                      ["Text", ["aaaa"]],
                     ],
                   ],
-                },
+                ],
               },
             ],
-          },
-          { "$tag": "BlankLine", "0": [""] },
-          {
-            "$tag": "BlockQuote",
-            "0": [
+          ],
+          ["BlankLine", [""]],
+          [
+            "BlockQuote",
+            [
               {
                 "indent": 0,
-                "block": {
-                  "$tag": "Heading",
-                  "0": [
+                "block": [
+                  "Heading",
+                  [
                     {
-                      "layout": {
-                        "$tag": "Setext",
-                        "0": {
+                      "layout": [
+                        "Setext",
+                        {
                           "leading_indent": 0,
                           "trailing_blanks": "",
                           "underline_indent": 0,
                           "underline_count": [8],
                           "underline_blanks": "",
                         },
-                      },
+                      ],
                       "level": 2,
-                      "inline": {
-                        "$tag": "Inlines",
-                        "0": [
+                      "inline": [
+                        "Inlines",
+                        [
                           [
-                            { "$tag": "Text", "0": ["bbb "] },
-                            {
-                              "$tag": "CodeSpan",
-                              "0": [
+                            ["Text", ["bbb "]],
+                            [
+                              "CodeSpan",
+                              [
                                 {
                                   "backticks": 1,
                                   "code_layout": [
@@ -1344,83 +1315,85 @@ test "basic" {
                                   ],
                                 },
                               ],
-                            },
-                            {
-                              "$tag": "Break",
-                              "0": [
+                            ],
+                            [
+                              "Break",
+                              [
                                 {
                                   "layout_before": [""],
-                                  "ty": { "$tag": "Soft" },
+                                  "ty": "Soft",
                                   "layout_after": [""],
                                 },
                               ],
-                            },
-                            { "$tag": "Text", "0": ["bbbb"] },
+                            ],
+                            ["Text", ["bbbb"]],
                           ],
                         ],
-                      },
+                      ],
                     },
                   ],
-                },
+                ],
               },
             ],
-          },
-          { "$tag": "BlankLine", "0": [""] },
-          {
-            "$tag": "Heading",
-            "0": [
+          ],
+          ["BlankLine", [""]],
+          [
+            "Heading",
+            [
               {
-                "layout": {
-                  "$tag": "Atx",
-                  "0": { "indent": 2, "after_opening": "", "closing": "" },
-                },
+                "layout": [
+                  "Atx",
+                  { "indent": 2, "after_opening": "", "closing": "" },
+                ],
                 "level": 1,
-                "inline": { "$tag": "Text", "0": ["That's one way"] },
+                "inline": ["Text", ["That's one way"]],
               },
             ],
-          },
-          { "$tag": "BlankLine", "0": ["  "] },
-          {
-            "$tag": "Heading",
-            "0": [
+          ],
+          ["BlankLine", ["  "]],
+          [
+            "Heading",
+            [
               {
-                "layout": {
-                  "$tag": "Atx",
-                  "0": { "indent": 3, "after_opening": "", "closing": "" },
-                },
+                "layout": [
+                  "Atx",
+                  { "indent": 3, "after_opening": "", "closing": "" },
+                ],
                 "level": 3,
-                "inline": {
-                  "$tag": "Text",
-                  "0": ["It's a long way to the heading"],
-                },
+                "inline": ["Text", ["It's a long way to the heading"]],
               },
             ],
-          },
-          { "$tag": "BlankLine", "0": [""] },
-          {
-            "$tag": "Heading",
-            "0": [
+          ],
+          ["BlankLine", [""]],
+          [
+            "Heading",
+            [
               {
-                "layout": {
-                  "$tag": "Atx",
-                  "0": { "indent": 0, "after_opening": "", "closing": "" },
-                },
+                "layout": [
+                  "Atx",
+                  { "indent": 0, "after_opening": "", "closing": "" },
+                ],
                 "level": 2,
-                "inline": { "$tag": "Text", "0": ["Testing HTML block"] },
+                "inline": ["Text", ["Testing HTML block"]],
               },
             ],
-          },
-          { "$tag": "BlankLine", "0": [""] },
-          {
-            "$tag": "HtmlBlock",
-            "0": [[["<aside>"], ["<p>There is no aside</p>"], ["</aside>"]]],
-          },
-          { "$tag": "BlankLine", "0": [""] },
-          {
-            "$tag": "List",
-            "0": [
+          ],
+          ["BlankLine", [""]],
+          [
+            "HtmlBlock",
+            [
+              [
+                "HtmlBlock",
+                [["<aside>"], ["<p>There is no aside</p>"], ["</aside>"]],
+              ],
+            ],
+          ],
+          ["BlankLine", [""]],
+          [
+            "List",
+            [
               {
-                "ty": { "$tag": "Unordered", "0": "*" },
+                "ty": ["Unordered", "*"],
                 "tight": true,
                 "items": [
                   [
@@ -1428,50 +1401,53 @@ test "basic" {
                       "before_marker": 0,
                       "marker": ["*"],
                       "after_marker": 1,
-                      "block": {
-                        "$tag": "HtmlBlock",
-                        "0": [
+                      "block": [
+                        "HtmlBlock",
+                        [
                           [
-                            ["<aside>"],
-                            ["<p>There is no aside</p>"],
-                            ["</aside>"],
+                            "HtmlBlock",
+                            [
+                              ["<aside>"],
+                              ["<p>There is no aside</p>"],
+                              ["</aside>"],
+                            ],
                           ],
                         ],
-                      },
+                      ],
                     },
                   ],
                 ],
               },
             ],
-          },
-          { "$tag": "BlankLine", "0": [""] },
-          {
-            "$tag": "Heading",
-            "0": [
+          ],
+          ["BlankLine", [""]],
+          [
+            "Heading",
+            [
               {
-                "layout": {
-                  "$tag": "Atx",
-                  "0": { "indent": 0, "after_opening": "", "closing": "" },
-                },
+                "layout": [
+                  "Atx",
+                  { "indent": 0, "after_opening": "", "closing": "" },
+                ],
                 "level": 2,
-                "inline": { "$tag": "Text", "0": ["Testing lists"] },
+                "inline": ["Text", ["Testing lists"]],
               },
             ],
-          },
-          { "$tag": "BlankLine", "0": [""] },
-          {
-            "$tag": "Paragraph",
-            "0": [
+          ],
+          ["BlankLine", [""]],
+          [
+            "Paragraph",
+            [
               {
                 "leading_indent": 0,
-                "inline": {
-                  "$tag": "Inlines",
-                  "0": [
+                "inline": [
+                  "Inlines",
+                  [
                     [
-                      { "$tag": "Text", "0": ["The "] },
-                      {
-                        "$tag": "CodeSpan",
-                        "0": [
+                      ["Text", ["The "]],
+                      [
+                        "CodeSpan",
+                        [
                           {
                             "backticks": 1,
                             "code_layout": [
@@ -1479,26 +1455,24 @@ test "basic" {
                             ],
                           },
                         ],
-                      },
-                      {
-                        "$tag": "Text",
-                        "0": [
-                          " function is the root. There are reasons for this:",
-                        ],
-                      },
+                      ],
+                      [
+                        "Text",
+                        [" function is the root. There are reasons for this:"],
+                      ],
                     ],
                   ],
-                },
+                ],
                 "trailing_blanks": "",
               },
             ],
-          },
-          { "$tag": "BlankLine", "0": [""] },
-          {
-            "$tag": "List",
-            "0": [
+          ],
+          ["BlankLine", [""]],
+          [
+            "List",
+            [
               {
-                "ty": { "$tag": "Ordered", "0": 1, "1": "." },
+                "ty": ["Ordered", 1, "."],
                 "tight": true,
                 "items": [
                   [
@@ -1506,37 +1480,37 @@ test "basic" {
                       "before_marker": 1,
                       "marker": ["1."],
                       "after_marker": 1,
-                      "block": {
-                        "$tag": "Paragraph",
-                        "0": [
+                      "block": [
+                        "Paragraph",
+                        [
                           {
                             "leading_indent": 0,
-                            "inline": {
-                              "$tag": "Inlines",
-                              "0": [
+                            "inline": [
+                              "Inlines",
+                              [
                                 [
-                                  {
-                                    "$tag": "Text",
-                                    "0": [
+                                  [
+                                    "Text",
+                                    [
                                       "There is no reason. There should be a reason or an ",
                                     ],
-                                  },
-                                  {
-                                    "$tag": "Autolink",
-                                    "0": [
+                                  ],
+                                  [
+                                    "Autolink",
+                                    [
                                       {
                                         "is_email": false,
                                         "link": ["http://example.org"],
                                       },
                                     ],
-                                  },
+                                  ],
                                 ],
                               ],
-                            },
+                            ],
                             "trailing_blanks": "",
                           },
                         ],
-                      },
+                      ],
                     },
                   ],
                   [
@@ -1544,21 +1518,21 @@ test "basic" {
                       "before_marker": 0,
                       "marker": ["2."],
                       "after_marker": 1,
-                      "block": {
-                        "$tag": "Paragraph",
-                        "0": [
+                      "block": [
+                        "Paragraph",
+                        [
                           {
                             "leading_indent": 0,
-                            "inline": {
-                              "$tag": "Text",
-                              "0": [
+                            "inline": [
+                              "Text",
+                              [
                                 "Maybe that's the reason. But it may not be the reason.",
                               ],
-                            },
+                            ],
                             "trailing_blanks": "",
                           },
                         ],
-                      },
+                      ],
                     },
                   ],
                   [
@@ -1566,53 +1540,47 @@ test "basic" {
                       "before_marker": 1,
                       "marker": ["3."],
                       "after_marker": 1,
-                      "block": {
-                        "$tag": "Paragraph",
-                        "0": [
+                      "block": [
+                        "Paragraph",
+                        [
                           {
                             "leading_indent": 0,
-                            "inline": {
-                              "$tag": "Text",
-                              "0": ["Is reason the only tool ?"],
-                            },
+                            "inline": ["Text", ["Is reason the only tool ?"]],
                             "trailing_blanks": "",
                           },
                         ],
-                      },
+                      ],
                     },
                   ],
                 ],
               },
             ],
-          },
-          { "$tag": "BlankLine", "0": [""] },
-          {
-            "$tag": "BlockQuote",
-            "0": [
+          ],
+          ["BlankLine", [""]],
+          [
+            "BlockQuote",
+            [
               {
                 "indent": 0,
-                "block": {
-                  "$tag": "Blocks",
-                  "0": [
+                "block": [
+                  "Blocks",
+                  [
                     [
-                      {
-                        "$tag": "Paragraph",
-                        "0": [
+                      [
+                        "Paragraph",
+                        [
                           {
                             "leading_indent": 0,
-                            "inline": {
-                              "$tag": "Text",
-                              "0": ["Quoted bullets"],
-                            },
+                            "inline": ["Text", ["Quoted bullets"]],
                             "trailing_blanks": "",
                           },
                         ],
-                      },
-                      {
-                        "$tag": "List",
-                        "0": [
+                      ],
+                      [
+                        "List",
+                        [
                           {
-                            "ty": { "$tag": "Unordered", "0": "*" },
+                            "ty": ["Unordered", "*"],
                             "tight": true,
                             "items": [
                               [
@@ -1620,36 +1588,36 @@ test "basic" {
                                   "before_marker": 0,
                                   "marker": ["*"],
                                   "after_marker": 1,
-                                  "block": {
-                                    "$tag": "Paragraph",
-                                    "0": [
+                                  "block": [
+                                    "Paragraph",
+                                    [
                                       {
                                         "leading_indent": 0,
-                                        "inline": {
-                                          "$tag": "Text",
-                                          "0": ["Is this important ?"],
-                                        },
+                                        "inline": [
+                                          "Text",
+                                          ["Is this important ?"],
+                                        ],
                                         "trailing_blanks": "",
                                       },
                                     ],
-                                  },
+                                  ],
                                 },
                               ],
                             ],
                           },
                         ],
-                      },
+                      ],
                     ],
                   ],
-                },
+                ],
               },
             ],
-          },
-          {
-            "$tag": "List",
-            "0": [
+          ],
+          [
+            "List",
+            [
               {
-                "ty": { "$tag": "Unordered", "0": "*" },
+                "ty": ["Unordered", "*"],
                 "tight": true,
                 "items": [
                   [
@@ -1657,11 +1625,11 @@ test "basic" {
                       "before_marker": 0,
                       "marker": ["*"],
                       "after_marker": 1,
-                      "block": {
-                        "$tag": "List",
-                        "0": [
+                      "block": [
+                        "List",
+                        [
                           {
-                            "ty": { "$tag": "Unordered", "0": "*" },
+                            "ty": ["Unordered", "*"],
                             "tight": true,
                             "items": [
                               [
@@ -1669,25 +1637,25 @@ test "basic" {
                                   "before_marker": 0,
                                   "marker": ["*"],
                                   "after_marker": 1,
-                                  "block": {
-                                    "$tag": "Paragraph",
-                                    "0": [
+                                  "block": [
+                                    "Paragraph",
+                                    [
                                       {
                                         "leading_indent": 0,
-                                        "inline": {
-                                          "$tag": "Text",
-                                          "0": ["Well it's in the spec"],
-                                        },
+                                        "inline": [
+                                          "Text",
+                                          ["Well it's in the spec"],
+                                        ],
                                         "trailing_blanks": "",
                                       },
                                     ],
-                                  },
+                                  ],
                                 },
                               ],
                             ],
                           },
                         ],
-                      },
+                      ],
                     },
                   ],
                   [
@@ -1695,224 +1663,221 @@ test "basic" {
                       "before_marker": 0,
                       "marker": ["*"],
                       "after_marker": 1,
-                      "block": { "$tag": "BlankLine", "0": [""] },
+                      "block": ["BlankLine", [""]],
                     },
                   ],
                 ],
               },
             ],
-          },
-          {
-            "$tag": "Paragraph",
-            "0": [
+          ],
+          [
+            "Paragraph",
+            [
               {
                 "leading_indent": 0,
-                "inline": { "$tag": "Text", "0": ["Empty list item above"] },
+                "inline": ["Text", ["Empty list item above"]],
                 "trailing_blanks": "",
               },
             ],
-          },
-          { "$tag": "BlankLine", "0": [""] },
-          {
-            "$tag": "Heading",
-            "0": [
+          ],
+          ["BlankLine", [""]],
+          [
+            "Heading",
+            [
               {
-                "layout": {
-                  "$tag": "Atx",
-                  "0": { "indent": 0, "after_opening": "", "closing": "" },
-                },
+                "layout": [
+                  "Atx",
+                  { "indent": 0, "after_opening": "", "closing": "" },
+                ],
                 "level": 2,
-                "inline": { "$tag": "Text", "0": ["Testing paragraphs"] },
+                "inline": ["Text", ["Testing paragraphs"]],
               },
             ],
-          },
-          { "$tag": "BlankLine", "0": [""] },
-          {
-            "$tag": "Paragraph",
-            "0": [
+          ],
+          ["BlankLine", [""]],
+          [
+            "Paragraph",
+            [
               {
                 "leading_indent": 3,
-                "inline": {
-                  "$tag": "Inlines",
-                  "0": [
+                "inline": [
+                  "Inlines",
+                  [
                     [
-                      {
-                        "$tag": "Text",
-                        "0": ["We really want your paragraph layout preserved."],
-                      },
-                      {
-                        "$tag": "Break",
-                        "0": [
+                      [
+                        "Text",
+                        ["We really want your paragraph layout preserved."],
+                      ],
+                      [
+                        "Break",
+                        [
                           {
                             "layout_before": [""],
-                            "ty": { "$tag": "Soft" },
+                            "ty": "Soft",
                             "layout_after": [""],
                           },
                         ],
-                      },
-                      { "$tag": "Text", "0": ["Really ?"] },
-                      {
-                        "$tag": "Break",
-                        "0": [
+                      ],
+                      ["Text", ["Really ?"]],
+                      [
+                        "Break",
+                        [
                           {
                             "layout_before": [""],
-                            "ty": { "$tag": "Soft" },
+                            "ty": "Soft",
                             "layout_after": [""],
                           },
                         ],
-                      },
-                      { "$tag": "Text", "0": ["Really."] },
-                      {
-                        "$tag": "Break",
-                        "0": [
+                      ],
+                      ["Text", ["Really."]],
+                      [
+                        "Break",
+                        [
                           {
                             "layout_before": [""],
-                            "ty": { "$tag": "Soft" },
+                            "ty": "Soft",
                             "layout_after": [""],
                           },
                         ],
-                      },
-                      { "$tag": "Text", "0": ["Really."] },
-                      {
-                        "$tag": "Break",
-                        "0": [
+                      ],
+                      ["Text", ["Really."]],
+                      [
+                        "Break",
+                        [
                           {
                             "layout_before": [""],
-                            "ty": { "$tag": "Soft" },
+                            "ty": "Soft",
                             "layout_after": [""],
                           },
                         ],
-                      },
-                      { "$tag": "Text", "0": ["Really."] },
+                      ],
+                      ["Text", ["Really."]],
                     ],
                   ],
-                },
+                ],
                 "trailing_blanks": "",
               },
             ],
-          },
-          { "$tag": "BlankLine", "0": [""] },
-          { "$tag": "BlankLine", "0": [""] },
-          {
-            "$tag": "BlockQuote",
-            "0": [
+          ],
+          ["BlankLine", [""]],
+          ["BlankLine", [""]],
+          [
+            "BlockQuote",
+            [
               {
                 "indent": 0,
-                "block": {
-                  "$tag": "Paragraph",
-                  "0": [
+                "block": [
+                  "Paragraph",
+                  [
                     {
                       "leading_indent": 2,
-                      "inline": {
-                        "$tag": "Inlines",
-                        "0": [
+                      "inline": [
+                        "Inlines",
+                        [
                           [
-                            {
-                              "$tag": "Text",
-                              "0": [
+                            [
+                              "Text",
+                              [
                                 "We really want your paragraph layout preserved.",
                               ],
-                            },
-                            {
-                              "$tag": "Break",
-                              "0": [
+                            ],
+                            [
+                              "Break",
+                              [
                                 {
                                   "layout_before": [""],
-                                  "ty": { "$tag": "Soft" },
+                                  "ty": "Soft",
                                   "layout_after": [""],
                                 },
                               ],
-                            },
-                            { "$tag": "Text", "0": ["Really ?"] },
-                            {
-                              "$tag": "Break",
-                              "0": [
+                            ],
+                            ["Text", ["Really ?"]],
+                            [
+                              "Break",
+                              [
                                 {
                                   "layout_before": [""],
-                                  "ty": { "$tag": "Soft" },
+                                  "ty": "Soft",
                                   "layout_after": [""],
                                 },
                               ],
-                            },
-                            { "$tag": "Text", "0": ["Really."] },
-                            {
-                              "$tag": "Break",
-                              "0": [
+                            ],
+                            ["Text", ["Really."]],
+                            [
+                              "Break",
+                              [
                                 {
                                   "layout_before": [""],
-                                  "ty": { "$tag": "Soft" },
+                                  "ty": "Soft",
                                   "layout_after": [""],
                                 },
                               ],
-                            },
-                            { "$tag": "Text", "0": ["Really."] },
-                            {
-                              "$tag": "Break",
-                              "0": [
+                            ],
+                            ["Text", ["Really."]],
+                            [
+                              "Break",
+                              [
                                 {
                                   "layout_before": [""],
-                                  "ty": { "$tag": "Soft" },
+                                  "ty": "Soft",
                                   "layout_after": [""],
                                 },
                               ],
-                            },
-                            { "$tag": "Text", "0": ["Really."] },
+                            ],
+                            ["Text", ["Really."]],
                           ],
                         ],
-                      },
+                      ],
                       "trailing_blanks": "",
                     },
                   ],
-                },
+                ],
               },
             ],
-          },
-          { "$tag": "BlankLine", "0": [" "] },
-          { "$tag": "BlankLine", "0": [""] },
-          { "$tag": "BlankLine", "0": [""] },
-          {
-            "$tag": "Heading",
-            "0": [
+          ],
+          ["BlankLine", [" "]],
+          ["BlankLine", [""]],
+          ["BlankLine", [""]],
+          [
+            "Heading",
+            [
               {
-                "layout": {
-                  "$tag": "Atx",
-                  "0": { "indent": 0, "after_opening": "", "closing": "" },
-                },
+                "layout": [
+                  "Atx",
+                  { "indent": 0, "after_opening": "", "closing": "" },
+                ],
                 "level": 2,
-                "inline": { "$tag": "Text", "0": ["Testing thematic breaks"] },
+                "inline": ["Text", ["Testing thematic breaks"]],
               },
             ],
-          },
-          { "$tag": "BlankLine", "0": [""] },
-          { "$tag": "ThematicBreak", "0": [{ "indent": 1, "layout": "***" }] },
-          { "$tag": "ThematicBreak", "0": [{ "indent": 2, "layout": "---" }] },
-          { "$tag": "ThematicBreak", "0": [{ "indent": 3, "layout": "___" }] },
-          { "$tag": "BlankLine", "0": [""] },
-          {
-            "$tag": "ThematicBreak",
-            "0": [{ "indent": 0, "layout": "_ _ _ _ _ " }],
-          },
-          { "$tag": "BlankLine", "0": [""] },
-          {
-            "$tag": "BlockQuote",
-            "0": [
+          ],
+          ["BlankLine", [""]],
+          ["ThematicBreak", [{ "indent": 1, "layout": "***" }]],
+          ["ThematicBreak", [{ "indent": 2, "layout": "---" }]],
+          ["ThematicBreak", [{ "indent": 3, "layout": "___" }]],
+          ["BlankLine", [""]],
+          ["ThematicBreak", [{ "indent": 0, "layout": "_ _ _ _ _ " }]],
+          ["BlankLine", [""]],
+          [
+            "BlockQuote",
+            [
               {
                 "indent": 0,
-                "block": {
-                  "$tag": "ThematicBreak",
-                  "0": [{ "indent": 1, "layout": "*******" }],
-                },
+                "block": [
+                  "ThematicBreak",
+                  [{ "indent": 1, "layout": "*******" }],
+                ],
               },
             ],
-          },
-          { "$tag": "BlankLine", "0": [""] },
+          ],
+          ["BlankLine", [""]],
         ],
       ],
-    },
+    ],
     "defs": {
-      "colla psed": {
-        "$tag": "LinkDef",
-        "0": [
+      "colla psed": [
+        "LinkDef",
+        [
           {
             "layout": {
               "indent": 0,
@@ -1940,10 +1905,10 @@ test "basic" {
             ],
           },
         ],
-      },
-      "`short cuted`": {
-        "$tag": "LinkDef",
-        "0": [
+      ],
+      "`short cuted`": [
+        "LinkDef",
+        [
           {
             "layout": {
               "indent": 1,
@@ -1970,7 +1935,7 @@ test "basic" {
             ],
           },
         ],
-      },
+      ],
     },
   })
 }

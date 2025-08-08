@@ -12,14 +12,14 @@ test "text location handling" {
     file: "test.md",
     first_ccode: 0,
     last_ccode: 10,
-    first_line: (1, 0),
-    last_line: (1, 10),
+    first_line: LinePos(1, 0),
+    last_line: LinePos(1, 10),
   }
   let after_loc = loc.after()
   inspect(
     after_loc,
     content=(
-      #|{file: "test.md", first_ccode: 1, last_ccode: -1, first_line: LinePos((1, 10)), last_line: LinePos((-1, -1))}
+      #|{file: "test.md", first_ccode: 1, last_ccode: -1, first_line: LinePos(1, 10), last_line: LinePos(-1, -1)}
     ),
   )
   let none_loc = @cmark_base.TextLoc::none()
@@ -136,8 +136,8 @@ test "metadata handling" {
     file: "test.md",
     first_ccode: 0,
     last_ccode: 10,
-    first_line: (1, 0),
-    last_line: (1, 10),
+    first_line: LinePos(1, 0),
+    last_line: LinePos(1, 10),
   }
   let meta = @cmark_base.Meta::new(loc~)
   inspect(meta.is_none(), content="false")

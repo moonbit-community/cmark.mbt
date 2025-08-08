@@ -44,7 +44,7 @@ pub fn Label::compare(self : Label, other : Label) -> Int {
 pub(all) enum LabelDef {
   LinkDef(Node[LinkDefinition])
   FootnoteDef(Node[Footnote])
-} derive(Show, ToJson)
+} derive(Show, ToJson(style="flat"))
 
 ///|
 pub typealias Map[LabelKey, LabelDef] as LabelDefs
@@ -80,7 +80,7 @@ pub(all) enum LinkKind {
 }
 
 ///|
-pub(all) type LabelResolverFn (LabelContext) -> Label?
+pub(all) struct LabelResolverFn((LabelContext) -> Label?)
 
 ///|
 pub fn LabelContext::default_resolver(self : LabelContext) -> Label? {

@@ -7,7 +7,7 @@ pub(all) enum HtmlBlockEndCond {
   EndCond1
   EndBlank
   EndBlank7
-} derive(Show, ToJson, Eq)
+} derive(Show, ToJson(style="flat"), Eq)
 
 ///|
 pub(all) enum ListType {
@@ -15,7 +15,7 @@ pub(all) enum ListType {
   Unordered(Char)
   /// Starting at given integer, markers ending with given character, i.e. ')' or '.'.
   Ordered(Int, Char)
-} derive(Show, FromJson, ToJson, Eq)
+} derive(Show, FromJson(style="flat"), ToJson(style="flat"), Eq)
 
 ///|
 pub fn ListType::is_same_type(self : ListType, other : ListType) -> Bool {
@@ -39,7 +39,7 @@ pub(all) enum LineType {
   ExtTableRow(Last)
   ExtFootnoteLabel(Array[Span], Last, String)
   Nomatch
-} derive(Show, ToJson, Eq)
+} derive(Show, ToJson(style="flat"), Eq)
 
 ///| https://spec.commonmark.org/current/#thematic-breaks
 pub fn LineType::thematic_break(
@@ -234,7 +234,7 @@ pub fn LineType::fenced_code_block_start(
 pub(all) enum FencedCodeBlockContinue {
   Close(First, Last)
   Code
-} derive(Show, ToJson)
+} derive(Show, ToJson(style="flat"))
 
 ///| `fenced_code_block_continue(fence, s, last, start)` indicates
 /// whether the fence code continues or closes in the the range
