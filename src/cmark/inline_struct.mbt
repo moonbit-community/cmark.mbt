@@ -22,7 +22,7 @@ priv enum Token {
   RightParen(TokenStart)
   StrikethroughMarks(TokenStrikethroughMarks)
   MathSpanMarks(TokenMathSpanMarks)
-} derive(Show, ToJson)
+} derive(Show, ToJson(style="flat"))
 
 ///|
 priv struct TokenStart {
@@ -1590,7 +1590,7 @@ fn Parser::start_col(
 priv enum StartColResult {
   Col((Inline, TableCellLayout), CharCodePos)
   Start(String, Array[Inline])
-} derive(Show, ToJson)
+} derive(Show, ToJson(style="flat"))
 
 ///|
 test {

@@ -6,9 +6,9 @@ import(
 )
 
 // Values
-fn autolink_email(String, last~ : Int = .., start~ : Int = ..) -> Int?
+fn autolink_email(String, last? : Int, start? : Int) -> Int?
 
-fn autolink_uri(String, last~ : Int = .., start~ : Int = ..) -> Int?
+fn autolink_uri(String, last? : Int, start? : Int) -> Int?
 
 let char_code_pos_none : Int
 
@@ -44,6 +44,8 @@ fn rev_drop_spaces(String, first~ : Int, start~ : Int) -> Int
 
 fn run_of(char~ : Char, String, last~ : Int, start~ : Int) -> Int
 
+// Errors
+
 // Types and methods
 pub(all) enum FencedCodeBlockContinue {
   Close(Int, Int)
@@ -63,8 +65,8 @@ impl Eq for HtmlBlockEndCond
 impl Show for HtmlBlockEndCond
 impl ToJson for HtmlBlockEndCond
 
-pub(all) type LinePos (Int, Int)
-fn LinePos::inner(Self) -> (Int, Int)
+pub(all) struct LinePos(Int, Int)
+
 impl Compare for LinePos
 impl Eq for LinePos
 impl Show for LinePos
@@ -126,14 +128,14 @@ pub(all) struct Meta {
 }
 fn Meta::compare(Self, Self) -> Int
 fn Meta::is_none(Self) -> Bool
-fn Meta::new(loc~ : TextLoc = ..) -> Self
+fn Meta::new(loc? : TextLoc) -> Self
 fn Meta::none() -> Self
 fn Meta::to_json(Self) -> Json
 impl Eq for Meta
 impl Show for Meta
 impl ToJson for Meta
 
-pub(all) type NextLineFn[A] (A) -> LineSpan?
+pub(all) struct NextLineFn[A]((A) -> LineSpan?)
 fn[A] NextLineFn::inner(Self[A]) -> (A) -> LineSpan?
 
 pub(all) enum NextLineResult {

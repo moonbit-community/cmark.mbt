@@ -11,7 +11,7 @@ priv enum Closer {
   EmphasisMarks(Char)
   StrikethroughMarks
   MathSpanMarks(Int)
-} derive(Eq, Hash, Show, ToJson)
+} derive(Eq, Hash, Show, ToJson(style="flat"))
 
 ///|
 test {
@@ -24,7 +24,7 @@ test {
 typealias Set[Int] as PosSet
 
 ///|
-priv type CloserIndex Map[Closer, PosSet] derive(Show, ToJson)
+priv struct CloserIndex(Map[Closer, PosSet]) derive(Show, ToJson)
 
 ///|
 test {

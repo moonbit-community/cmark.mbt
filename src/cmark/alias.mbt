@@ -29,7 +29,7 @@ typealias @cmark_base.Span
 typealias @cmark_base.LineSpan
 
 ///|
-priv type Tokens @deque.T[Token]
+priv struct Tokens(@deque.T[Token])
 
 ///|
 impl Show for Tokens with output(self, logger) {
@@ -58,7 +58,7 @@ fn Tokens::push(self : Tokens, t : Token) -> Unit {
 // }
 
 ///|
-priv type RevTokens @deque.T[Token]
+priv struct RevTokens(@deque.T[Token])
 
 ///|
 impl Show for RevTokens with output(self, logger) {

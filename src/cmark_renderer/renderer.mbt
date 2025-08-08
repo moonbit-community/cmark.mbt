@@ -49,16 +49,16 @@ pub fn Context::init(self : Context, doc : Doc) -> Unit {
 }
 
 ///|
-pub(all) type InitContextFn (Context, Doc) -> Unit
+pub(all) struct InitContextFn((Context, Doc) -> Unit)
 
 ///|
-pub(all) type InlineFn (Context, Inline) -> Bool raise
+pub(all) struct InlineFn((Context, Inline) -> Bool raise)
 
 ///|
-pub(all) type BlockFn (Context, Block) -> Bool raise
+pub(all) struct BlockFn((Context, Block) -> Bool raise)
 
 ///|
-pub(all) type DocFn (Context, Doc) -> Bool raise
+pub(all) struct DocFn((Context, Doc) -> Bool raise)
 
 ///|
 pub fn Context::char(self : Context, ch : Char) -> Unit {

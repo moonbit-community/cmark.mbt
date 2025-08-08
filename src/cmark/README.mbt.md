@@ -16,37 +16,37 @@ test "basic parsing" {
   // Should contain a heading and a paragraph
   @json.inspect(doc, content={
     "nl": "\n",
-    "block": {
-      "$tag": "Blocks",
-      "0": [
+    "block": [
+      "Blocks",
+      [
         [
-          {
-            "$tag": "Heading",
-            "0": [
+          [
+            "Heading",
+            [
               {
-                "layout": {
-                  "$tag": "Atx",
-                  "0": { "indent": 0, "after_opening": "", "closing": "" },
-                },
+                "layout": [
+                  "Atx",
+                  { "indent": 0, "after_opening": "", "closing": "" },
+                ],
                 "level": 1,
-                "inline": { "$tag": "Text", "0": ["Hello World"] },
+                "inline": ["Text", ["Hello World"]],
               },
             ],
-          },
-          { "$tag": "BlankLine", "0": [""] },
-          {
-            "$tag": "Paragraph",
-            "0": [
+          ],
+          ["BlankLine", [""]],
+          [
+            "Paragraph",
+            [
               {
                 "leading_indent": 0,
-                "inline": { "$tag": "Text", "0": ["This is a paragraph."] },
+                "inline": ["Text", ["This is a paragraph."]],
                 "trailing_blanks": "",
               },
             ],
-          },
+          ],
         ],
       ],
-    },
+    ],
     "defs": {},
   })
 }
@@ -66,41 +66,31 @@ test "emphasis and strong emphasis" {
   let doc = @cmark.Doc::from_string(input)
   @json.inspect(doc, content={
     "nl": "\n",
-    "block": {
-      "$tag": "Paragraph",
-      "0": [
+    "block": [
+      "Paragraph",
+      [
         {
           "leading_indent": 0,
-          "inline": {
-            "$tag": "Inlines",
-            "0": [
+          "inline": [
+            "Inlines",
+            [
               [
-                {
-                  "$tag": "Emphasis",
-                  "0": [
-                    {
-                      "delim": "_",
-                      "inline": { "$tag": "Text", "0": ["Emphasis"] },
-                    },
-                  ],
-                },
-                { "$tag": "Text", "0": [" and "] },
-                {
-                  "$tag": "StrongEmphasis",
-                  "0": [
-                    {
-                      "delim": "*",
-                      "inline": { "$tag": "Text", "0": ["strong emphasis"] },
-                    },
-                  ],
-                },
+                [
+                  "Emphasis",
+                  [{ "delim": "_", "inline": ["Text", ["Emphasis"]] }],
+                ],
+                ["Text", [" and "]],
+                [
+                  "StrongEmphasis",
+                  [{ "delim": "*", "inline": ["Text", ["strong emphasis"]] }],
+                ],
               ],
             ],
-          },
+          ],
           "trailing_blanks": "",
         },
       ],
-    },
+    ],
     "defs": {},
   })
 }
@@ -115,28 +105,28 @@ test "inline code and math" {
   let doc = @cmark.Doc::from_string(input, strict=false)
   @json.inspect(doc, content={
     "nl": "\n",
-    "block": {
-      "$tag": "Paragraph",
-      "0": [
+    "block": [
+      "Paragraph",
+      [
         {
           "leading_indent": 0,
-          "inline": {
-            "$tag": "Inlines",
-            "0": [
+          "inline": [
+            "Inlines",
+            [
               [
-                {
-                  "$tag": "ExtMathSpan",
-                  "0": [
+                [
+                  "ExtMathSpan",
+                  [
                     {
                       "display": false,
                       "tex_layout": [{ "blanks": "", "node": ["E = mc^2"] }],
                     },
                   ],
-                },
-                { "$tag": "Text", "0": [" in Python: "] },
-                {
-                  "$tag": "CodeSpan",
-                  "0": [
+                ],
+                ["Text", [" in Python: "]],
+                [
+                  "CodeSpan",
+                  [
                     {
                       "backticks": 1,
                       "code_layout": [
@@ -144,14 +134,14 @@ test "inline code and math" {
                       ],
                     },
                   ],
-                },
+                ],
               ],
             ],
-          },
+          ],
           "trailing_blanks": "",
         },
       ],
-    },
+    ],
     "defs": {},
   })
 }
@@ -169,19 +159,16 @@ test "headings" {
   // Should contain a heading and a paragraph
   @json.inspect(doc, content={
     "nl": "\n",
-    "block": {
-      "$tag": "Heading",
-      "0": [
+    "block": [
+      "Heading",
+      [
         {
-          "layout": {
-            "$tag": "Atx",
-            "0": { "indent": 0, "after_opening": "", "closing": "" },
-          },
+          "layout": ["Atx", { "indent": 0, "after_opening": "", "closing": "" }],
           "level": 1,
-          "inline": { "$tag": "Text", "0": ["Level 1"] },
+          "inline": ["Text", ["Level 1"]],
         },
       ],
-    },
+    ],
     "defs": {},
   })
 }
@@ -199,11 +186,11 @@ test "lists" {
   // Should find an ordered list within an unordered one.
   @json.inspect(doc, content={
     "nl": "\n",
-    "block": {
-      "$tag": "List",
-      "0": [
+    "block": [
+      "List",
+      [
         {
-          "ty": { "$tag": "Unordered", "0": "-" },
+          "ty": ["Unordered", "-"],
           "tight": true,
           "items": [
             [
@@ -211,16 +198,16 @@ test "lists" {
                 "before_marker": 0,
                 "marker": ["-"],
                 "after_marker": 1,
-                "block": {
-                  "$tag": "Paragraph",
-                  "0": [
+                "block": [
+                  "Paragraph",
+                  [
                     {
                       "leading_indent": 0,
-                      "inline": { "$tag": "Text", "0": ["First item"] },
+                      "inline": ["Text", ["First item"]],
                       "trailing_blanks": "",
                     },
                   ],
-                },
+                ],
               },
             ],
             [
@@ -228,25 +215,25 @@ test "lists" {
                 "before_marker": 0,
                 "marker": ["-"],
                 "after_marker": 1,
-                "block": {
-                  "$tag": "Blocks",
-                  "0": [
+                "block": [
+                  "Blocks",
+                  [
                     [
-                      {
-                        "$tag": "Paragraph",
-                        "0": [
+                      [
+                        "Paragraph",
+                        [
                           {
                             "leading_indent": 0,
-                            "inline": { "$tag": "Text", "0": ["Second item"] },
+                            "inline": ["Text", ["Second item"]],
                             "trailing_blanks": "",
                           },
                         ],
-                      },
-                      {
-                        "$tag": "List",
-                        "0": [
+                      ],
+                      [
+                        "List",
+                        [
                           {
-                            "ty": { "$tag": "Ordered", "0": 1, "1": "." },
+                            "ty": ["Ordered", 1, "."],
                             "tight": true,
                             "items": [
                               [
@@ -254,34 +241,31 @@ test "lists" {
                                   "before_marker": 0,
                                   "marker": ["1."],
                                   "after_marker": 1,
-                                  "block": {
-                                    "$tag": "Paragraph",
-                                    "0": [
+                                  "block": [
+                                    "Paragraph",
+                                    [
                                       {
                                         "leading_indent": 0,
-                                        "inline": {
-                                          "$tag": "Text",
-                                          "0": ["Nested item"],
-                                        },
+                                        "inline": ["Text", ["Nested item"]],
                                         "trailing_blanks": "",
                                       },
                                     ],
-                                  },
+                                  ],
                                 },
                               ],
                             ],
                           },
                         ],
-                      },
+                      ],
                     ],
                   ],
-                },
+                ],
               },
             ],
           ],
         },
       ],
-    },
+    ],
     "defs": {},
   })
 }
@@ -301,19 +285,19 @@ test "code blocks" {
   let doc = @cmark.Doc::from_string(input)
   @json.inspect(doc, content={
     "nl": "\n",
-    "block": {
-      "$tag": "CodeBlock",
-      "0": [
+    "block": [
+      "CodeBlock",
+      [
         {
-          "layout": {
-            "$tag": "Fenced",
-            "0": { "indent": 0, "opening_fence": [""], "closing_fence": [""] },
-          },
+          "layout": [
+            "Fenced",
+            { "indent": 0, "opening_fence": [""], "closing_fence": [""] },
+          ],
           "info_string": ["moonbit"],
           "code": [["fn main {"], ["  println(\"Hello\")"], ["}"]],
         },
       ],
-    },
+    ],
     "defs": {},
   })
 }
@@ -331,42 +315,50 @@ test "tables" {
   let null = Json::null()
   @json.inspect(doc, content={
     "nl": "\n",
-    "block": {
-      "$tag": "ExtTable",
-      "0": [
+    "block": [
+      "ExtTable",
+      [
         {
           "indent": 0,
           "col_count": 2,
           "rows": [
             [
               [
-                {
-                  "$tag": "Header",
-                  "0": [
-                    [{ "$tag": "Text", "0": ["Header 1"] }, ["", ""]],
-                    [{ "$tag": "Text", "0": ["Header 2"] }, ["", ""]],
+                [
+                  "Header",
+                  [
+                    [["Text", ["Header 1"]], ["TableCellLayout", ["", ""]]],
+                    [["Text", ["Header 2"]], ["TableCellLayout", ["", ""]]],
                   ],
-                },
+                ],
               ],
               "",
             ],
-            [[{ "$tag": "Sep", "0": [[[null, 10]], [[null, 10]]] }], ""],
             [
               [
-                {
-                  "$tag": "Data",
-                  "0": [
-                    [{ "$tag": "Text", "0": ["Cell 1"] }, ["", ""]],
-                    [{ "$tag": "Text", "0": ["Cell 2"] }, ["", ""]],
+                [
+                  "Sep",
+                  [[["TableSep", [null, 10]]], [["TableSep", [null, 10]]]],
+                ],
+              ],
+              "",
+            ],
+            [
+              [
+                [
+                  "Data",
+                  [
+                    [["Text", ["Cell 1"]], ["TableCellLayout", ["", ""]]],
+                    [["Text", ["Cell 2"]], ["TableCellLayout", ["", ""]]],
                   ],
-                },
+                ],
               ],
               "",
             ],
           ],
         },
       ],
-    },
+    ],
     "defs": {},
   })
 }
@@ -383,53 +375,53 @@ test "footnotes" {
   let doc = @cmark.Doc::from_string(input, strict=false)
   @json.inspect(doc, content={
     "nl": "\n",
-    "block": {
-      "$tag": "Blocks",
-      "0": [
+    "block": [
+      "Blocks",
+      [
         [
-          {
-            "$tag": "Paragraph",
-            "0": [
+          [
+            "Paragraph",
+            [
               {
                 "leading_indent": 0,
-                "inline": {
-                  "$tag": "Inlines",
-                  "0": [
+                "inline": [
+                  "Inlines",
+                  [
                     [
-                      { "$tag": "Text", "0": ["Text"] },
-                      {
-                        "$tag": "Link",
-                        "0": [
+                      ["Text", ["Text"]],
+                      [
+                        "Link",
+                        [
                           {
-                            "text": { "$tag": "Text", "0": ["^1"] },
-                            "reference": {
-                              "$tag": "Ref",
-                              "0": { "$tag": "Shortcut" },
-                              "1": {
+                            "text": ["Text", ["^1"]],
+                            "reference": [
+                              "Ref",
+                              "Shortcut",
+                              {
                                 "meta": {},
                                 "key": "^1",
                                 "text": [{ "blanks": "", "node": ["^1"] }],
                               },
-                              "2": {
+                              {
                                 "meta": {},
                                 "key": "^1",
                                 "text": [{ "blanks": "", "node": ["^1"] }],
                               },
-                            },
+                            ],
                           },
                         ],
-                      },
+                      ],
                     ],
                   ],
-                },
+                ],
                 "trailing_blanks": "",
               },
             ],
-          },
-          { "$tag": "BlankLine", "0": [""] },
-          {
-            "$tag": "ExtFootnoteDefinition",
-            "0": [
+          ],
+          ["BlankLine", [""]],
+          [
+            "ExtFootnoteDefinition",
+            [
               {
                 "indent": 0,
                 "label": {
@@ -442,26 +434,26 @@ test "footnotes" {
                   "key": "^1",
                   "text": [{ "blanks": "", "node": ["^1"] }],
                 },
-                "block": {
-                  "$tag": "Paragraph",
-                  "0": [
+                "block": [
+                  "Paragraph",
+                  [
                     {
                       "leading_indent": 1,
-                      "inline": { "$tag": "Text", "0": ["Footnote content"] },
+                      "inline": ["Text", ["Footnote content"]],
                       "trailing_blanks": "",
                     },
                   ],
-                },
+                ],
               },
             ],
-          },
+          ],
         ],
       ],
-    },
+    ],
     "defs": {
-      "^1": {
-        "$tag": "FootnoteDef",
-        "0": [
+      "^1": [
+        "FootnoteDef",
+        [
           {
             "indent": 0,
             "label": {
@@ -474,19 +466,19 @@ test "footnotes" {
               "key": "^1",
               "text": [{ "blanks": "", "node": ["^1"] }],
             },
-            "block": {
-              "$tag": "Paragraph",
-              "0": [
+            "block": [
+              "Paragraph",
+              [
                 {
                   "leading_indent": 1,
-                  "inline": { "$tag": "Text", "0": ["Footnote content"] },
+                  "inline": ["Text", ["Footnote content"]],
                   "trailing_blanks": "",
                 },
               ],
-            },
+            ],
           },
         ],
-      },
+      ],
     },
   })
 }

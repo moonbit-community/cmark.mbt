@@ -95,7 +95,7 @@ pub typealias Int as LineNum // 1-based
 pub let line_num_none = -1
 
 ///|
-pub(all) type LinePos (LineNum, CharCodePos) derive (
+pub(all) struct LinePos(LineNum,CharCodePos) derive (
   Show,
   Eq,
   Compare,
@@ -104,7 +104,7 @@ pub(all) type LinePos (LineNum, CharCodePos) derive (
 )
 
 ///|
-pub let line_pos_none : LinePos = (line_num_none, char_code_pos_none)
+pub let line_pos_none : LinePos = LinePos(line_num_none, char_code_pos_none)
 
 ///|
 pub(all) struct LineSpan {
@@ -121,10 +121,10 @@ pub(all) struct Span {
 } derive(Show, ToJson, Eq, Compare)
 
 ///|
-pub(all) type NextLineFn[A] (A) -> LineSpan?
+pub(all) struct NextLineFn[A]((A) -> LineSpan?)
 
 ///|
 pub(all) enum NextLineResult {
   ThisLine(CharCodePos)
   NextLine(LineSpan, CharCodePos)
-} derive(Show, ToJson)
+} derive(Show, ToJson(style="flat"))

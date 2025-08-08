@@ -15,7 +15,7 @@ pub(all) enum Inline {
   Text(Node[InlineText])
   ExtStrikethrough(Node[InlineStrikethrough])
   ExtMathSpan(Node[InlineMathSpan])
-} derive(Eq, Show, ToJson)
+} derive(Eq, Show, ToJson(style="flat"))
 
 ///|
 pub fn Inline::empty() -> Inline {
@@ -242,7 +242,7 @@ pub fn InlineBreak::new(
 pub(all) enum InlineBreakType {
   Hard
   Soft
-} derive(Eq, Compare, Show, FromJson, ToJson)
+} derive(Eq, Compare, Show, FromJson(style="flat"), ToJson(style="flat"))
 
 ///| The type for [code spans](https://spec.commonmark.org/0.30/#code-spans).
 pub(all) struct InlineCodeSpan {
@@ -360,7 +360,7 @@ pub(all) enum ReferenceKind {
   /// https://spec.commonmark.org/0.30/#reference-link
   /// First label is the label of the reference, second label is the label of the referenced definition.
   Ref(ReferenceLayout, Label, Label)
-} derive(Eq, Show, ToJson)
+} derive(Eq, Show, ToJson(style="flat"))
 
 ///|
 /// The type for reference link layouts.
@@ -371,7 +371,7 @@ pub(all) enum ReferenceLayout {
   Full
   /// https://spec.commonmark.org/0.30/#shortcut-reference-link
   Shortcut
-} derive(Eq, Show, FromJson, ToJson)
+} derive(Eq, Show, FromJson(style="flat"), ToJson(style="flat"))
 
 ///|
 pub fn InlineLink::new(text : Inline, reference : ReferenceKind) -> InlineLink {
@@ -431,7 +431,7 @@ pub fn InlineLink::is_unsafe(l : String) -> Bool {
 }
 
 ///| The type for [inline raw HTML](https://spec.commonmark.org/0.30/#raw-html) (can span multiple lines).
-pub(all) type InlineRawHtml Seq[Tight] derive(Eq, Show, ToJson)
+pub(all) struct InlineRawHtml(Seq[Tight]) derive(Eq, Show, ToJson)
 
 ///| The type for [textual content](https://spec.commonmark.org/0.30/#textual-content).
 ///
@@ -443,7 +443,7 @@ pub typealias String as InlineText
 // Extensions
 
 ///|
-pub(all) type InlineStrikethrough Inline derive(Eq, Show, ToJson)
+pub(all) struct InlineStrikethrough(Inline) derive(Eq, Show, ToJson)
 
 ///|
 pub(all) struct InlineMathSpan {

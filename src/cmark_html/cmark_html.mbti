@@ -7,15 +7,17 @@ import(
 )
 
 // Values
-fn from_doc(backend_blocks~ : Bool = .., safe~ : Bool, @cmark.Doc) -> String raise
+fn from_doc(backend_blocks? : Bool, safe~ : Bool, @cmark.Doc) -> String raise
 
-fn render(backend_blocks~ : Bool = .., safe~ : Bool = .., strict~ : Bool = .., String) -> String raise
+fn render(backend_blocks? : Bool, safe? : Bool, strict? : Bool, String) -> String raise
 
-fn renderer(backend_blocks~ : Bool = .., safe~ : Bool) -> @cmark_renderer.Renderer
+fn renderer(backend_blocks? : Bool, safe~ : Bool) -> @cmark_renderer.Renderer
 
 fn safe(@cmark_renderer.Context) -> Bool
 
-fn xhtml_renderer(backend_blocks~ : Bool = .., safe~ : Bool) -> @cmark_renderer.Renderer
+fn xhtml_renderer(backend_blocks? : Bool, safe~ : Bool) -> @cmark_renderer.Renderer
+
+// Errors
 
 // Types and methods
 

@@ -57,7 +57,7 @@ fn Parser::new(
     defs,
     resolver,
     cidx: CloserIndex::new(),
-    curr_line_pos: (1, 0),
+    curr_line_pos: LinePos(1, 0),
     curr_line_last_char: -1,
     curr_char: 0,
     curr_char_col: 0,
@@ -281,7 +281,7 @@ fn Parser::raw_tight_block_lines(
 }
 
 ///|
-priv type ParserCleanSpanFn (Parser, LineSpan) -> StringNode
+priv struct ParserCleanSpanFn((Parser, LineSpan) -> StringNode)
 
 ///|
 fn Parser::_tight_block_lines(

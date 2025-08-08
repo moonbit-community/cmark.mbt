@@ -153,7 +153,7 @@ priv struct FenceCodeBlockStruct {
 priv enum CodeBlockStruct {
   Indented(Array[IndentedCodeLine])
   Fenced(FenceCodeBlockStruct)
-} derive(Show, ToJson)
+} derive(Show, ToJson(style="flat"))
 
 ///|
 priv struct Atx {
@@ -176,7 +176,7 @@ priv struct Setext {
 priv enum Heading {
   Atx(Atx)
   Setext(Setext)
-} derive(Show, ToJson)
+} derive(Show, ToJson(style="flat"))
 
 ///|
 priv struct HtmlBlockStruct {
@@ -203,7 +203,7 @@ priv enum BlockStruct {
   ThematicBreak(Indent, LineSpan) // Including trailing blanks
   ExtTable(Indent, Array[(LineSpan, LineSpan)]) // The second `LineSpan` is for trailing blanks
   ExtFootnote(Indent, (Label, Label?), Array[BlockStruct])
-} derive(Show, ToJson)
+} derive(Show, ToJson(style="flat"))
 
 ///|
 priv struct ListItemStruct {
@@ -1375,7 +1375,7 @@ fn Parser::get_next_line(self : Parser) -> Bool {
   } else {
     k - 1
   }
-  self.curr_line_pos = (self.curr_line_pos.0 + 1, first_char)
+  self.curr_line_pos = LinePos(self.curr_line_pos.0 + 1, first_char)
   self.curr_line_last_char = last_char
   self.curr_char = first_char
   self.curr_char_col = 0
@@ -1391,7 +1391,7 @@ fn Parser::parse_block(self : Parser) -> (String, Node[Array[BlockStruct]]) {
       file: self.file,
       first_ccode: 0,
       last_ccode: self.curr_line_last_char,
-      first_line: (1, 0),
+      first_line: LinePos(1, 0),
       last_line: self.curr_line_pos,
     })
   }

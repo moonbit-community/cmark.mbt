@@ -11,7 +11,7 @@ fn parse_only(
   let lines1 : Array[LineSpan] = []
   for ln in lines {
     lines1.push({
-      pos: (ln_num, 0),
+      pos: LinePos(ln_num, 0),
       first: char_code_pos,
       last: char_code_pos + ln.length() - 1,
     })
@@ -33,7 +33,7 @@ fn tokenize_only(
   let lines1 : Array[LineSpan] = []
   for ln in lines {
     lines1.push({
-      pos: (ln_num, 0),
+      pos: LinePos(ln_num, 0),
       first: char_code_pos,
       last: char_code_pos + ln.length() - 1,
     })
@@ -54,10 +54,7 @@ test "should parse entity and numeric char references" {
     ),
     content=[
       [0, ""],
-      {
-        "$tag": "Text",
-        "0": ["  & © Æ Ď ¾ ℋ ⅆ ∲ ≧̸ # Ӓ Ϡ � \" ആ ಫ"],
-      },
+      ["Text", ["  & © Æ Ď ¾ ℋ ⅆ ∲ ≧̸ # Ӓ Ϡ � \" ആ ಫ"]],
     ],
   )
   @json.inspect(
@@ -68,12 +65,12 @@ test "should parse entity and numeric char references" {
     ),
     content=[
       [0, ""],
-      {
-        "$tag": "Text",
-        "0": [
+      [
+        "Text",
+        [
           "&nbsp &x; &#; &#x; &#87654321; &#abcdef0; &ThisIsNotDefined; &hi?; &copy &MadeUpEntity;",
         ],
-      },
+      ],
     ],
   )
 }
@@ -82,17 +79,11 @@ test "should parse entity and numeric char references" {
 test "should parse autolinks" {
   @json.inspect(parse_only("<http://example.org>"), content=[
     [0, ""],
-    {
-      "$tag": "Autolink",
-      "0": [{ "is_email": false, "link": ["http://example.org"] }],
-    },
+    ["Autolink", [{ "is_email": false, "link": ["http://example.org"] }]],
   ])
   @json.inspect(parse_only("<you@example.org>"), content=[
     [0, ""],
-    {
-      "$tag": "Autolink",
-      "0": [{ "is_email": true, "link": ["you@example.org"] }],
-    },
+    ["Autolink", [{ "is_email": true, "link": ["you@example.org"] }]],
   ])
 }
 
@@ -108,46 +99,34 @@ test "should parse breaks" {
     ),
     content=[
       [0, ""],
-      {
-        "$tag": "Inlines",
-        "0": [
+      [
+        "Inlines",
+        [
           [
-            {
-              "$tag": "Text",
-              "0": [
+            [
+              "Text",
+              [
                 "A line ending (not in a code span or HTML tag) that is preceded by two",
               ],
-            },
-            {
-              "$tag": "Break",
-              "0": [
-                {
-                  "layout_before": [""],
-                  "ty": { "$tag": "Soft" },
-                  "layout_after": [""],
-                },
-              ],
-            },
-            {
-              "$tag": "Text",
-              "0": [
+            ],
+            [
+              "Break",
+              [{ "layout_before": [""], "ty": "Soft", "layout_after": [""] }],
+            ],
+            [
+              "Text",
+              [
                 "or more spaces and does not occur at the end of a block is parsed as a",
               ],
-            },
-            {
-              "$tag": "Break",
-              "0": [
-                {
-                  "layout_before": [""],
-                  "ty": { "$tag": "Soft" },
-                  "layout_after": [""],
-                },
-              ],
-            },
-            { "$tag": "Text", "0": ["hard line break."] },
+            ],
+            [
+              "Break",
+              [{ "layout_before": [""], "ty": "Soft", "layout_after": [""] }],
+            ],
+            ["Text", ["hard line break."]],
           ],
         ],
-      },
+      ],
     ],
   )
   @json.inspect(
@@ -160,39 +139,27 @@ test "should parse breaks" {
     ),
     content=[
       [0, ""],
-      {
-        "$tag": "Inlines",
-        "0": [
+      [
+        "Inlines",
+        [
           [
-            {
-              "$tag": "Text",
-              "0": ["So this means we had softbreaks so far and now we get  "],
-            },
-            {
-              "$tag": "Break",
-              "0": [
-                {
-                  "layout_before": [""],
-                  "ty": { "$tag": "Hard" },
-                  "layout_after": [""],
-                },
-              ],
-            },
-            { "$tag": "Text", "0": ["a hard break"] },
-            {
-              "$tag": "Break",
-              "0": [
-                {
-                  "layout_before": [""],
-                  "ty": { "$tag": "Hard" },
-                  "layout_after": [""],
-                },
-              ],
-            },
-            { "$tag": "Text", "0": ["and another one."] },
+            [
+              "Text",
+              ["So this means we had softbreaks so far and now we get  "],
+            ],
+            [
+              "Break",
+              [{ "layout_before": [""], "ty": "Hard", "layout_after": [""] }],
+            ],
+            ["Text", ["a hard break"]],
+            [
+              "Break",
+              [{ "layout_before": [""], "ty": "Hard", "layout_after": [""] }],
+            ],
+            ["Text", ["and another one."]],
           ],
         ],
-      },
+      ],
     ],
   )
 }
@@ -208,38 +175,29 @@ test "should tokenize codespans" {
       ),
     ),
     content=[
-      { "Backticks(1)": [25, 71], "Backticks(2)": [41] },
+      ["CloserIndex", { "Backticks(1)": [25, 71], "Backticks(2)": [41] }],
       [
-        {
-          "$tag": "Backticks",
-          "0": { "start": 25, "count": 1, "escaped": false },
-        },
-        {
-          "$tag": "Newline",
-          "0": {
+        ["Backticks", { "start": 25, "count": 1, "escaped": false }],
+        [
+          "Newline",
+          {
             "start": 26,
-            "break_ty": { "$tag": "Soft" },
-            "newline": { "pos": [2, 0], "first": 27, "last": 59 },
+            "break_ty": "Soft",
+            "newline": { "pos": ["LinePos", 2, 0], "first": 27, "last": 59 },
           },
-        },
-        {
-          "$tag": "Backticks",
-          "0": { "start": 41, "count": 2, "escaped": false },
-        },
-        {
-          "$tag": "Newline",
-          "0": {
+        ],
+        ["Backticks", { "start": 41, "count": 2, "escaped": false }],
+        [
+          "Newline",
+          {
             "start": 60,
-            "break_ty": { "$tag": "Soft" },
-            "newline": { "pos": [3, 0], "first": 61, "last": 71 },
+            "break_ty": "Soft",
+            "newline": { "pos": ["LinePos", 3, 0], "first": 61, "last": 71 },
           },
-        },
-        {
-          "$tag": "Backticks",
-          "0": { "start": 71, "count": 1, "escaped": false },
-        },
+        ],
+        ["Backticks", { "start": 71, "count": 1, "escaped": false }],
       ],
-      { "pos": [1, 0], "first": 0, "last": 25 },
+      { "pos": ["LinePos", 1, 0], "first": 0, "last": 25 },
     ],
   )
 }
@@ -248,24 +206,24 @@ test "should tokenize codespans" {
 test "should parse codespans on a single line" {
   @json.inspect(parse_only("Wow, we have `code spans` now!"), content=[
     [0, ""],
-    {
-      "$tag": "Inlines",
-      "0": [
+    [
+      "Inlines",
+      [
         [
-          { "$tag": "Text", "0": ["Wow, we have "] },
-          {
-            "$tag": "CodeSpan",
-            "0": [
+          ["Text", ["Wow, we have "]],
+          [
+            "CodeSpan",
+            [
               {
                 "backticks": 1,
                 "code_layout": [{ "blanks": "", "node": ["code spans"] }],
               },
             ],
-          },
-          { "$tag": "Text", "0": [" now!"] },
+          ],
+          ["Text", [" now!"]],
         ],
       ],
-    },
+    ],
   ])
 }
 
@@ -280,14 +238,14 @@ test "should parse codespans across multiple lines" {
     ),
     content=[
       [0, ""],
-      {
-        "$tag": "Inlines",
-        "0": [
+      [
+        "Inlines",
+        [
           [
-            { "$tag": "Text", "0": ["wow code"] },
-            {
-              "$tag": "CodeSpan",
-              "0": [
+            ["Text", ["wow code"]],
+            [
+              "CodeSpan",
+              [
                 {
                   "backticks": 1,
                   "code_layout": [
@@ -296,11 +254,11 @@ test "should parse codespans across multiple lines" {
                   ],
                 },
               ],
-            },
-            { "$tag": "Text", "0": [" !"] },
+            ],
+            ["Text", [" !"]],
           ],
         ],
-      },
+      ],
     ],
   )
   @json.inspect(
@@ -313,14 +271,14 @@ test "should parse codespans across multiple lines" {
     ),
     content=[
       [0, ""],
-      {
-        "$tag": "Inlines",
-        "0": [
+      [
+        "Inlines",
+        [
           [
-            { "$tag": "Text", "0": ["This is a multi-line code"] },
-            {
-              "$tag": "CodeSpan",
-              "0": [
+            ["Text", ["This is a multi-line code"]],
+            [
+              "CodeSpan",
+              [
                 {
                   "backticks": 1,
                   "code_layout": [
@@ -330,10 +288,10 @@ test "should parse codespans across multiple lines" {
                   ],
                 },
               ],
-            },
+            ],
           ],
         ],
-      },
+      ],
     ],
   )
   @json.inspect(
@@ -347,14 +305,14 @@ test "should parse codespans across multiple lines" {
     ),
     content=[
       [0, ""],
-      {
-        "$tag": "Inlines",
-        "0": [
+      [
+        "Inlines",
+        [
           [
-            { "$tag": "Text", "0": ["Sometimes code spans "] },
-            {
-              "$tag": "CodeSpan",
-              "0": [
+            ["Text", ["Sometimes code spans "]],
+            [
+              "CodeSpan",
+              [
                 {
                   "backticks": 2,
                   "code_layout": [
@@ -365,11 +323,11 @@ test "should parse codespans across multiple lines" {
                   ],
                 },
               ],
-            },
-            { "$tag": "Text", "0": [". Do you fancy "] },
-            {
-              "$tag": "CodeSpan",
-              "0": [
+            ],
+            ["Text", [". Do you fancy "]],
+            [
+              "CodeSpan",
+              [
                 {
                   "backticks": 2,
                   "code_layout": [
@@ -377,11 +335,11 @@ test "should parse codespans across multiple lines" {
                   ],
                 },
               ],
-            },
-            { "$tag": "Text", "0": [" ?"] },
+            ],
+            ["Text", [" ?"]],
           ],
         ],
-      },
+      ],
     ],
   )
 }
@@ -390,104 +348,72 @@ test "should parse codespans across multiple lines" {
 test "should parse emphases" {
   @json.inspect(parse_only("*it's just emph*"), content=[
     [0, ""],
-    {
-      "$tag": "Emphasis",
-      "0": [
-        { "delim": "*", "inline": { "$tag": "Text", "0": ["it's just emph"] } },
-      ],
-    },
+    ["Emphasis", [{ "delim": "*", "inline": ["Text", ["it's just emph"]] }]],
   ])
   @json.inspect(parse_only("_and another emph_"), content=[
     [0, ""],
-    {
-      "$tag": "Emphasis",
-      "0": [
-        {
-          "delim": "_",
-          "inline": { "$tag": "Text", "0": ["and another emph"] },
-        },
-      ],
-    },
+    ["Emphasis", [{ "delim": "_", "inline": ["Text", ["and another emph"]] }]],
   ])
   @json.inspect(parse_only("**and strong emph**"), content=[
     [0, ""],
-    {
-      "$tag": "StrongEmphasis",
-      "0": [
-        { "delim": "*", "inline": { "$tag": "Text", "0": ["and strong emph"] } },
-      ],
-    },
+    [
+      "StrongEmphasis",
+      [{ "delim": "*", "inline": ["Text", ["and strong emph"]] }],
+    ],
   ])
   @json.inspect(parse_only("__and another strong emph__"), content=[
     [0, ""],
-    {
-      "$tag": "StrongEmphasis",
-      "0": [
-        {
-          "delim": "_",
-          "inline": { "$tag": "Text", "0": ["and another strong emph"] },
-        },
-      ],
-    },
+    [
+      "StrongEmphasis",
+      [{ "delim": "_", "inline": ["Text", ["and another strong emph"]] }],
+    ],
   ])
   @json.inspect(parse_only("be careful about **embedded * markers**!"), content=[
     [0, ""],
-    {
-      "$tag": "Inlines",
-      "0": [
+    [
+      "Inlines",
+      [
         [
-          { "$tag": "Text", "0": ["be careful about "] },
-          {
-            "$tag": "StrongEmphasis",
-            "0": [
-              {
-                "delim": "*",
-                "inline": { "$tag": "Text", "0": ["embedded * markers"] },
-              },
-            ],
-          },
-          { "$tag": "Text", "0": ["!"] },
+          ["Text", ["be careful about "]],
+          [
+            "StrongEmphasis",
+            [{ "delim": "*", "inline": ["Text", ["embedded * markers"]] }],
+          ],
+          ["Text", ["!"]],
         ],
       ],
-    },
+    ],
   ])
   @json.inspect(parse_only("This *is not ** what* you want?"), content=[
     [0, ""],
-    {
-      "$tag": "Inlines",
-      "0": [
+    [
+      "Inlines",
+      [
         [
-          { "$tag": "Text", "0": ["This "] },
-          {
-            "$tag": "Emphasis",
-            "0": [
-              {
-                "delim": "*",
-                "inline": { "$tag": "Text", "0": ["is not ** what"] },
-              },
-            ],
-          },
-          { "$tag": "Text", "0": [" you want?"] },
+          ["Text", ["This "]],
+          [
+            "Emphasis",
+            [{ "delim": "*", "inline": ["Text", ["is not ** what"]] }],
+          ],
+          ["Text", [" you want?"]],
         ],
       ],
-    },
+    ],
   ])
   @json.inspect(parse_only("**许可证**：GPL-v3.0"), content=[
     [0, ""],
-    {
-      "$tag": "Inlines",
-      "0": [
+    [
+      "Inlines",
+      [
         [
-          {
-            "$tag": "StrongEmphasis",
-            "0": [
-              { "delim": "*", "inline": { "$tag": "Text", "0": ["许可证"] } },
-            ],
-          },
-          { "$tag": "Text", "0": ["：GPL-v3.0"] },
+          [
+            "StrongEmphasis",
+            [{ "delim": "*", "inline": ["Text", ["许可证"]] }],
+          ],
+          ["Text", ["：GPL-v3.0"]],
         ],
       ],
-    },
+    ],
   ])
 }
 
@@ -501,14 +427,14 @@ test "should parse links/images/refs" {
     ),
     content=[
       [0, ""],
-      {
-        "$tag": "Link",
-        "0": [
+      [
+        "Link",
+        [
           {
-            "text": { "$tag": "Text", "0": ["a link"] },
-            "reference": {
-              "$tag": "Inline",
-              "0": [
+            "text": ["Text", ["a link"]],
+            "reference": [
+              "Inline",
+              [
                 {
                   "layout": {
                     "indent": 0,
@@ -521,10 +447,10 @@ test "should parse links/images/refs" {
                   "dest": ["http://example.org"],
                 },
               ],
-            },
+            ],
           },
         ],
-      },
+      ],
     ],
   )
   @json.inspect(
@@ -535,14 +461,14 @@ test "should parse links/images/refs" {
     ),
     content=[
       [0, ""],
-      {
-        "$tag": "Image",
-        "0": [
+      [
+        "Image",
+        [
           {
-            "text": { "$tag": "Text", "0": ["an image"] },
-            "reference": {
-              "$tag": "Inline",
-              "0": [
+            "text": ["Text", ["an image"]],
+            "reference": [
+              "Inline",
+              [
                 {
                   "layout": {
                     "indent": 0,
@@ -555,10 +481,10 @@ test "should parse links/images/refs" {
                   "dest": ["http://example.org"],
                 },
               ],
-            },
+            ],
           },
         ],
-      },
+      ],
     ],
   )
   @json.inspect(
@@ -569,14 +495,14 @@ test "should parse links/images/refs" {
     ),
     content=[
       [0, ""],
-      {
-        "$tag": "Link",
-        "0": [
+      [
+        "Link",
+        [
           {
-            "text": { "$tag": "Text", "0": ["a link"] },
-            "reference": {
-              "$tag": "Inline",
-              "0": [
+            "text": ["Text", ["a link"]],
+            "reference": [
+              "Inline",
+              [
                 {
                   "layout": {
                     "indent": 0,
@@ -590,10 +516,10 @@ test "should parse links/images/refs" {
                   "title": [{ "blanks": "", "node": ["a title"] }],
                 },
               ],
-            },
+            ],
           },
         ],
-      },
+      ],
     ],
   )
   @json.inspect(
@@ -604,14 +530,14 @@ test "should parse links/images/refs" {
     ),
     content=[
       [0, ""],
-      {
-        "$tag": "Image",
-        "0": [
+      [
+        "Image",
+        [
           {
-            "text": { "$tag": "Text", "0": ["an image"] },
-            "reference": {
-              "$tag": "Inline",
-              "0": [
+            "text": ["Text", ["an image"]],
+            "reference": [
+              "Inline",
+              [
                 {
                   "layout": {
                     "indent": 0,
@@ -625,10 +551,10 @@ test "should parse links/images/refs" {
                   "title": [{ "blanks": "", "node": ["a title"] }],
                 },
               ],
-            },
+            ],
           },
         ],
-      },
+      ],
     ],
   )
   @json.inspect(
@@ -641,19 +567,19 @@ test "should parse links/images/refs" {
     ),
     content=[
       [0, ""],
-      {
-        "$tag": "Inlines",
-        "0": [
+      [
+        "Inlines",
+        [
           [
-            { "$tag": "Text", "0": ["This is an "] },
-            {
-              "$tag": "Image",
-              "0": [
+            ["Text", ["This is an "]],
+            [
+              "Image",
+              [
                 {
-                  "text": { "$tag": "Text", "0": ["inline image"] },
-                  "reference": {
-                    "$tag": "Inline",
-                    "0": [
+                  "text": ["Text", ["inline image"]],
+                  "reference": [
+                    "Inline",
+                    [
                       {
                         "layout": {
                           "indent": 0,
@@ -670,13 +596,13 @@ test "should parse links/images/refs" {
                         ],
                       },
                     ],
-                  },
+                  ],
                 },
               ],
-            },
+            ],
           ],
         ],
-      },
+      ],
     ],
   )
 }
@@ -691,20 +617,20 @@ test "should tokenize broken links across lines" {
       ),
     ),
     content=[
-      { "RightBrack": [22] },
+      ["CloserIndex", { "RightBrack": [22] }],
       [
-        { "$tag": "LinkStart", "0": { "start": 8, "image": false } },
-        {
-          "$tag": "Newline",
-          "0": {
+        ["LinkStart", { "start": 8, "image": false }],
+        [
+          "Newline",
+          {
             "start": 12,
-            "break_ty": { "$tag": "Soft" },
-            "newline": { "pos": [2, 0], "first": 13, "last": 27 },
+            "break_ty": "Soft",
+            "newline": { "pos": ["LinePos", 2, 0], "first": 13, "last": 27 },
           },
-        },
-        { "$tag": "RightBrack", "0": { "start": 22 } },
+        ],
+        ["RightBrack", { "start": 22 }],
       ],
-      { "pos": [1, 0], "first": 0, "last": 11 },
+      { "pos": ["LinePos", 1, 0], "first": 0, "last": 11 },
     ],
   )
 }
@@ -720,25 +646,19 @@ test "should parse broken links across lines" {
     ),
     content=[
       [0, ""],
-      {
-        "$tag": "Inlines",
-        "0": [
+      [
+        "Inlines",
+        [
           [
-            { "$tag": "Text", "0": ["and the [end"] },
-            {
-              "$tag": "Break",
-              "0": [
-                {
-                  "layout_before": [""],
-                  "ty": { "$tag": "Soft" },
-                  "layout_after": [""],
-                },
-              ],
-            },
-            { "$tag": "Text", "0": ["condition], wow"] },
+            ["Text", ["and the [end"]],
+            [
+              "Break",
+              [{ "layout_before": [""], "ty": "Soft", "layout_after": [""] }],
+            ],
+            ["Text", ["condition], wow"]],
           ],
         ],
-      },
+      ],
     ],
   )
 }
@@ -753,18 +673,30 @@ test "should parse raw HTML" {
     ),
     content=[
       [0, ""],
-      {
-        "$tag": "Inlines",
-        "0": [
+      [
+        "Inlines",
+        [
           [
-            { "$tag": "RawHtml", "0": [[{ "blanks": "", "node": ["<div>"] }]] },
-            { "$tag": "RawHtml", "0": [[{ "blanks": "", "node": ["<p>"] }]] },
-            { "$tag": "Text", "0": ["Some text"] },
-            { "$tag": "RawHtml", "0": [[{ "blanks": "", "node": ["</p>"] }]] },
-            { "$tag": "RawHtml", "0": [[{ "blanks": "", "node": ["</div>"] }]] },
+            [
+              "RawHtml",
+              [["InlineRawHtml", [{ "blanks": "", "node": ["<div>"] }]]],
+            ],
+            [
+              "RawHtml",
+              [["InlineRawHtml", [{ "blanks": "", "node": ["<p>"] }]]],
+            ],
+            ["Text", ["Some text"]],
+            [
+              "RawHtml",
+              [["InlineRawHtml", [{ "blanks": "", "node": ["</p>"] }]]],
+            ],
+            [
+              "RawHtml",
+              [["InlineRawHtml", [{ "blanks": "", "node": ["</div>"] }]]],
+            ],
           ],
         ],
-      },
+      ],
     ],
   )
   @json.inspect(
@@ -775,20 +707,28 @@ test "should parse raw HTML" {
     ),
     content=[
       [0, ""],
-      {
-        "$tag": "Inlines",
-        "0": [
+      [
+        "Inlines",
+        [
           [
-            { "$tag": "Text", "0": ["foo "] },
-            {
-              "$tag": "RawHtml",
-              "0": [[{ "blanks": "", "node": ["<a href=\"\\*\" />"] }]],
-            },
-            { "$tag": "Text", "0": ["u"] },
-            { "$tag": "RawHtml", "0": [[{ "blanks": "", "node": ["</a>"] }]] },
+            ["Text", ["foo "]],
+            [
+              "RawHtml",
+              [
+                [
+                  "InlineRawHtml",
+                  [{ "blanks": "", "node": ["<a href=\"\\*\" />"] }],
+                ],
+              ],
+            ],
+            ["Text", ["u"]],
+            [
+              "RawHtml",
+              [["InlineRawHtml", [{ "blanks": "", "node": ["</a>"] }]]],
+            ],
           ],
         ],
-      },
+      ],
     ],
   )
   @json.inspect(
@@ -800,27 +740,36 @@ test "should parse raw HTML" {
     ),
     content=[
       [0, ""],
-      {
-        "$tag": "Inlines",
-        "0": [
+      [
+        "Inlines",
+        [
           [
-            { "$tag": "Text", "0": ["Haha "] },
-            { "$tag": "RawHtml", "0": [[{ "blanks": "", "node": ["<a>"] }]] },
-            { "$tag": "Text", "0": ["a"] },
-            { "$tag": "RawHtml", "0": [[{ "blanks": "", "node": ["</a>"] }]] },
-            {
-              "$tag": "RawHtml",
-              "0": [
+            ["Text", ["Haha "]],
+            [
+              "RawHtml",
+              [["InlineRawHtml", [{ "blanks": "", "node": ["<a>"] }]]],
+            ],
+            ["Text", ["a"]],
+            [
+              "RawHtml",
+              [["InlineRawHtml", [{ "blanks": "", "node": ["</a>"] }]]],
+            ],
+            [
+              "RawHtml",
+              [
                 [
-                  { "blanks": "", "node": ["<b2"] },
-                  { "blanks": "", "node": ["data=\"foo\" >"] },
+                  "InlineRawHtml",
+                  [
+                    { "blanks": "", "node": ["<b2"] },
+                    { "blanks": "", "node": ["data=\"foo\" >"] },
+                  ],
                 ],
               ],
-            },
-            { "$tag": "Text", "0": [" hihi this is not the end yet."] },
+            ],
+            ["Text", [" hihi this is not the end yet."]],
           ],
         ],
-      },
+      ],
     ],
   )
 }
@@ -830,84 +779,87 @@ test "should tokenize nested strikethroughs and emphases" {
   let doc =
     #|Nesting the nest ~~*emph2* ~~stroke~~ *emph3 **emph4  ~~strikeagain~~***~~
   @json.inspect(tokenize_only(doc, strict=false), content=[
-    { "EmphasisMarks('*')": [19, 25, 69], "StrikethroughMarks": [35, 67, 72] },
     [
-      {
-        "$tag": "StrikethroughMarks",
-        "0": { "start": 17, "may_open": true, "may_close": false },
-      },
-      {
-        "$tag": "EmphasisMarks",
-        "0": {
+      "CloserIndex",
+      { "EmphasisMarks('*')": [19, 25, 69], "StrikethroughMarks": [35, 67, 72] },
+    ],
+    [
+      [
+        "StrikethroughMarks",
+        { "start": 17, "may_open": true, "may_close": false },
+      ],
+      [
+        "EmphasisMarks",
+        {
           "start": 19,
           "char": "*",
           "count": 1,
           "may_open": true,
           "may_close": true,
         },
-      },
-      {
-        "$tag": "EmphasisMarks",
-        "0": {
+      ],
+      [
+        "EmphasisMarks",
+        {
           "start": 25,
           "char": "*",
           "count": 1,
           "may_open": false,
           "may_close": true,
         },
-      },
-      {
-        "$tag": "StrikethroughMarks",
-        "0": { "start": 27, "may_open": true, "may_close": false },
-      },
-      {
-        "$tag": "StrikethroughMarks",
-        "0": { "start": 35, "may_open": false, "may_close": true },
-      },
-      {
-        "$tag": "EmphasisMarks",
-        "0": {
+      ],
+      [
+        "StrikethroughMarks",
+        { "start": 27, "may_open": true, "may_close": false },
+      ],
+      [
+        "StrikethroughMarks",
+        { "start": 35, "may_open": false, "may_close": true },
+      ],
+      [
+        "EmphasisMarks",
+        {
           "start": 38,
           "char": "*",
           "count": 1,
           "may_open": true,
           "may_close": false,
         },
-      },
-      {
-        "$tag": "EmphasisMarks",
-        "0": {
+      ],
+      [
+        "EmphasisMarks",
+        {
           "start": 45,
           "char": "*",
           "count": 2,
           "may_open": true,
           "may_close": false,
         },
-      },
-      {
-        "$tag": "StrikethroughMarks",
-        "0": { "start": 54, "may_open": true, "may_close": false },
-      },
-      {
-        "$tag": "StrikethroughMarks",
-        "0": { "start": 67, "may_open": true, "may_close": true },
-      },
-      {
-        "$tag": "EmphasisMarks",
-        "0": {
+      ],
+      [
+        "StrikethroughMarks",
+        { "start": 54, "may_open": true, "may_close": false },
+      ],
+      [
+        "StrikethroughMarks",
+        { "start": 67, "may_open": true, "may_close": true },
+      ],
+      [
+        "EmphasisMarks",
+        {
           "start": 69,
           "char": "*",
           "count": 3,
           "may_open": true,
           "may_close": true,
         },
-      },
-      {
-        "$tag": "StrikethroughMarks",
-        "0": { "start": 72, "may_open": false, "may_close": true },
-      },
+      ],
+      [
+        "StrikethroughMarks",
+        { "start": 72, "may_open": false, "may_close": true },
+      ],
     ],
-    { "pos": [1, 0], "first": 0, "last": 73 },
+    { "pos": ["LinePos", 1, 0], "first": 0, "last": 73 },
   ])
 }
 
@@ -922,85 +874,80 @@ test "should parse strikethroughs" {
     ),
     content=[
       [0, ""],
-      {
-        "$tag": "Inlines",
-        "0": [
+      [
+        "Inlines",
+        [
           [
-            { "$tag": "Text", "0": ["Nesting the nest "] },
-            {
-              "$tag": "ExtStrikethrough",
-              "0": [
-                {
-                  "$tag": "Inlines",
-                  "0": [
+            ["Text", ["Nesting the nest "]],
+            [
+              "ExtStrikethrough",
+              [
+                [
+                  "InlineStrikethrough",
+                  [
+                    "Inlines",
                     [
-                      {
-                        "$tag": "Emphasis",
-                        "0": [
-                          {
-                            "delim": "*",
-                            "inline": { "$tag": "Text", "0": ["emph2"] },
-                          },
+                      [
+                        [
+                          "Emphasis",
+                          [{ "delim": "*", "inline": ["Text", ["emph2"]] }],
                         ],
-                      },
-                      { "$tag": "Text", "0": [" "] },
-                      {
-                        "$tag": "ExtStrikethrough",
-                        "0": [{ "$tag": "Text", "0": ["stroke"] }],
-                      },
-                      { "$tag": "Text", "0": [" "] },
-                      {
-                        "$tag": "Emphasis",
-                        "0": [
-                          {
-                            "delim": "*",
-                            "inline": {
-                              "$tag": "Inlines",
-                              "0": [
+                        ["Text", [" "]],
+                        [
+                          "ExtStrikethrough",
+                          [["InlineStrikethrough", ["Text", ["stroke"]]]],
+                        ],
+                        ["Text", [" "]],
+                        [
+                          "Emphasis",
+                          [
+                            {
+                              "delim": "*",
+                              "inline": [
+                                "Inlines",
                                 [
-                                  { "$tag": "Text", "0": ["emph3 "] },
-                                  {
-                                    "$tag": "StrongEmphasis",
-                                    "0": [
-                                      {
-                                        "delim": "*",
-                                        "inline": {
-                                          "$tag": "Inlines",
-                                          "0": [
+                                  [
+                                    ["Text", ["emph3 "]],
+                                    [
+                                      "StrongEmphasis",
+                                      [
+                                        {
+                                          "delim": "*",
+                                          "inline": [
+                                            "Inlines",
                                             [
-                                              {
-                                                "$tag": "Text",
-                                                "0": ["emph4  "],
-                                              },
-                                              {
-                                                "$tag": "ExtStrikethrough",
-                                                "0": [
-                                                  {
-                                                    "$tag": "Text",
-                                                    "0": ["strikeagain"],
-                                                  },
+                                              [
+                                                ["Text", ["emph4  "]],
+                                                [
+                                                  "ExtStrikethrough",
+                                                  [
+                                                    [
+                                                      "InlineStrikethrough",
+                                                      ["Text", ["strikeagain"]],
+                                                    ],
+                                                  ],
                                                 ],
-                                              },
+                                              ],
                                             ],
                                           ],
                                         },
-                                      },
+                                      ],
                                     ],
-                                  },
+                                  ],
                                 ],
                               ],
                             },
-                          },
+                          ],
                         ],
-                      },
+                      ],
                     ],
                   ],
-                },
+                ],
               ],
-            },
+            ],
           ],
         ],
-      },
+      ],
     ],
   )
 }
@@ -1015,18 +962,18 @@ test "should tokenize inline math" {
       ),
     ),
     content=[
-      { "MathSpanMarks(1)": [16] },
+      ["CloserIndex", { "MathSpanMarks(1)": [16] }],
       [
-        {
-          "$tag": "MathSpanMarks",
-          "0": { "start": 9, "count": 1, "may_open": true, "may_close": false },
-        },
-        {
-          "$tag": "MathSpanMarks",
-          "0": { "start": 16, "count": 1, "may_open": false, "may_close": true },
-        },
+        [
+          "MathSpanMarks",
+          { "start": 9, "count": 1, "may_open": true, "may_close": false },
+        ],
+        [
+          "MathSpanMarks",
+          { "start": 16, "count": 1, "may_open": false, "may_close": true },
+        ],
       ],
-      { "pos": [1, 0], "first": 1, "last": 19 },
+      { "pos": ["LinePos", 1, 0], "first": 1, "last": 19 },
     ],
   )
 }
@@ -1042,24 +989,24 @@ test "should parse inline math" {
     ),
     content=[
       [1, ""],
-      {
-        "$tag": "Inlines",
-        "0": [
+      [
+        "Inlines",
+        [
           [
-            { "$tag": "Text", "0": ["This is "] },
-            {
-              "$tag": "ExtMathSpan",
-              "0": [
+            ["Text", ["This is "]],
+            [
+              "ExtMathSpan",
+              [
                 {
                   "display": false,
                   "tex_layout": [{ "blanks": "", "node": ["\\LaTeX"] }],
                 },
               ],
-            },
-            { "$tag": "Text", "0": [" !!"] },
+            ],
+            ["Text", [" !!"]],
           ],
         ],
-      },
+      ],
     ],
   )
 }

@@ -18,17 +18,17 @@ pub(all) struct Mapper {
 }
 
 ///|
-pub(all) type MapFn[A] (Mapper, A) -> A? raise MapperError
+pub(all) struct MapFn[A]((Mapper, A) -> A? raise MapperError)
 
 ///|
-pub(all) type MapperFn[A] (Mapper, A) -> MapperResult[A]
+pub(all) struct MapperFn[A]((Mapper, A) -> MapperResult[A])
 
 ///| The type for mapper results.
 /// `Default` means doing the default map.
 pub(all) enum MapperResult[A] {
   Default
   Map(A?)
-} derive(Eq, Show, ToJson)
+} derive(Eq, Show, ToJson(style="flat"))
 
 ///|
 pub impl[A] Default for MapperResult[A] with default() {
