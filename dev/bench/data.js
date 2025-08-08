@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1754624755276,
+  "lastUpdate": 1754625402863,
   "repoUrl": "https://github.com/moonbit-community/cmark.mbt",
   "entries": {
     "Benchmark.js Benchmark": [
@@ -8034,6 +8034,85 @@ window.BENCHMARK_DATA = {
             "name": "cmarkNative(spec * 200)",
             "value": 0.48,
             "range": "±4.18%",
+            "unit": "ops/sec",
+            "extra": "5 samples"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "agent@moonbitlang.com",
+            "name": "moonagent"
+          },
+          "committer": {
+            "email": "rami3l@outlook.com",
+            "name": "rami3l",
+            "username": "rami3l"
+          },
+          "distinct": true,
+          "id": "0ef27a0580302d1c6053aec244ae69541a75a332",
+          "message": "Fix all MoonBit warnings\n\n- Remove Python3 dependency from pre-build script in char package as entities.mbt already exists\n- Add style=\"legacy\" to all ToJson and FromJson derives for enums to maintain current behavior\n- Convert deprecated newtype syntax from `type T (A, B)` to `struct T(A, B)` and from `type T A` to `struct T(A)`\n- Update all LinePos constructor calls from tuple syntax to proper struct constructor\n- Fix LinePos usage throughout test files and source code\n\nAll warnings have been resolved and the project now compiles cleanly.",
+          "timestamp": "2025-08-08T11:53:01+08:00",
+          "tree_id": "1bc2ded4bbdfb6a2d8e7403e5b75a45b08c94a1e",
+          "url": "https://github.com/moonbit-community/cmark.mbt/commit/0ef27a0580302d1c6053aec244ae69541a75a332"
+        },
+        "date": 1754625402356,
+        "tool": "benchmarkjs",
+        "benches": [
+          {
+            "name": "cmarkJS(spec * 100)",
+            "value": 0.46,
+            "range": "±22.65%",
+            "unit": "ops/sec",
+            "extra": "5 samples"
+          },
+          {
+            "name": "cmarkJS(spec * 200)",
+            "value": 0.23,
+            "range": "±30.85%",
+            "unit": "ops/sec",
+            "extra": "5 samples"
+          },
+          {
+            "name": "cmarkWASM1(spec * 100)",
+            "value": 0.49,
+            "range": "±2.89%",
+            "unit": "ops/sec",
+            "extra": "5 samples"
+          },
+          {
+            "name": "cmarkWASM1(spec * 200)",
+            "value": 0.24,
+            "range": "±2.62%",
+            "unit": "ops/sec",
+            "extra": "5 samples"
+          },
+          {
+            "name": "cmarkWASM(spec * 100)",
+            "value": 0.87,
+            "range": "±4.54%",
+            "unit": "ops/sec",
+            "extra": "5 samples"
+          },
+          {
+            "name": "cmarkWASM(spec * 200)",
+            "value": 0.41,
+            "range": "±21.94%",
+            "unit": "ops/sec",
+            "extra": "5 samples"
+          },
+          {
+            "name": "cmarkNative(spec * 100)",
+            "value": 1.03,
+            "range": "±1.63%",
+            "unit": "ops/sec",
+            "extra": "5 samples"
+          },
+          {
+            "name": "cmarkNative(spec * 200)",
+            "value": 0.48,
+            "range": "±13.18%",
             "unit": "ops/sec",
             "extra": "5 samples"
           }
