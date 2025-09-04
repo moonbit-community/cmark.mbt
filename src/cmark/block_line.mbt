@@ -1,4 +1,5 @@
-///| Block lines.
+///|
+/// Block lines.
 ///
 /// In CommonMark blocks, a "line" does not necessarily correspond to
 /// a line in the source plain text. For example the lines of a
@@ -24,14 +25,15 @@ pub fn BlockLine::list_text_loc(ls : Seq[BlockLine]) -> TextLoc {
   }
 }
 
-///| Tight block lines: a block line with its initial blanks trimmed but kept for layout. 
+///|
+/// Tight block lines: a block line with its initial blanks trimmed but kept for layout. 
 pub(all) struct Tight {
   blanks : Blanks
   node : StringNode
 } derive(Eq, ToJson)
 
 ///|
-pub fn Tight::empty(meta~ : Meta = Meta::none()) -> Tight {
+pub fn Tight::empty(meta? : Meta = Meta::none()) -> Tight {
   { blanks: "", node: StringNode::empty(meta~) }
 }
 
@@ -66,7 +68,7 @@ pub fn Tight::list_text_loc(ls : Seq[Tight]) -> TextLoc {
 
 ///|
 fn BlockLine::flush_tight(
-  meta~ : Meta = Meta::none(),
+  meta? : Meta = Meta::none(),
   s : String,
   start : Int,
   last : Int,

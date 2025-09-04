@@ -1,6 +1,7 @@
 // Labels.
 
-///| Labels are used by [reference links](https://spec.commonmark.org/0.30/#reference-link) to
+///|
+/// Labels are used by [reference links](https://spec.commonmark.org/0.30/#reference-link) to
 /// refer to the [definitions](#definitions) of
 /// [link reference definitions](https://spec.commonmark.org/0.30/#link-reference-definitions),
 /// [footnote definitions](#footnote-definitions) and your own
@@ -11,14 +12,15 @@ pub(all) struct Label {
   text : Seq[Tight]
 } derive(Show, ToJson)
 
-///| The type for label keys. These are
+///|
+/// The type for label keys. These are
 /// [link labels](https://spec.commonmark.org/0.30/#link-label)
 /// normalized for [matches](https://spec.commonmark.org/0.30/#matches).
 pub typealias String as LabelKey
 
 ///|
 pub fn Label::new(
-  meta~ : Meta = Meta::none(),
+  meta? : Meta = Meta::none(),
   key~ : String,
   text : Seq[Tight],
 ) -> Label {
@@ -31,7 +33,7 @@ pub fn Label::text_loc(self : Label) -> TextLoc {
 }
 
 ///|
-pub impl Eq for Label with op_equal(self, other) {
+pub impl Eq for Label with equal(self, other) {
   self.key == other.key
 }
 
@@ -49,7 +51,8 @@ pub(all) enum LabelDef {
 ///|
 pub typealias Map[LabelKey, LabelDef] as LabelDefs
 
-///| `context` is:
+///|
+/// `context` is:
 /// - `Def (prev, current)` when we just hit a
 ///   [link reference definition](https://spec.commonmark.org/0.30/#link-reference-definitions)
 ///   or footnote definition that defines the label `current`.

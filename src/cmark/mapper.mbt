@@ -1,4 +1,5 @@
-///| Abstract syntax tree mappers.
+///|
+/// Abstract syntax tree mappers.
 ///
 /// Mappers help with pushing abstract syntax tree transformations in every
 /// node with a minimal amount of code by defaulting the cases you
@@ -23,7 +24,8 @@ pub(all) struct MapFn[A]((Mapper, A) -> A? raise MapperError)
 ///|
 pub(all) struct MapperFn[A]((Mapper, A) -> MapperResult[A])
 
-///| The type for mapper results.
+///|
+/// The type for mapper results.
 /// `Default` means doing the default map.
 pub(all) enum MapperResult[A] {
   Default
@@ -68,10 +70,10 @@ pub fn[A] Mapper::block_ext_none(self : Mapper, _a : A) -> A? raise MapperError 
 
 ///|
 pub fn Mapper::new(
-  inline_ext_default~ : MapFn[Inline] = Mapper::inline_ext_none,
-  block_ext_default~ : MapFn[Block] = Mapper::block_ext_none,
-  inline~ : MapperFn[Inline] = Mapper::none,
-  block~ : MapperFn[Block] = Mapper::none,
+  inline_ext_default? : MapFn[Inline] = Mapper::inline_ext_none,
+  block_ext_default? : MapFn[Block] = Mapper::block_ext_none,
+  inline? : MapperFn[Inline] = Mapper::none,
+  block? : MapperFn[Block] = Mapper::none,
 ) -> Mapper {
   { inline_ext_default, block_ext_default, inline, block }
 }

@@ -1,4 +1,5 @@
-///| Test for tag_name
+///|
+/// Test for tag_name
 test "tag_name with valid tag" {
   let s = "div class=\"test\">"
   let result = tag_name(s, last=16, start=0)
@@ -19,7 +20,8 @@ test "tag_name with invalid start condition" {
   inspect(result, content="Some(3)")
 }
 
-///| Test for attribute_name
+///|
+/// Test for attribute_name
 test "attribute_name with valid start chars" {
   let s = "_attr:value"
   let result = attribute_name(s, last=9, start=0)

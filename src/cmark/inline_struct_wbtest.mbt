@@ -1,8 +1,8 @@
 ///|
 fn parse_only(
   txt : String,
-  strict~ : Bool = true,
-  polish~ : (Parser) -> Parser = fn(p) { p },
+  strict? : Bool = true,
+  polish? : (Parser) -> Parser = fn(p) { p },
 ) -> ((Col, String), Inline) {
   let p = Parser::new(txt, strict~) |> polish()
   let lines = txt.split("\n")
@@ -24,7 +24,7 @@ fn parse_only(
 ///|
 fn tokenize_only(
   txt : String,
-  strict~ : Bool = true,
+  strict? : Bool = true,
 ) -> (CloserIndex, Tokens, LineSpan) {
   let p = Parser::new(txt, strict~)
   let lines = txt.split("\n")

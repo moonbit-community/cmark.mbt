@@ -1,4 +1,5 @@
-///| Closer indexes.
+///|
+/// Closer indexes.
 ///
 /// They map closing delimiters to the position where they
 /// start. Shortcuts forward searches in inline parsing. See

@@ -35,7 +35,8 @@ test "code block new with info string" {
   }
 }
 
-///| Test CodeBlock::new with indented layout and info string
+///|
+/// Test CodeBlock::new with indented layout and info string
 test "code block with indented layout and info string" {
   let node = StringNode::empty()
   let code = Seq::from_array([node])
@@ -54,7 +55,8 @@ test "code block with indented layout and info string" {
   }
 }
 
-///| Test for CodeBlock::make_fence
+///|
+/// Test for CodeBlock::make_fence
 test "code block make fence" {
   // Test when there are no backticks in any lines
   let node = Node::new("plain text")
@@ -73,7 +75,8 @@ test "code block make fence" {
   inspect(count2, content="4")
 }
 
-///| Test Block::normalize for BlockQuote
+///|
+/// Test Block::normalize for BlockQuote
 test "block normalize with block quote" {
   let blockQuote = @cmark.BlockQuote::new(@cmark.Block::empty())
   let normalized = @cmark.Block::BlockQuote(@cmark.Node::new(blockQuote)).normalize()
@@ -83,7 +86,8 @@ test "block normalize with block quote" {
   )
 }
 
-///| Test Block::normalize for List with Seq.empty()
+///|
+/// Test Block::normalize for List with Seq.empty()
 test "block normalize with list using Seq.empty" {
   let items = @cmark.Seq::empty()
   let list = @cmark.BlockList::{
@@ -98,7 +102,8 @@ test "block normalize with list using Seq.empty" {
   )
 }
 
-///| Tests to improve coverage for the block.mbt file
+///|
+/// Tests to improve coverage for the block.mbt file
 test "code block fenced layout default" {
   let layout = CodeBlockFencedLayout::default()
   inspect(layout.indent, content="0")
@@ -139,7 +144,8 @@ test "block quote normalize_block" {
   inspect(normalized_quote.indent, content="0")
 }
 
-///| Test the ListTaskStatus::from_marker with a custom marker
+///|
+/// Test the ListTaskStatus::from_marker with a custom marker
 test "list task status from marker with custom marker" {
   let status = ListTaskStatus::from_marker('?')
   match status {

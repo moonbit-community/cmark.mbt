@@ -1,5 +1,6 @@
-///| https://spec.commonmark.org/current/#tag-name
-fn tag_name(s : String, last~ : Int = -1, start~ : Int = 0) -> Int? {
+///|
+/// https://spec.commonmark.org/current/#tag-name
+fn tag_name(s : String, last? : Int = -1, start? : Int = 0) -> Int? {
   let last = if last < 0 { s.length() + last } else { last }
   for k = start + 1 {
     guard k <= last else { break Some(k - 1) }
@@ -10,8 +11,9 @@ fn tag_name(s : String, last~ : Int = -1, start~ : Int = 0) -> Int? {
   }
 }
 
-///| https://spec.commonmark.org/current/#attribute-name
-fn attribute_name(s : String, last~ : Int = -1, start~ : Int = 0) -> Next? {
+///|
+/// https://spec.commonmark.org/current/#attribute-name
+fn attribute_name(s : String, last? : Int = -1, start? : Int = 0) -> Next? {
   let last = if last < 0 { s.length() + last } else { last }
   fn char_is_start(c : Char) -> Bool {
     match c {
@@ -38,7 +40,8 @@ fn attribute_name(s : String, last~ : Int = -1, start~ : Int = 0) -> Next? {
   }
 }
 
-///| https://spec.commonmark.org/current/#attribute-value
+///|
+/// https://spec.commonmark.org/current/#attribute-value
 fn[A] attribute_value(
   next_line~ : NextLineFn[A],
   s : String,
@@ -71,7 +74,8 @@ fn[A] attribute_value(
   }
 }
 
-///| https://spec.commonmark.org/current/#attribute
+///|
+/// https://spec.commonmark.org/current/#attribute
 /// https://spec.commonmark.org/current/#attribute-value-specification
 fn[A] attribute(
   next_line~ : NextLineFn[A],
@@ -111,7 +115,8 @@ fn[A] attribute(
   attribute_value(next_line~, s, lines, line~, spans.val, start~)
 }
 
-///| https://spec.commonmark.org/current/#open-tag
+///|
+/// https://spec.commonmark.org/current/#open-tag
 fn[A] open_tag(
   next_line~ : NextLineFn[A],
   s : String,
@@ -167,7 +172,8 @@ fn[A] open_tag(
   }
 }
 
-///| Start is on `</`.
+///|
+/// Start is on `</`.
 /// https://spec.commonmark.org/current/#closing-tag
 fn[A] closing_tag(
   next_line~ : NextLineFn[A],
@@ -195,7 +201,8 @@ fn[A] closing_tag(
   Some((line, spans.val, last))
 }
 
-///| Start is on `<!{letter}`.
+///|
+/// Start is on `<!{letter}`.
 /// https://spec.commonmark.org/current/#declaration
 fn[A] declaration(
   next_line~ : NextLineFn[A],
@@ -212,7 +219,8 @@ fn[A] declaration(
   ))
 }
 
-///| https://spec.commonmark.org/current/#processing-instruction
+///|
+/// https://spec.commonmark.org/current/#processing-instruction
 fn[A] processing_instruction(
   next_line : NextLineFn[A],
   s : String,
@@ -240,7 +248,8 @@ fn[A] processing_instruction(
   }
 }
 
-///| Start is on `<!-`.
+///|
+/// Start is on `<!-`.
 /// https://spec.commonmark.org/current/#html-comment
 fn[A] html_comment(
   next_line~ : NextLineFn[A],
@@ -282,7 +291,8 @@ fn[A] html_comment(
   }
 }
 
-///| Start is on `<![`.
+///|
+/// Start is on `<![`.
 /// https://spec.commonmark.org/current/#cdata-section
 fn[A] cdata_section(
   next_line~ : NextLineFn[A],
@@ -317,7 +327,8 @@ fn[A] cdata_section(
   }
 }
 
-///| https://spec.commonmark.org/current/#html-tag
+///|
+/// https://spec.commonmark.org/current/#html-tag
 pub fn[A] raw_html(
   next_line~ : NextLineFn[A],
   s : String,

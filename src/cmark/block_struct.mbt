@@ -69,7 +69,8 @@ fn Parser::accept_cols(self : Parser, count~ : Int) -> Unit {
   self.update_next_non_blank()
 }
 
-///| https://spec.commonmark.org/current/#block-quote-marker
+///|
+/// https://spec.commonmark.org/current/#block-quote-marker
 fn Parser::match_and_accept_block_quote(self : Parser) -> Bool {
   if self.end_of_line() || self.i[self.curr_char] != '>' {
     return false
@@ -85,7 +86,8 @@ fn Parser::match_and_accept_block_quote(self : Parser) -> Bool {
   true
 }
 
-///| Returns min indent after marker for list item
+///|
+/// Returns min indent after marker for list item
 fn Parser::accept_list_marker_and_indent(
   self : Parser,
   marker_size~ : Int,
@@ -103,7 +105,8 @@ fn Parser::accept_list_marker_and_indent(
   min_indent
 }
 
-///| Returns padding for partially consumed tab and content first char
+///|
+/// Returns padding for partially consumed tab and content first char
 fn Parser::accept_code_indent(
   self : Parser,
   count~ : Int,
@@ -123,7 +126,7 @@ fn Parser::accept_code_indent(
 // line spans. See:
 // https://spec.commonmark.org/current/#phase-1-block-structure
 
-///| 
+///|
 /// Number of space characters to pad content with
 typealias Int as SpacePad
 
@@ -387,7 +390,8 @@ fn Parser::table(
 // Link reference definition parsing
 // This is invoked when we close a paragraph and works on the paragraph lines.
 
-///| Has no side effect on [p], parsing occurs on [lines] spans.
+///|
+/// Has no side effect on [p], parsing occurs on [lines] spans.
 /// https://spec.commonmark.org/current/#link-reference-definitions
 fn Parser::parse_link_ref_definition(
   self : Parser,
@@ -683,7 +687,8 @@ fn Parser::end_doc(self : Parser, bs : Array[BlockStruct]) -> Unit {
 
 // Adding lines to blocks
 
-///| Effects on [p]'s column advance
+///|
+/// Effects on [p]'s column advance
 fn Parser::match_line_type(
   self : Parser,
   no_setext~ : Bool,
