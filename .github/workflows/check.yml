@@ -14,11 +14,7 @@ jobs:
       matrix:
         os:
           - name: ubuntu-latest
-            path: ubuntu_x86_64_moon_setup
-          - name: macos-13
-            path: mac_intel_moon_setup
           - name: macos-latest
-            path: mac_m1_moon_setup
           - name: windows-latest
 
     runs-on: ${{ matrix.os.name }}
@@ -29,12 +25,10 @@ jobs:
       - name: install
         if: ${{ matrix.os.name != 'windows-latest' }}
         run: |
-          curl -fsSL https://cli.moonbitlang.com/install/unix.sh | bash -s -- pre-release
+          curl -fsSL https://cli.moonbitlang.com/install/unix.sh | bash -s
           echo "$HOME/.moon/bin" >> $GITHUB_PATH
 
       - name: install on windows
-        env:
-          MOONBIT_INSTALL_VERSION: pre-release
         if: ${{ matrix.os.name == 'windows-latest' }}
         run: |
           Set-ExecutionPolicy RemoteSigned -Scope CurrentUser; irm https://cli.moonbitlang.com/install/powershell.ps1 | iex
@@ -75,7 +69,7 @@ jobs:
 
       - name: install
         run: |
-          curl -fsSL https://cli.moonbitlang.com/install/unix.sh | bash -s -- pre-release
+          curl -fsSL https://cli.moonbitlang.com/install/unix.sh | bash -s
           echo "$HOME/.moon/bin" >> $GITHUB_PATH
 
       - name: moon test
