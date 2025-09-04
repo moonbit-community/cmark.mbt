@@ -222,7 +222,8 @@ test "spec" (it : @test.T) {
   it.snapshot(filename="spec.html")
 }
 
-///| Test for raw HTML handling in safe mode
+///|
+/// Test for raw HTML handling in safe mode
 test "raw html in safe mode" (it : @test.T) {
   let doc =
     #|## Raw HTML in safe mode
@@ -239,7 +240,8 @@ test "raw html in safe mode" (it : @test.T) {
   it.snapshot(filename="raw_html_safe_mode.html")
 }
 
-///| Test for comments
+///|
+/// Test for comments
 test "html with comments" (it : @test.T) {
   let doc =
     #|## HTML with comments
@@ -256,7 +258,8 @@ test "html with comments" (it : @test.T) {
   it.snapshot(filename="html_comments.html")
 }
 
-///| Test for strict mode HTML
+///|
+/// Test for strict mode HTML
 test "strict mode html" (it : @test.T) {
   let doc =
     #|<p>This paragraph is valid HTML.</p>
@@ -271,7 +274,8 @@ test "strict mode html" (it : @test.T) {
   it.snapshot(filename="strict_mode_html.html")
 }
 
-///| Test XHTML rendering
+///|
+/// Test XHTML rendering
 test "xhtml rendering" (it : @test.T) {
   let doc =
     #|## Thematic breaks

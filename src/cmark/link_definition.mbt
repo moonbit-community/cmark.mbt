@@ -13,11 +13,11 @@ pub(all) struct LinkDefinition {
 
 ///|
 pub fn LinkDefinition::new(
-  layout~ : LinkDefinitionLayout = LinkDefinitionLayout::default(),
-  label~ : Label? = None,
-  defined_label~ : Label? = None,
-  dest~ : StringNode? = None,
-  title~ : Seq[Tight]? = None,
+  layout? : LinkDefinitionLayout = LinkDefinitionLayout::default(),
+  label? : Label? = None,
+  defined_label? : Label? = None,
+  dest? : StringNode? = None,
+  title? : Seq[Tight]? = None,
 ) -> LinkDefinition {
   { layout, label, defined_label, dest, title }
 }

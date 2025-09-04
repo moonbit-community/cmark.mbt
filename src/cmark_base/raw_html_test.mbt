@@ -1,4 +1,5 @@
-///| Mock NextLineFn that returns the specified LineSpan
+///|
+/// Mock NextLineFn that returns the specified LineSpan
 fn mock_next_line(_ : LineSpan) -> (String) -> LineSpan? {
   fn(_) { None }
 }
@@ -131,7 +132,8 @@ test "raw_html with invalid char after <!" {
 
 ///| Additional tests for raw_html.mbt to improve coverage
 
-///| Test raw_html with invalid start condition
+///|
+/// Test raw_html with invalid start condition
 test "raw_html_invalid_start" {
   let s = "text without any HTML"
   let line_span = @cmark_base.LineSpan::{
@@ -149,7 +151,8 @@ test "raw_html_invalid_start" {
   inspect(result, content="None")
 }
 
-///| Test raw_html with closing tag that has invalid tag name
+///|
+/// Test raw_html with closing tag that has invalid tag name
 test "raw_html_closing_tag_invalid_name" {
   let s = "</1div>" // Tag name cannot start with a number
   let line_span = @cmark_base.LineSpan::{
@@ -170,7 +173,8 @@ test "raw_html_closing_tag_invalid_name" {
   )
 }
 
-///| Test raw_html with closing tag that has no closing bracket
+///|
+/// Test raw_html with closing tag that has no closing bracket
 test "raw_html_closing_tag_no_end" {
   let s = "</div" // Missing closing >
   let line_span = @cmark_base.LineSpan::{
@@ -188,7 +192,8 @@ test "raw_html_closing_tag_no_end" {
   inspect(result, content="None")
 }
 
-///| Test raw_html with invalid open tag
+///|
+/// Test raw_html with invalid open tag
 test "raw_html_open_tag_invalid" {
   let s = "<.div>" // Tag name cannot start with a dot
   let line_span = @cmark_base.LineSpan::{
@@ -209,7 +214,8 @@ test "raw_html_open_tag_invalid" {
   )
 }
 
-///| Test raw_html with self-closing tag that has no closing bracket
+///|
+/// Test raw_html with self-closing tag that has no closing bracket
 test "raw_html_self_closing_tag_no_end" {
   let s = "<div /" // Missing closing >
   let line_span = @cmark_base.LineSpan::{
@@ -227,7 +233,8 @@ test "raw_html_self_closing_tag_no_end" {
   inspect(result, content="None")
 }
 
-///| Test raw_html with attribute that has invalid name
+///|
+/// Test raw_html with attribute that has invalid name
 test "raw_html_attribute_invalid_name" {
   let s = "<div .class=\"value\">"
   let line_span = @cmark_base.LineSpan::{
@@ -245,7 +252,8 @@ test "raw_html_attribute_invalid_name" {
   inspect(result, content="None")
 }
 
-///| Test raw_html with attribute that has no value
+///|
+/// Test raw_html with attribute that has no value
 test "raw_html_attribute_no_value" {
   let s = "<div data-attr>" // Attribute without value is valid
   let line_span = @cmark_base.LineSpan::{
@@ -266,7 +274,8 @@ test "raw_html_attribute_no_value" {
   )
 }
 
-///| Test raw_html with unquoted attribute value
+///|
+/// Test raw_html with unquoted attribute value
 test "raw_html_attribute_unquoted_value" {
   let s = "<div data-attr=value>" // Unquoted attribute value is valid
   let line_span = @cmark_base.LineSpan::{
@@ -287,7 +296,8 @@ test "raw_html_attribute_unquoted_value" {
   )
 }
 
-///| Test raw_html with exclamation mark but invalid format
+///|
+/// Test raw_html with exclamation mark but invalid format
 test "raw_html_exclamation_invalid" {
   let s = "<!x" // Invalid character after <!
   let line_span = @cmark_base.LineSpan::{
@@ -305,7 +315,8 @@ test "raw_html_exclamation_invalid" {
   inspect(result, content="None")
 }
 
-///| Test raw_html with exclamation mark but too short
+///|
+/// Test raw_html with exclamation mark but too short
 test "raw_html_exclamation_too_short" {
   let s = "<!" // Too short after !
   let line_span = @cmark_base.LineSpan::{
@@ -323,7 +334,8 @@ test "raw_html_exclamation_too_short" {
   inspect(result, content="None")
 }
 
-///| Test HTML comment with incomplete format
+///|
+/// Test HTML comment with incomplete format
 test "raw_html_comment_incomplete" {
   let s = "<!-" // Incomplete HTML comment
   let line_span = @cmark_base.LineSpan::{
@@ -341,7 +353,8 @@ test "raw_html_comment_incomplete" {
   inspect(result, content="None")
 }
 
-///| Test HTML comment with invalid format 1
+///|
+/// Test HTML comment with invalid format 1
 test "raw_html_comment_invalid1" {
   let s = "<!-->" // Invalid HTML comment
   let line_span = @cmark_base.LineSpan::{
@@ -359,7 +372,8 @@ test "raw_html_comment_invalid1" {
   inspect(result, content="None")
 }
 
-///| Test HTML comment with invalid format 2
+///|
+/// Test HTML comment with invalid format 2
 test "raw_html_comment_invalid2" {
   let s = "<!--->" // Invalid HTML comment
   let line_span = @cmark_base.LineSpan::{
@@ -377,7 +391,8 @@ test "raw_html_comment_invalid2" {
   inspect(result, content="None")
 }
 
-///| Test CDATA section with incomplete format
+///|
+/// Test CDATA section with incomplete format
 test "raw_html_cdata_incomplete" {
   let s = "<![" // Incomplete CDATA
   let line_span = @cmark_base.LineSpan::{
@@ -395,7 +410,8 @@ test "raw_html_cdata_incomplete" {
   inspect(result, content="None")
 }
 
-///| Test CDATA section with wrong format
+///|
+/// Test CDATA section with wrong format
 test "raw_html_cdata_wrong_format" {
   let s = "<![ Wrong" // Not CDATA format
   let line_span = @cmark_base.LineSpan::{

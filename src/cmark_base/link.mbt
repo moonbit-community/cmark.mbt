@@ -1,4 +1,5 @@
-///| `link_destination(s, last, start)` matches a link destination
+///|
+/// `link_destination(s, last, start)` matches a link destination
 /// starting at `start` in the range `start..=last` (assumed on
 /// the same line). This is `Some((delimited, first, last))` with the
 /// data in [first..=last] the destination data. `delimited` is
@@ -66,7 +67,8 @@ pub fn link_destination(
   }
 }
 
-///| `link_title(next_line, s, lines, line, last)` is a link title on line `line` starting at `start`. 
+///|
+/// `link_title(next_line, s, lines, line, last)` is a link title on line `line` starting at `start`. 
 /// Returns `Some((lines, last_line, spans, last))` with `lines` the lines after consuming the title,
 /// `last_line` the line where it stops, `spans` the byte ranges of `s` that make up the title in reverse
 /// order, `last` is on the closing delimiter and guaranteed to be on `last_line`. 
@@ -120,7 +122,8 @@ pub fn[A] link_title(
   }
 }
 
-///| Matches a link label on `line` starting at `start`.
+///|
+/// Matches a link label on `line` starting at `start`.
 /// The byte ranges have the label's content, the string is the normalized label.
 /// `buf` is used as scratch space.
 ///

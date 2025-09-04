@@ -12,7 +12,8 @@ pub(all) struct FoldFn[A, B]((Folder[B], B, A) -> B raise FolderError)
 ///|
 pub(all) struct FolderFn[A, B]((Folder[B], B, A) -> FolderResult[B])
 
-///| The type for folder results.
+///|
+/// The type for folder results.
 /// `Default` means doing the default fold.
 pub(all) enum FolderResult[A] {
   Default
@@ -57,10 +58,10 @@ pub fn[A] Folder::block_ext_none(
 
 ///|
 pub fn[A] Folder::new(
-  inline_ext_default~ : FoldFn[Inline, A] = Folder::inline_ext_none,
-  block_ext_default~ : FoldFn[Block, A] = Folder::block_ext_none,
-  inline~ : FolderFn[Inline, A] = Folder::none,
-  block~ : FolderFn[Block, A] = Folder::none,
+  inline_ext_default? : FoldFn[Inline, A] = Folder::inline_ext_none,
+  block_ext_default? : FoldFn[Block, A] = Folder::block_ext_none,
+  inline? : FolderFn[Inline, A] = Folder::none,
+  block? : FolderFn[Block, A] = Folder::none,
 ) -> Folder[A] {
   { inline_ext_default, block_ext_default, inline, block }
 }

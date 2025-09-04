@@ -1,4 +1,5 @@
-///| `run_of(char, s, last, start)` is the last position of a consecutive run of `char`
+///|
+/// `run_of(char, s, last, start)` is the last position of a consecutive run of `char`
 /// in the range `[start, last]` or `start - 1` if `start` is not `char`.
 pub fn run_of(
   char~ : Char,
@@ -12,7 +13,8 @@ pub fn run_of(
   run_of(char~, s, last~, start=start + 1)
 }
 
-///| `first_non_blank(s, last, start)` is the first position in the range `[start, last]`
+///|
+/// `first_non_blank(s, last, start)` is the first position in the range `[start, last]`
 /// that is not blank and `last + 1` if there is none.
 pub fn first_non_blank(
   s : String,
@@ -25,12 +27,14 @@ pub fn first_non_blank(
   last + 1
 }
 
-///| `first_non_blank_in_span(s, span)` is `first_non_blank(s, last=span.last, start=span.first)`.
+///|
+/// `first_non_blank_in_span(s, span)` is `first_non_blank(s, last=span.last, start=span.first)`.
 pub fn first_non_blank_in_span(s : String, span : LineSpan) -> CharCodePos {
   first_non_blank(s, last=span.last, start=span.first)
 }
 
-///| `last_non_blank(s, first, start)` is the last position in the range `[first, start]`
+///|
+/// `last_non_blank(s, first, start)` is the last position in the range `[first, start]`
 /// that is not blank and `first - 1` if there is none.
 pub fn last_non_blank(
   s : String,
@@ -46,7 +50,8 @@ pub fn last_non_blank(
   }
 }
 
-///| `rev_drop_spaces(s, first, start)` is the last position in the range `[first, start]`
+///|
+/// `rev_drop_spaces(s, first, start)` is the last position in the range `[first, start]`
 /// that is not U+0020 and `first - 1` if there is none.
 pub fn rev_drop_spaces(
   s : String,
@@ -84,7 +89,8 @@ fn push_span(
   spans.push({ start: line.first, span: { ..line, first: first1, last: last1 } })
 }
 
-///| Includes final `char` in spans.
+///|
+/// Includes final `char` in spans.
 fn[A] accept_to(
   char~ : Char,
   next_line~ : NextLineFn[A],
@@ -109,7 +115,8 @@ fn[A] accept_to(
   }
 }
 
-///| Does not not include final `char` in spans and continues on backslashed `char`.
+///|
+/// Does not not include final `char` in spans and continues on backslashed `char`.
 fn[A] accept_upto(
   char~ : Char,
   next_line~ : NextLineFn[A],
@@ -141,7 +148,8 @@ fn[A] accept_upto(
   }
 }
 
-///| `first_non_blank_over_nl(next_line, s, lines, line, start)` is the first byte position starting with `start`
+///|
+/// `first_non_blank_over_nl(next_line, s, lines, line, start)` is the first byte position starting with `start`
 /// that is not blank in `line` or on the next line as determined by `next_line`.
 /// Returns `None` if there is no such position.
 pub fn[A] first_non_blank_over_nl(
@@ -163,7 +171,8 @@ pub fn[A] first_non_blank_over_nl(
   Some(NextLine(new_line, nb))
 }
 
-///| Same as `first_non_blank_over_nl()` but pushes skipped data on `spans`.
+///|
+/// Same as `first_non_blank_over_nl()` but pushes skipped data on `spans`.
 fn[A] first_non_blank_over_nl1(
   next_line~ : NextLineFn[A],
   s : String,
@@ -187,7 +196,8 @@ fn[A] first_non_blank_over_nl1(
   }
 }
 
-///| `first_non_escaped_char(c, s, last, start)` is the first `CharCodePos`
+///|
+/// `first_non_escaped_char(c, s, last, start)` is the first `CharCodePos`
 /// in the range `[start, last]` that has `c` unescaped and `last + 1` if there is none.
 pub fn first_non_escaped_char(
   c : Char,

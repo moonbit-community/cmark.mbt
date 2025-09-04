@@ -74,7 +74,7 @@ pub fn next_char(s : @string.View, last~ : Int, after~ : Int) -> Char {
 
 ///|
 pub fn utf_16_clean_raw(
-  pad~ : Int = 0,
+  pad? : Int = 0,
   buf : Buffer,
   s : String,
   first~ : Int,

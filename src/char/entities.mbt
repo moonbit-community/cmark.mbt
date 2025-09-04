@@ -1,4 +1,5 @@
-///| A collection of named entities in HTML,
+///|
+/// A collection of named entities in HTML,
 /// generated from <https://html.spec.whatwg.org/entities.json>.
 /// To regenerate, run `moon build`.
 let html_named_entities : Json = {

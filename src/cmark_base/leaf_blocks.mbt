@@ -41,7 +41,8 @@ pub(all) enum LineType {
   Nomatch
 } derive(Show, ToJson(style="flat"), Eq)
 
-///| https://spec.commonmark.org/current/#thematic-breaks
+///|
+/// https://spec.commonmark.org/current/#thematic-breaks
 pub fn LineType::thematic_break(
   s : String,
   last~ : CharCodePos,
@@ -71,7 +72,8 @@ pub fn LineType::thematic_break(
   }
 }
 
-///| https://spec.commonmark.org/current/#atx-headings
+///|
+/// https://spec.commonmark.org/current/#atx-headings
 pub fn LineType::atx_heading(
   s : String,
   last~ : CharCodePos,
@@ -146,7 +148,8 @@ pub fn LineType::atx_heading(
   level(s, last, 1, start + 1)
 }
 
-///| https://spec.commonmark.org/current/#setext-heading
+///|
+/// https://spec.commonmark.org/current/#setext-heading
 pub fn LineType::setext_heading_underline(
   s : String,
   last~ : CharCodePos,
@@ -236,7 +239,8 @@ pub(all) enum FencedCodeBlockContinue {
   Code
 } derive(Show, ToJson(style="flat"))
 
-///| `fenced_code_block_continue(fence, s, last, start)` indicates
+///|
+/// `fenced_code_block_continue(fence, s, last, start)` indicates
 /// whether the fence code continues or closes in the the range
 /// [start;last] given the opening `open` which indicates the
 /// indent, fence char and number of fence chars.
@@ -356,7 +360,8 @@ fn LineType::html_block_start_7_close_tag(
   }
 }
 
-///| https://spec.commonmark.org/current/#html-blocks
+///|
+/// https://spec.commonmark.org/current/#html-blocks
 pub fn LineType::html_block_start(
   s : String,
   last~ : CharCodePos,
@@ -425,7 +430,8 @@ pub fn LineType::html_block_start(
   }
 }
 
-///| https://spec.commonmark.org/current/#html-blocks end condition 1.
+///|
+/// https://spec.commonmark.org/current/#html-blocks end condition 1.
 fn LineType::html_block_end_cond_1(
   s : String,
   last~ : CharCodePos,

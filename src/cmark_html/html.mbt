@@ -28,7 +28,7 @@ test {
 }
 
 ///|
-impl Eq for HtmlRenderFootnote with op_equal(self, other) {
+impl Eq for HtmlRenderFootnote with equal(self, other) {
   self.id == other.id
 }
 
@@ -63,7 +63,7 @@ fn backend_blocks(c : Context) -> Bool {
 
 ///|
 fn init_context(
-  backend_blocks~ : Bool = false,
+  backend_blocks? : Bool = false,
   safe~ : Bool,
   c : Context,
   _doc : Doc,
@@ -392,7 +392,7 @@ fn link_dest_and_title(
 }
 
 ///|
-fn image(c : Context, i : @cmark.InlineLink, close~ : String = " >") -> Unit {
+fn image(c : Context, i : @cmark.InlineLink, close? : String = " >") -> Unit {
   match i.reference_definition(c.doc.defs) {
     Some(LinkDef({ v: ld, .. })) => {
       let (link, title) = link_dest_and_title(c, ld)
@@ -918,7 +918,7 @@ fn doc(c : Context, d : Doc) -> Bool raise {
 
 ///|
 pub fn renderer(
-  backend_blocks~ : Bool = false,
+  backend_blocks? : Bool = false,
   safe~ : Bool,
 ) -> @cmark_renderer.Renderer {
   @cmark_renderer.Renderer::new(
@@ -931,7 +931,7 @@ pub fn renderer(
 
 ///|
 pub fn xhtml_renderer(
-  backend_blocks~ : Bool = false,
+  backend_blocks? : Bool = false,
   safe~ : Bool,
 ) -> @cmark_renderer.Renderer {
   @cmark_renderer.Renderer::new(
@@ -944,7 +944,7 @@ pub fn xhtml_renderer(
 
 ///|
 pub fn from_doc(
-  backend_blocks~ : Bool = false,
+  backend_blocks? : Bool = false,
   safe~ : Bool,
   doc : Doc,
 ) -> String raise {
@@ -956,9 +956,9 @@ pub fn from_doc(
 ///
 /// For more parsing options, call `@cmark.Doc::from_string()` and `from_doc()` manually.
 pub fn render(
-  backend_blocks~ : Bool = false,
-  safe~ : Bool = false,
-  strict~ : Bool = true,
+  backend_blocks? : Bool = false,
+  safe? : Bool = false,
+  strict? : Bool = true,
   s : String,
 ) -> String raise {
   from_doc(backend_blocks~, safe~, @cmark.Doc::from_string(s, strict~))

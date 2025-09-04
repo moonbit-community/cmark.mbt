@@ -1,6 +1,7 @@
 // Inline structure parsing
 
-///| Tokens for parsing inlines.
+///|
+/// Tokens for parsing inlines.
 ///
 /// The list of tokens of a paragraph are the points to consider to
 /// parse it into inlines. Tokens gradually become `Inline` tokens
@@ -176,7 +177,8 @@ fn make_closer_index(toks : Tokens) -> CloserIndex {
   cidx
 }
 
-///| Used to make the text delimitation precise for nested inlines.
+///|
+/// Used to make the text delimitation precise for nested inlines.
 fn tokens_shorten_last_line(to_last~ : Int, toks : Tokens) -> Unit {
   let last = to_last
   for i = toks.inner().length() - 1; i >= 0; i = i - 1 {
@@ -597,7 +599,8 @@ fn Parser::ext_math_span_token(
 
 // Parsers
 
-///| https://spec.commonmark.org/current/#code-span
+///|
+/// https://spec.commonmark.org/current/#code-span
 /// Tries to push an inline code span to the `rev_toks` stack.
 /// If this function returns `Some((line_span, token))`, it means the stack has been modified.
 fn Parser::try_code(
@@ -752,7 +755,8 @@ fn Parser::label_of_spans(
   { meta, key, text }
 }
 
-///| https://spec.commonmark.org/current/#full-reference-link
+///|
+/// https://spec.commonmark.org/current/#full-reference-link
 /// If the function returns `Some(Some(_))`, it means the `rev_toks` stack has been modified.
 fn Parser::try_full_reflink_remainder(
   self : Parser,
@@ -778,7 +782,8 @@ fn Parser::try_full_reflink_remainder(
   Some(Some((line, ReferenceKind::Ref(Full, ref_, def), last)))
 }
 
-///| https://spec.commonmark.org/current/#shortcut-reference-link
+///|
+/// https://spec.commonmark.org/current/#shortcut-reference-link
 /// If the function returns `Some(Some(_))`, it means the `rev_toks` stack has been modified.
 fn Parser::try_shortcut_reflink(
   self : Parser,
@@ -805,7 +810,8 @@ fn Parser::try_shortcut_reflink(
   Some((line, ReferenceKind::Ref(Shortcut, ref_, def), last))
 }
 
-///| https://spec.commonmark.org/current/#collapsed-reference-link
+///|
+/// https://spec.commonmark.org/current/#collapsed-reference-link
 /// If the function returns `Some()`, it means the `rev_toks` stack has been modified.
 fn Parser::try_collapsed_reflink(
   self : Parser,
@@ -834,7 +840,8 @@ fn Parser::try_collapsed_reflink(
   Some((line, ReferenceKind::Ref(Collapsed, ref_, def), last))
 }
 
-///| https://spec.commonmark.org/current/#inline-link
+///|
+/// https://spec.commonmark.org/current/#inline-link
 /// If the function returns `Some(_)`, it means the `rev_toks` stack has been modified.
 fn Parser::try_inline_link_remainder(
   self : Parser,
@@ -1136,7 +1143,8 @@ fn Parser::try_link(
   })
 }
 
-///| Parse inline atoms and links.
+///|
+/// Parse inline atoms and links.
 /// Links are parsed here otherwise link reference data gets parsed as atoms.
 fn Parser::first_pass(
   self : Parser,
@@ -1414,7 +1422,7 @@ fn Parser::second_pass(
 
 // Last pass
 
-///| 
+///|
 /// Only `Inline` and `Newline` tokens remain. We fold over them to
 /// convert them to `inline` values and `Break`s. `Text` inlines
 /// are created for data between them.
