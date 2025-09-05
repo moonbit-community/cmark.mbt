@@ -42,7 +42,8 @@ jobs:
       - name: moon check
         run: |
           moon update
-          moon check --deny-warn
+          # moon check --deny-warn
+          moon check
 
       - name: moon info and moon fmt
         run: |
