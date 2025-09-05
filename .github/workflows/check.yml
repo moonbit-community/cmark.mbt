@@ -59,8 +59,10 @@ jobs:
           moon test --target wasm --release
           moon test --target wasm-gc
           moon test --target wasm-gc --release
-          # moon test --target js
-          # moon test --target js --release
+          moon test --target js
+          moon test --target js --release
+          moon test --target native
+          moon test --target native --release
 
   coverage-check:
     runs-on: ubuntu-latest
