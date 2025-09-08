@@ -95,7 +95,7 @@ pub typealias Int as LineNum // 1-based
 pub let line_num_none = -1
 
 ///|
-pub(all) struct LinePos(LineNum,CharCodePos) derive (
+pub(all) struct LinePos(LineNum, CharCodePos) derive (
   Show,
   Eq,
   Compare,

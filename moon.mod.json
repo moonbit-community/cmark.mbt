@@ -10,5 +10,6 @@
   "license": "Apache-2.0",
   "keywords": ["commonmark", "markdown"],
   "description": "A CommonMark toolkit for MoonBit",
-  "source": "src"
+  "source": "src",
+  "alert-list": "-test_import_all"
 }

@@ -13,7 +13,7 @@ test "raw_html with invalid input" {
   }
   let s = "" // Empty string
   let next_line_fn = mock_next_line(line_span)
-  let result = raw_html(
+  let result = @cmark_base.raw_html(
     next_line=next_line_fn,
     s,
     "dummy",
@@ -32,7 +32,7 @@ test "raw_html with processing instruction" {
     last: s.length() - 1,
   }
   let next_line_fn = mock_next_line(line_span)
-  let result = raw_html(
+  let result = @cmark_base.raw_html(
     next_line=next_line_fn,
     s,
     "dummy",
@@ -54,7 +54,7 @@ test "raw_html with HTML comment" {
     last: s.length() - 1,
   }
   let next_line_fn = mock_next_line(line_span)
-  let result = raw_html(
+  let result = @cmark_base.raw_html(
     next_line=next_line_fn,
     s,
     "dummy",
@@ -76,7 +76,7 @@ test "raw_html with declaration" {
     last: s.length() - 1,
   }
   let next_line_fn = mock_next_line(line_span)
-  let result = raw_html(
+  let result = @cmark_base.raw_html(
     next_line=next_line_fn,
     s,
     "dummy",
@@ -98,7 +98,7 @@ test "raw_html with CDATA section" {
     last: s.length() - 1,
   }
   let next_line_fn = mock_next_line(line_span)
-  let result = raw_html(
+  let result = @cmark_base.raw_html(
     next_line=next_line_fn,
     s,
     "dummy",
@@ -120,7 +120,7 @@ test "raw_html with invalid char after <!" {
     last: s.length() - 1,
   }
   let next_line_fn = mock_next_line(line_span)
-  let result = raw_html(
+  let result = @cmark_base.raw_html(
     next_line=next_line_fn,
     s,
     "dummy",
@@ -141,7 +141,7 @@ test "raw_html_invalid_start" {
     first: 0,
     last: s.length() - 1,
   }
-  let result = raw_html(
+  let result = @cmark_base.raw_html(
     next_line=mock_next_line(line_span),
     s,
     "dummy",
@@ -160,7 +160,7 @@ test "raw_html_closing_tag_invalid_name" {
     first: 0,
     last: s.length() - 1,
   }
-  let result = raw_html(
+  let result = @cmark_base.raw_html(
     next_line=mock_next_line(line_span),
     s,
     "dummy",
@@ -182,7 +182,7 @@ test "raw_html_closing_tag_no_end" {
     first: 0,
     last: s.length() - 1,
   }
-  let result = raw_html(
+  let result = @cmark_base.raw_html(
     next_line=mock_next_line(line_span),
     s,
     "dummy",
@@ -201,7 +201,7 @@ test "raw_html_open_tag_invalid" {
     first: 0,
     last: s.length() - 1,
   }
-  let result = raw_html(
+  let result = @cmark_base.raw_html(
     next_line=mock_next_line(line_span),
     s,
     "dummy",
@@ -223,7 +223,7 @@ test "raw_html_self_closing_tag_no_end" {
     first: 0,
     last: s.length() - 1,
   }
-  let result = raw_html(
+  let result = @cmark_base.raw_html(
     next_line=mock_next_line(line_span),
     s,
     "dummy",
@@ -242,7 +242,7 @@ test "raw_html_attribute_invalid_name" {
     first: 0,
     last: s.length() - 1,
   }
-  let result = raw_html(
+  let result = @cmark_base.raw_html(
     next_line=mock_next_line(line_span),
     s,
     "dummy",
@@ -261,7 +261,7 @@ test "raw_html_attribute_no_value" {
     first: 0,
     last: s.length() - 1,
   }
-  let result = raw_html(
+  let result = @cmark_base.raw_html(
     next_line=mock_next_line(line_span),
     s,
     "dummy",
@@ -283,7 +283,7 @@ test "raw_html_attribute_unquoted_value" {
     first: 0,
     last: s.length() - 1,
   }
-  let result = raw_html(
+  let result = @cmark_base.raw_html(
     next_line=mock_next_line(line_span),
     s,
     "dummy",
@@ -305,7 +305,7 @@ test "raw_html_exclamation_invalid" {
     first: 0,
     last: s.length() - 1,
   }
-  let result = raw_html(
+  let result = @cmark_base.raw_html(
     next_line=mock_next_line(line_span),
     s,
     "dum",
@@ -324,7 +324,7 @@ test "raw_html_exclamation_too_short" {
     first: 0,
     last: 1,
   }
-  let result = raw_html(
+  let result = @cmark_base.raw_html(
     next_line=mock_next_line(line_span),
     s,
     "dummy",
@@ -343,7 +343,7 @@ test "raw_html_comment_incomplete" {
     first: 0,
     last: 2,
   }
-  let result = raw_html(
+  let result = @cmark_base.raw_html(
     next_line=mock_next_line(line_span),
     s,
     "dummy",
@@ -362,7 +362,7 @@ test "raw_html_comment_invalid1" {
     first: 0,
     last: 4,
   }
-  let result = raw_html(
+  let result = @cmark_base.raw_html(
     next_line=mock_next_line(line_span),
     s,
     "dummy",
@@ -381,7 +381,7 @@ test "raw_html_comment_invalid2" {
     first: 0,
     last: 5,
   }
-  let result = raw_html(
+  let result = @cmark_base.raw_html(
     next_line=mock_next_line(line_span),
     s,
     "dummy",
@@ -400,7 +400,7 @@ test "raw_html_cdata_incomplete" {
     first: 0,
     last: 2,
   }
-  let result = raw_html(
+  let result = @cmark_base.raw_html(
     next_line=mock_next_line(line_span),
     s,
     "dummy",
@@ -419,7 +419,7 @@ test "raw_html_cdata_wrong_format" {
     first: 0,
     last: 8,
   }
-  let result = raw_html(
+  let result = @cmark_base.raw_html(
     next_line=mock_next_line(line_span),
     s,
     "dummy",

@@ -35,25 +35,25 @@ test "link_destination contains no space condition false" {
   let s = "   "
   let last = s.length() - 1
   let start = 0
-  let result = link_destination(s, last~, start~)
+  let result = @cmark_base.link_destination(s, last~, start~)
   inspect(result, content="None")
 }
 
 ///|
 test "test link_destination with escaped backslashes" {
-  let result = link_destination("<\\\\>", last=3, start=0)
+  let result = @cmark_base.link_destination("<\\\\>", last=3, start=0)
   inspect(result, content="Some((true, 1, 2))")
 }
 
 ///|
 test "test link_destination with matched angle brackets" {
-  let result = link_destination("<url>", last=4, start=0)
+  let result = @cmark_base.link_destination("<url>", last=4, start=0)
   inspect(result, content="Some((true, 1, 3))")
 }
 
 ///|
 test "test link_destination with backslash before closing angle bracket" {
-  let result = link_destination("<url\\>", last=5, start=0)
+  let result = @cmark_base.link_destination("<url\\>", last=5, start=0)
   inspect(result, content="None")
 }
 
