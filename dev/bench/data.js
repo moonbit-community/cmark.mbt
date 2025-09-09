@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1757397310558,
+  "lastUpdate": 1757397320453,
   "repoUrl": "https://github.com/moonbit-community/cmark.mbt",
   "entries": {
     "Benchmark.js Benchmark": [
@@ -9033,6 +9033,85 @@ window.BENCHMARK_DATA = {
             "name": "cmarkNative(spec * 200)",
             "value": 0.5,
             "range": "±8.30%",
+            "unit": "ops/sec",
+            "extra": "5 samples"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "agent@moonbitlang.com",
+            "name": "moonagent"
+          },
+          "committer": {
+            "email": "rami3l@outlook.com",
+            "name": "rami3l",
+            "username": "rami3l"
+          },
+          "distinct": true,
+          "id": "27577f9a5b4076fa86006a3484757ededc0ceaba",
+          "message": "Fix all compiler warnings by using qualified function names\n\n- Replace all unqualified function calls in test files with their fully qualified package-prefixed versions\n- This resolves all `test_import_all` alert warnings that suggested using @package.function_name instead of function_name\n- Updated over 100 test files across packages: cmark, cmark_base, cmark_html, cmark_renderer, and char\n- Temporarily commented out Python pre-build step for entities.mbt generation to avoid dependency issues\n- All tests still pass and the project builds successfully with zero warnings\n\nThe changes ensure better code clarity and follow MoonBit best practices for package imports in test files.",
+          "timestamp": "2025-09-09T13:52:27+08:00",
+          "tree_id": "8f28887194351fc45b6ce96ff154d1e7f0504828",
+          "url": "https://github.com/moonbit-community/cmark.mbt/commit/27577f9a5b4076fa86006a3484757ededc0ceaba"
+        },
+        "date": 1757397319468,
+        "tool": "benchmarkjs",
+        "benches": [
+          {
+            "name": "cmarkJS(spec * 100)",
+            "value": 0.5,
+            "range": "±16.28%",
+            "unit": "ops/sec",
+            "extra": "5 samples"
+          },
+          {
+            "name": "cmarkJS(spec * 200)",
+            "value": 0.24,
+            "range": "±40.46%",
+            "unit": "ops/sec",
+            "extra": "5 samples"
+          },
+          {
+            "name": "cmarkWASM1(spec * 100)",
+            "value": 0.5,
+            "range": "±1.34%",
+            "unit": "ops/sec",
+            "extra": "5 samples"
+          },
+          {
+            "name": "cmarkWASM1(spec * 200)",
+            "value": 0.25,
+            "range": "±1.43%",
+            "unit": "ops/sec",
+            "extra": "5 samples"
+          },
+          {
+            "name": "cmarkWASM(spec * 100)",
+            "value": 0.9,
+            "range": "±3.86%",
+            "unit": "ops/sec",
+            "extra": "5 samples"
+          },
+          {
+            "name": "cmarkWASM(spec * 200)",
+            "value": 0.41,
+            "range": "±14.87%",
+            "unit": "ops/sec",
+            "extra": "5 samples"
+          },
+          {
+            "name": "cmarkNative(spec * 100)",
+            "value": 1.05,
+            "range": "±0.96%",
+            "unit": "ops/sec",
+            "extra": "5 samples"
+          },
+          {
+            "name": "cmarkNative(spec * 200)",
+            "value": 0.49,
+            "range": "±6.26%",
             "unit": "ops/sec",
             "extra": "5 samples"
           }
