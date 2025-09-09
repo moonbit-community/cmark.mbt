@@ -1,6 +1,6 @@
 ///|
 test "basic" {
-  let rendered = Doc::from_string(test_base_md_str)
+  let rendered = @cmark.Doc::from_string(test_base_md_str)
   @json.inspect(rendered, content={
     "nl": "\n",
     "block": [
