@@ -1,9 +1,9 @@
 {
   "name": "rami3l/cmark",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "deps": {
-    "myfreess/casefold": "0.1.2",
-    "myfreess/charclass": "0.1.1"
+    "myfreess/casefold": "0.1.3",
+    "myfreess/charclass": "0.1.2"
   },
   "readme": "README.md",
   "repository": "https://github.com/moonbit-community/cmark",
