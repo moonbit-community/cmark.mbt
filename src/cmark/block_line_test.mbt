@@ -1,22 +1,22 @@
 ///|
 test "Show for Tight outputs the node content" {
-  let tight = Tight::empty()
+  let tight = @cmark.Tight::empty()
   inspect(Show::to_string(tight), content="\"\"")
 }
 
 ///|
 test "BlockLine::to_string extracts the string value" {
   let meta = @cmark_base.Meta::none()
-  let block_line : BlockLine = { v: "Test string", meta }
+  let block_line : @cmark.BlockLine = { v: "Test string", meta }
   let result = block_line.to_string()
   inspect(result, content="Test string")
 }
 
 ///|
 test "BlockLine::list_text_loc handles empty sequence" {
-  let empty_seq = Seq::empty()
+  let empty_seq = @cmark.Seq::empty()
   inspect(
-    BlockLine::list_text_loc(empty_seq),
+    @cmark.BlockLine::list_text_loc(empty_seq),
     content=(
       #|{file: "-", first_ccode: -1, last_ccode: -1, first_line: LinePos(-1, -1), last_line: LinePos(-1, -1)}
     ),
@@ -33,9 +33,9 @@ test "BlockLine::list_text_loc handles single element sequence" {
     last_line: LinePos(1, 5),
   }
   let meta = @cmark_base.Meta::new(loc~)
-  let single_node : BlockLine = { v: "hello", meta }
-  let single_seq = Seq::from_array([single_node])
-  let result = BlockLine::list_text_loc(single_seq)
+  let single_node : @cmark.BlockLine = { v: "hello", meta }
+  let single_seq = @cmark.Seq::from_array([single_node])
+  let result = @cmark.BlockLine::list_text_loc(single_seq)
   inspect(
     result,
     content=(
@@ -55,7 +55,7 @@ test "BlockLine::list_text_loc handles multiple element sequence" {
     last_line: LinePos(1, 5),
   }
   let meta1 = @cmark_base.Meta::new(loc=loc1)
-  let node1 : BlockLine = { v: "hello", meta: meta1 }
+  let node1 : @cmark.BlockLine = { v: "hello", meta: meta1 }
 
   // Second node with location at line 2
   let loc2 = @cmark_base.TextLoc::{
@@ -66,9 +66,9 @@ test "BlockLine::list_text_loc handles multiple element sequence" {
     last_line: LinePos(2, 5),
   }
   let meta2 = @cmark_base.Meta::new(loc=loc2)
-  let node2 : BlockLine = { v: "world", meta: meta2 }
-  let multi_seq = Seq::from_array([node1, node2])
-  let result = BlockLine::list_text_loc(multi_seq)
+  let node2 : @cmark.BlockLine = { v: "world", meta: meta2 }
+  let multi_seq = @cmark.Seq::from_array([node1, node2])
+  let result = @cmark.BlockLine::list_text_loc(multi_seq)
 
   // Should span from first_ccode of first node to last_ccode of last node
   inspect(
@@ -81,9 +81,9 @@ test "BlockLine::list_text_loc handles multiple element sequence" {
 
 ///|
 test "Tight::list_text_loc handles empty sequence" {
-  let empty_seq = Seq::empty()
+  let empty_seq = @cmark.Seq::empty()
   inspect(
-    Tight::list_text_loc(empty_seq),
+    @cmark.Tight::list_text_loc(empty_seq),
     content=(
       #|{file: "-", first_ccode: -1, last_ccode: -1, first_line: LinePos(-1, -1), last_line: LinePos(-1, -1)}
     ),
@@ -100,11 +100,11 @@ test "Tight::list_text_loc handles single element sequence" {
     last_line: LinePos(1, 5),
   }
   let meta = @cmark_base.Meta::new(loc~)
-  let node : StringNode = { v: "hello", meta }
-  let t : Tight = { blanks: "", node }
-  let seq = Seq::from_array([t])
+  let node : @cmark.StringNode = { v: "hello", meta }
+  let t : @cmark.Tight = { blanks: "", node }
+  let seq = @cmark.Seq::from_array([t])
   inspect(
-    Tight::list_text_loc(seq),
+    @cmark.Tight::list_text_loc(seq),
     content=(
       #|{file: "-", first_ccode: 0, last_ccode: 5, first_line: LinePos(1, 0), last_line: LinePos(1, 5)}
     ),
@@ -122,8 +122,8 @@ test "Tight::list_text_loc handles multiple element sequence" {
     last_line: LinePos(1, 5),
   }
   let meta1 = @cmark_base.Meta::new(loc=loc1)
-  let node1 : StringNode = { v: "hello", meta: meta1 }
-  let t1 : Tight = { blanks: "", node: node1 }
+  let node1 : @cmark.StringNode = { v: "hello", meta: meta1 }
+  let t1 : @cmark.Tight = { blanks: "", node: node1 }
 
   // Second tight element
   let loc2 = @cmark_base.TextLoc::{
@@ -134,11 +134,11 @@ test "Tight::list_text_loc handles multiple element sequence" {
     last_line: LinePos(2, 5),
   }
   let meta2 = @cmark_base.Meta::new(loc=loc2)
-  let node2 : StringNode = { v: "world", meta: meta2 }
-  let t2 : Tight = { blanks: "  ", node: node2 }
-  let seq = Seq::from_array([t1, t2])
+  let node2 : @cmark.StringNode = { v: "world", meta: meta2 }
+  let t2 : @cmark.Tight = { blanks: "  ", node: node2 }
+  let seq = @cmark.Seq::from_array([t1, t2])
   inspect(
-    Tight::list_text_loc(seq),
+    @cmark.Tight::list_text_loc(seq),
     content=(
       #|{file: "-", first_ccode: 0, last_ccode: 11, first_line: LinePos(1, 0), last_line: LinePos(2, 5)}
     ),

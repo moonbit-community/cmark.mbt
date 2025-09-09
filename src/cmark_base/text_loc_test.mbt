@@ -1,26 +1,26 @@
 ///|
 test "TextLoc::is_none with none value" {
-  let loc = TextLoc::none()
+  let loc = @cmark_base.TextLoc::none()
   inspect(loc.is_none(), content="true")
 }
 
 ///|
 test "TextLoc::is_empty for non-empty location" {
-  let loc = TextLoc::none()
+  let loc = @cmark_base.TextLoc::none()
   let loc = { ..loc, first_ccode: 10, last_ccode: 5 }
   inspect(loc.is_empty(), content="true")
 }
 
 ///|
 test "TextLoc::is_empty for empty location" {
-  let loc = TextLoc::none()
+  let loc = @cmark_base.TextLoc::none()
   let loc = { ..loc, first_ccode: 5, last_ccode: 10 }
   inspect(loc.is_empty(), content="false")
 }
 
 ///|
 test "TextLoc::after basic functionality" {
-  let loc = TextLoc::none()
+  let loc = @cmark_base.TextLoc::none()
   let after_loc = loc.after()
   inspect(after_loc.first_ccode, content="0")
   inspect(after_loc.last_ccode, content="-1")
@@ -30,8 +30,8 @@ test "TextLoc::after basic functionality" {
 
 ///|
 test "test case TextLoc::reloc" {
-  let loc1 = TextLoc::none()
-  let loc2 = TextLoc::none()
+  let loc1 = @cmark_base.TextLoc::none()
+  let loc2 = @cmark_base.TextLoc::none()
   inspect(
     loc1.reloc(loc2),
     content=(
@@ -42,12 +42,12 @@ test "test case TextLoc::reloc" {
 
 ///|
 test "TextLoc to_first method test" {
-  let initial_loc : TextLoc = {
+  let initial_loc : @cmark_base.TextLoc = {
     file: "dummy_file",
     first_ccode: 10,
     last_ccode: 20,
-    first_line: LinePos(1, 10),
-    last_line: LinePos(2, 20),
+    first_line: @cmark_base.LinePos(1, 10),
+    last_line: @cmark_base.LinePos(2, 20),
   }
   let modified_loc = initial_loc.to_first()
   inspect(modified_loc.last_ccode, content="10")
@@ -57,7 +57,7 @@ test "TextLoc to_first method test" {
 
 ///|
 test "TextLoc to_last method" {
-  let loc_initial : TextLoc = {
+  let loc_initial : @cmark_base.TextLoc = {
     file: "test_file",
     first_ccode: 10,
     last_ccode: 20,
