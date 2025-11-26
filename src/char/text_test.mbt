@@ -275,7 +275,7 @@ test "sub_includes with matching at end" {
 }
 
 ///|
-test "empty decimal entity reference" {
+test "empty decimal entity reference (2)" {
   let buf = StringBuilder::new()
   let s = "&#;"
   inspect(
@@ -295,7 +295,7 @@ test "non-digit in decimal entity reference" {
 }
 
 ///|
-test "at_checked valid character" {
+test "at_checked valid character (2)" {
   let s = "hello"
   match @char.at_checked(s, 0) {
     Ok(c) => inspect(c.to_string(), content="h")
@@ -311,7 +311,7 @@ test "at_checked invalid character" {
 }
 
 ///|
-test "utf_16_clean_unref vs utf_16_clean_unesc_unref" {
+test "utf_16_clean_unref vs utf_16_clean_unesc_unref (2)" {
   // Test the difference between the two functions
   let buf = StringBuilder::new()
   let s = "a\\*b"
@@ -325,14 +325,14 @@ test "utf_16_clean_unref vs utf_16_clean_unesc_unref" {
 }
 
 ///|
-test "decimal entity reference" {
+test "decimal entity reference (2)" {
   let buf = StringBuilder::new()
   let s = "&#65;" // Decimal for 'A'
   inspect(@char.utf_16_clean_unesc_unref(buf, s, first=0, last=4), content="A")
 }
 
 ///|
-test "invalid decimal entity reference" {
+test "invalid decimal entity reference (2)" {
   let buf = StringBuilder::new()
   let s = "&#a;" // Not a valid decimal
   inspect(
@@ -342,7 +342,7 @@ test "invalid decimal entity reference" {
 }
 
 ///|
-test "empty decimal entity reference" {
+test "empty decimal entity reference (3)" {
   let buf = StringBuilder::new()
   let s = "&#;" // Empty decimal reference
   inspect(
@@ -352,7 +352,7 @@ test "empty decimal entity reference" {
 }
 
 ///|
-test "decimal entity reference too long" {
+test "decimal entity reference too long (2)" {
   let buf = StringBuilder::new()
   let s = "&#12345678;" // Too long decimal entity
   inspect(
@@ -362,7 +362,7 @@ test "decimal entity reference too long" {
 }
 
 ///|
-test "try_entity_hex invalid" {
+test "try_entity_hex invalid (2)" {
   let buf = StringBuilder::new(size_hint=0)
   inspect(
     @char.utf_16_clean_unesc_unref(buf, "&#xqq;", first=0, last=5),
@@ -371,7 +371,7 @@ test "try_entity_hex invalid" {
 }
 
 ///|
-test "try_entity_named empty" {
+test "try_entity_named empty (2)" {
   let buf = StringBuilder::new(size_hint=0)
   inspect(
     @char.utf_16_clean_unesc_unref(buf, "&;", first=0, last=1),
@@ -380,13 +380,13 @@ test "try_entity_named empty" {
 }
 
 ///|
-test "resolve empty" {
+test "resolve empty (2)" {
   let buf = StringBuilder::new(size_hint=0)
   inspect(@char.utf_16_clean_unesc_unref(buf, "", first=1, last=0), content="")
 }
 
 ///|
-test "resolve escaped chars" {
+test "resolve escaped chars (2)" {
   let buf = StringBuilder::new(size_hint=0)
   inspect(
     @char.utf_16_clean_unesc_unref(buf, "\\", first=0, last=0),
@@ -395,7 +395,7 @@ test "resolve escaped chars" {
 }
 
 ///|
-test "try_entity_named with incomplete entity" {
+test "try_entity_named with incomplete entity (2)" {
   let buf = StringBuilder::new(size_hint=0)
   let s = "&abc"
   inspect(
@@ -405,7 +405,7 @@ test "try_entity_named with incomplete entity" {
 }
 
 ///|
-test "handling null character and non-ascii chars" {
+test "handling null character and non-ascii chars (2)" {
   let buf = StringBuilder::new(size_hint=0)
   let s = "\u0000\u00FF"
   inspect(
@@ -415,7 +415,7 @@ test "handling null character and non-ascii chars" {
 }
 
 ///|
-test "handling escape with non-punctuation" {
+test "handling escape with non-punctuation (2)" {
   let buf = StringBuilder::new(size_hint=0)
   let s = "\\a"
   inspect(
@@ -425,7 +425,7 @@ test "handling escape with non-punctuation" {
 }
 
 ///|
-test "hex entity with invalid length" {
+test "hex entity with invalid length (2)" {
   let buf = StringBuilder::new()
   let s = "&#x123456789;" // Too long hex entity
   inspect(
@@ -435,7 +435,7 @@ test "hex entity with invalid length" {
 }
 
 ///|
-test "hex entity with null char" {
+test "hex entity with null char (2)" {
   let buf = StringBuilder::new()
   let s = "&#x0;" // Represents null character
   inspect(
@@ -445,7 +445,7 @@ test "hex entity with null char" {
 }
 
 ///|
-test "non-ASCII valid UTF-16 sequence" {
+test "non-ASCII valid UTF-16 sequence (2)" {
   let buf = StringBuilder::new()
   // Valid UTF-16 sequence for a non-ASCII character
   let s = "a😀b"
@@ -456,14 +456,14 @@ test "non-ASCII valid UTF-16 sequence" {
 }
 
 ///|
-test "try_entity_named with valid entity" {
+test "try_entity_named with valid entity (2)" {
   let buf = StringBuilder::new()
   let s = "&amp;" // HTML entity for '&'
   inspect(@char.utf_16_clean_unesc_unref(buf, s, first=0, last=4), content="&")
 }
 
 ///|
-test "try_entity_named with non-alphabetic character" {
+test "try_entity_named with non-alphabetic character (2)" {
   let buf = StringBuilder::new()
   let s = "&123;"
   inspect(

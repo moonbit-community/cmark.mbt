@@ -128,7 +128,7 @@ fn Parser::accept_code_indent(
 
 ///|
 /// Number of space characters to pad content with
-typealias Int as SpacePad
+type SpacePad = Int
 
 ///|
 priv struct IndentedCodeLine {
@@ -156,7 +156,7 @@ priv struct FenceCodeBlockStruct {
 priv enum CodeBlockStruct {
   Indented(Array[IndentedCodeLine])
   Fenced(FenceCodeBlockStruct)
-} derive(Show, ToJson(style="flat"))
+} derive(Show, ToJson)
 
 ///|
 priv struct Atx {
@@ -179,7 +179,7 @@ priv struct Setext {
 priv enum Heading {
   Atx(Atx)
   Setext(Setext)
-} derive(Show, ToJson(style="flat"))
+} derive(Show, ToJson)
 
 ///|
 priv struct HtmlBlockStruct {
@@ -206,7 +206,7 @@ priv enum BlockStruct {
   ThematicBreak(Indent, LineSpan) // Including trailing blanks
   ExtTable(Indent, Array[(LineSpan, LineSpan)]) // The second `LineSpan` is for trailing blanks
   ExtFootnote(Indent, (Label, Label?), Array[BlockStruct])
-} derive(Show, ToJson(style="flat"))
+} derive(Show, ToJson)
 
 ///|
 priv struct ListItemStruct {

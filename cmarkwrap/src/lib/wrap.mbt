@@ -13,5 +13,5 @@ pub fn result_unwrap(res : Result[String, Error]) -> String {
 
 ///|
 pub fn result_is_ok(res : Result[String, Error]) -> Bool {
-  res.is_ok()
+  res is Ok(_)
 }

@@ -77,19 +77,19 @@ pub fn TextLoc::reloc(self : TextLoc, other : TextLoc) -> TextLoc {
 // TODO: Formatters unimplemented
 
 ///|
-pub typealias String as FilePath
+pub type FilePath = String
 
 ///|
 pub let file_path_none = "-"
 
 ///|
-pub typealias Int as CharCodePos // 0-based
+pub type CharCodePos = Int // 0-based
 
 ///|
 pub let char_code_pos_none : CharCodePos = -1
 
 ///|
-pub typealias Int as LineNum // 1-based
+pub type LineNum = Int // 1-based
 
 ///|
 pub let line_num_none = -1
@@ -127,4 +127,4 @@ pub(all) struct NextLineFn[A]((A) -> LineSpan?)
 pub(all) enum NextLineResult {
   ThisLine(CharCodePos)
   NextLine(LineSpan, CharCodePos)
-} derive(Show, ToJson(style="flat"))
+} derive(Show, ToJson)

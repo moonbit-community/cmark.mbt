@@ -14,7 +14,7 @@ pub(all) enum Block {
   ExtMathBlock(Node[CodeBlock])
   ExtTable(Node[Table])
   ExtFootnoteDefinition(Node[Footnote])
-} derive(Show, ToJson(style="flat"))
+} derive(Show, ToJson)
 
 ///|
 pub fn Block::empty() -> Block {
@@ -57,7 +57,7 @@ pub fn Block::normalize(self : Block) -> Block {
       let acc = [bs.pop().unwrap().normalize()]
       for {
         match bs.pop() {
-          Some(Blocks({ v: bs1, .. })) => bs += bs1.inner()
+          Some(Blocks({ v: bs1, .. })) => bs += bs1.0
           Some(b) => acc.push(b.normalize())
           None => break
         }
@@ -101,7 +101,7 @@ pub fn Block::defs(
 ///|
 /// The type for [blank lines](https://spec.commonmark.org/0.30/#blank-lines).
 /// These can be ignored during rendering, they are kept for layout.
-pub typealias Blanks as BlockBlankLine
+pub type BlockBlankLine = Blanks
 
 ///|
 /// The type for [block quotes](https://spec.commonmark.org/0.30/#block-quotes).
@@ -143,7 +143,7 @@ pub(all) struct CodeBlock {
 pub(all) enum CodeBlockLayout {
   Indented
   Fenced(CodeBlockFencedLayout)
-} derive(Show, ToJson(style="flat"))
+} derive(Show, ToJson)
 
 ///|
 pub(all) struct CodeBlockFencedLayout {
@@ -205,9 +205,9 @@ pub fn CodeBlock::language_of_info_string(s : String) -> (String, String)? {
     }
   }
   let rem_first = @cmark_base.first_non_blank(s, last=max, start=white)
-  let lang = s.substring(start=0, end=white)
+  let lang = s[0:white].to_string() catch { _ => panic() }
   guard not(lang.is_empty()) else { None }
-  Some((lang, s.substring(start=rem_first, end=max + 1)))
+  Some((lang, s[rem_first:max + 1].to_string() catch { _ => panic() }))
 }
 
 ///|
@@ -230,7 +230,7 @@ pub(all) struct BlockHeading {
 pub(all) enum BlockHeadingLayout {
   Atx(BlockHeadingAtxLayout)
   Setext(BlockHeadingSetextLayout)
-} derive(Show, ToJson(style="flat"))
+} derive(Show, ToJson)
 
 ///|
 pub(all) struct BlockHeadingAtxLayout {
@@ -257,7 +257,7 @@ pub(all) struct BlockHeadingSetextLayout {
 pub(all) enum BlockHeadingId {
   Auto(String)
   Id(String)
-} derive(Show, FromJson(style="flat"), ToJson(style="flat"))
+} derive(Show, FromJson, ToJson)
 
 ///|
 pub fn BlockHeading::new(
@@ -283,7 +283,7 @@ pub(all) struct ListItem {
 } derive(Show, ToJson)
 
 ///|
-pub typealias ListItem as ListItemBlock
+pub type ListItemBlock = ListItem
 
 ///|
 pub fn ListItem::new(
@@ -427,14 +427,14 @@ pub(all) enum TableAlign {
   Left
   Center
   Right
-} derive(Show, FromJson(style="flat"), ToJson(style="flat"))
+} derive(Show, FromJson, ToJson)
 
 ///|
 pub(all) enum TableRow {
   Header(Seq[(Inline, TableCellLayout)])
   Sep(Seq[Node[TableSep]])
   Data(Seq[(Inline, TableCellLayout)])
-} derive(Show, ToJson(style="flat"))
+} derive(Show, ToJson)
 
 ///|
 pub(all) struct TableSep((TableAlign?, Count)) derive(Show, ToJson)

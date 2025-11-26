@@ -1,4 +1,7 @@
 ///|
+using @cmark {type LabelKey}
+
+///|
 priv struct State {
   safe : Bool
   backend_blocks : Bool
@@ -41,7 +44,7 @@ impl Compare for HtmlRenderFootnote with compare(self, other) {
 priv suberror EState State
 
 ///|
-typealias Set[String] as StringSet
+type StringSet = Set[String]
 
 ///|
 priv struct Joined[T] {
@@ -95,7 +98,8 @@ fn uid(c : Context, id : String) -> String {
 fn footnote_id(l : String) -> String {
   let res = StringBuilder::new()
   res.write_string("fn-")
-  for c in l.substring(start=1) {
+  let l = l[1:] catch { _ => panic() }
+  for c in l {
     res.write_char(
       match c {
         ' ' | '\t' => '-'
@@ -145,7 +149,7 @@ fn joined_string(c : Context, join : Joined[String]) -> Unit {
 }
 
 ///|
-// fn buffer_add_html_escaped_char(b : Buffer, ch : Char) -> Unit {
+// fn buffer_add_html_escaped_char(b : StringBuilder, ch : Char) -> Unit {
 //   match ch {
 //     '\u{0}' => b.write_char(@char.rep)
 //     '&' => b.write_string("&amp;")
@@ -163,10 +167,10 @@ fn joined_string(c : Context, join : Joined[String]) -> Unit {
 // }
 
 ///|
-fn buffer_add_html_escaped_string(b : Buffer, s : String) -> Unit {
+fn buffer_add_html_escaped_string(b : StringBuilder, s : String) -> Unit {
   let len = s.length()
   let max_idx = len - 1
-  fn flush(b : Buffer, start : Int, i : Int) {
+  fn flush(b : StringBuilder, start : Int, i : Int) {
     if start < len {
       b.write_substring(s, start, i - start)
     }
@@ -220,7 +224,7 @@ fn html_escaped_string(c : Context, s : String) -> Unit {
 }
 
 ///|
-fn buffer_add_pct_encoded_string(b : Buffer, s : String) -> Unit { // Percent encoded + HTML escaped
+fn buffer_add_pct_encoded_string(b : StringBuilder, s : String) -> Unit { // Percent encoded + HTML escaped
   fn unsafe_hexdigit(i : Int) {
     (if i < 10 { i + 0x30 } else { i + 0x37 }).unsafe_to_char()
   }
@@ -249,7 +253,7 @@ fn buffer_add_pct_encoded_string(b : Buffer, s : String) -> Unit { // Percent en
     | '@')
   }
 
-  let flush = fn(b : Buffer, max : Int, start : Int, i : Int) -> Unit {
+  let flush = fn(b : StringBuilder, max : Int, start : Int, i : Int) -> Unit {
     if start <= max {
       b.write_substring(s, start, i - start)
     }
@@ -473,11 +477,11 @@ fn raw_html(c : Context, h : @cmark.InlineRawHtml) -> Unit {
     comment(c, "CommonMark raw HTML omitted")
     return
   }
-  if h.inner().is_empty() {
+  if h.0.is_empty() {
     return
   }
-  c.b.write_string(h.inner()[0].node.v)
-  for x in h.inner().to_array()[1:] {
+  c.b.write_string(h.0[0].node.v)
+  for x in h.0.to_array()[1:] {
     c.b.write_char('\n')
     c.b.write_string(x.node.v)
   }
@@ -486,7 +490,7 @@ fn raw_html(c : Context, h : @cmark.InlineRawHtml) -> Unit {
 ///|
 fn strikethrough(c : Context, s : @cmark.InlineStrikethrough) -> Unit raise {
   c.b.write_string("<del>")
-  c.inline(s.inner())
+  c.inline(s.0)
   c.b.write_string("</del>")
 }
 
@@ -703,7 +707,7 @@ fn html_block(c : Context, html : @cmark.HtmlBlock) -> Unit {
     c.b.write_char('\n')
     return
   }
-  for l in html.inner() {
+  for l in html.0 {
     c.b.write_string(l.v)
     c.b.write_char('\n')
   }
@@ -752,13 +756,13 @@ fn table(c : Context, t : @cmark.Table) -> Unit raise {
   ) raise {
     match (align, cs) {
       ([{ v, .. }, .. align], [(col, _), .. cs]) => {
-        start(c, v.inner().0, tag)
+        start(c, v.0.0, tag)
         c.inline(col)
         close(c, tag)
         cols(c, tag, align, count - 1, cs)
       }
       ([{ v, .. }, .. align], []) => {
-        start(c, v.inner().0, tag)
+        start(c, v.0.0, tag)
         close(c, tag)
         cols(c, tag, align, count - 1, [][:])
       }

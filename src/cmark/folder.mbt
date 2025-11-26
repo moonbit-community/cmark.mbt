@@ -18,7 +18,7 @@ pub(all) struct FolderFn[A, B]((Folder[B], B, A) -> FolderResult[B])
 pub(all) enum FolderResult[A] {
   Default
   Fold(A)
-} derive(Eq, Show, ToJson(style="flat"))
+} derive(Eq, Show, ToJson)
 
 ///|
 pub impl[A] Default for FolderResult[A] with default() {
@@ -92,7 +92,7 @@ pub fn[A] Folder::fold_inline(
       }
       acc
     }
-    ExtStrikethrough({ v, .. }) => self.fold_inline(acc, v.inner())
+    ExtStrikethrough({ v, .. }) => self.fold_inline(acc, v.0)
     // ext => (self.inline_ext_default)!(self, acc, ext)
   }
 }

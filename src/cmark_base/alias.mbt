@@ -1,2 +1,0 @@
-///|
-typealias StringBuilder as Buffer

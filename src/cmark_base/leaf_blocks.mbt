@@ -7,7 +7,7 @@ pub(all) enum HtmlBlockEndCond {
   EndCond1
   EndBlank
   EndBlank7
-} derive(Show, ToJson(style="flat"), Eq)
+} derive(Show, ToJson, Eq)
 
 ///|
 pub(all) enum ListType {
@@ -15,7 +15,7 @@ pub(all) enum ListType {
   Unordered(Char)
   /// Starting at given integer, markers ending with given character, i.e. ')' or '.'.
   Ordered(Int, Char)
-} derive(Show, FromJson(style="flat"), ToJson(style="flat"), Eq)
+} derive(Show, FromJson, ToJson, Eq)
 
 ///|
 pub fn ListType::is_same_type(self : ListType, other : ListType) -> Bool {
@@ -39,7 +39,7 @@ pub(all) enum LineType {
   ExtTableRow(Last)
   ExtFootnoteLabel(Array[Span], Last, String)
   Nomatch
-} derive(Show, ToJson(style="flat"), Eq)
+} derive(Show, ToJson, Eq)
 
 ///|
 /// https://spec.commonmark.org/current/#thematic-breaks
@@ -237,7 +237,7 @@ pub fn LineType::fenced_code_block_start(
 pub(all) enum FencedCodeBlockContinue {
   Close(First, Last)
   Code
-} derive(Show, ToJson(style="flat"))
+} derive(Show, ToJson)
 
 ///|
 /// `fenced_code_block_continue(fence, s, last, start)` indicates
@@ -279,12 +279,12 @@ pub fn FencedCodeBlockContinue::new(
 }
 
 ///|
-let html_start_cond_1_set : Set[String] = Set::of([
+let html_start_cond_1_set : Set[String] = Set::from_array([
   "pre", "script", "style", "textarea",
 ])
 
 ///|
-let html_start_cond_6_set : Set[String] = Set::of([
+let html_start_cond_6_set : Set[String] = Set::from_array([
   "address", "article", "aside", "base", "basefont", "blockquote", "body", "caption",
   "center", "col", "colgroup", "dd", "details", "dialog", "dir", "div", "dl", "dt",
   "fieldset", "figcaption", "figure", "footer", "form", "frame", "frameset", "h1",
@@ -302,7 +302,7 @@ fn LineType::html_block_start_5(
 ) -> LineType {
   let next = start + 3 // 3 first chars checked
   let sub = "CDATA["
-  if start + 8 > last || not(s.substring(start=next).has_prefix(sub)) {
+  if start + 8 > last || not(s[next:].has_prefix(sub) catch { _ => panic() }) {
     return Nomatch
   }
   HtmlBlockLine(EndStr("]]>"))
@@ -398,7 +398,9 @@ pub fn LineType::html_block_start(
         }
         continue i + 1
       }
-      let tag = s.substring(start=tag_first, end=tag_last + 1).to_lower()
+      let tag = s[tag_first:tag_last + 1].to_string().to_lower() catch {
+          _ => panic()
+        }
       let is_open_end = {
         let n = tag_last + 1
         n > last ||
@@ -408,11 +410,10 @@ pub fn LineType::html_block_start(
         // ' ' | '\t' | '>'
         | 62)
       }
-      let is_open_close_end = is_open_end ||
-        (
-          tag_last + 2 <= last &&
-          s.substring(start=tag_last + 1, end=tag_last + 3) == "/>"
-        )
+      let is_open_close_end = (is_open_end ||
+      (tag_last + 2 <= last && s[tag_last + 1:tag_last + 3] == "/>")) catch {
+        _ => panic()
+      }
       if c != '/' {
         if html_start_cond_1_set.contains(tag) && is_open_end {
           LineType::HtmlBlockLine(EndCond1) // 1
@@ -443,7 +444,7 @@ fn LineType::html_block_end_cond_1(
     guard s[k] == '<' && s[k + 1] == '/' else { continue k + 1 }
     let next = k + 2
     let is_end_tag = {
-      let lower_s_sub = lower_s.substring(start=next)
+      let lower_s_sub = lower_s[next:] catch { _ => panic() }
       match s[next] {
         'p' => lower_s_sub.has_prefix("pre>")
         's' =>
@@ -492,7 +493,7 @@ pub fn LineType::ext_table_row(
 
 ///|
 pub fn LineType::ext_footnote_label(
-  buf : Buffer,
+  buf : StringBuilder,
   s : String,
   line_pos~ : LinePos,
   last~ : CharCodePos,

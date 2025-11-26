@@ -1,5 +1,5 @@
 ///|
-typealias Int as Col
+type Col = Int
 
 ///|
 #coverage.skip

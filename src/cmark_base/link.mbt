@@ -129,7 +129,7 @@ pub fn[A] link_title(
 ///
 /// See: https://spec.commonmark.org/current/#link-label
 pub fn[A] link_label(
-  buf : Buffer,
+  buf : StringBuilder,
   next_line~ : NextLineFn[A],
   s : String,
   lines : A,
