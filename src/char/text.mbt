@@ -75,7 +75,7 @@ pub fn next_char(s : @string.View, last~ : Int, after~ : Int) -> Char {
 ///|
 pub fn utf_16_clean_raw(
   pad? : Int = 0,
-  buf : Buffer,
+  buf : StringBuilder,
   s : String,
   first~ : Int,
   last~ : Int,
@@ -125,7 +125,9 @@ pub fn utf_16_clean_raw(
   fn check(last, first, k) {
     for k = k {
       break if k > last {
-        s.substring(start=first, end=last + 1)
+        s[first:last + 1].to_string() catch {
+          _ => panic()
+        }
       } else if s[k] == '\u{0}' {
         buf.reset()
         clean(last, first, k)
@@ -167,7 +169,7 @@ pub fn utf_16_clean_raw(
 
 ///|
 pub fn utf_16_clean_unesc_unref(
-  buf : Buffer,
+  buf : StringBuilder,
   s : String,
   first~ : Int,
   last~ : Int,
@@ -177,7 +179,7 @@ pub fn utf_16_clean_unesc_unref(
 
 ///|
 pub fn utf_16_clean_unref(
-  buf : Buffer,
+  buf : StringBuilder,
   s : String,
   first~ : Int,
   last~ : Int,
@@ -186,7 +188,13 @@ pub fn utf_16_clean_unref(
 }
 
 ///|
-fn flush(buf : Buffer, s : String, last : Int, start : Int, k : Int) -> Unit {
+fn flush(
+  buf : StringBuilder,
+  s : String,
+  last : Int,
+  start : Int,
+  k : Int,
+) -> Unit {
   if start <= last {
     buf.write_substring(s, start, k - start)
   }
@@ -195,7 +203,7 @@ fn flush(buf : Buffer, s : String, last : Int, start : Int, k : Int) -> Unit {
 ///|
 fn _utf_16_clean_unesc_unref(
   do_unesc~ : Bool,
-  buf : Buffer,
+  buf : StringBuilder,
   s : String,
   first~ : Int,
   last~ : Int,
@@ -267,7 +275,7 @@ fn _utf_16_clean_unesc_unref(
       }
       match s[k] {
         ';' => {
-          let name = s.substring(start=name_start, end=k)
+          let name = s[name_start:k].to_string() catch { _ => panic() }
           match html_named_entity(name) {
             None => return resolve(last, start, k + 1)
             Some(e) => {
@@ -366,7 +374,9 @@ fn _utf_16_clean_unesc_unref(
   let last = @cmp.minimum(last, max)
   let first = @cmp.maximum(first, 0)
   for k = first {
-    guard k <= last else { break s.substring(start=first, end=last + 1) }
+    guard k <= last else {
+      break s[first:last + 1].to_string() catch { _ => panic() }
+    }
     match (s[k], do_unesc) {
       ('\\', true) | ('&', _) | ('\u{0}', _) => {
         buf.reset()

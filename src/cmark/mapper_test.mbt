@@ -293,7 +293,7 @@ test "map_inline with Link" {
 }
 
 ///|
-test "map_inline with Emphasis" {
+test "map_inline with Emphasis (2)" {
   let mapper = @cmark.Mapper::new()
   let text = @cmark.Inline::Text(@cmark.Node::new("emphasized text"))
   // Create Emphasis with the correct structure

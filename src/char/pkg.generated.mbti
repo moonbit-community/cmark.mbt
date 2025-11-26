@@ -1,10 +1,6 @@
 // Generated using `moon info`, DON'T EDIT IT
 package "rami3l/cmark/char"
 
-import(
-  "moonbitlang/core/string"
-)
-
 // Values
 fn ascii_digit_to_int(Char) -> Int
 
@@ -12,7 +8,7 @@ fn ascii_hexdigit_to_int(Char) -> Int
 
 fn ascii_octdigit_to_int(Char) -> Int
 
-fn at_checked(@string.View, Int) -> Result[Char, Int]
+fn at_checked(StringView, Int) -> Result[Char, Int]
 
 fn is_ascii_alphanum(Char) -> Bool
 
@@ -32,9 +28,9 @@ fn length_utf32(Int) -> Int
 
 fn length_utf8(Int) -> Int
 
-fn next_char(@string.View, last~ : Int, after~ : Int) -> Char
+fn next_char(StringView, last~ : Int, after~ : Int) -> Char
 
-fn prev_char(@string.View, first~ : Int, before~ : Int) -> Char
+fn prev_char(StringView, first~ : Int, before~ : Int) -> Char
 
 let rep : Char
 

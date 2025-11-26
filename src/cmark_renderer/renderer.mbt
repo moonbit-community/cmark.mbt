@@ -35,12 +35,12 @@ pub fn Renderer::compose(self : Renderer, other : Renderer) -> Renderer {
 pub(all) struct Context {
   renderer : Renderer
   mut state : Error?
-  b : Buffer
+  b : StringBuilder
   mut doc : Doc
 }
 
 ///|
-pub fn Context::new(renderer : Renderer, b : Buffer) -> Context {
+pub fn Context::new(renderer : Renderer, b : StringBuilder) -> Context {
   { renderer, state: None, b, doc: Doc::empty() }
 }
 
@@ -102,7 +102,7 @@ pub fn Context::doc(self : Context, doc : Doc) -> Unit raise {
 
 ///|
 pub fn Renderer::doc_to_string(self : Renderer, doc : Doc) -> String raise {
-  let buf = Buffer::new(size_hint=1024)
+  let buf = StringBuilder::new(size_hint=1024)
   self.buffer_add_doc(buf, doc)
   buf.to_string()
 }
@@ -110,7 +110,7 @@ pub fn Renderer::doc_to_string(self : Renderer, doc : Doc) -> String raise {
 ///|
 pub fn Renderer::buffer_add_doc(
   self : Renderer,
-  buf : Buffer,
+  buf : StringBuilder,
   doc : Doc,
 ) -> Unit raise {
   Context::new(self, buf).doc(doc)

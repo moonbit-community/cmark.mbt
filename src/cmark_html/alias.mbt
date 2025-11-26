@@ -1,11 +1,5 @@
 ///|
-typealias @cmark_renderer.Context
+using @cmark_renderer {type Context}
 
 ///|
-typealias StringBuilder as Buffer
-
-///|
-typealias @cmark.Doc
-
-///|
-typealias @cmark.LabelKey
+using @cmark {type Doc}

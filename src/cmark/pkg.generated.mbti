@@ -87,6 +87,7 @@ impl Show for BlockHeadingSetextLayout
 impl ToJson for BlockHeadingSetextLayout
 
 pub(all) struct BlockLine(Node[String])
+#deprecated
 fn BlockLine::inner(Self) -> Node[String]
 fn BlockLine::list_text_loc(Seq[Self]) -> @cmark_base.TextLoc
 fn BlockLine::to_string(Self) -> String
@@ -168,6 +169,7 @@ impl Show for Doc
 impl ToJson for Doc
 
 pub(all) struct FoldFn[A, B]((Folder[B], B, A) -> B raise FolderError)
+#deprecated
 fn[A, B] FoldFn::inner(Self[A, B]) -> (Folder[B], B, A) -> B raise FolderError
 
 pub(all) struct Folder[A] {
@@ -186,6 +188,7 @@ fn[A, B] Folder::none(Self[A], A, B) -> FolderResult[A]
 fn[A] Folder::ret(A) -> FolderResult[A]
 
 pub(all) struct FolderFn[A, B]((Folder[B], B, A) -> FolderResult[B])
+#deprecated
 fn[A, B] FolderFn::inner(Self[A, B]) -> (Folder[B], B, A) -> FolderResult[B]
 
 pub(all) enum FolderResult[A] {
@@ -210,6 +213,7 @@ impl Show for Footnote
 impl ToJson for Footnote
 
 pub(all) struct HtmlBlock(Seq[Node[String]])
+#deprecated
 fn HtmlBlock::inner(Self) -> Seq[Node[String]]
 impl Show for HtmlBlock
 impl ToJson for HtmlBlock
@@ -309,12 +313,14 @@ impl Show for InlineMathSpan
 impl ToJson for InlineMathSpan
 
 pub(all) struct InlineRawHtml(Seq[Tight])
+#deprecated
 fn InlineRawHtml::inner(Self) -> Seq[Tight]
 impl Eq for InlineRawHtml
 impl Show for InlineRawHtml
 impl ToJson for InlineRawHtml
 
 pub(all) struct InlineStrikethrough(Inline)
+#deprecated
 fn InlineStrikethrough::inner(Self) -> Inline
 impl Eq for InlineStrikethrough
 impl Show for InlineStrikethrough
@@ -346,6 +352,7 @@ impl Show for LabelDef
 impl ToJson for LabelDef
 
 pub(all) struct LabelResolverFn((LabelContext) -> Label?)
+#deprecated
 fn LabelResolverFn::inner(Self) -> (LabelContext) -> Label?
 
 pub(all) struct LinkDefinition {
@@ -379,6 +386,7 @@ pub(all) enum LinkKind {
   Image
 }
 
+#alias(ListItemBlock)
 pub(all) struct ListItem {
   before_marker : Int
   marker : Node[String]
@@ -401,6 +409,7 @@ pub(all) enum ListTaskStatus {
 fn ListTaskStatus::from_marker(Char) -> Self
 
 pub(all) struct MapFn[A]((Mapper, A) -> A? raise MapperError)
+#deprecated
 fn[A] MapFn::inner(Self[A]) -> (Mapper, A) -> A? raise MapperError
 
 pub(all) struct Mapper {
@@ -420,6 +429,7 @@ fn[A] Mapper::none(Self, A) -> MapperResult[A]
 fn[A] Mapper::ret(A) -> MapperResult[A]
 
 pub(all) struct MapperFn[A]((Mapper, A) -> MapperResult[A])
+#deprecated
 fn[A] MapperFn::inner(Self[A]) -> (Mapper, A) -> MapperResult[A]
 
 pub(all) enum MapperResult[A] {
@@ -497,6 +507,7 @@ impl ToJson for TableAlign
 impl @json.FromJson for TableAlign
 
 pub(all) struct TableCellLayout((String, String))
+#deprecated
 fn TableCellLayout::inner(Self) -> (String, String)
 impl Compare for TableCellLayout
 impl Eq for TableCellLayout
@@ -512,6 +523,7 @@ impl Show for TableRow
 impl ToJson for TableRow
 
 pub(all) struct TableSep((TableAlign?, Int))
+#deprecated
 fn TableSep::inner(Self) -> (TableAlign?, Int)
 impl Show for TableSep
 impl ToJson for TableSep
@@ -528,25 +540,23 @@ impl Show for Tight
 impl ToJson for Tight
 
 // Type aliases
-pub typealias String as Blanks
+pub type Blanks = String
 
-pub typealias Node[String] as BlanksNode
+pub type BlanksNode = Node[String]
 
-pub typealias String as BlockBlankLine
+pub type BlockBlankLine = String
 
-pub typealias Node[String] as BlockLineBlank
+pub type BlockLineBlank = Node[String]
 
-pub typealias Int as Count
+pub type Count = Int
 
-pub typealias String as InlineText
+pub type InlineText = String
 
-pub typealias Map[String, LabelDef] as LabelDefs
+pub type LabelDefs = Map[String, LabelDef]
 
-pub typealias String as LabelKey
+pub type LabelKey = String
 
-pub typealias ListItem as ListItemBlock
-
-pub typealias Node[String] as StringNode
+pub type StringNode = Node[String]
 
 // Traits
 

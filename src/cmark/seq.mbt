@@ -3,7 +3,7 @@ struct Seq[A](Array[A]) derive(Eq, Show)
 
 ///|
 pub impl[A : ToJson] ToJson for Seq[A] with to_json(self) -> Json {
-  self.inner().to_json()
+  self.0.to_json()
 }
 
 ///|
@@ -27,59 +27,59 @@ pub fn[A] Seq::from_array(arr : Array[A]) -> Seq[A] {
 ///|
 /// @coverage.skip
 pub fn[A] Seq::to_array(self : Seq[A]) -> Array[A] {
-  self.inner()
+  self.0
 }
 
 ///|
 /// @coverage.skip
 pub fn[A] Seq::iter(self : Seq[A]) -> Iter[A] {
-  self.inner().iter()
+  self.0.iter()
 }
 
 ///|
 /// @coverage.skip
 pub fn[A] Seq::length(self : Seq[A]) -> Int {
-  self.inner().length()
+  self.0.length()
 }
 
 ///|
 /// @coverage.skip
 pub fn[A, B] Seq::map(self : Seq[A], f : (A) -> B) -> Seq[B] {
-  self.inner().map(f)
+  self.0.map(f)
 }
 
 ///|
 /// @coverage.skip
 pub fn[A, B] Seq::fold(self : Seq[A], init~ : B, f : (B, A) -> B) -> B {
-  self.inner().fold(init~, f)
+  self.0.fold(init~, f)
 }
 
 ///|
 /// @coverage.skip
 pub fn[A, B] Seq::rev_fold(self : Seq[A], init~ : B, f : (B, A) -> B) -> B {
-  self.inner().rev_fold(init~, f)
+  self.0.rev_fold(init~, f)
 }
 
 ///|
 /// @coverage.skip
 pub fn[A] Seq::get(self : Seq[A], idx : Int) -> A? {
-  self.inner().get(idx)
+  self.0.get(idx)
 }
 
 ///|
 /// @coverage.skip
 pub fn[A] Seq::op_get(self : Seq[A], idx : Int) -> A {
-  self.inner()[idx]
+  self.0[idx]
 }
 
 ///|
 /// @coverage.skip
 pub fn[A] Seq::op_set(self : Seq[A], idx : Int, val : A) -> Unit {
-  self.inner()[idx] = val
+  self.0[idx] = val
 }
 
 ///|
 /// @coverage.skip
 pub fn[A] Seq::is_empty(self : Seq[A]) -> Bool {
-  self.inner().is_empty()
+  self.0.is_empty()
 }

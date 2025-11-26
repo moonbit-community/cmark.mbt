@@ -16,7 +16,7 @@ pub(all) struct Label {
 /// The type for label keys. These are
 /// [link labels](https://spec.commonmark.org/0.30/#link-label)
 /// normalized for [matches](https://spec.commonmark.org/0.30/#matches).
-pub typealias String as LabelKey
+pub type LabelKey = String
 
 ///|
 pub fn Label::new(
@@ -46,10 +46,10 @@ pub fn Label::compare(self : Label, other : Label) -> Int {
 pub(all) enum LabelDef {
   LinkDef(Node[LinkDefinition])
   FootnoteDef(Node[Footnote])
-} derive(Show, ToJson(style="flat"))
+} derive(Show, ToJson)
 
 ///|
-pub typealias Map[LabelKey, LabelDef] as LabelDefs
+pub type LabelDefs = Map[LabelKey, LabelDef]
 
 ///|
 /// `context` is:

@@ -23,7 +23,7 @@ priv enum Token {
   RightParen(TokenStart)
   StrikethroughMarks(TokenStrikethroughMarks)
   MathSpanMarks(TokenMathSpanMarks)
-} derive(Show, ToJson(style="flat"))
+} derive(Show, ToJson)
 
 ///|
 priv struct TokenStart {
@@ -153,10 +153,8 @@ fn CloserIndex::has_math_span(
 ///|
 fn make_closer_index(toks : Tokens) -> CloserIndex {
   let cidx = CloserIndex::new()
-  guard not(toks.inner().is_empty()) else { cidx }
-  toks
-  .inner()
-  .retain(fn(curr) {
+  guard not(toks.0.is_empty()) else { cidx }
+  toks.0.retain(fn(curr) {
     match curr {
       Backticks({ count, start, .. }) => cidx.add(Backticks(count), start)
       RightBrack({ start }) => cidx.add(RightBrack, start)
@@ -181,14 +179,14 @@ fn make_closer_index(toks : Tokens) -> CloserIndex {
 /// Used to make the text delimitation precise for nested inlines.
 fn tokens_shorten_last_line(to_last~ : Int, toks : Tokens) -> Unit {
   let last = to_last
-  for i = toks.inner().length() - 1; i >= 0; i = i - 1 {
-    match toks.inner()[i] {
+  for i = toks.0.length() - 1; i >= 0; i = i - 1 {
+    match toks.0[i] {
       Newline({ newline, .. } as nl) => {
-        toks.inner()[i] = Newline({ ..nl, newline: { ..newline, last, } })
+        toks.0[i] = Newline({ ..nl, newline: { ..newline, last, } })
         break
       }
       Inline({ endline, .. } as il) => {
-        toks.inner()[i] = Inline({ ..il, endline: { ..endline, last, } })
+        toks.0[i] = Inline({ ..il, endline: { ..endline, last, } })
         break
       }
       _ => ()
@@ -619,7 +617,7 @@ fn Parser::try_code(
   let mut line = { ..start_line, first, }
   let spans = []
   let mut k = first
-  let old_rev_toks = rev_toks.val.inner().copy()
+  let old_rev_toks = rev_toks.val.0.copy()
   for {
     match rev_toks.val.pop() {
       None => break
@@ -665,7 +663,7 @@ fn Parser::try_math_span(
 ) -> (LineSpan, Token)? {
   let cstart = start
   guard self.cidx.has_math_span(count~, after=cstart) else { None }
-  let old_rev_toks = rev_toks.val.inner().copy()
+  let old_rev_toks = rev_toks.val.0.copy()
   let first = cstart + count
   let mut line = { ..start_line, first, }
   let spans = []
@@ -953,7 +951,7 @@ fn Parser::find_link_text_tokens(
   let mut line = start_line
   let mut nest = 0
   let acc : Tokens = @deque.new()
-  let old_rev_toks = rev_toks.val.inner().copy()
+  let old_rev_toks = rev_toks.val.0.copy()
   for {
     match (rev_toks.val.pop(), nest) {
       (Some(RightBrack({ start: last })), 0) => {
@@ -1017,7 +1015,7 @@ fn Parser::try_link_def(
   text : Array[Inline],
 ) -> (LineSpan, Token, Bool)? {
   let next = text_last + 1
-  let old_rev_toks = start_rev_toks.val.inner().copy()
+  let old_rev_toks = start_rev_toks.val.0.copy()
   let link = if next > line.last {
     self.try_shortcut_reflink(start_rev_toks, start_line, image~, start~)
   } else {
@@ -1101,7 +1099,7 @@ fn Parser::try_link(
   image~ : Bool,
   start~ : CharCodePos,
 ) -> (LineSpan, Token, Bool)? {
-  let rev_toks : Ref[RevTokens] = Ref::new(start_rev_toks.val.inner().copy())
+  let rev_toks : Ref[RevTokens] = Ref::new(start_rev_toks.val.0.copy())
   guard self.cidx.has_right_brack(after=start) else { return None }
   guard self.find_link_text_tokens( // text_last with ] delim 
       rev_toks,
@@ -1112,7 +1110,7 @@ fn Parser::try_link(
     None
   }
   let (text, had_link) = self.parse_tokens(
-    text_toks.inner(),
+    text_toks.0,
     {
       let first = start + 1 + image.to_int()
       let last = if start_line == line {
@@ -1154,7 +1152,7 @@ fn Parser::first_pass(
   let acc : Tokens = @deque.new()
   let mut had_link = false
   let mut line = line
-  let rev_toks : Ref[RevTokens] = Ref::new(toks.val.inner())
+  let rev_toks : Ref[RevTokens] = Ref::new(toks.val.0)
   while rev_toks.val.pop() is Some(t) {
     match t {
       Backticks({ start, count, escaped }) =>
@@ -1254,8 +1252,8 @@ fn Parser::find_emphasis_text(
       Some(t) => acc.push(t)
     }
   }
-  for i = acc.inner().length() - 1; i >= 0; i = i - 1 {
-    rev_toks.val.push(acc.inner()[i])
+  for i = acc.0.length() - 1; i >= 0; i = i - 1 {
+    rev_toks.val.push(acc.0[i])
   }
   None
 }
@@ -1341,8 +1339,8 @@ fn Parser::find_strikethrough_text(
       Some(t) => acc.push(t)
     }
   }
-  for i = acc.inner().length() - 1; i >= 0; i = i - 1 {
-    rev_toks.val.push(acc.inner()[i])
+  for i = acc.0.length() - 1; i >= 0; i = i - 1 {
+    rev_toks.val.push(acc.0[i])
   }
   None
 }
@@ -1394,7 +1392,7 @@ fn Parser::second_pass(
   toks : Ref[Tokens],
   line : LineSpan,
 ) -> Unit {
-  let rev_toks : Ref[RevTokens] = Ref::new(toks.val.inner())
+  let rev_toks : Ref[RevTokens] = Ref::new(toks.val.0)
   let acc : Tokens = @deque.new()
   toks.val = acc
   let mut line = line
@@ -1434,7 +1432,7 @@ fn Parser::last_pass(
   let acc = []
   let mut line = line
   let mut k = line.first
-  for tok in toks.inner() {
+  for tok in toks.0 {
     match tok {
       Newline({ start, break_ty, newline }) => {
         self.try_add_text_inline(line, first=k, last=start - 1, acc)
@@ -1598,7 +1596,7 @@ fn Parser::start_col(
 priv enum StartColResult {
   Col((Inline, TableCellLayout), CharCodePos)
   Start(String, Array[Inline])
-} derive(Show, ToJson(style="flat"))
+} derive(Show, ToJson)
 
 ///|
 test {
@@ -1617,15 +1615,15 @@ fn Parser::finish_col(
   k : CharCodePos,
 ) -> ((Inline, TableCellLayout), CharCodePos) {
   for k = k {
-    if toks.inner().is_empty() {
+    if toks.0.is_empty() {
       guard self.find_pipe(line, before=line.last + 1, k)
         is Ok((text, after, k))
       is_.push_iter(text.iter())
       break ((self.make_col(is_), (blanks_before, after)), k)
     }
-    guard toks.inner().front() is Some(Inline({ start, inline, next, .. }))
+    guard toks.0.front() is Some(Inline({ start, inline, next, .. }))
     if k >= start {
-      toks.inner().unsafe_pop_front()
+      toks.0.unsafe_pop_front()
       is_.push(inline)
       continue k
     }
@@ -1633,7 +1631,7 @@ fn Parser::finish_col(
       Err(text) => {
         is_.push(text)
         is_.push(inline)
-        toks.inner().unsafe_pop_front()
+        toks.0.unsafe_pop_front()
         continue next
       }
       Ok((text, after, k)) => {
@@ -1653,20 +1651,20 @@ fn Parser::parse_cols(
   k : CharCodePos,
 ) -> Unit {
   for k = k {
-    if toks.inner().is_empty() {
+    if toks.0.is_empty() {
       guard k <= line.last else { break }
       guard self.start_col(line, before=line.last + 1, k) is Col(col, k)
       acc.push(col)
       continue k
     }
-    guard toks.inner().front() is Some(Inline({ start, inline, next, .. }))
+    guard toks.0.front() is Some(Inline({ start, inline, next, .. }))
     match self.start_col(line, before=start, k) {
       Col(col, k) => {
         acc.push(col)
         continue k
       }
       Start(before, is_) => {
-        toks.inner().unsafe_pop_front()
+        toks.0.unsafe_pop_front()
         is_.push(inline)
         let (col, k) = self.finish_col(line, before, is_, toks, next)
         acc.push(col)

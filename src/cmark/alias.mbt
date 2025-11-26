@@ -1,44 +1,41 @@
 ///|
-typealias StringBuilder as Buffer
+using @cmark_base {type Indent}
 
 ///|
-typealias @cmark_base.Indent
+using @cmark_base {type Meta}
 
 ///|
-typealias @cmark_base.Meta
+using @cmark_base {type TextLoc}
 
 ///|
-typealias @cmark_base.TextLoc
+using @cmark_base {type LinePos}
 
 ///|
-typealias @cmark_base.LinePos
+using @cmark_base {type CharCodePos}
 
 ///|
-typealias @cmark_base.CharCodePos
-
-///|
-typealias @cmark_base.FilePath
+using @cmark_base {type FilePath}
 
 ///|
 let file_path_none = @cmark_base.file_path_none
 
 ///|
-typealias @cmark_base.Span
+using @cmark_base {type Span}
 
 ///|
-typealias @cmark_base.LineSpan
+using @cmark_base {type LineSpan}
 
 ///|
 priv struct Tokens(@deque.Deque[Token])
 
 ///|
 impl Show for Tokens with output(self, logger) {
-  logger.write_object(self.inner())
+  logger.write_object(self.0)
 }
 
 ///|
 impl ToJson for Tokens with to_json(self) {
-  Json::array(Array::from_iter(self.inner().iter().map(ToJson::to_json)))
+  Json::array(Array::from_iter(self.0.iter().map(ToJson::to_json)))
 }
 
 ///|
@@ -50,7 +47,7 @@ test {
 
 ///|
 fn Tokens::push(self : Tokens, t : Token) -> Unit {
-  self.inner().push_back(t)
+  self.0.push_back(t)
 }
 
 // fn Tokens::pop(self : Tokens) -> Token? {
@@ -62,12 +59,12 @@ priv struct RevTokens(@deque.Deque[Token])
 
 ///|
 impl Show for RevTokens with output(self, logger) {
-  logger.write_object(self.inner())
+  logger.write_object(self.0)
 }
 
 ///|
 impl ToJson for RevTokens with to_json(self) {
-  Json::array(Array::from_iter(self.inner().iter().map(ToJson::to_json)))
+  Json::array(Array::from_iter(self.0.iter().map(ToJson::to_json)))
 }
 
 ///|
@@ -79,25 +76,25 @@ test {
 
 ///|
 fn RevTokens::push(self : RevTokens, t : Token) -> Unit {
-  self.inner().push_front(t)
+  self.0.push_front(t)
 }
 
 ///|
 fn RevTokens::pop(self : RevTokens) -> Token? {
-  self.inner().pop_front()
+  self.0.pop_front()
 }
 
 ///|
-typealias @cmark_base.HeadingLevel
+using @cmark_base {type HeadingLevel}
 
 ///|
-typealias @cmark_base.NextLineFn
+using @cmark_base {type NextLineFn}
 
 ///|
-typealias @cmark_base.HtmlBlockEndCond
+using @cmark_base {type HtmlBlockEndCond}
 
 ///|
-typealias @cmark_base.ListType
+using @cmark_base {type ListType}
 
 ///|
-typealias @cmark_base.LineType
+using @cmark_base {type LineType}

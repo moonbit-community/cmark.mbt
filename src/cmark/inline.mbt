@@ -15,7 +15,7 @@ pub(all) enum Inline {
   Text(Node[InlineText])
   ExtStrikethrough(Node[InlineStrikethrough])
   ExtMathSpan(Node[InlineMathSpan])
-} derive(Eq, Show, ToJson(style="flat"))
+} derive(Eq, Show, ToJson)
 
 ///|
 pub fn Inline::empty() -> Inline {
@@ -82,7 +82,7 @@ pub fn Inline::normalize(self : Inline) -> Inline {
     StrongEmphasis({ v: raw, meta }) =>
       StrongEmphasis({ v: { ..raw, inline: raw.inline.normalize() }, meta })
     ExtStrikethrough({ v: raw, meta }) =>
-      ExtStrikethrough({ v: raw.inner().normalize(), meta })
+      ExtStrikethrough({ v: raw.0.normalize(), meta })
     Inlines({ v: Seq([i]), .. }) => i
     Inlines({ v: Seq([i, .. is_]), meta }) => {
       let acc = [i.normalize()]
@@ -91,7 +91,7 @@ pub fn Inline::normalize(self : Inline) -> Inline {
         guard is_.pop() is Some(curr) else { break }
         match curr {
           Inlines({ v: is1, .. }) =>
-            for i1 in is1.inner().rev() {
+            for i1 in is1.0.rev() {
               is_.push(i1)
             }
           Text({ v: t1, meta: meta1 }) as i1 =>
@@ -124,8 +124,8 @@ pub fn Inline::to_plain_text(
   break_on_soft~ : Bool,
 ) -> Seq[Seq[String]] {
   let acc = Seq::from_array([Seq::empty()])
-  let push = fn(s) { acc[acc.length() - 1].inner().push(s) }
-  let newline = fn() { acc.inner().push([]) }
+  let push = fn(s) { acc[acc.length() - 1].0.push(s) }
+  let newline = fn() { acc.0.push([]) }
   let st = [self]
   for {
     guard st.pop() is Some(curr) else { break }
@@ -142,13 +142,13 @@ pub fn Inline::to_plain_text(
       Emphasis({ v: { inline, .. }, .. })
       | StrongEmphasis({ v: { inline, .. }, .. }) => st.push(inline)
       Inlines({ v: is1, .. }) =>
-        for i in is1.inner().rev() {
+        for i in is1.0.rev() {
           st.push(i)
         }
       Link(l) => st.push(l.v.text)
       RawHtml(_) => ()
       Text(t) => push(t.v)
-      ExtStrikethrough(i) => st.push(i.v.inner())
+      ExtStrikethrough(i) => st.push(i.v.0)
       ExtMathSpan(m) => push(m.v.tex())
       i => st.push(i)
     }
@@ -159,10 +159,10 @@ pub fn Inline::to_plain_text(
 ///|
 pub fn Inline::id(
   self : Inline,
-  buf? : Buffer = Buffer::new(size_hint=256),
+  buf? : StringBuilder = StringBuilder::new(size_hint=256),
 ) -> String {
   let text = self.to_plain_text(break_on_soft=false)
-  let s = text.inner().map(fn(l) { l.inner().join("") }).join("\n")
+  let s = text.0.map(fn(l) { l.0.join("") }).join("\n")
   // Collapses non initial white 
   let collapse_blanks = fn(prev) {
     if @char.is_ascii_blank(prev) && not(buf.is_empty()) {
@@ -222,7 +222,7 @@ pub(all) struct InlineAutolink {
 ///|
 pub fn InlineAutolink::new(link : StringNode) -> InlineAutolink {
   let raw_link = "<{$link.raw}>"
-  { is_email: not(@cmark_base.autolink_email(raw_link).is_empty()), link }
+  { is_email: not(@cmark_base.autolink_email(raw_link) is None), link }
 }
 
 ///|
@@ -245,7 +245,7 @@ pub fn InlineBreak::new(
 pub(all) enum InlineBreakType {
   Hard
   Soft
-} derive(Eq, Compare, Show, FromJson(style="flat"), ToJson(style="flat"))
+} derive(Eq, Compare, Show, FromJson, ToJson)
 
 ///|
 /// The type for [code spans](https://spec.commonmark.org/0.30/#code-spans).
@@ -333,7 +333,7 @@ pub fn InlineCodeSpan::code(self : InlineCodeSpan) -> String {
   let s = self.code_layout.iter().map(Tight::to_string).to_array().join(" ")
   guard s != "" else { "" }
   if s is [' ', .. mid, ' '] && not(mid.iter().all(fn(it) { it == ' ' })) {
-    return s.substring(start=1, end=s.length() - 1)
+    return s[1:s.length() - 1].to_string() catch { _ => panic() }
   }
   s
 }
@@ -367,7 +367,7 @@ pub(all) enum ReferenceKind {
   /// https://spec.commonmark.org/0.30/#reference-link
   /// First label is the label of the reference, second label is the label of the referenced definition.
   Ref(ReferenceLayout, Label, Label)
-} derive(Eq, Show, ToJson(style="flat"))
+} derive(Eq, Show, ToJson)
 
 ///|
 /// The type for reference link layouts.
@@ -378,7 +378,7 @@ pub(all) enum ReferenceLayout {
   Full
   /// https://spec.commonmark.org/0.30/#shortcut-reference-link
   Shortcut
-} derive(Eq, Show, FromJson(style="flat"), ToJson(style="flat"))
+} derive(Eq, Show, FromJson, ToJson)
 
 ///|
 pub fn InlineLink::new(text : Inline, reference : ReferenceKind) -> InlineLink {
@@ -431,7 +431,7 @@ pub fn InlineLink::is_unsafe(l : String) -> Bool {
       None => j
     }
     let allowed = ["image/gif", "image/png", "image/jpeg", "image/webp"]
-    allowed.contains(l.substring(start=5, end=@cmp.minimum(j, k)))
+    allowed.contains(l[5:@cmp.minimum(j, k)].to_string() catch { _ => panic() })
   }
   let lower = @casefold.casefold(l)
   lower.has_prefix("javascript:") ||
@@ -450,7 +450,7 @@ pub(all) struct InlineRawHtml(Seq[Tight]) derive(Eq, Show, ToJson)
 /// Normally these strings should not contain newlines. This can
 /// however happen if the source had newlines as
 /// [character references](https://spec.commonmark.org/0.30/#entity-and-numeric-character-references).
-pub typealias String as InlineText
+pub type InlineText = String
 
 // Extensions
 
@@ -465,5 +465,5 @@ pub(all) struct InlineMathSpan {
 
 ///|
 pub fn InlineMathSpan::tex(self : Self) -> String {
-  self.tex_layout.inner().map(Tight::to_string).join(" ")
+  self.tex_layout.0.map(Tight::to_string).join(" ")
 }

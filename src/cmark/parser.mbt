@@ -5,7 +5,7 @@ priv struct Parser {
   /// Input string.
   i : String
   /// Scratch buffer.
-  buf : Buffer
+  buf : StringBuilder
   /// Whether extensions are enabled.
   exts : Bool
   /// Don't compute locations.
@@ -48,7 +48,7 @@ fn Parser::new(
   {
     file,
     i,
-    buf: Buffer::new(size_hint=512),
+    buf: StringBuilder::new(size_hint=512),
     no_locs: not(locs),
     no_layouts: not(layout),
     exts: not(strict),

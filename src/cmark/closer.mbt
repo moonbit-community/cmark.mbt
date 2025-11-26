@@ -12,7 +12,7 @@ priv enum Closer {
   EmphasisMarks(Char)
   StrikethroughMarks
   MathSpanMarks(Int)
-} derive(Eq, Hash, Show, ToJson(style="flat"))
+} derive(Eq, Hash, Show, ToJson)
 
 ///|
 test {
@@ -22,7 +22,7 @@ test {
 }
 
 ///|
-typealias Set[Int] as PosSet
+type PosSet = Set[Int]
 
 ///|
 priv struct CloserIndex(Map[Closer, PosSet]) derive(Show, ToJson)
@@ -41,11 +41,11 @@ fn CloserIndex::new() -> CloserIndex {
 
 ///|
 fn CloserIndex::add(self : CloserIndex, key : Closer, pos : Int) -> Unit {
-  (match self.inner().get(key) {
+  (match self.0.get(key) {
     Some(ps) => ps
     None => {
       let ps = PosSet::new()
-      self.inner()[key] = ps
+      self.0[key] = ps
       ps
     }
   }).add(pos)
@@ -53,13 +53,10 @@ fn CloserIndex::add(self : CloserIndex, key : Closer, pos : Int) -> Unit {
 
 ///|
 fn CloserIndex::pos(self : CloserIndex, key : Closer, after~ : Int) -> Int? {
-  self
-  .inner()
-  .get(key)
-  .bind(fn(s) { s.iter().find_first(fn(pos) { pos > after }) })
+  self.0.get(key).bind(fn(s) { s.iter().find_first(fn(pos) { pos > after }) })
 }
 
 ///|
 fn CloserIndex::exists(self : CloserIndex, key : Closer, after~ : Int) -> Bool {
-  not(self.pos(key, after~).is_empty())
+  not(self.pos(key, after~) is None)
 }
