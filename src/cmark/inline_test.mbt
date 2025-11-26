@@ -1,6 +1,6 @@
 ///|
 test "InlineAutolink::new with link" {
-  let meta = @rami3l/cmark/cmark_base.Meta::none()
+  let meta = @cmark_base.Meta::none()
   let link = @cmark.Node::new("example.com", meta~)
   let autolink = @cmark.InlineAutolink::new(link)
   inspect(autolink.is_email, content="false")
@@ -9,7 +9,7 @@ test "InlineAutolink::new with link" {
 
 ///|
 test "Inline::is_empty checks if inline content is empty" {
-  let meta = @rami3l/cmark/cmark_base.Meta::none()
+  let meta = @cmark_base.Meta::none()
 
   // Test empty inlines list
   let empty_inlines = @cmark.Inline::Inlines({ v: @cmark.Seq::empty(), meta })
@@ -187,10 +187,7 @@ test "Inline::normalize with Link type" {
 
   // Create a link with text inside
   let text = @cmark.Inline::Text(@cmark.Node::new("link text", meta~))
-  let link_def = @cmark.Node::new(
-    @rami3l/cmark/cmark.LinkDefinition::new(),
-    meta~,
-  )
+  let link_def = @cmark.Node::new(@cmark.LinkDefinition::new(), meta~)
   let reference = @cmark.ReferenceKind::Inline(link_def)
   let link = @cmark.Inline::Link(@cmark.Node::new({ text, reference }, meta~))
 
@@ -228,10 +225,7 @@ test "Inline::normalize with nested structures" {
 
   // Test with Image type
   let text = @cmark.Inline::Text(@cmark.Node::new("alt text", meta~))
-  let link_def = @cmark.Node::new(
-    @rami3l/cmark/cmark.LinkDefinition::new(),
-    meta~,
-  )
+  let link_def = @cmark.Node::new(@cmark.LinkDefinition::new(), meta~)
   let reference = @cmark.ReferenceKind::Inline(link_def)
   let link = @cmark.InlineLink::new(text, reference)
   let image = @cmark.Inline::Image(@cmark.Node::new(link, meta~))

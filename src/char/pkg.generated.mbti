@@ -1,5 +1,5 @@
 // Generated using `moon info`, DON'T EDIT IT
-package "rami3l/cmark/char"
+package "moonbit-community/cmark/char"
 
 // Values
 fn ascii_digit_to_int(Char) -> Int

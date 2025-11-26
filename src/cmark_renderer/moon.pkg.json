@@ -1,5 +1,5 @@
 {
   "import": [
-    "rami3l/cmark/cmark"
+    "moonbit-community/cmark/cmark"
   ]
 }
