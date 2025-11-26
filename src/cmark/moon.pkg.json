@@ -2,8 +2,8 @@
   "import": [
     "myfreess/casefold",
     "myfreess/charclass/unicode",
-    "rami3l/cmark/char",
-    "rami3l/cmark/cmark_base"
+    "moonbit-community/cmark/char",
+    "moonbit-community/cmark/cmark_base"
   ],
   "pre-build": [
     {

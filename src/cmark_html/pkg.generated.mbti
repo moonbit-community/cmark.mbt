@@ -1,9 +1,9 @@
 // Generated using `moon info`, DON'T EDIT IT
-package "rami3l/cmark/cmark_html"
+package "moonbit-community/cmark/cmark_html"
 
 import(
-  "rami3l/cmark/cmark"
-  "rami3l/cmark/cmark_renderer"
+  "moonbit-community/cmark/cmark"
+  "moonbit-community/cmark/cmark_renderer"
 )
 
 // Values

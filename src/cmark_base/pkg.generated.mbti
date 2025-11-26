@@ -1,5 +1,5 @@
 // Generated using `moon info`, DON'T EDIT IT
-package "rami3l/cmark/cmark_base"
+package "moonbit-community/cmark/cmark_base"
 
 import(
   "moonbitlang/core/json"

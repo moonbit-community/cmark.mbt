@@ -1,9 +1,9 @@
 {
   "import": [
-    "rami3l/cmark/char",
-    "rami3l/cmark/cmark_base",
-    "rami3l/cmark/cmark",
-    "rami3l/cmark/cmark_renderer"
+    "moonbit-community/cmark/char",
+    "moonbit-community/cmark/cmark_base",
+    "moonbit-community/cmark/cmark",
+    "moonbit-community/cmark/cmark_renderer"
   ],
   "pre-build": [
     {

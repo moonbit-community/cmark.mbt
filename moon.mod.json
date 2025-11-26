@@ -1,5 +1,5 @@
 {
-  "name": "rami3l/cmark",
+  "name": "moonbit-community/cmark",
   "version": "0.4.0",
   "deps": {
     "myfreess/casefold": "0.1.3",
