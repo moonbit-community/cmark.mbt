@@ -1,8 +1,8 @@
 {
-  "name": "rami3l/cmarkwrap",
+  "name": "moonbit-community/cmarkwrap",
   "version": "0.1.0",
   "deps": {
-    "rami3l/cmark": {
+    "moonbit-community/cmark": {
       "path": "../"
     },
     "moonbitlang/x": "0.4.31"

@@ -1,6 +1,6 @@
 {
   "is-main": true,
-  "import": ["moonbitlang/x/fs", "rami3l/cmarkwrap/lib"],
+  "import": ["moonbitlang/x/fs", "moonbit-community/cmarkwrap/lib"],
   "targets": {
     "ident_wasm.mbt": ["wasm"],
     "ident_wasm_gc.mbt": ["wasm-gc"],

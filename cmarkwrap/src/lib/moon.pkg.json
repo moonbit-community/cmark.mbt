@@ -1,6 +1,6 @@
 {
   "import": [
-    "rami3l/cmark/cmark_html"
+    "moonbit-community/cmark/cmark_html"
   ],
   "link": {
     "wasm": {
