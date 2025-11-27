@@ -33,10 +33,9 @@ jobs:
           MOONC_INTERNAL_PARAMS: "allocator = tlsf-mbt |"
         run: |
           moon update
+          cd cmarkwrap
           for t in js wasm wasm-gc native; do
-            moon -C=cmarkwrap run --target=$t --release \
-              cmarkwrap/src/main/main.mbt \
-              | tee -a bench-output.txt
+            moon run --target $t --release src/main/ | tee -a ../bench-output.txt
           done
 
       - name: Store benchmark result

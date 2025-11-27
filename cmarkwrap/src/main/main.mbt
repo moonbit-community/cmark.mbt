@@ -1,6 +1,6 @@
 ///|
 fn main {
-  let doc : String = try! @fs.read_file_to_string("./src/data/test/spec.md")
+  let doc : String = try! @fs.read_file_to_string("./../src/data/test/spec.md")
   let count = 5
   let cases = Map::new()
   cases
