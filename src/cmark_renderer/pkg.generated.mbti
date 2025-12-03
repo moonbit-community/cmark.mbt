@@ -9,12 +9,12 @@ import(
 
 // Errors
 pub(all) suberror RenderError String
-impl Show for RenderError
+pub impl Show for RenderError
 
 // Types and methods
 pub(all) struct BlockFn((Context, @cmark.Block) -> Bool raise)
 #deprecated
-fn BlockFn::inner(Self) -> (Context, @cmark.Block) -> Bool raise
+pub fn BlockFn::inner(Self) -> (Context, @cmark.Block) -> Bool raise
 
 pub(all) struct Context {
   renderer : Renderer
@@ -22,25 +22,25 @@ pub(all) struct Context {
   b : StringBuilder
   mut doc : @cmark.Doc
 }
-fn Context::block(Self, @cmark.Block) -> Unit raise
-fn Context::char(Self, Char) -> Unit
-fn Context::doc(Self, @cmark.Doc) -> Unit raise
-fn Context::init(Self, @cmark.Doc) -> Unit
-fn Context::inline(Self, @cmark.Inline) -> Unit raise
-fn Context::new(Renderer, StringBuilder) -> Self
-fn Context::string(Self, String) -> Unit
+pub fn Context::block(Self, @cmark.Block) -> Unit raise
+pub fn Context::char(Self, Char) -> Unit
+pub fn Context::doc(Self, @cmark.Doc) -> Unit raise
+pub fn Context::init(Self, @cmark.Doc) -> Unit
+pub fn Context::inline(Self, @cmark.Inline) -> Unit raise
+pub fn Context::new(Renderer, StringBuilder) -> Self
+pub fn Context::string(Self, String) -> Unit
 
 pub(all) struct DocFn((Context, @cmark.Doc) -> Bool raise)
 #deprecated
-fn DocFn::inner(Self) -> (Context, @cmark.Doc) -> Bool raise
+pub fn DocFn::inner(Self) -> (Context, @cmark.Doc) -> Bool raise
 
 pub(all) struct InitContextFn((Context, @cmark.Doc) -> Unit)
 #deprecated
-fn InitContextFn::inner(Self) -> (Context, @cmark.Doc) -> Unit
+pub fn InitContextFn::inner(Self) -> (Context, @cmark.Doc) -> Unit
 
 pub(all) struct InlineFn((Context, @cmark.Inline) -> Bool raise)
 #deprecated
-fn InlineFn::inner(Self) -> (Context, @cmark.Inline) -> Bool raise
+pub fn InlineFn::inner(Self) -> (Context, @cmark.Inline) -> Bool raise
 
 pub(all) struct Renderer {
   init_context : InitContextFn
@@ -48,10 +48,10 @@ pub(all) struct Renderer {
   block : BlockFn
   doc : DocFn
 }
-fn Renderer::buffer_add_doc(Self, StringBuilder, @cmark.Doc) -> Unit raise
-fn Renderer::compose(Self, Self) -> Self
-fn Renderer::doc_to_string(Self, @cmark.Doc) -> String raise
-fn Renderer::new(init_context? : InitContextFn, inline? : InlineFn, block? : BlockFn, doc? : DocFn) -> Self
+pub fn Renderer::buffer_add_doc(Self, StringBuilder, @cmark.Doc) -> Unit raise
+pub fn Renderer::compose(Self, Self) -> Self
+pub fn Renderer::doc_to_string(Self, @cmark.Doc) -> String raise
+pub fn Renderer::new(init_context? : InitContextFn, inline? : InlineFn, block? : BlockFn, doc? : DocFn) -> Self
 
 // Type aliases
 

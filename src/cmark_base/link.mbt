@@ -14,14 +14,14 @@ pub fn link_destination(
   if start > last {
     return None
   }
-  if s[start] == '<'.to_int() {
+  if s.code_unit_at(start) == '<' {
     // delimited, i.e. start has '<'
     // https://spec.commonmark.org/current/#link-destination 1st
     for prev = '\u{0}', k = start + 1 {
       if k > last {
         break None
       }
-      let c = Int::unsafe_to_char(s[k])
+      let c = s.code_unit_at(k).unsafe_to_char()
       match (c, prev) {
         ('\n' | '\r', _) => break None
         ('\\', '\\') => continue '\u{0}', k + 1
@@ -40,7 +40,7 @@ pub fn link_destination(
       if k > last {
         break if bal == 0 { Some((false, start, k - 1)) } else { None }
       }
-      let c = Int::unsafe_to_char(s[k])
+      let c = s.code_unit_at(k).unsafe_to_char()
       match (c, prev) {
         ('\\', '\\') => continue '\u{0}', bal, k + 1
         ('(', '\\') => ()
@@ -84,7 +84,7 @@ pub fn[A] link_title(
   if start > line.last {
     return None
   }
-  match s[start].unsafe_to_char() {
+  match s.code_unit_at(start).unsafe_to_char() {
     '"' | '\'' as char => {
       let spans = []
       accept_upto(char~, next_line~, s, lines, line~, spans, after=start).map(span_last => (
@@ -106,15 +106,15 @@ pub fn[A] link_title(
           continue newline, prev_bslash, start, start
         }
         if not(prev_bslash) {
-          if s[k] == '(' {
+          if s.code_unit_at(k) == '(' {
             break None
           }
-          if s[k] == ')' {
+          if s.code_unit_at(k) == ')' {
             push_span(line~, start, k - 1, acc)
             break Some((line, acc, k))
           }
         }
-        let prev_bslash = s[k] == '\\' && not(prev_bslash)
+        let prev_bslash = s.code_unit_at(k) == '\\' && not(prev_bslash)
         continue line, prev_bslash, start, k + 1
       }
     }
@@ -136,7 +136,7 @@ pub fn[A] link_label(
   line~ : LineSpan,
   start~ : CharCodePos,
 ) -> (LineSpan, Array[Span], Last, String)? {
-  if start > line.last || s[start] != '[' {
+  if start > line.last || s.code_unit_at(start) != '[' {
     return None
   }
   let start = start + 1
@@ -160,7 +160,7 @@ pub fn[A] link_label(
     if count > 999 {
       break None
     }
-    match (s[k].unsafe_to_char(), prev) {
+    match (s.code_unit_at(k).unsafe_to_char(), prev) {
       ('\\', '\\') => {
         b.write_char('\\')
         let prev = '\u{0}'
@@ -190,7 +190,7 @@ pub fn[A] link_label(
     }
     let k1 = k + @char.length_utf8(u.to_int())
     b.write_char(@char.to_ascii_lower(u))
-    let prev = s[k].unsafe_to_char()
+    let prev = s.code_unit_at(k).unsafe_to_char()
     continue line, prev, start, count + 1, k1
   }
 }
