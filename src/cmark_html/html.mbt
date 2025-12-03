@@ -172,7 +172,7 @@ fn buffer_add_html_escaped_string(b : StringBuilder, s : String) -> Unit {
   let max_idx = len - 1
   fn flush(b : StringBuilder, start : Int, i : Int) {
     if start < len {
-      b.write_substring(s, start, i - start)
+      b.write_view(s[start:i] catch { _ => panic() })
     }
   }
 
@@ -182,7 +182,7 @@ fn buffer_add_html_escaped_string(b : StringBuilder, s : String) -> Unit {
       break
     }
     let next = i + 1
-    match s[i] {
+    match s.code_unit_at(i) {
       '\u{0}' => {
         flush(b, start, i)
         b.write_char(@char.rep)
@@ -255,7 +255,7 @@ fn buffer_add_pct_encoded_string(b : StringBuilder, s : String) -> Unit { // Per
 
   let flush = fn(b : StringBuilder, max : Int, start : Int, i : Int) -> Unit {
     if start <= max {
-      b.write_substring(s, start, i - start)
+      b.write_view(s[start:i] catch { _ => panic() })
     }
   }
   let max = s.length() - 1
@@ -265,7 +265,7 @@ fn buffer_add_pct_encoded_string(b : StringBuilder, s : String) -> Unit { // Per
       break
     }
     let next = i + 1
-    match s[i] {
+    match s.code_unit_at(i) {
       c if c.to_char() is Some(c) && (@char.is_ascii_alphanum(c) || is_delim(c)) =>
         continue start, next
       '&' => {
@@ -280,8 +280,9 @@ fn buffer_add_pct_encoded_string(b : StringBuilder, s : String) -> Unit { // Per
       }
       c => {
         flush(b, max, start, i)
-        let hi = (c >> 4) & 0xF
-        let lo = c & 0xF
+        let c_int = c.to_int()
+        let hi = (c_int >> 4) & 0xF
+        let lo = c_int & 0xF
         b.write_char('%')
         b.write_char(unsafe_hexdigit(hi))
         b.write_char(unsafe_hexdigit(lo))
@@ -559,7 +560,7 @@ fn code_block(c : Context, cb : @cmark.CodeBlock) -> Unit {
     c.b.write_char('\n')
   }
   if lang is Some((lang, _env)) {
-    if backend_blocks(c) && lang[0] == '=' {
+    if backend_blocks(c) && lang.code_unit_at(0) == '=' {
       if lang == "=html" && not(safe(c)) {
         block_lines(c, cb.code.to_array())
       }
