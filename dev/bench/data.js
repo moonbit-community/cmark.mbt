@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1764742341947,
+  "lastUpdate": 1764918029042,
   "repoUrl": "https://github.com/moonbit-community/cmark.mbt",
   "entries": {
     "Benchmark.js Benchmark": [
@@ -9580,6 +9580,86 @@ window.BENCHMARK_DATA = {
             "name": "cmarkNative(spec * 200)",
             "value": 0.49,
             "range": "±7.04%",
+            "unit": "ops/sec",
+            "extra": "5 samples"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "yezihang@idea.edu.cn",
+            "name": "zihang",
+            "username": "peter-jerry-ye"
+          },
+          "committer": {
+            "email": "jerryzihye@outlook.com",
+            "name": "Zihang Ye",
+            "username": "peter-jerry-ye"
+          },
+          "distinct": true,
+          "id": "5fac4fcb5a05dd9978d6c3a3174dc9704b784eca",
+          "message": "Fix deprecation warnings for string indexing\n\n- Replace s[idx] with s.code_unit_at(idx) which returns UInt16\n- Replace @string.View with StringView\n- Replace write_substring with write_view\n- Handle type conversions for UInt16 comparisons\n- Fix rev_inplace() to rev_in_place()\n\nThis addresses the deprecation warnings from the MoonBit standard library\nupdate where string indexing now returns UInt16 instead of Int.\n\nCo-authored-by: openhands <openhands@all-hands.dev>",
+          "timestamp": "2025-12-05T14:57:40+08:00",
+          "tree_id": "2287483fdc8674b73533a75e6c9388635e8885eb",
+          "url": "https://github.com/moonbit-community/cmark.mbt/commit/5fac4fcb5a05dd9978d6c3a3174dc9704b784eca"
+        },
+        "date": 1764918028135,
+        "tool": "benchmarkjs",
+        "benches": [
+          {
+            "name": "cmarkJS(spec * 100)",
+            "value": 0.5,
+            "range": "±21.55%",
+            "unit": "ops/sec",
+            "extra": "5 samples"
+          },
+          {
+            "name": "cmarkJS(spec * 200)",
+            "value": 0.24,
+            "range": "±47.68%",
+            "unit": "ops/sec",
+            "extra": "5 samples"
+          },
+          {
+            "name": "cmarkWASM1(spec * 100)",
+            "value": 0.51,
+            "range": "±0.90%",
+            "unit": "ops/sec",
+            "extra": "5 samples"
+          },
+          {
+            "name": "cmarkWASM1(spec * 200)",
+            "value": 0.26,
+            "range": "±1.11%",
+            "unit": "ops/sec",
+            "extra": "5 samples"
+          },
+          {
+            "name": "cmarkWASM(spec * 100)",
+            "value": 0.88,
+            "range": "±6.19%",
+            "unit": "ops/sec",
+            "extra": "5 samples"
+          },
+          {
+            "name": "cmarkWASM(spec * 200)",
+            "value": 0.43,
+            "range": "±2.67%",
+            "unit": "ops/sec",
+            "extra": "5 samples"
+          },
+          {
+            "name": "cmarkNative(spec * 100)",
+            "value": 1.03,
+            "range": "±1.29%",
+            "unit": "ops/sec",
+            "extra": "5 samples"
+          },
+          {
+            "name": "cmarkNative(spec * 200)",
+            "value": 0.49,
+            "range": "±5.85%",
             "unit": "ops/sec",
             "extra": "5 samples"
           }
