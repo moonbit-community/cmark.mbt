@@ -308,7 +308,7 @@ pub fn InlineCodeSpan::from_string(
       }
       break layout
     }
-    let sk = s[k]
+    let sk = s.code_unit_at(k)
     if sk == '`' {
       continue btc + 1, start, k + 1
     }
@@ -317,7 +317,7 @@ pub fn InlineCodeSpan::from_string(
     }
     guard sk is ('\n' | '\r') else { continue 0, start, k + 1 }
     BlockLine::flush_tight(meta~, s, start, k - 1, acc)
-    let start = if k + 1 <= max && sk == '\r' && s[k + 1] == '\n' {
+    let start = if k + 1 <= max && sk == '\r' && s.code_unit_at(k + 1) == '\n' {
       k + 2
     } else {
       k + 1

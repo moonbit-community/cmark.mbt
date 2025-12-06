@@ -183,7 +183,8 @@ pub fn CodeBlock::make_fence(self : CodeBlock) -> (Char, Count) {
   for n in self.code {
     let c = n.v
     let mut k = 0
-    while k < c.length() && c[k] == ch.to_int() {
+    while k < c.length() && c.code_unit_at(k) == ch.to_int().to_uint16() {
+      // TODO(upstream): provide UInt16 ~ Char comparison
       k += 1
     }
     if k != 0 {
@@ -472,12 +473,12 @@ fn Table::parse_sep_row(
     (acc, [(Text({ v, meta }), TableCellLayout(("", ""))), .. cs]) => {
       guard not(v.is_empty()) else { None }
       let max = v.length() - 1
-      let first_colon = v[0] == ':'
-      let last_colon = v[max] == ':'
+      let first_colon = v.code_unit_at(0) == ':'
+      let last_colon = v.code_unit_at(max) == ':'
       let first = if first_colon { 1 } else { 0 }
       let last = if last_colon { max - 1 } else { max }
       for i in first..=last {
-        guard v[i] == '-' else { break None }
+        guard v.code_unit_at(i) == '-' else { break None }
       } else {
         let count = last - first + 1
         let sep = match (first_colon, last_colon) {
