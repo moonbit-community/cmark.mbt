@@ -6,7 +6,7 @@ This package provides fundamental CommonMark parsing utilities and data structur
 
 The package includes utilities for tracking text locations in source files:
 
-```moonbit
+```mbt check
 ///|
 test "text location handling" {
   let loc = @cmark_base.TextLoc::{
@@ -32,7 +32,7 @@ test "text location handling" {
 
 The package provides functions for parsing links, URIs and email addresses:
 
-```moonbit
+```mbt check
 ///|
 test "link parsing" {
   let txt = "Visit <https://mooncakes.io/>!"
@@ -46,7 +46,7 @@ test "link parsing" {
 
 The package provides various string analysis functions:
 
-```moonbit
+```mbt check
 ///|
 test "string analysis" {
   let start = 0
@@ -63,7 +63,7 @@ test "string analysis" {
 
 The package provides comprehensive line type detection for different CommonMark elements:
 
-```moonbit
+```mbt check
 ///|
 test "line type detection" {
   let start = 0
@@ -96,7 +96,7 @@ test "line type detection" {
 
 The package provides support for different types of lists:
 
-```moonbit
+```mbt check
 ///|
 test "list types" {
   let unordered = @cmark_base.ListType::Unordered('-')
@@ -112,7 +112,7 @@ test "list types" {
 
 Support for detecting and parsing HTML blocks:
 
-```moonbit
+```mbt check
 ///|
 test "html blocks" {
   let start = 0
@@ -136,7 +136,7 @@ test "html blocks" {
 
 The package includes structures for tracking metadata:
 
-```moonbit
+```mbt check
 ///|
 test "metadata handling" {
   let loc = @cmark_base.TextLoc::{
