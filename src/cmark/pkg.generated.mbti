@@ -475,9 +475,11 @@ pub fn[A] Seq::empty() -> Self[A]
 pub fn[A, B] Seq::fold(Self[A], init~ : B, (B, A) -> B) -> B
 pub fn[A] Seq::from_array(Array[A]) -> Self[A]
 pub fn[A] Seq::from_iter(Iter[A]) -> Self[A]
+pub fn[A] Seq::from_iterator(Iterator[A]) -> Self[A]
 pub fn[A] Seq::get(Self[A], Int) -> A?
 pub fn[A] Seq::is_empty(Self[A]) -> Bool
 pub fn[A] Seq::iter(Self[A]) -> Iter[A]
+pub fn[A] Seq::iterator(Self[A]) -> Iterator[A]
 pub fn[A] Seq::length(Self[A]) -> Int
 pub fn[A, B] Seq::map(Self[A], (A) -> B) -> Self[B]
 pub fn[A] Seq::op_get(Self[A], Int) -> A
