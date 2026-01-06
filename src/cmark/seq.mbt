@@ -20,6 +20,12 @@ pub fn[A] Seq::from_iter(iter : Iter[A]) -> Seq[A] {
 
 ///|
 /// @coverage.skip
+pub fn[A] Seq::from_iterator(iter : Iterator[A]) -> Seq[A] {
+  Array::from_iterator(iter)
+}
+
+///|
+/// @coverage.skip
 pub fn[A] Seq::from_array(arr : Array[A]) -> Seq[A] {
   arr
 }
@@ -34,6 +40,12 @@ pub fn[A] Seq::to_array(self : Seq[A]) -> Array[A] {
 /// @coverage.skip
 pub fn[A] Seq::iter(self : Seq[A]) -> Iter[A] {
   self.0.iter()
+}
+
+///|
+/// @coverage.skip
+pub fn[A] Seq::iterator(self : Seq[A]) -> Iterator[A] {
+  self.0.iterator()
 }
 
 ///|

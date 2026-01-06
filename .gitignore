@@ -4,4 +4,5 @@ target/
 .env
 node_modules/
 _build/
+_build
 target

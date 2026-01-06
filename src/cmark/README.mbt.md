@@ -284,9 +284,9 @@ test "code blocks" {
   let tick3 = "`".repeat(3)
   let input =
     $|\{tick3}moonbit
-    #|fn main {
-    #|  println("Hello")
-    #|}
+    $|fn main {
+    $|  println("Hello")
+    $|}
     $|\{tick3}
   let doc = @cmark.Doc::from_string(input)
   @json.inspect(doc, content={

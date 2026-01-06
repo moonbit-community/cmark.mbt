@@ -48,7 +48,7 @@ type StringSet = Set[String]
 
 ///|
 priv struct Joined[T] {
-  iter : Iter[T]
+  iter : Iterator[T]
   sep : String
 }
 
@@ -391,7 +391,7 @@ fn link_dest_and_title(
       }
   }
   let title = ld.title.map(fn(title) {
-    { iter: title.iter().map(fn(t) { t.node.v }), sep: "\n" }
+    { iter: title.iterator().map(fn(t) { t.node.v }), sep: "\n" }
   })
   (dest, title)
 }
@@ -406,7 +406,7 @@ fn image(c : Context, i : @cmark.InlineLink, close? : String = " >") -> Unit {
       c.b.write_string("\" alt=\"")
       let lines = i.text.to_plain_text(break_on_soft=false)
       for line in lines {
-        let joined = { iter: line.iter(), sep: "\n" }
+        let joined = { iter: line.iterator(), sep: "\n" }
         joined_string(c, joined)
       }
       c.b.write_char('"')
