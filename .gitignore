@@ -4,3 +4,4 @@ target/
 .env
 node_modules/
 _build/
+target
