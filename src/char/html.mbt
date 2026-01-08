@@ -1,4 +1,8 @@
 ///|
 fn html_named_entity(name : String) -> String? {
-  html_named_entities.value(name).bind(Json::as_string)
+  if html_named_entities is Object(m) && m.get(name) is Some(String(v)) {
+    Some(v)
+  } else {
+    None
+  }
 }
