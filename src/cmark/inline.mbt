@@ -188,7 +188,7 @@ pub fn Inline::id(
           u = @char.rep
         }
         let k = k + @char.length_utf16(u.to_int())
-        if @char.is_ascii_punctuation(c) || @unicode.is_punctuation(c) {
+        if @char.is_ascii_punctuation(c) || is_punctuation(c) {
           continue '\u{0}', k
         }
         match @casefold.casefold_char(u) {
