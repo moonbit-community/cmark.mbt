@@ -7,6 +7,10 @@ import(
 )
 
 // Values
+pub fn is_punctuation(Char) -> Bool
+
+pub fn is_whitespace(Char) -> Bool
+
 pub let layout_empty : Node[String]
 
 pub fn layout_of_string(meta? : @cmark_base.Meta, String) -> Node[String]
