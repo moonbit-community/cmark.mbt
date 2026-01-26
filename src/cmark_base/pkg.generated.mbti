@@ -1,9 +1,9 @@
 // Generated using `moon info`, DON'T EDIT IT
 package "moonbit-community/cmark/cmark_base"
 
-import(
-  "moonbitlang/core/json"
-)
+import {
+  "moonbitlang/core/json",
+}
 
 // Values
 pub fn autolink_email(String, last? : Int, start? : Int) -> Int?

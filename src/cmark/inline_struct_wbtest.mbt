@@ -46,7 +46,7 @@ fn tokenize_only(
 
 ///|
 test "should parse entity and numeric char references" {
-  @json.inspect(
+  json_inspect(
     parse_only(
       (
         #|&nbsp; &amp; &copy; &AElig; &Dcaron; &frac34; &HilbertSpace; &DifferentialD; &ClockwiseContourIntegral; &ngE; &#35; &#1234; &#992; &#0; &#X22; &#XD06; &#xcab;
@@ -57,7 +57,7 @@ test "should parse entity and numeric char references" {
       ["Text", ["  & © Æ Ď ¾ ℋ ⅆ ∲ ≧̸ # Ӓ Ϡ � \" ആ ಫ"]],
     ],
   )
-  @json.inspect(
+  json_inspect(
     parse_only(
       (
         #|&nbsp &x; &#; &#x; &#87654321; &#abcdef0; &ThisIsNotDefined; &hi?; &copy &MadeUpEntity;
@@ -77,11 +77,11 @@ test "should parse entity and numeric char references" {
 
 ///|
 test "should parse autolinks" {
-  @json.inspect(parse_only("<http://example.org>"), content=[
+  json_inspect(parse_only("<http://example.org>"), content=[
     [0, ""],
     ["Autolink", [{ "is_email": false, "link": ["http://example.org"] }]],
   ])
-  @json.inspect(parse_only("<you@example.org>"), content=[
+  json_inspect(parse_only("<you@example.org>"), content=[
     [0, ""],
     ["Autolink", [{ "is_email": true, "link": ["you@example.org"] }]],
   ])
@@ -89,7 +89,7 @@ test "should parse autolinks" {
 
 ///|
 test "should parse breaks" {
-  @json.inspect(
+  json_inspect(
     parse_only(
       (
         #|A line ending (not in a code span or HTML tag) that is preceded by two
@@ -129,7 +129,7 @@ test "should parse breaks" {
       ],
     ],
   )
-  @json.inspect(
+  json_inspect(
     parse_only(
       (
         #|So this means we had softbreaks so far and now we get  \
@@ -166,7 +166,7 @@ test "should parse breaks" {
 
 ///|
 test "should tokenize codespans" {
-  @json.inspect(
+  json_inspect(
     tokenize_only(
       (
         #|This is a multi-line code`
@@ -204,7 +204,7 @@ test "should tokenize codespans" {
 
 ///|
 test "should parse codespans on a single line" {
-  @json.inspect(parse_only("Wow, we have `code spans` now!"), content=[
+  json_inspect(parse_only("Wow, we have `code spans` now!"), content=[
     [0, ""],
     [
       "Inlines",
@@ -229,7 +229,7 @@ test "should parse codespans on a single line" {
 
 ///|
 test "should parse codespans across multiple lines" {
-  @json.inspect(
+  json_inspect(
     parse_only(
       (
         #|wow code`
@@ -261,7 +261,7 @@ test "should parse codespans across multiple lines" {
       ],
     ],
   )
-  @json.inspect(
+  json_inspect(
     parse_only(
       (
         #|This is a multi-line code`
@@ -294,7 +294,7 @@ test "should parse codespans across multiple lines" {
       ],
     ],
   )
-  @json.inspect(
+  json_inspect(
     parse_only(
       (
         #|Sometimes code spans `` `can have
@@ -346,29 +346,29 @@ test "should parse codespans across multiple lines" {
 
 ///|
 test "should parse emphases" {
-  @json.inspect(parse_only("*it's just emph*"), content=[
+  json_inspect(parse_only("*it's just emph*"), content=[
     [0, ""],
     ["Emphasis", [{ "delim": "*", "inline": ["Text", ["it's just emph"]] }]],
   ])
-  @json.inspect(parse_only("_and another emph_"), content=[
+  json_inspect(parse_only("_and another emph_"), content=[
     [0, ""],
     ["Emphasis", [{ "delim": "_", "inline": ["Text", ["and another emph"]] }]],
   ])
-  @json.inspect(parse_only("**and strong emph**"), content=[
+  json_inspect(parse_only("**and strong emph**"), content=[
     [0, ""],
     [
       "StrongEmphasis",
       [{ "delim": "*", "inline": ["Text", ["and strong emph"]] }],
     ],
   ])
-  @json.inspect(parse_only("__and another strong emph__"), content=[
+  json_inspect(parse_only("__and another strong emph__"), content=[
     [0, ""],
     [
       "StrongEmphasis",
       [{ "delim": "_", "inline": ["Text", ["and another strong emph"]] }],
     ],
   ])
-  @json.inspect(parse_only("be careful about **embedded * markers**!"), content=[
+  json_inspect(parse_only("be careful about **embedded * markers**!"), content=[
     [0, ""],
     [
       "Inlines",
@@ -384,7 +384,7 @@ test "should parse emphases" {
       ],
     ],
   ])
-  @json.inspect(parse_only("This *is not ** what* you want?"), content=[
+  json_inspect(parse_only("This *is not ** what* you want?"), content=[
     [0, ""],
     [
       "Inlines",
@@ -400,7 +400,7 @@ test "should parse emphases" {
       ],
     ],
   ])
-  @json.inspect(parse_only("**许可证**：GPL-v3.0"), content=[
+  json_inspect(parse_only("**许可证**：GPL-v3.0"), content=[
     [0, ""],
     [
       "Inlines",
@@ -419,7 +419,7 @@ test "should parse emphases" {
 
 ///|
 test "should parse links/images/refs" {
-  @json.inspect(
+  json_inspect(
     parse_only(
       (
         #|[a link](http://example.org)
@@ -453,7 +453,7 @@ test "should parse links/images/refs" {
       ],
     ],
   )
-  @json.inspect(
+  json_inspect(
     parse_only(
       (
         #|![an image](http://example.org)
@@ -487,7 +487,7 @@ test "should parse links/images/refs" {
       ],
     ],
   )
-  @json.inspect(
+  json_inspect(
     parse_only(
       (
         #|[a link](http://example.org "a title")
@@ -522,7 +522,7 @@ test "should parse links/images/refs" {
       ],
     ],
   )
-  @json.inspect(
+  json_inspect(
     parse_only(
       (
         #|![an image](http://example.org "a title")
@@ -557,7 +557,7 @@ test "should parse links/images/refs" {
       ],
     ],
   )
-  @json.inspect(
+  json_inspect(
     parse_only(
       (
         #|This is an ![inline image](
@@ -609,7 +609,7 @@ test "should parse links/images/refs" {
 
 ///|
 test "should tokenize broken links across lines" {
-  @json.inspect(
+  json_inspect(
     tokenize_only(
       (
         #|and the [end
@@ -637,7 +637,7 @@ test "should tokenize broken links across lines" {
 
 ///|
 test "should parse broken links across lines" {
-  @json.inspect(
+  json_inspect(
     parse_only(
       (
         #|and the [end
@@ -665,7 +665,7 @@ test "should parse broken links across lines" {
 
 ///|
 test "should parse raw HTML" {
-  @json.inspect(
+  json_inspect(
     parse_only(
       (
         #|<div><p>Some text</p></div>
@@ -699,7 +699,7 @@ test "should parse raw HTML" {
       ],
     ],
   )
-  @json.inspect(
+  json_inspect(
     parse_only(
       (
         #|foo <a href="\*" />u</a>
@@ -731,7 +731,7 @@ test "should parse raw HTML" {
       ],
     ],
   )
-  @json.inspect(
+  json_inspect(
     parse_only(
       (
         #|Haha <a>a</a><b2
@@ -778,7 +778,7 @@ test "should parse raw HTML" {
 test "should tokenize nested strikethroughs and emphases" {
   let doc =
     #|Nesting the nest ~~*emph2* ~~stroke~~ *emph3 **emph4  ~~strikeagain~~***~~
-  @json.inspect(tokenize_only(doc, strict=false), content=[
+  json_inspect(tokenize_only(doc, strict=false), content=[
     [
       "CloserIndex",
       { "EmphasisMarks('*')": [19, 25, 69], "StrikethroughMarks": [35, 67, 72] },
@@ -865,7 +865,7 @@ test "should tokenize nested strikethroughs and emphases" {
 
 ///|
 test "should parse strikethroughs" {
-  @json.inspect(
+  json_inspect(
     parse_only(
       strict=false,
       (
@@ -954,7 +954,7 @@ test "should parse strikethroughs" {
 
 ///|
 test "should tokenize inline math" {
-  @json.inspect(
+  json_inspect(
     tokenize_only(
       strict=false,
       (
@@ -980,7 +980,7 @@ test "should tokenize inline math" {
 
 ///|
 test "should parse inline math" {
-  @json.inspect(
+  json_inspect(
     parse_only(
       strict=false,
       (

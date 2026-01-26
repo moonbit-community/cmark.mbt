@@ -1,14 +1,16 @@
 // Generated using `moon info`, DON'T EDIT IT
 package "moonbit-community/cmark/cmark_renderer"
 
-import(
-  "moonbit-community/cmark/cmark"
-)
+import {
+  "moonbit-community/cmark/cmark",
+}
 
 // Values
 
 // Errors
-pub(all) suberror RenderError String
+pub(all) suberror RenderError {
+  RenderError(String)
+}
 pub impl Show for RenderError
 
 // Types and methods
