@@ -21,7 +21,7 @@ pub fn first_non_blank(
   last~ : CharCodePos,
   start~ : CharCodePos,
 ) -> CharCodePos {
-  for k in start..=last {
+  for k in start..<=last {
     guard s.code_unit_at(k).to_char() is Some(c) && @char.is_ascii_blank(c) else {
       return k
     }

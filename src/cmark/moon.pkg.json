@@ -3,7 +3,11 @@
     "myfreess/casefold",
     "myfreess/charclass/unicode",
     "moonbit-community/cmark/char",
-    "moonbit-community/cmark/cmark_base"
+    "moonbit-community/cmark/cmark_base",
+    "moonbitlang/core/cmp",
+    "moonbitlang/core/deque",
+    "moonbitlang/core/sorted_set",
+    "moonbitlang/core/json"
   ],
   "pre-build": [
     {

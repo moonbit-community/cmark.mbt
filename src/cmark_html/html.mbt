@@ -41,7 +41,9 @@ impl Compare for HtmlRenderFootnote with compare(self, other) {
 }
 
 ///|
-priv suberror EState State
+priv suberror EState {
+  EState(State)
+}
 
 ///|
 type StringSet = Set[String]
@@ -891,7 +893,7 @@ fn footnotes(c : Context, fs : Map[LabelKey, HtmlRenderFootnote]) -> Unit raise 
     c.block(footnote.block)
     c.b.write_string("<span>")
     let { count: refc, .. } = f
-    for r in 1..=refc {
+    for r in 1..<=refc {
       c.b.write_string("<a href=\"#")
       pct_encoded_string(c, footnote_ref_id(id, r))
       c.b.write_string("\" role=\"doc-backlink\" class=\"fn-label\">↩︎︎")

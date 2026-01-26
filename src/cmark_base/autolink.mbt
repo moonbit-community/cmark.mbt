@@ -33,7 +33,7 @@ pub fn autolink_email(s : String, last? : Int = -1, start? : Int = 0) -> Last? {
   }
 
   guard start <= last || s.code_unit_at(start) == '<' else { None }
-  for k in (start + 1)..=last {
+  for k in (start + 1)..<=last {
     let sk = s.code_unit_at(k).unsafe_to_char()
     if char_is_atext_plus_dot(sk) {
       continue
@@ -61,7 +61,7 @@ pub fn autolink_uri(s : String, last? : Int = -1, start? : Int = 0) -> Last? {
     not(c is ('\u{0}'..='\u{1f}' | '\u{7f}' | '<' | '>' | ' '))
   }
   let rest = fn(s : String, last, k) {
-    for k in k..=last {
+    for k in k..<=last {
       let sk = s.get_char(k).unwrap()
       guard not(char_is_uri(sk)) else { continue }
       break if sk == '>' { Some(k) } else { None }

@@ -1,5 +1,9 @@
 ///|
-pub(all) suberror FolderError String derive(Show)
+pub(all) suberror FolderError {
+  FolderError(String)
+} derive(Show)
 
 ///|
-pub(all) suberror MapperError String derive(Show)
+pub(all) suberror MapperError {
+  MapperError(String)
+} derive(Show)

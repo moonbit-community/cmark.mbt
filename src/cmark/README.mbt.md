@@ -15,7 +15,7 @@ test "basic parsing" {
     #|This is a paragraph.
   let doc = @cmark.Doc::from_string(input)
   // Should contain a heading and a paragraph
-  @json.inspect(doc, content={
+  json_inspect(doc, content={
     "nl": "\n",
     "block": [
       "Blocks",
@@ -66,7 +66,7 @@ test "emphasis and strong emphasis" {
   let input =
     #|_Emphasis_ and **strong emphasis**
   let doc = @cmark.Doc::from_string(input)
-  @json.inspect(doc, content={
+  json_inspect(doc, content={
     "nl": "\n",
     "block": [
       "Paragraph",
@@ -106,7 +106,7 @@ test "inline code and math" {
   let input =
     $|$E = mc^2$ in Python: `E = m * (c ** 2)`
   let doc = @cmark.Doc::from_string(input, strict=false)
-  @json.inspect(doc, content={
+  json_inspect(doc, content={
     "nl": "\n",
     "block": [
       "Paragraph",
@@ -161,7 +161,7 @@ test "headings" {
     #|# Level 1
   let doc = @cmark.Doc::from_string(input)
   // Should contain a heading and a paragraph
-  @json.inspect(doc, content={
+  json_inspect(doc, content={
     "nl": "\n",
     "block": [
       "Heading",
@@ -189,7 +189,7 @@ test "lists" {
     #|  1. Nested item
   let doc = @cmark.Doc::from_string(input)
   // Should find an ordered list within an unordered one.
-  @json.inspect(doc, content={
+  json_inspect(doc, content={
     "nl": "\n",
     "block": [
       "List",
@@ -289,7 +289,7 @@ test "code blocks" {
     #|}
     $|\{tick3}
   let doc = @cmark.Doc::from_string(input)
-  @json.inspect(doc, content={
+  json_inspect(doc, content={
     "nl": "\n",
     "block": [
       "CodeBlock",
@@ -320,7 +320,7 @@ test "tables" {
     #|| Cell 1   | Cell 2   |
   let doc = @cmark.Doc::from_string(input, strict=false)
   let null = Json::null()
-  @json.inspect(doc, content={
+  json_inspect(doc, content={
     "nl": "\n",
     "block": [
       "ExtTable",
@@ -381,7 +381,7 @@ test "footnotes" {
     #|
     #|[^1]: Footnote content
   let doc = @cmark.Doc::from_string(input, strict=false)
-  @json.inspect(doc, content={
+  json_inspect(doc, content={
     "nl": "\n",
     "block": [
       "Blocks",

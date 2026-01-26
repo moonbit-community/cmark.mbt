@@ -195,7 +195,7 @@ test "map_block with paragraph" {
     }),
   )
   let result = mapper.map_block(paragraph)
-  @json.inspect(result, content=[
+  json_inspect(result, content=[
     [
       "Paragraph",
       [

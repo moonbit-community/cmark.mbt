@@ -1,10 +1,10 @@
 // Generated using `moon info`, DON'T EDIT IT
 package "moonbit-community/cmark/cmark_html"
 
-import(
-  "moonbit-community/cmark/cmark"
-  "moonbit-community/cmark/cmark_renderer"
-)
+import {
+  "moonbit-community/cmark/cmark",
+  "moonbit-community/cmark/cmark_renderer",
+}
 
 // Values
 pub fn from_doc(backend_blocks? : Bool, safe~ : Bool, @cmark.Doc) -> String raise

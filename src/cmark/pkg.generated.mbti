@@ -1,10 +1,10 @@
 // Generated using `moon info`, DON'T EDIT IT
 package "moonbit-community/cmark/cmark"
 
-import(
-  "moonbit-community/cmark/cmark_base"
-  "moonbitlang/core/json"
-)
+import {
+  "moonbit-community/cmark/cmark_base",
+  "moonbitlang/core/json",
+}
 
 // Values
 pub fn is_punctuation(Char) -> Bool
@@ -16,10 +16,14 @@ pub let layout_empty : Node[String]
 pub fn layout_of_string(meta? : @cmark_base.Meta, String) -> Node[String]
 
 // Errors
-pub(all) suberror FolderError String
+pub(all) suberror FolderError {
+  FolderError(String)
+}
 pub impl Show for FolderError
 
-pub(all) suberror MapperError String
+pub(all) suberror MapperError {
+  MapperError(String)
+}
 pub impl Show for MapperError
 
 // Types and methods
