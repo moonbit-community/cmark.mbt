@@ -477,7 +477,7 @@ fn Table::parse_sep_row(
       let last_colon = v.code_unit_at(max) == ':'
       let first = if first_colon { 1 } else { 0 }
       let last = if last_colon { max - 1 } else { max }
-      for i in first..=last {
+      for i in first..<=last {
         guard v.code_unit_at(i) == '-' else { break None }
       } else {
         let count = last - first + 1

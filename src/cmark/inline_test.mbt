@@ -129,7 +129,7 @@ test "Inline::normalize with Emphasis type" {
 
   // Normalize and check result
   let normalized = emphasis.normalize()
-  @json.inspect(normalized, content=[
+  json_inspect(normalized, content=[
     "Emphasis",
     [{ "delim": "*", "inline": ["Text", ["emphasized text"]] }],
   ])
@@ -147,7 +147,7 @@ test "Inline::normalize with StrongEmphasis type" {
 
   // Normalize and check result
   let normalized = strong.normalize()
-  @json.inspect(normalized, content=[
+  json_inspect(normalized, content=[
     "StrongEmphasis",
     [{ "delim": "*", "inline": ["Text", ["strong text"]] }],
   ])
@@ -216,7 +216,7 @@ test "Inline::normalize with more complex Inlines structure" {
 
   // The normalization should flatten the nested Inlines and concat consecutive texts
   let normalized = outer_inlines.normalize()
-  @json.inspect(normalized, content=["Text", ["firstsecond"]])
+  json_inspect(normalized, content=["Text", ["firstsecond"]])
 }
 
 ///|
@@ -232,7 +232,7 @@ test "Inline::normalize with nested structures" {
 
   // Normalize and check that it correctly processed nested elements
   let normalized = image.normalize()
-  @json.inspect(normalized, content=[
+  json_inspect(normalized, content=[
     "Image",
     [
       {

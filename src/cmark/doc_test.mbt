@@ -1,7 +1,7 @@
 ///|
 test "basic" {
   let rendered = @cmark.Doc::from_string(test_base_md_str)
-  @json.inspect(rendered, content={
+  json_inspect(rendered, content={
     "nl": "\n",
     "block": [
       "Blocks",

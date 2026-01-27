@@ -1,2 +1,4 @@
 ///|
-pub(all) suberror RenderError String derive(Show)
+pub(all) suberror RenderError {
+  RenderError(String)
+} derive(Show)
