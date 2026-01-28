@@ -17,13 +17,22 @@ fn main {
   }
   let us_per_s = 1_000_000.0
   for v in summaries {
-    let v = v.to_json().as_object().unwrap()
-    let k = v.get("name").unwrap().as_string().unwrap()
-    // let max = 1.0 / v.get("min").unwrap().as_number().unwrap()
-    // let min = 1.0 / v.get("max").unwrap().as_number().unwrap()
-    let avg = us_per_s / v.get("mean").unwrap().as_number().unwrap()
+    let j = v.to_json()
+    guard j is Object(obj) else { continue }
+    let k = match obj.get("name") {
+      Some(String(s)) => s
+      _ => continue
+    }
+    let mean = match obj.get("mean") {
+      Some(Number(n, ..)) => n
+      _ => continue
+    }
+    let avg = us_per_s / mean
     let moe_estm = {
-      let sigma = v.get("std_dev").unwrap().as_number().unwrap()
+      let sigma = match obj.get("std_dev") {
+        Some(Number(n, ..)) => n
+        _ => continue
+      }
       let sem = sigma / us_per_s / count.to_double().sqrt()
       let df = count - 1
       let critical = {

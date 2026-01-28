@@ -1,0 +1,18 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "moonbit-community/cmarkwrap/lib"
+
+// Values
+pub fn render(String) -> String raise
+
+pub fn result_is_ok(Result[String, Error]) -> Bool
+
+pub fn result_unwrap(Result[String, Error]) -> String
+
+// Errors
+
+// Types and methods
+
+// Type aliases
+
+// Traits
+
