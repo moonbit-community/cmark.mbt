@@ -1108,9 +1108,7 @@ fn Parser::try_add_to_html_block(
       if LineType::html_block_end(self.i, end_cond~, last~, start~) {
         match end_cond {
           EndBlank7 | EndBlank =>
-            bs
-            ..push(HtmlBlock({ ..b, end_cond: None }))
-            .push(self.blank_line())
+            bs..push(HtmlBlock({ ..b, end_cond: None })).push(self.blank_line())
           _ => {
             b.html.push(l)
             bs.push(HtmlBlock({ html: b.html, end_cond: None }))

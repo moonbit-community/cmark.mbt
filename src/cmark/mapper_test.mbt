@@ -125,7 +125,6 @@ test "panic block_ext_none raises error" {
   let mapper = @cmark.Mapper::new()
   let block = @cmark.Block::empty()
   let _ = mapper.block_ext_none(block)
-
 }
 
 ///|
@@ -133,7 +132,6 @@ test "panic inline_ext_none raises error" {
   let mapper = @cmark.Mapper::new()
   let inline = @cmark.Inline::empty()
   let _ = mapper.inline_ext_none(inline)
-
 }
 
 ///|

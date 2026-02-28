@@ -74,19 +74,17 @@ pub fn Context::string(self : Context, str : String) -> Unit {
 ///|
 pub fn Context::inline(self : Context, inline : Inline) -> Unit raise {
   let _ = (self.renderer.inline)(self, inline) ||
-    {
+    ({
       raise RenderError("unknown inline type")
-    }
-
+    })
 }
 
 ///|
 pub fn Context::block(self : Context, block : Block) -> Unit raise {
   let _ = (self.renderer.block)(self, block) ||
-    {
+    ({
       raise RenderError("unknown block type")
-    }
-
+    })
 }
 
 ///|
@@ -94,9 +92,9 @@ pub fn Context::doc(self : Context, doc : Doc) -> Unit raise {
   self.doc = doc
   self.init(doc)
   let _ = (self.renderer.doc)(self, doc) ||
-    {
+    ({
       raise RenderError("unhandled doc")
-    }
+    })
   self.doc = Doc::empty()
 }
 

@@ -1,0 +1,20 @@
+import {
+  "myfreess/casefold",
+  "myfreess/charclass/unicode",
+  "moonbit-community/cmark/char",
+  "moonbit-community/cmark/cmark_base",
+  "moonbitlang/core/cmp",
+  "moonbitlang/core/deque",
+  "moonbitlang/core/sorted_set",
+  "moonbitlang/core/json",
+}
+
+options(
+  "pre-build": [
+    {
+      "command": ":embed -i $input -o $output --name test_base_md_str",
+      "input": "../data/test/basic.md",
+      "output": "test_data_test.mbt",
+    },
+  ],
+)

@@ -89,7 +89,6 @@ test "fold_doc with empty block" {
   let folder = @cmark.Folder::new()
   let empty_doc = @cmark.Doc::empty()
   let _ = folder.fold_doc((), empty_doc)
-
 }
 
 ///|
@@ -97,7 +96,6 @@ test "fold_doc with simple paragraph" {
   let folder = @cmark.Folder::new()
   let doc = @cmark.Doc::from_string("Hello world")
   let _ = folder.fold_doc((), doc)
-
 }
 
 ///|
