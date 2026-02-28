@@ -1,0 +1,5 @@
+import {
+  "moonbit-community/cmark/char",
+  "moonbitlang/core/cmp",
+  "moonbitlang/core/json",
+}
