@@ -82,7 +82,7 @@ pub fn LineType::atx_heading(
   fn skip_hashes(s : String, last, k) {
     for k = k; k <= last && s.code_unit_at(k) == '#'; k = k + 1 {
 
-    } else {
+    } nobreak {
       k
     }
   }

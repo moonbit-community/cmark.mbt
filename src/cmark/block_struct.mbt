@@ -592,7 +592,7 @@ fn Parser::close_list(
       guard blocks.pop() is Some(bl)
       let items = l.items
       items[items.length() - 1] = { ..i, blocks, }
-      bs..push(List({ ..l, items, }))..push(bl)
+      bs..push(List({ ..l, items, })).push(bl)
     }
     _ => {
       let items = l.items
@@ -1110,7 +1110,7 @@ fn Parser::try_add_to_html_block(
           EndBlank7 | EndBlank =>
             bs
             ..push(HtmlBlock({ ..b, end_cond: None }))
-            ..push(self.blank_line())
+            .push(self.blank_line())
           _ => {
             b.html.push(l)
             bs.push(HtmlBlock({ html: b.html, end_cond: None }))
@@ -1258,7 +1258,7 @@ fn Parser::try_add_to_list_item(
       item.blocks.iter().all(BlockStruct::is_blank_line) {
       // Item can only start with a single blank line, 
       // if we are here it's not a new item so the list ends
-      bs..push(List(list))
+      bs.push(List(list))
       self.add_open_blocks(bs)
     } else {
       self.accept_cols(count=list.item_min_indent)
@@ -1340,7 +1340,7 @@ fn Parser::get_first_line(self : Parser) -> String {
                         self.i.code_unit_at(k) != '\r' &&
                         self.i.code_unit_at(k) != '\n' {
     k += 1
-  } else {
+  } nobreak {
     // If the line is empty, we have -1
     k - 1
   }
@@ -1379,7 +1379,7 @@ fn Parser::get_next_line(self : Parser) -> Bool {
                       k <= max && not(self.i.code_unit_at(k) is ('\r' | '\n'))
                       k = k + 1 {
 
-  } else {
+  } nobreak {
     k - 1
   }
   self.curr_line_pos = LinePos(self.curr_line_pos.0 + 1, first_char)
