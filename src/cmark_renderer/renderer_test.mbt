@@ -92,7 +92,7 @@ test "renderer_error_handling_inline" {
   inspect(
     result,
     content=(
-      #|Err(RenderError("unknown inline type"))
+      #|Err(moonbit-community/cmark/cmark_renderer.RenderError.RenderError)
     ),
   )
 }
@@ -108,7 +108,7 @@ test "renderer_error_handling_block" {
   inspect(
     result,
     content=(
-      #|Err(RenderError("unknown block type"))
+      #|Err(moonbit-community/cmark/cmark_renderer.RenderError.RenderError)
     ),
   )
 }
@@ -124,7 +124,7 @@ test "renderer_error_handling_doc" {
   inspect(
     result,
     content=(
-      #|Err(RenderError("unhandled doc"))
+      #|Err(moonbit-community/cmark/cmark_renderer.RenderError.RenderError)
     ),
   )
 }

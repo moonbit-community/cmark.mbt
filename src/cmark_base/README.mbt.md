@@ -20,7 +20,7 @@ test "text location handling" {
   inspect(
     after_loc,
     content=(
-      #|{file: "test.md", first_ccode: 1, last_ccode: -1, first_line: LinePos(1, 10), last_line: LinePos(-1, -1)}
+      #|{"file":"test.md","first_ccode":1,"last_ccode":-1,"first_line":["LinePos",1,10],"last_line":["LinePos",-1,-1]}
     ),
   )
   let none_loc = @cmark_base.TextLoc::none()
@@ -69,23 +69,23 @@ test "line type detection" {
   let start = 0
 
   // ATX Heading
-  inspect(
+  debug_inspect(
     @cmark_base.LineType::atx_heading("# Heading", last=8, start~),
     content="AtxHeadingLine(1, 1, 2, 8)",
   )
 
   // Thematic Break
-  inspect(
+  debug_inspect(
     @cmark_base.LineType::thematic_break("---", last=2, start~),
     content="ThematicBreakLine(2)",
   )
 
   // List Items
-  inspect(
+  debug_inspect(
     @cmark_base.LineType::list_marker("- Item", last=5, start~),
     content="ListMarkerLine(Unordered('-'), 0)",
   )
-  inspect(
+  debug_inspect(
     @cmark_base.LineType::list_marker("1. Item", last=6, start~),
     content="ListMarkerLine(Ordered(1, '.'), 1)",
   )
@@ -116,7 +116,7 @@ Support for detecting and parsing HTML blocks:
 ///|
 test "html blocks" {
   let start = 0
-  inspect(
+  debug_inspect(
     @cmark_base.LineType::html_block_start("<div>", last=5, start~),
     content="HtmlBlockLine(EndBlank)",
   )

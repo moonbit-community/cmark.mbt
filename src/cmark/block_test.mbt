@@ -1,15 +1,70 @@
 ///|
 test "normalize other block types" {
   let block = @cmark.Block::BlankLine(@cmark.Node::empty())
-  inspect(block.normalize(), content="BlankLine(Node::new(\"\"))")
+  debug_inspect(
+    block.normalize(),
+    content=(
+      #|BlankLine(
+      #|  {
+      #|    v: "",
+      #|    meta: {
+      #|      id: 0,
+      #|      loc: {
+      #|        file: "-",
+      #|        first_ccode: -1,
+      #|        last_ccode: -1,
+      #|        first_line: LinePos(-1, -1),
+      #|        last_line: LinePos(-1, -1),
+      #|      },
+      #|      extra: None,
+      #|    },
+      #|  },
+      #|)
+    ),
+  )
 
   // Test BlockQuote normalization
   let quote_block = @cmark.Block::BlockQuote(
     @cmark.Node::new(@cmark.BlockQuote::new(@cmark.Block::empty())),
   )
-  inspect(
+  debug_inspect(
     quote_block.normalize(),
-    content="BlockQuote(Node::new({indent: 0, block: Blocks(Node::new(Seq([])))}))",
+    content=(
+      #|BlockQuote(
+      #|  {
+      #|    v: {
+      #|      indent: 0,
+      #|      block: Blocks(
+      #|        {
+      #|          v: Seq([]),
+      #|          meta: {
+      #|            id: 0,
+      #|            loc: {
+      #|              file: "-",
+      #|              first_ccode: -1,
+      #|              last_ccode: -1,
+      #|              first_line: LinePos(-1, -1),
+      #|              last_line: LinePos(-1, -1),
+      #|            },
+      #|            extra: None,
+      #|          },
+      #|        },
+      #|      ),
+      #|    },
+      #|    meta: {
+      #|      id: 0,
+      #|      loc: {
+      #|        file: "-",
+      #|        first_ccode: -1,
+      #|        last_ccode: -1,
+      #|        first_line: LinePos(-1, -1),
+      #|        last_line: LinePos(-1, -1),
+      #|      },
+      #|      extra: None,
+      #|    },
+      #|  },
+      #|)
+    ),
   )
 }
 
@@ -80,9 +135,44 @@ test "code block make fence" {
 test "block normalize with block quote" {
   let blockQuote = @cmark.BlockQuote::new(@cmark.Block::empty())
   let normalized = @cmark.Block::BlockQuote(@cmark.Node::new(blockQuote)).normalize()
-  inspect(
+  debug_inspect(
     normalized,
-    content="BlockQuote(Node::new({indent: 0, block: Blocks(Node::new(Seq([])))}))",
+    content=(
+      #|BlockQuote(
+      #|  {
+      #|    v: {
+      #|      indent: 0,
+      #|      block: Blocks(
+      #|        {
+      #|          v: Seq([]),
+      #|          meta: {
+      #|            id: 0,
+      #|            loc: {
+      #|              file: "-",
+      #|              first_ccode: -1,
+      #|              last_ccode: -1,
+      #|              first_line: LinePos(-1, -1),
+      #|              last_line: LinePos(-1, -1),
+      #|            },
+      #|            extra: None,
+      #|          },
+      #|        },
+      #|      ),
+      #|    },
+      #|    meta: {
+      #|      id: 0,
+      #|      loc: {
+      #|        file: "-",
+      #|        first_ccode: -1,
+      #|        last_ccode: -1,
+      #|        first_line: LinePos(-1, -1),
+      #|        last_line: LinePos(-1, -1),
+      #|      },
+      #|      extra: None,
+      #|    },
+      #|  },
+      #|)
+    ),
   )
 }
 
@@ -96,9 +186,26 @@ test "block normalize with list using Seq.empty" {
     items,
   }
   let normalized = @cmark.Block::List(@cmark.Node::new(list)).normalize()
-  inspect(
+  debug_inspect(
     normalized,
-    content="List(Node::new({ty: Unordered('*'), tight: true, items: Seq([])}))",
+    content=(
+      #|List(
+      #|  {
+      #|    v: { ty: Unordered('*'), tight: true, items: Seq([]) },
+      #|    meta: {
+      #|      id: 0,
+      #|      loc: {
+      #|        file: "-",
+      #|        first_ccode: -1,
+      #|        last_ccode: -1,
+      #|        first_line: LinePos(-1, -1),
+      #|        last_line: LinePos(-1, -1),
+      #|      },
+      #|      extra: None,
+      #|    },
+      #|  },
+      #|)
+    ),
   )
 }
 
@@ -132,7 +239,27 @@ test "create new list item" {
   // Test ListItem::map_block and ListItem::normalize_block
   let new_block = @cmark.Block::BlankLine(@cmark.Node::new(""))
   let mapped_item = item.map_block(fn(_) { new_block })
-  inspect(mapped_item.block, content="BlankLine(Node::new(\"\"))")
+  debug_inspect(
+    mapped_item.block,
+    content=(
+      #|BlankLine(
+      #|  {
+      #|    v: "",
+      #|    meta: {
+      #|      id: 0,
+      #|      loc: {
+      #|        file: "-",
+      #|        first_ccode: -1,
+      #|        last_ccode: -1,
+      #|        first_line: LinePos(-1, -1),
+      #|        last_line: LinePos(-1, -1),
+      #|      },
+      #|      extra: None,
+      #|    },
+      #|  },
+      #|)
+    ),
+  )
   let normalized_item = item.normalize_block()
   inspect(normalized_item.before_marker, content="2")
 }
@@ -177,5 +304,25 @@ test "heading new" {
 test "block normalize" {
   let block = @cmark.Block::BlankLine(@cmark.Node::new(""))
   let normalized = block.normalize()
-  inspect(normalized, content="BlankLine(Node::new(\"\"))")
+  debug_inspect(
+    normalized,
+    content=(
+      #|BlankLine(
+      #|  {
+      #|    v: "",
+      #|    meta: {
+      #|      id: 0,
+      #|      loc: {
+      #|        file: "-",
+      #|        first_ccode: -1,
+      #|        last_ccode: -1,
+      #|        first_line: LinePos(-1, -1),
+      #|        last_line: LinePos(-1, -1),
+      #|      },
+      #|      extra: None,
+      #|    },
+      #|  },
+      #|)
+    ),
+  )
 }

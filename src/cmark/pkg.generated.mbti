@@ -3,6 +3,7 @@ package "moonbit-community/cmark/cmark"
 
 import {
   "moonbit-community/cmark/cmark_base",
+  "moonbitlang/core/debug",
   "moonbitlang/core/json",
 }
 
@@ -18,11 +19,11 @@ pub fn layout_of_string(meta? : @cmark_base.Meta, String) -> Node[String]
 // Errors
 pub(all) suberror FolderError {
   FolderError(String)
-} derive(Show)
+} derive(@debug.Debug)
 
 pub(all) suberror MapperError {
   MapperError(String)
-} derive(Show)
+} derive(@debug.Debug)
 
 // Types and methods
 pub(all) enum Block {
@@ -39,7 +40,7 @@ pub(all) enum Block {
   ExtMathBlock(Node[CodeBlock])
   ExtTable(Node[Table])
   ExtFootnoteDefinition(Node[Footnote])
-} derive(Show, ToJson)
+} derive(ToJson, @debug.Debug)
 pub fn Block::defs(Self, init? : Map[String, LabelDef]) -> Map[String, LabelDef]
 pub fn Block::empty() -> Self
 pub fn Block::meta(Self) -> @cmark_base.Meta
@@ -50,25 +51,25 @@ pub(all) struct BlockHeading {
   level : Int
   inline : Inline
   id : BlockHeadingId?
-} derive(Show, ToJson)
+} derive(ToJson, @debug.Debug)
 pub fn BlockHeading::new(id? : BlockHeadingId?, layout? : BlockHeadingLayout, level~ : Int, Inline) -> Self
 
 pub(all) struct BlockHeadingAtxLayout {
   indent : Int
   after_opening : String
   closing : String
-} derive(Show, ToJson, @json.FromJson)
+} derive(ToJson, @debug.Debug, @json.FromJson)
 pub fn BlockHeadingAtxLayout::default() -> Self
 
 pub(all) enum BlockHeadingId {
   Auto(String)
   Id(String)
-} derive(Show, ToJson, @json.FromJson)
+} derive(ToJson, @debug.Debug, @json.FromJson)
 
 pub(all) enum BlockHeadingLayout {
   Atx(BlockHeadingAtxLayout)
   Setext(BlockHeadingSetextLayout)
-} derive(Show, ToJson)
+} derive(ToJson, @debug.Debug)
 
 pub(all) struct BlockHeadingSetextLayout {
   leading_indent : Int
@@ -76,7 +77,7 @@ pub(all) struct BlockHeadingSetextLayout {
   underline_indent : Int
   underline_count : Node[Int]
   underline_blanks : String
-} derive(Show, ToJson)
+} derive(ToJson, @debug.Debug)
 
 pub(all) struct BlockLine(Node[String])
 pub fn BlockLine::list_text_loc(Seq[Self]) -> @cmark_base.TextLoc
@@ -86,7 +87,7 @@ pub(all) struct BlockList {
   ty : @cmark_base.ListType
   tight : Bool
   items : Seq[Node[ListItem]]
-} derive(Show, ToJson)
+} derive(ToJson, @debug.Debug)
 pub fn BlockList::map_items(Self, (ListItem) -> ListItem) -> Self
 pub fn BlockList::normalize_items(Self) -> Self
 
@@ -94,13 +95,13 @@ pub(all) struct BlockParagraph {
   leading_indent : Int
   inline : Inline
   trailing_blanks : String
-} derive(Show, ToJson)
+} derive(ToJson, @debug.Debug)
 pub fn BlockParagraph::new(leading_indent? : Int, trailing_blanks? : String, Inline) -> Self
 
 pub(all) struct BlockQuote {
   indent : Int
   block : Block
-} derive(Show, ToJson)
+} derive(ToJson, @debug.Debug)
 pub fn BlockQuote::map_block(Self, (Block) -> Block) -> Self
 pub fn BlockQuote::new(indent? : Int, Block) -> Self
 pub fn BlockQuote::normalize_block(Self) -> Self
@@ -108,14 +109,14 @@ pub fn BlockQuote::normalize_block(Self) -> Self
 pub(all) struct BlockThematicBreak {
   indent : Int
   layout : String
-} derive(Show, ToJson, @json.FromJson)
+} derive(ToJson, @debug.Debug, @json.FromJson)
 pub fn BlockThematicBreak::new(indent? : Int, layout? : String) -> Self
 
 pub(all) struct CodeBlock {
   layout : CodeBlockLayout
   info_string : Node[String]?
   code : Seq[Node[String]]
-} derive(Show, ToJson)
+} derive(ToJson, @debug.Debug)
 pub fn CodeBlock::language_of_info_string(String) -> (String, String)?
 pub fn CodeBlock::make_fence(Self) -> (Char, Int)
 pub fn CodeBlock::new(layout? : CodeBlockLayout, info_string? : Node[String]?, Seq[Node[String]]) -> Self
@@ -124,19 +125,19 @@ pub(all) struct CodeBlockFencedLayout {
   indent : Int
   opening_fence : Node[String]
   closing_fence : Node[String]?
-} derive(Show, ToJson)
+} derive(ToJson, @debug.Debug)
 pub fn CodeBlockFencedLayout::default() -> Self
 
 pub(all) enum CodeBlockLayout {
   Indented
   Fenced(CodeBlockFencedLayout)
-} derive(Show, ToJson)
+} derive(ToJson, @debug.Debug)
 
 pub(all) struct Doc {
   nl : String
   block : Block
   defs : Map[String, LabelDef]
-} derive(Show, ToJson)
+} derive(ToJson, @debug.Debug)
 pub fn Doc::empty() -> Self
 pub fn Doc::from_string(defs? : Map[String, LabelDef], resolver? : LabelResolverFn, nested_links? : Bool, heading_auto_ids? : Bool, layout? : Bool, locs? : Bool, file? : String, strict? : Bool, String) -> Self
 pub fn Doc::new(nl? : String, defs? : Map[String, LabelDef], Block) -> Self
@@ -163,7 +164,7 @@ pub(all) struct FolderFn[A, B]((Folder[B], B, A) -> FolderResult[B])
 pub(all) enum FolderResult[A] {
   Default
   Fold(A)
-} derive(Eq, Show, ToJson)
+} derive(Eq, ToJson, @debug.Debug)
 pub impl[A] Default for FolderResult[A]
 
 pub(all) struct Footnote {
@@ -171,12 +172,12 @@ pub(all) struct Footnote {
   label : Label
   defined_label : Label?
   block : Block
-} derive(Show, ToJson)
+} derive(ToJson, @debug.Debug)
 pub fn Footnote::map_block(Self, (Block) -> Block) -> Self
 pub fn Footnote::new(indent? : Int, defined_label? : Label?, Label, Block) -> Self
 pub fn Footnote::normalize_block(Self) -> Self
 
-pub(all) struct HtmlBlock(Seq[Node[String]]) derive(Show, ToJson)
+pub(all) struct HtmlBlock(Seq[Node[String]]) derive(ToJson, @debug.Debug)
 
 pub(all) enum Inline {
   Autolink(Node[InlineAutolink])
@@ -191,7 +192,7 @@ pub(all) enum Inline {
   Text(Node[String])
   ExtStrikethrough(Node[InlineStrikethrough])
   ExtMathSpan(Node[InlineMathSpan])
-} derive(Eq, Show, ToJson)
+} derive(Eq, ToJson, @debug.Debug)
 pub fn Inline::empty() -> Self
 pub fn Inline::id(Self, buf? : StringBuilder) -> String
 pub fn Inline::is_empty(Self) -> Bool
@@ -202,25 +203,25 @@ pub fn Inline::to_plain_text(Self, break_on_soft~ : Bool) -> Seq[Seq[String]]
 pub(all) struct InlineAutolink {
   is_email : Bool
   link : Node[String]
-} derive(Eq, Show, ToJson)
+} derive(Eq, ToJson, @debug.Debug)
 pub fn InlineAutolink::new(Node[String]) -> Self
 
 pub(all) struct InlineBreak {
   layout_before : Node[String]
   ty : InlineBreakType
   layout_after : Node[String]
-} derive(Eq, Show, ToJson)
+} derive(Eq, ToJson, @debug.Debug)
 pub fn InlineBreak::new(layout_before? : Node[String], layout_after? : Node[String], InlineBreakType) -> Self
 
 pub(all) enum InlineBreakType {
   Hard
   Soft
-} derive(Compare, Eq, Show, ToJson, @json.FromJson)
+} derive(Compare, Eq, ToJson, @debug.Debug, @json.FromJson)
 
 pub(all) struct InlineCodeSpan {
   backticks : Int
   code_layout : Seq[Tight]
-} derive(Eq, Show, ToJson)
+} derive(Eq, ToJson, @debug.Debug)
 pub fn InlineCodeSpan::code(Self) -> String
 pub fn InlineCodeSpan::from_string(meta? : @cmark_base.Meta, String) -> Self
 pub fn InlineCodeSpan::new(backticks~ : Int, Seq[Tight]) -> Self
@@ -228,13 +229,13 @@ pub fn InlineCodeSpan::new(backticks~ : Int, Seq[Tight]) -> Self
 pub(all) struct InlineEmphasis {
   delim : Char
   inline : Inline
-} derive(Eq, Show, ToJson)
+} derive(Eq, ToJson, @debug.Debug)
 pub fn InlineEmphasis::new(delim? : Char, Inline) -> Self
 
 pub(all) struct InlineLink {
   text : Inline
   reference : ReferenceKind
-} derive(Eq, Show, ToJson)
+} derive(Eq, ToJson, @debug.Debug)
 pub fn InlineLink::is_unsafe(String) -> Bool
 pub fn InlineLink::new(Inline, ReferenceKind) -> Self
 pub fn InlineLink::reference_definition(Self, Map[String, LabelDef]) -> LabelDef?
@@ -243,18 +244,18 @@ pub fn InlineLink::referenced_label(Self) -> Label?
 pub(all) struct InlineMathSpan {
   display : Bool
   tex_layout : Seq[Tight]
-} derive(Eq, Show, ToJson)
+} derive(Eq, ToJson, @debug.Debug)
 pub fn InlineMathSpan::tex(Self) -> String
 
-pub(all) struct InlineRawHtml(Seq[Tight]) derive(Eq, Show, ToJson)
+pub(all) struct InlineRawHtml(Seq[Tight]) derive(Eq, ToJson, @debug.Debug)
 
-pub(all) struct InlineStrikethrough(Inline) derive(Eq, Show, ToJson)
+pub(all) struct InlineStrikethrough(Inline) derive(Eq, ToJson, @debug.Debug)
 
 pub(all) struct Label {
   meta : @cmark_base.Meta
   key : String
   text : Seq[Tight]
-} derive(Show, ToJson)
+} derive(ToJson, @debug.Debug)
 pub fn Label::compare(Self, Self) -> Int
 pub fn Label::new(meta? : @cmark_base.Meta, key~ : String, Seq[Tight]) -> Self
 pub fn Label::text_loc(Self) -> @cmark_base.TextLoc
@@ -269,7 +270,7 @@ pub fn LabelContext::default_resolver(Self) -> Label?
 pub(all) enum LabelDef {
   LinkDef(Node[LinkDefinition])
   FootnoteDef(Node[Footnote])
-} derive(Show, ToJson)
+} derive(ToJson, @debug.Debug)
 
 pub(all) struct LabelResolverFn((LabelContext) -> Label?)
 
@@ -279,7 +280,7 @@ pub(all) struct LinkDefinition {
   defined_label : Label?
   dest : Node[String]?
   title : Seq[Tight]?
-} derive(Eq, Show, ToJson)
+} derive(Eq, ToJson, @debug.Debug)
 pub fn LinkDefinition::new(layout? : LinkDefinitionLayout, label? : Label?, defined_label? : Label?, dest? : Node[String]?, title? : Seq[Tight]?) -> Self
 
 pub(all) struct LinkDefinitionLayout {
@@ -289,7 +290,7 @@ pub(all) struct LinkDefinitionLayout {
   after_dest : Seq[Node[String]]
   title_open_delim : Char
   after_title : Seq[Node[String]]
-} derive(Eq, Show, ToJson)
+} derive(Eq, ToJson, @debug.Debug)
 pub fn LinkDefinitionLayout::default() -> Self
 pub fn LinkDefinitionLayout::for_dest(String) -> Self
 
@@ -305,7 +306,7 @@ pub(all) struct ListItem {
   after_marker : Int
   block : Block
   ext_task_marker : Node[Char]?
-} derive(Show, ToJson)
+} derive(ToJson, @debug.Debug)
 pub fn ListItem::map_block(Self, (Block) -> Block) -> Self
 pub fn ListItem::new(before_marker? : Int, marker? : Node[String], after_marker? : Int, ext_task_marker~ : Node[Char]?, Block) -> Self
 pub fn ListItem::normalize_block(Self) -> Self
@@ -341,13 +342,13 @@ pub(all) struct MapperFn[A]((Mapper, A) -> MapperResult[A])
 pub(all) enum MapperResult[A] {
   Default
   Map(A?)
-} derive(Eq, Show, ToJson)
+} derive(Eq, ToJson, @debug.Debug)
 pub impl[A] Default for MapperResult[A]
 
 pub(all) struct Node[A] {
   v : A
   meta : @cmark_base.Meta
-} derive(Eq)
+} derive(Eq, @debug.Debug)
 pub fn Node::empty(meta? : @cmark_base.Meta) -> Self[String]
 pub fn[A, B] Node::map(Self[A], (A) -> B) -> Self[B]
 pub fn[A] Node::new(A, meta? : @cmark_base.Meta) -> Self[A]
@@ -357,15 +358,15 @@ pub impl[A : ToJson] ToJson for Node[A]
 pub(all) enum ReferenceKind {
   Inline(Node[LinkDefinition])
   Ref(ReferenceLayout, Label, Label)
-} derive(Eq, Show, ToJson)
+} derive(Eq, ToJson, @debug.Debug)
 
 pub(all) enum ReferenceLayout {
   Collapsed
   Full
   Shortcut
-} derive(Eq, Show, ToJson, @json.FromJson)
+} derive(Eq, ToJson, @debug.Debug, @json.FromJson)
 
-type Seq[A] derive(Eq, Show)
+type Seq[A] derive(Eq, @debug.Debug)
 pub fn[A] Seq::empty() -> Self[A]
 pub fn[A, B] Seq::fold(Self[A], init~ : B, (B, A) -> B) -> B
 pub fn[A] Seq::from_array(Array[A]) -> Self[A]
@@ -385,29 +386,29 @@ pub(all) struct Table {
   indent : Int
   col_count : Int
   rows : Seq[(Node[TableRow], String)]
-} derive(Show, ToJson)
+} derive(ToJson, @debug.Debug)
 pub fn Table::new(indent? : Int, Seq[(Node[TableRow], String)]) -> Self
 
 pub(all) enum TableAlign {
   Left
   Center
   Right
-} derive(Show, ToJson, @json.FromJson)
+} derive(ToJson, @debug.Debug, @json.FromJson)
 
-pub(all) struct TableCellLayout((String, String)) derive(Compare, Eq, Show, ToJson)
+pub(all) struct TableCellLayout((String, String)) derive(Compare, Eq, ToJson, @debug.Debug)
 
 pub(all) enum TableRow {
   Header(Seq[(Inline, TableCellLayout)])
   Sep(Seq[Node[TableSep]])
   Data(Seq[(Inline, TableCellLayout)])
-} derive(Show, ToJson)
+} derive(ToJson, @debug.Debug)
 
-pub(all) struct TableSep((TableAlign?, Int)) derive(Show, ToJson)
+pub(all) struct TableSep((TableAlign?, Int)) derive(ToJson, @debug.Debug)
 
 pub(all) struct Tight {
   blanks : String
   node : Node[String]
-} derive(Eq, ToJson)
+} derive(Eq, ToJson, @debug.Debug)
 pub fn Tight::empty(meta? : @cmark_base.Meta) -> Self
 pub fn Tight::list_text_loc(Seq[Self]) -> @cmark_base.TextLoc
 pub fn Tight::to_string(Self) -> String

@@ -1,7 +1,7 @@
 ///|
 test "folder_none" {
   let folder = @cmark.Folder::new()
-  inspect(@cmark.Folder::none(folder, 1, "test"), content="Default")
+  debug_inspect(@cmark.Folder::none(folder, 1, "test"), content="Default")
 }
 
 ///|

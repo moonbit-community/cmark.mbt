@@ -80,7 +80,7 @@ test "referenced_label with inline reference" {
   let link_def = @cmark.Node::new(@cmark.LinkDefinition::new())
   let inline_ref = @cmark.ReferenceKind::Inline(link_def)
   let link = @cmark.InlineLink::new(text, inline_ref)
-  inspect(link.referenced_label(), content="None")
+  debug_inspect(link.referenced_label(), content="None")
 }
 
 ///|
@@ -164,7 +164,7 @@ test "InlineBreak::new creates a break with specified parameters" {
     layout_after~,
     break_type,
   )
-  inspect(line_break.ty, content="Hard")
+  debug_inspect(line_break.ty, content="Hard")
   inspect(line_break.layout_before.v, content="  ")
   inspect(line_break.layout_after.v, content="   ")
 }
@@ -271,10 +271,42 @@ test "Inline::normalize with ExtStrikethrough type" {
 
   // Normalize and check
   let normalized = strikethrough.normalize()
-  inspect(
+  debug_inspect(
     normalized,
     content=(
-      #|ExtStrikethrough(Node::new(InlineStrikethrough(Text(Node::new("strikethrough")))))
+      #|ExtStrikethrough(
+      #|  {
+      #|    v: InlineStrikethrough(
+      #|      Text(
+      #|        {
+      #|          v: "strikethrough",
+      #|          meta: {
+      #|            id: 0,
+      #|            loc: {
+      #|              file: "-",
+      #|              first_ccode: -1,
+      #|              last_ccode: -1,
+      #|              first_line: LinePos(-1, -1),
+      #|              last_line: LinePos(-1, -1),
+      #|            },
+      #|            extra: None,
+      #|          },
+      #|        },
+      #|      ),
+      #|    ),
+      #|    meta: {
+      #|      id: 0,
+      #|      loc: {
+      #|        file: "-",
+      #|        first_ccode: -1,
+      #|        last_ccode: -1,
+      #|        first_line: LinePos(-1, -1),
+      #|        last_line: LinePos(-1, -1),
+      #|      },
+      #|      extra: None,
+      #|    },
+      #|  },
+      #|)
     ),
   )
 }
@@ -486,5 +518,25 @@ test "Inline::normalize with singleton list" {
 
   // Normalize should return just the inner item
   let normalized = inlines.normalize()
-  inspect(normalized, content="Text(Node::new(\"single item\"))")
+  debug_inspect(
+    normalized,
+    content=(
+      #|Text(
+      #|  {
+      #|    v: "single item",
+      #|    meta: {
+      #|      id: 0,
+      #|      loc: {
+      #|        file: "-",
+      #|        first_ccode: -1,
+      #|        last_ccode: -1,
+      #|        first_line: LinePos(-1, -1),
+      #|        last_line: LinePos(-1, -1),
+      #|      },
+      #|      extra: None,
+      #|    },
+      #|  },
+      #|)
+    ),
+  )
 }

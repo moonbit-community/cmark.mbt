@@ -7,7 +7,7 @@ pub(all) enum HtmlBlockEndCond {
   EndCond1
   EndBlank
   EndBlank7
-} derive(Show, ToJson, Eq)
+} derive(Debug, ToJson, Eq)
 
 ///|
 pub(all) enum ListType {
@@ -15,7 +15,7 @@ pub(all) enum ListType {
   Unordered(Char)
   /// Starting at given integer, markers ending with given character, i.e. ')' or '.'.
   Ordered(Int, Char)
-} derive(Show, FromJson, ToJson, Eq)
+} derive(Debug, FromJson, ToJson, Eq)
 
 ///|
 pub fn ListType::is_same_type(self : ListType, other : ListType) -> Bool {
@@ -39,7 +39,7 @@ pub(all) enum LineType {
   ExtTableRow(Last)
   ExtFootnoteLabel(Array[Span], Last, String)
   Nomatch
-} derive(Show, ToJson, Eq)
+} derive(Debug, ToJson, Eq)
 
 ///|
 /// https://spec.commonmark.org/current/#thematic-breaks
@@ -249,7 +249,7 @@ pub fn LineType::fenced_code_block_start(
 pub(all) enum FencedCodeBlockContinue {
   Close(First, Last)
   Code
-} derive(Show, ToJson)
+} derive(Debug, ToJson)
 
 ///|
 /// `fenced_code_block_continue(fence, s, last, start)` indicates
@@ -314,7 +314,7 @@ fn LineType::html_block_start_5(
 ) -> LineType {
   let next = start + 3 // 3 first chars checked
   let sub = "CDATA["
-  if start + 8 > last || !(s[next:].has_prefix(sub) catch { _ => panic() }) {
+  if start + 8 > last || !s[next:].has_prefix(sub) {
     return Nomatch
   }
   HtmlBlockLine(EndStr("]]>"))
@@ -410,9 +410,7 @@ pub fn LineType::html_block_start(
         }
         continue i + 1
       }
-      let tag = s[tag_first:tag_last + 1].to_string().to_lower() catch {
-          _ => panic()
-        }
+      let tag = s[tag_first:tag_last + 1].to_string().to_lower()
       let is_open_end = {
         let n = tag_last + 1
         n > last ||
@@ -422,10 +420,8 @@ pub fn LineType::html_block_start(
         // ' ' | '\t' | '>'
         | 62)
       }
-      let is_open_close_end = (is_open_end ||
-      (tag_last + 2 <= last && s[tag_last + 1:tag_last + 3] == "/>")) catch {
-        _ => panic()
-      }
+      let is_open_close_end = is_open_end ||
+        (tag_last + 2 <= last && s[tag_last + 1:tag_last + 3] == "/>")
       if c != '/' {
         if html_start_cond_1_set.contains(tag) && is_open_end {
           LineType::HtmlBlockLine(EndCond1) // 1
@@ -458,7 +454,7 @@ fn LineType::html_block_end_cond_1(
     }
     let next = k + 2
     let is_end_tag = {
-      let lower_s_sub = lower_s[next:] catch { _ => panic() }
+      let lower_s_sub = lower_s[next:]
       match s.code_unit_at(next) {
         'p' => lower_s_sub.has_prefix("pre>")
         's' =>

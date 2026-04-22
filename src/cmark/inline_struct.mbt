@@ -23,19 +23,19 @@ priv enum Token {
   RightParen(TokenStart)
   StrikethroughMarks(TokenStrikethroughMarks)
   MathSpanMarks(TokenMathSpanMarks)
-} derive(Show, ToJson)
+} derive(ToJson)
 
 ///|
 priv struct TokenStart {
   start : CharCodePos
-} derive(Show, ToJson)
+} derive(ToJson)
 
 ///|
 priv struct TokenBackticks {
   start : CharCodePos
   count : Int
   escaped : Bool
-} derive(Show, ToJson)
+} derive(ToJson)
 
 ///|
 priv struct TokenEmphasisMarks {
@@ -44,7 +44,7 @@ priv struct TokenEmphasisMarks {
   count : Int
   may_open : Bool
   may_close : Bool
-} derive(Show, ToJson)
+} derive(ToJson)
 
 ///|
 priv struct TokenInline {
@@ -52,13 +52,13 @@ priv struct TokenInline {
   inline : Inline
   endline : LineSpan
   next : CharCodePos
-} derive(Show, ToJson)
+} derive(ToJson)
 
 ///|
 priv struct TokenLinkStart {
   start : CharCodePos
   image : Bool
-} derive(Show, ToJson)
+} derive(ToJson)
 
 ///|
 priv struct TokenNewline {
@@ -66,14 +66,14 @@ priv struct TokenNewline {
   start : CharCodePos
   break_ty : InlineBreakType
   newline : LineSpan
-} derive(Show, ToJson)
+} derive(ToJson)
 
 ///|
 priv struct TokenStrikethroughMarks {
   start : CharCodePos
   may_open : Bool
   may_close : Bool
-} derive(Show, ToJson)
+} derive(ToJson)
 
 ///|
 priv struct TokenMathSpanMarks {
@@ -81,7 +81,7 @@ priv struct TokenMathSpanMarks {
   count : Int
   may_open : Bool
   may_close : Bool
-} derive(Show, ToJson)
+} derive(ToJson)
 
 ///|
 fn Token::start(self : Token) -> CharCodePos {
@@ -1587,12 +1587,11 @@ fn Parser::start_col(
 priv enum StartColResult {
   Col((Inline, TableCellLayout), CharCodePos)
   Start(String, Array[Inline])
-} derive(Show, ToJson)
+} derive(ToJson)
 
 ///|
 test {
-  // Prevent warning about unused Show and ToJson
-  (fn(s : StartColResult) { s.to_string() }) |> ignore()
+  // Prevent warning about unused ToJson
   (fn(s : StartColResult) { s.to_json() }) |> ignore()
 }
 

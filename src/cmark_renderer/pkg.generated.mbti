@@ -3,6 +3,7 @@ package "moonbit-community/cmark/cmark_renderer"
 
 import {
   "moonbit-community/cmark/cmark",
+  "moonbitlang/core/debug",
 }
 
 // Values
@@ -10,7 +11,7 @@ import {
 // Errors
 pub(all) suberror RenderError {
   RenderError(String)
-} derive(Show)
+} derive(@debug.Debug)
 
 // Types and methods
 pub(all) struct BlockFn((Context, @cmark.Block) -> Bool raise)

@@ -5,7 +5,7 @@ pub(all) struct TextLoc {
   last_ccode : CharCodePos
   first_line : LinePos
   last_line : LinePos
-} derive(Eq, Compare, Show, FromJson, ToJson)
+} derive(Eq, Compare, Debug, FromJson, ToJson)
 
 ///|
 let text_loc_none : TextLoc = {
@@ -74,7 +74,10 @@ pub fn TextLoc::reloc(self : TextLoc, other : TextLoc) -> TextLoc {
   { file, first_ccode, last_ccode, first_line, last_line }
 }
 
-// TODO: Formatters unimplemented
+///|
+pub impl Show for TextLoc with output(self, logger) {
+  logger.write_string(self.to_json().stringify())
+}
 
 ///|
 pub type FilePath = String
@@ -96,7 +99,7 @@ pub let line_num_none = -1
 
 ///|
 pub(all) struct LinePos(LineNum, CharCodePos) derive (
-  Show,
+  Debug,
   Eq,
   Compare,
   FromJson,
@@ -111,14 +114,14 @@ pub(all) struct LineSpan {
   pos : LinePos
   first : CharCodePos
   last : CharCodePos
-} derive(Show, ToJson, Eq, Compare)
+} derive(Debug, ToJson, Eq, Compare)
 
 ///|
 ///  A line span with the byte position on where the line starts (inside a CommonMark container).  The [line_start] is the start of line in the container, the [line_span] has the actual data. The characters in the \[[line_start];[line_span.first - 1]\] are blanks.
 pub(all) struct Span {
   start : CharCodePos
   span : LineSpan
-} derive(Show, ToJson, Eq, Compare)
+} derive(Debug, ToJson, Eq, Compare)
 
 ///|
 pub(all) struct NextLineFn[A]((A) -> LineSpan?)
@@ -127,4 +130,4 @@ pub(all) struct NextLineFn[A]((A) -> LineSpan?)
 pub(all) enum NextLineResult {
   ThisLine(CharCodePos)
   NextLine(LineSpan, CharCodePos)
-} derive(Show, ToJson)
+} derive(Debug, ToJson)

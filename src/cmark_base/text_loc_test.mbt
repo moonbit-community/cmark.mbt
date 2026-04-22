@@ -24,8 +24,8 @@ test "TextLoc::after basic functionality" {
   let after_loc = loc.after()
   inspect(after_loc.first_ccode, content="0")
   inspect(after_loc.last_ccode, content="-1")
-  inspect(after_loc.first_line, content="LinePos(-1, -1)")
-  inspect(after_loc.last_line, content="LinePos(-1, -1)")
+  debug_inspect(after_loc.first_line, content="LinePos(-1, -1)")
+  debug_inspect(after_loc.last_line, content="LinePos(-1, -1)")
 }
 
 ///|
@@ -35,7 +35,7 @@ test "test case TextLoc::reloc" {
   inspect(
     loc1.reloc(loc2),
     content=(
-      #|{file: "-", first_ccode: -1, last_ccode: -1, first_line: LinePos(-1, -1), last_line: LinePos(-1, -1)}
+      #|{"file":"-","first_ccode":-1,"last_ccode":-1,"first_line":["LinePos",-1,-1],"last_line":["LinePos",-1,-1]}
     ),
   )
 }
@@ -66,5 +66,5 @@ test "TextLoc to_last method" {
   }
   let loc_transformed = loc_initial.to_last()
   inspect(loc_transformed.first_ccode, content="20")
-  inspect(loc_transformed.first_line, content="LinePos(1, 20)")
+  debug_inspect(loc_transformed.first_line, content="LinePos(1, 20)")
 }
