@@ -2,6 +2,7 @@
 package "moonbit-community/cmark/cmark_base"
 
 import {
+  "moonbitlang/core/debug",
   "moonbitlang/core/json",
 }
 
@@ -50,7 +51,7 @@ pub fn run_of(char~ : Char, String, last~ : Int, start~ : Int) -> Int
 pub(all) enum FencedCodeBlockContinue {
   Close(Int, Int)
   Code
-} derive(Show, ToJson)
+} derive(ToJson, @debug.Debug)
 pub fn FencedCodeBlockContinue::new(String, fence~ : (Char, Int), last~ : Int, start~ : Int) -> Self
 
 pub(all) enum HtmlBlockEndCond {
@@ -58,15 +59,15 @@ pub(all) enum HtmlBlockEndCond {
   EndCond1
   EndBlank
   EndBlank7
-} derive(Eq, Show, ToJson)
+} derive(Eq, ToJson, @debug.Debug)
 
-pub(all) struct LinePos(Int, Int) derive(Compare, Eq, Show, ToJson, @json.FromJson)
+pub(all) struct LinePos(Int, Int) derive(Compare, Eq, ToJson, @debug.Debug, @json.FromJson)
 
 pub(all) struct LineSpan {
   pos : LinePos
   first : Int
   last : Int
-} derive(Compare, Eq, Show, ToJson)
+} derive(Compare, Eq, ToJson, @debug.Debug)
 
 pub(all) enum LineType {
   AtxHeadingLine(Int, Int, Int, Int)
@@ -82,7 +83,7 @@ pub(all) enum LineType {
   ExtTableRow(Int)
   ExtFootnoteLabel(Array[Span], Int, String)
   Nomatch
-} derive(Eq, Show, ToJson)
+} derive(Eq, ToJson, @debug.Debug)
 pub fn LineType::atx_heading(String, last~ : Int, start~ : Int) -> Self
 pub fn LineType::ext_footnote_label(StringBuilder, String, line_pos~ : LinePos, last~ : Int, start~ : Int) -> Self
 pub fn LineType::ext_table_row(String, last~ : Int, start~ : Int) -> Self
@@ -96,14 +97,14 @@ pub fn LineType::thematic_break(String, last~ : Int, start~ : Int) -> Self
 pub(all) enum ListType {
   Unordered(Char)
   Ordered(Int, Char)
-} derive(Eq, Show, ToJson, @json.FromJson)
+} derive(Eq, ToJson, @debug.Debug, @json.FromJson)
 pub fn ListType::is_same_type(Self, Self) -> Bool
 
 pub(all) struct Meta {
   id : Int
   loc : TextLoc
   extra : Error?
-}
+} derive(@debug.Debug)
 pub fn Meta::compare(Self, Self) -> Int
 pub fn Meta::is_none(Self) -> Bool
 pub fn Meta::new(loc? : TextLoc) -> Self
@@ -118,12 +119,12 @@ pub(all) struct NextLineFn[A]((A) -> LineSpan?)
 pub(all) enum NextLineResult {
   ThisLine(Int)
   NextLine(LineSpan, Int)
-} derive(Show, ToJson)
+} derive(ToJson, @debug.Debug)
 
 pub(all) struct Span {
   start : Int
   span : LineSpan
-} derive(Compare, Eq, Show, ToJson)
+} derive(Compare, Eq, ToJson, @debug.Debug)
 
 pub(all) struct TextLoc {
   file : String
@@ -131,7 +132,7 @@ pub(all) struct TextLoc {
   last_ccode : Int
   first_line : LinePos
   last_line : LinePos
-} derive(Compare, Eq, Show, ToJson, @json.FromJson)
+} derive(Compare, Eq, ToJson, @debug.Debug, @json.FromJson)
 pub fn TextLoc::after(Self) -> Self
 pub fn TextLoc::is_empty(Self) -> Bool
 pub fn TextLoc::is_none(Self) -> Bool
@@ -140,6 +141,7 @@ pub fn TextLoc::reloc(Self, Self) -> Self
 pub fn TextLoc::span(Self, Self) -> Self
 pub fn TextLoc::to_first(Self) -> Self
 pub fn TextLoc::to_last(Self) -> Self
+pub impl Show for TextLoc
 
 // Type aliases
 pub type CharCodePos = Int
