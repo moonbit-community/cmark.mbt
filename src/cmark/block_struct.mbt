@@ -460,7 +460,7 @@ fn Parser::parse_link_ref_definition(
           start=start1,
         )
         is Some((line1, spans, last)) else {
-        guard !(no_newline) else { return None }
+        guard !no_newline else { return None }
         lines1.val = lines
         (lines1, [], '"', None, [], meta_last)
       }
@@ -475,7 +475,7 @@ fn Parser::parse_link_ref_definition(
         }
       }
       guard after_title is Some(after_title) else {
-        guard !(no_newline) else { return None }
+        guard !no_newline else { return None }
         lines1.val = lines
         (lines1, [], '"', None, [], meta_last)
       }
@@ -515,7 +515,7 @@ fn Parser::maybe_add_link_ref_definitions(
   lines : Array[LineSpan],
   prevs : Array[BlockStruct],
 ) -> Unit {
-  while !(lines.is_empty()) {
+  while !lines.is_empty() {
     guard self.parse_link_ref_definition(lines) is Some(ld) else {
       //  Link defs can't interrupt a paragraph so we are good now.
       prevs.push(Paragraph({ maybe_ref: false, lines }))
@@ -715,7 +715,7 @@ fn Parser::match_line_type(
       }
       ParagraphLine
     }
-    '=' if !(no_setext) => {
+    '=' if !no_setext => {
       let r = LineType::setext_heading_underline(self.i, last~, start~)
       guard r is Nomatch else { r }
       ParagraphLine
@@ -1252,7 +1252,7 @@ fn Parser::try_add_to_list_item(
     let last_blank = self.only_blanks()
     guard list.items.last() is Some(item)
     return if list.last_blank &&
-      !(last_blank) &&
+      !last_blank &&
       item.blocks.iter().all(BlockStruct::is_blank_line) {
       // Item can only start with a single blank line, 
       // if we are here it's not a new item so the list ends
@@ -1406,7 +1406,7 @@ fn Parser::parse_block(self : Parser) -> (String, Node[Array[BlockStruct]]) {
   let blocks = {
     while true {
       self.add_line(bs)
-      if !(self.get_next_line()) {
+      if !self.get_next_line() {
         self.end_doc(bs)
         break
       }
@@ -1728,7 +1728,7 @@ fn Parser::block_struct_to_list_item(
 fn Parser::block_struct_to_list(self : Parser, list : ListBlockStruct) -> Block {
   let items = list.items
   let (first, tight) = self.block_struct_to_list_item(items[0])
-  let (tight, items) = loop (!(list.loose) && tight, [first], items[1:]) {
+  let (tight, items) = loop (!list.loose && tight, [first], items[1:]) {
     (tight, acc, []) => (tight, acc)
     (tight, acc, [item, .. items]) => {
       let (item, item_tight) = self.block_struct_to_list_item(item)

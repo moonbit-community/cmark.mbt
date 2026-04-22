@@ -165,7 +165,7 @@ pub fn Inline::id(
   let s = text.0.map(fn(l) { l.0.join("") }).join("\n")
   // Collapses non initial white 
   let collapse_blanks = fn(prev) {
-    if @char.is_ascii_blank(prev) && !(buf.is_empty()) {
+    if @char.is_ascii_blank(prev) && !buf.is_empty() {
       buf.write_char('-')
     }
   }
@@ -332,7 +332,7 @@ pub fn InlineCodeSpan::from_string(
 pub fn InlineCodeSpan::code(self : InlineCodeSpan) -> String {
   let s = self.code_layout.iter().map(Tight::to_string).to_array().join(" ")
   guard s != "" else { "" }
-  if s is [' ', .. mid, ' '] && !(mid.iter().all(fn(it) { it == ' ' })) {
+  if s is [' ', .. mid, ' '] && !mid.iter().all(fn(it) { it == ' ' }) {
     return s[1:s.length() - 1].to_string() catch { _ => panic() }
   }
   s
@@ -437,7 +437,7 @@ pub fn InlineLink::is_unsafe(l : String) -> Bool {
   lower.has_prefix("javascript:") ||
   lower.has_prefix("vbscript:") ||
   lower.has_prefix("file:") ||
-  (lower.has_prefix("data:") && !(allowed_data_url(l)))
+  (lower.has_prefix("data:") && !allowed_data_url(l))
 }
 
 ///|

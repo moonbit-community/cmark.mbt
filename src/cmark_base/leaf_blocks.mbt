@@ -405,8 +405,7 @@ pub fn LineType::html_block_start(
       guard c.is_ascii_alphabetic() || c == '/' else { return Nomatch }
       let tag_first = if c == '/' { next + 1 } else { next }
       let tag_last = for i = tag_first {
-        if i > last ||
-          !(s.code_unit_at(i).unsafe_to_char().is_ascii_alphabetic()) {
+        if i > last || !s.code_unit_at(i).unsafe_to_char().is_ascii_alphabetic() {
           break i - 1
         }
         continue i + 1
@@ -472,7 +471,7 @@ fn LineType::html_block_end_cond_1(
         _ => false
       }
     }
-    guard !(is_end_tag) else { break true }
+    guard !is_end_tag else { break true }
     continue k + 1
   }
 }
