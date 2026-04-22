@@ -55,7 +55,7 @@ pub fn Block::normalize(self : Block) -> Block {
     Blocks({ v: Seq([.., _] as bs), meta }) => {
       let mut bs = bs
       let acc = [bs.pop().unwrap().normalize()]
-      for {
+      for ;; {
         match bs.pop() {
           Some(Blocks({ v: bs1, .. })) => bs += bs1.0
           Some(b) => acc.push(b.normalize())
@@ -198,7 +198,7 @@ pub fn CodeBlock::make_fence(self : CodeBlock) -> (Char, Count) {
 /// [language_of_info_string s] extracts a (non-empty) language, the first word of [s] and a trimmed remainder.
 /// Assumes [s] is {!String.trim}ed which is what {!info_string} gives you.
 pub fn CodeBlock::language_of_info_string(s : String) -> (String, String)? {
-  guard not(s.is_empty()) else { None }
+  guard !(s.is_empty()) else { None }
   let max = s.length() - 1
   let white = for i = 0; ; i = i + 1 {
     if i > max || @char.is_ascii_whitespace(s.get_char(i).unwrap()) {
@@ -207,7 +207,7 @@ pub fn CodeBlock::language_of_info_string(s : String) -> (String, String)? {
   }
   let rem_first = @cmark_base.first_non_blank(s, last=max, start=white)
   let lang = s[0:white].to_string() catch { _ => panic() }
-  guard not(lang.is_empty()) else { None }
+  guard !(lang.is_empty()) else { None }
   Some((lang, s[rem_first:max + 1].to_string() catch { _ => panic() }))
 }
 
@@ -471,7 +471,7 @@ fn Table::parse_sep_row(
   loop ([], cs) {
     (acc, []) => Some(acc)
     (acc, [(Text({ v, meta }), TableCellLayout(("", ""))), .. cs]) => {
-      guard not(v.is_empty()) else { None }
+      guard !(v.is_empty()) else { None }
       let max = v.length() - 1
       let first_colon = v.code_unit_at(0) == ':'
       let last_colon = v.code_unit_at(max) == ':'

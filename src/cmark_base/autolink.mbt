@@ -58,12 +58,12 @@ pub fn autolink_uri(s : String, last? : Int = -1, start? : Int = 0) -> Last? {
     @char.is_ascii_alphanum(c) || c is ('+' | '-' | '.')
   }
   let char_is_uri = fn(c : Char) {
-    not(c is ('\u{0}'..='\u{1f}' | '\u{7f}' | '<' | '>' | ' '))
+    !(c is ('\u{0}'..='\u{1f}' | '\u{7f}' | '<' | '>' | ' '))
   }
   let rest = fn(s : String, last, k) {
     for k in k..<=last {
       let sk = s.get_char(k).unwrap()
-      guard not(char_is_uri(sk)) else { continue }
+      guard !(char_is_uri(sk)) else { continue }
       break if sk == '>' { Some(k) } else { None }
     } nobreak {
       None

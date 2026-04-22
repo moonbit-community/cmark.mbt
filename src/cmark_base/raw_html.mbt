@@ -30,12 +30,12 @@ fn attribute_name(s : String, last? : Int = -1, start? : Int = 0) -> Next? {
   }
 
   if start > last ||
-    not(s.code_unit_at(start).to_char() is Some(c) && char_is_start(c)) {
+    !(s.code_unit_at(start).to_char() is Some(c) && char_is_start(c)) {
     return None
   }
   for k = start + 1 {
     if k > last ||
-      not(s.code_unit_at(k).to_char() is Some(c) && char_is_cont(c)) {
+      !(s.code_unit_at(k).to_char() is Some(c) && char_is_cont(c)) {
       break Some(k - 1)
     }
     continue k + 1
@@ -63,7 +63,7 @@ fn[A] attribute_value(
   }
   // https://spec.commonmark.org/current/#unquoted-attribute-value
   fn is_cont(c) {
-    not(c is (' ' | '\t' | '"' | '\'' | '=' | '<' | '>' | '`'))
+    !(c is (' ' | '\t' | '"' | '\'' | '=' | '<' | '>' | '`'))
   }
 
   for k = start + 1 {
@@ -306,7 +306,7 @@ fn[A] cdata_section(
   if start + 8 > line.last {
     return None
   }
-  if not(s[start + 3:].has_prefix("CDATA[") catch { _ => panic() }) {
+  if !(s[start + 3:].has_prefix("CDATA[") catch { _ => panic() }) {
     return None
   }
   let acc = []

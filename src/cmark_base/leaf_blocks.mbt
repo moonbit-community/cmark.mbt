@@ -195,7 +195,7 @@ pub fn LineType::fenced_code_block_start(
   fn info(s : String, last, nobt, info_first, k) {
     let sk = s.code_unit_at(k)
     guard k <= last else { Some((info_first, last)) }
-    guard not(nobt && sk == '`') else { None }
+    guard !(nobt && sk == '`') else { None }
     guard sk is (' ' | '\t') else { info(s, last, nobt, info_first, k + 1) }
     let after_blank = first_non_blank(s, last~, start=k)
     guard after_blank <= last else { Some((info_first, k - 1)) }
@@ -314,7 +314,7 @@ fn LineType::html_block_start_5(
 ) -> LineType {
   let next = start + 3 // 3 first chars checked
   let sub = "CDATA["
-  if start + 8 > last || not(s[next:].has_prefix(sub) catch { _ => panic() }) {
+  if start + 8 > last || !(s[next:].has_prefix(sub) catch { _ => panic() }) {
     return Nomatch
   }
   HtmlBlockLine(EndStr("]]>"))
@@ -406,7 +406,7 @@ pub fn LineType::html_block_start(
       let tag_first = if c == '/' { next + 1 } else { next }
       let tag_last = for i = tag_first {
         if i > last ||
-          not(s.code_unit_at(i).unsafe_to_char().is_ascii_alphabetic()) {
+          !(s.code_unit_at(i).unsafe_to_char().is_ascii_alphabetic()) {
           break i - 1
         }
         continue i + 1
@@ -472,7 +472,7 @@ fn LineType::html_block_end_cond_1(
         _ => false
       }
     }
-    guard not(is_end_tag) else { break true }
+    guard !(is_end_tag) else { break true }
     continue k + 1
   }
 }
