@@ -103,7 +103,7 @@ pub fn[A] link_title(
           let prev_bslash = false
           continue newline, prev_bslash, start, start
         }
-        if not(prev_bslash) {
+        if !(prev_bslash) {
           if s.code_unit_at(k) == '(' {
             break None
           }
@@ -112,7 +112,7 @@ pub fn[A] link_title(
             break Some((line, acc, k))
           }
         }
-        let prev_bslash = s.code_unit_at(k) == '\\' && not(prev_bslash)
+        let prev_bslash = s.code_unit_at(k) == '\\' && !(prev_bslash)
         continue line, prev_bslash, start, k + 1
       }
     }
@@ -149,7 +149,7 @@ pub fn[A] link_label(
       }
       push_span(line~, start, line.last, acc)
       let start = first_non_blank_in_span(s, newline)
-      if not(b.is_empty()) {
+      if !(b.is_empty()) {
         b.write_char(' ')
       }
       let prev = '\u{0}'
@@ -179,7 +179,7 @@ pub fn[A] link_label(
       _ => ()
     }
     // Collapse non initial whitespace
-    if @char.is_ascii_blank(prev) && not(b.is_empty()) {
+    if @char.is_ascii_blank(prev) && !(b.is_empty()) {
       b.write_char(' ')
     }
     let mut u = s.get_char(k).unwrap()

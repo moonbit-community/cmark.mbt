@@ -108,7 +108,7 @@ pub fn Mapper::map_inline(self : Mapper, i : Inline) -> Inline? {
     }
     Inlines({ v, meta }) => {
       let v = v.0.filter_map(fn(x) { self.map_inline(x) })
-      guard not(v.is_empty()) else { None }
+      guard !(v.is_empty()) else { None }
       Some(Inlines({ v, meta }))
     }
     ExtStrikethrough({ v, meta }) => {

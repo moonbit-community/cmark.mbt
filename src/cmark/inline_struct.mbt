@@ -153,7 +153,7 @@ fn CloserIndex::has_math_span(
 ///|
 fn make_closer_index(toks : Tokens) -> CloserIndex {
   let cidx = CloserIndex::new()
-  guard not(toks.0.is_empty()) else { cidx }
+  guard !(toks.0.is_empty()) else { cidx }
   toks.0.retain(fn(curr) {
     match curr {
       Backticks({ count, start, .. }) => cidx.add(Backticks(count), start)
@@ -196,7 +196,7 @@ fn tokens_shorten_last_line(to_last~ : Int, toks : Tokens) -> Unit {
 
 ///|
 fn tokens_drop_stop_after_right_brack(rev_toks : RevTokens) -> Unit {
-  for {
+  for ;; {
     match rev_toks.pop() {
       None | Some(RightBrack(_)) => break
       Some(_) => continue
@@ -206,7 +206,7 @@ fn tokens_drop_stop_after_right_brack(rev_toks : RevTokens) -> Unit {
 
 ///|
 fn tokens_pop_until(start~ : Int, rev_toks : RevTokens) -> Unit {
-  for {
+  for ;; {
     guard rev_toks.pop() is Some(t) else { break }
     if t.start() < start {
       continue
@@ -297,23 +297,23 @@ fn tokens_try_add_emphasis(
   let is_prev_punct = is_punctuation(prev_char)
   let is_next_white = is_whitespace(next_char)
   let is_next_punct = is_punctuation(next_char)
-  let is_left_flanking = not(is_next_white) &&
-    (not(is_next_punct) || is_prev_white || is_prev_punct)
-  let is_right_flanking = not(is_prev_white) &&
-    (not(is_prev_punct) || is_next_white || is_next_punct)
+  let is_left_flanking = !(is_next_white) &&
+    (!(is_next_punct) || is_prev_white || is_prev_punct)
+  let is_right_flanking = !(is_prev_white) &&
+    (!(is_prev_punct) || is_next_white || is_next_punct)
   let next = run_last + 1
   guard is_left_flanking || is_right_flanking else { next }
   let may_open = (char == '*' && is_left_flanking) ||
     (
       char == '_' &&
       is_left_flanking &&
-      (not(is_right_flanking) || is_prev_punct)
+      (!(is_right_flanking) || is_prev_punct)
     )
   let may_close = (char == '*' && is_right_flanking) ||
     (
       char == '_' &&
       is_right_flanking &&
-      (not(is_left_flanking) || is_next_punct)
+      (!(is_left_flanking) || is_next_punct)
     )
   guard may_open || may_close else { next }
   toks.push(EmphasisMarks({ start, char, count, may_open, may_close }))
@@ -335,8 +335,8 @@ fn tokens_try_add_strikethrough_marks(
   guard count == 2 else { next }
   let prev_char = @char.prev_char(s, first~, before=start)
   let next_char = @char.next_char(s, last~, after=run_last)
-  let may_open = not(@char.is_ascii_whitespace(next_char))
-  let may_close = not(@char.is_ascii_whitespace(prev_char))
+  let may_open = !(@char.is_ascii_whitespace(next_char))
+  let may_close = !(@char.is_ascii_whitespace(prev_char))
   toks.push(StrikethroughMarks({ start, may_open, may_close }))
   next
 }
@@ -359,8 +359,8 @@ fn tokens_try_add_math_span_marks(
   if count == 1 {
     let prev_char = @char.prev_char(s, first~, before=start)
     let next_char = @char.next_char(s, last~, after=run_last)
-    may_open = not(@char.is_ascii_whitespace(next_char))
-    may_close = not(@char.is_ascii_whitespace(prev_char))
+    may_open = !(@char.is_ascii_whitespace(next_char))
+    may_close = !(@char.is_ascii_whitespace(prev_char))
   }
   guard may_open || may_close else { next }
   toks.push(MathSpanMarks({ start, count, may_open, may_close }))
@@ -387,7 +387,7 @@ fn tokenize(
       }
     }
     let next = match s.code_unit_at(k) {
-      '\\' => continue lines, line, not(prev_bslash), k + 1
+      '\\' => continue lines, line, !(prev_bslash), k + 1
       '`' => tokens_add_backtick(toks, s, line, prev_bslash~, start=k)
       _ if prev_bslash => k + 1
       '*' | '_' => tokens_try_add_emphasis(toks, s, line, start=k)
@@ -611,7 +611,7 @@ fn Parser::try_code(
   escaped~ : Bool,
 ) -> (LineSpan, Token)? {
   let cstart = start
-  guard not(escaped) && self.cidx.has_backticks(count~, after=cstart) else {
+  guard !(escaped) && self.cidx.has_backticks(count~, after=cstart) else {
     None
   }
   let first = cstart + count
@@ -619,7 +619,7 @@ fn Parser::try_code(
   let spans = []
   let mut k = first
   let old_rev_toks = rev_toks.val.0.copy()
-  for {
+  for ;; {
     match rev_toks.val.pop() {
       None => break
       Some(Backticks({ start, count: c, .. })) => {
@@ -669,7 +669,7 @@ fn Parser::try_math_span(
   let mut line = { ..start_line, first, }
   let spans = []
   let mut k = first
-  for {
+  for ;; {
     match rev_toks.val.pop() {
       None => break
       Some(MathSpanMarks({ start, count: c, may_close, .. })) => {
@@ -953,7 +953,7 @@ fn Parser::find_link_text_tokens(
   let mut nest = 0
   let acc : Tokens = @deque.new()
   let old_rev_toks = rev_toks.val.0.copy()
-  for {
+  for ;; {
     match (rev_toks.val.pop(), nest) {
       (Some(RightBrack({ start: last })), 0) => {
         tokens_shorten_last_line(to_last=last - 1, acc)
@@ -1081,7 +1081,7 @@ fn Parser::try_link_def(
     image~,
     link,
   )
-  let had_link = not(image) && not(self.nested_links)
+  let had_link = !(image) && !(self.nested_links)
   Some((endline, t, had_link))
 }
 
@@ -1122,7 +1122,7 @@ fn Parser::try_link(
       { ..start_line, first, last }
     },
   )
-  if had_link && not(image) {
+  if had_link && !(image) {
     return None
   }
   self
@@ -1206,7 +1206,7 @@ fn Parser::find_emphasis_text(
   fn marks_match(marks : TokenEmphasisMarks, opener : TokenEmphasisMarks) {
     opener.char == marks.char &&
     (
-      (marks.may_open || not(opener.may_close)) ||
+      (marks.may_open || !(opener.may_close)) ||
       marks.count % 3 == 0 ||
       (opener.count + marks.count) % 3 != 0
     )
@@ -1227,7 +1227,7 @@ fn Parser::find_emphasis_text(
 
   let mut line = line
   let acc : Tokens = @deque.new()
-  for {
+  for ;; {
     match rev_toks.val.pop() {
       None => break
       Some(EmphasisMarks(marks) as t) => {
@@ -1318,7 +1318,7 @@ fn Parser::find_strikethrough_text(
 ) -> (LineSpan, Tokens, TokenStrikethroughMarks)? {
   let acc : Tokens = @deque.new()
   let mut line = start_line
-  for {
+  for ;; {
     match rev_toks.val.pop() {
       None => break
       Some(StrikethroughMarks(marks)) =>
@@ -1397,7 +1397,7 @@ fn Parser::second_pass(
   let acc : Tokens = @deque.new()
   toks.val = acc
   let mut line = line
-  for {
+  for ;; {
     match rev_toks.val.pop() {
       None => break
       Some(EmphasisMarks(opener)) =>

@@ -87,7 +87,7 @@ pub fn Inline::normalize(self : Inline) -> Inline {
     Inlines({ v: Seq([i, .. is_]), meta }) => {
       let acc = [i.normalize()]
       let is_ = Array::from_iter(is_.iter())
-      for {
+      for ;; {
         guard is_.pop() is Some(curr) else { break }
         match curr {
           Inlines({ v: is1, .. }) =>
@@ -127,7 +127,7 @@ pub fn Inline::to_plain_text(
   let push = fn(s) { acc[acc.length() - 1].0.push(s) }
   let newline = fn() { acc.0.push([]) }
   let st = [self]
-  for {
+  for ;; {
     guard st.pop() is Some(curr) else { break }
     match curr {
       Autolink(a) => push("<\{a.v.link.v}>")
@@ -165,7 +165,7 @@ pub fn Inline::id(
   let s = text.0.map(fn(l) { l.0.join("") }).join("\n")
   // Collapses non initial white 
   let collapse_blanks = fn(prev) {
-    if @char.is_ascii_blank(prev) && not(buf.is_empty()) {
+    if @char.is_ascii_blank(prev) && !(buf.is_empty()) {
       buf.write_char('-')
     }
   }
@@ -222,7 +222,7 @@ pub(all) struct InlineAutolink {
 ///|
 pub fn InlineAutolink::new(link : StringNode) -> InlineAutolink {
   let raw_link = "<{$link.raw}>"
-  { is_email: not(@cmark_base.autolink_email(raw_link) is None), link }
+  { is_email: !(@cmark_base.autolink_email(raw_link) is None), link }
 }
 
 ///|
@@ -332,7 +332,7 @@ pub fn InlineCodeSpan::from_string(
 pub fn InlineCodeSpan::code(self : InlineCodeSpan) -> String {
   let s = self.code_layout.iter().map(Tight::to_string).to_array().join(" ")
   guard s != "" else { "" }
-  if s is [' ', .. mid, ' '] && not(mid.iter().all(fn(it) { it == ' ' })) {
+  if s is [' ', .. mid, ' '] && !(mid.iter().all(fn(it) { it == ' ' })) {
     return s[1:s.length() - 1].to_string() catch { _ => panic() }
   }
   s
@@ -437,7 +437,7 @@ pub fn InlineLink::is_unsafe(l : String) -> Bool {
   lower.has_prefix("javascript:") ||
   lower.has_prefix("vbscript:") ||
   lower.has_prefix("file:") ||
-  (lower.has_prefix("data:") && not(allowed_data_url(l)))
+  (lower.has_prefix("data:") && !(allowed_data_url(l)))
 }
 
 ///|
