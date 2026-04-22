@@ -9,6 +9,8 @@ import {
   "moonbitlang/core/json",
 }
 
+warnings = "-unused_package"
+
 options(
   "pre-build": [
     {
