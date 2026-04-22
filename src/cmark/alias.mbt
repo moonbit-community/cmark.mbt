@@ -30,7 +30,7 @@ priv struct Tokens(@deque.Deque[Token])
 
 ///|
 impl Show for Tokens with output(self, logger) {
-  logger.write_object(self.0)
+  logger.write_string(self.to_json().stringify())
 }
 
 ///|
@@ -59,7 +59,7 @@ priv struct RevTokens(@deque.Deque[Token])
 
 ///|
 impl Show for RevTokens with output(self, logger) {
-  logger.write_object(self.0)
+  logger.write_string(self.to_json().stringify())
 }
 
 ///|

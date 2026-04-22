@@ -8,12 +8,6 @@ priv struct State {
   ids : StringSet
   mut footnote_count : Int
   footnotes : Map[LabelKey, HtmlRenderFootnote]
-} derive(Show)
-
-///|
-test {
-  // Prevent warning about unused Show
-  (fn(s : State) { s.to_string() }) |> ignore()
 }
 
 ///|
@@ -22,7 +16,7 @@ priv struct HtmlRenderFootnote {
   id : String
   mut count : Int
   footnote : @cmark.Footnote
-} derive(Show, ToJson)
+} derive(ToJson)
 
 ///|
 test {

@@ -2,7 +2,7 @@
 pub(all) struct Node[A] {
   v : A
   meta : Meta
-} derive(Eq)
+} derive(Eq, Debug)
 
 ///|
 pub fn[A] Node::new(v : A, meta? : Meta = Meta::none()) -> Node[A] {

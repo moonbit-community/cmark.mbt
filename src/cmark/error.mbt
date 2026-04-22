@@ -1,9 +1,9 @@
 ///|
 pub(all) suberror FolderError {
   FolderError(String)
-} derive(Show)
+} derive(Debug)
 
 ///|
 pub(all) suberror MapperError {
   MapperError(String)
-} derive(Show)
+} derive(Debug)

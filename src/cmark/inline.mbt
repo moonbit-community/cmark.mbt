@@ -15,7 +15,7 @@ pub(all) enum Inline {
   Text(Node[InlineText])
   ExtStrikethrough(Node[InlineStrikethrough])
   ExtMathSpan(Node[InlineMathSpan])
-} derive(Eq, Show, ToJson)
+} derive(Eq, Debug, ToJson)
 
 ///|
 pub fn Inline::empty() -> Inline {
@@ -217,7 +217,7 @@ pub(all) struct InlineAutolink {
   /// https://spec.commonmark.org/0.30/#absolute-uri
   /// https://spec.commonmark.org/0.30/#email-address
   link : StringNode
-} derive(Eq, Show, ToJson)
+} derive(Eq, Debug, ToJson)
 
 ///|
 pub fn InlineAutolink::new(link : StringNode) -> InlineAutolink {
@@ -230,7 +230,7 @@ pub(all) struct InlineBreak {
   layout_before : BlanksNode
   ty : InlineBreakType
   layout_after : BlanksNode
-} derive(Eq, Show, ToJson)
+} derive(Eq, Debug, ToJson)
 
 ///|
 pub fn InlineBreak::new(
@@ -245,14 +245,14 @@ pub fn InlineBreak::new(
 pub(all) enum InlineBreakType {
   Hard
   Soft
-} derive(Eq, Compare, Show, FromJson, ToJson)
+} derive(Eq, Compare, Debug, FromJson, ToJson)
 
 ///|
 /// The type for [code spans](https://spec.commonmark.org/0.30/#code-spans).
 pub(all) struct InlineCodeSpan {
   backticks : Count
   code_layout : Seq[Tight]
-} derive(Eq, Show, ToJson)
+} derive(Eq, Debug, ToJson)
 
 ///|
 pub fn InlineCodeSpan::new(
@@ -344,7 +344,7 @@ pub fn InlineCodeSpan::code(self : InlineCodeSpan) -> String {
 pub(all) struct InlineEmphasis {
   delim : Char
   inline : Inline
-} derive(Eq, Show, ToJson)
+} derive(Eq, Debug, ToJson)
 
 ///|
 pub fn InlineEmphasis::new(
@@ -358,7 +358,7 @@ pub fn InlineEmphasis::new(
 pub(all) struct InlineLink {
   text : Inline
   reference : ReferenceKind
-} derive(Eq, Show, ToJson)
+} derive(Eq, Debug, ToJson)
 
 ///|
 pub(all) enum ReferenceKind {
@@ -367,7 +367,7 @@ pub(all) enum ReferenceKind {
   /// https://spec.commonmark.org/0.30/#reference-link
   /// First label is the label of the reference, second label is the label of the referenced definition.
   Ref(ReferenceLayout, Label, Label)
-} derive(Eq, Show, ToJson)
+} derive(Eq, Debug, ToJson)
 
 ///|
 /// The type for reference link layouts.
@@ -378,7 +378,7 @@ pub(all) enum ReferenceLayout {
   Full
   /// https://spec.commonmark.org/0.30/#shortcut-reference-link
   Shortcut
-} derive(Eq, Show, FromJson, ToJson)
+} derive(Eq, Debug, FromJson, ToJson)
 
 ///|
 pub fn InlineLink::new(text : Inline, reference : ReferenceKind) -> InlineLink {
@@ -442,7 +442,7 @@ pub fn InlineLink::is_unsafe(l : String) -> Bool {
 
 ///|
 /// The type for [inline raw HTML](https://spec.commonmark.org/0.30/#raw-html) (can span multiple lines).
-pub(all) struct InlineRawHtml(Seq[Tight]) derive(Eq, Show, ToJson)
+pub(all) struct InlineRawHtml(Seq[Tight]) derive(Eq, Debug, ToJson)
 
 ///|
 /// The type for [textual content](https://spec.commonmark.org/0.30/#textual-content).
@@ -455,13 +455,13 @@ pub type InlineText = String
 // Extensions
 
 ///|
-pub(all) struct InlineStrikethrough(Inline) derive(Eq, Show, ToJson)
+pub(all) struct InlineStrikethrough(Inline) derive(Eq, Debug, ToJson)
 
 ///|
 pub(all) struct InlineMathSpan {
   display : Bool
   tex_layout : Seq[Tight]
-} derive(Eq, Show, ToJson)
+} derive(Eq, Debug, ToJson)
 
 ///|
 pub fn InlineMathSpan::tex(self : Self) -> String {

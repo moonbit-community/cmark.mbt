@@ -12,7 +12,31 @@ priv enum Closer {
   EmphasisMarks(Char)
   StrikethroughMarks
   MathSpanMarks(Int)
-} derive(Eq, Hash, Show, ToJson)
+} derive(Eq, Hash, ToJson)
+
+///|
+impl Show for Closer with output(self, logger) {
+  match self {
+    Backticks(n) => {
+      logger.write_string("Backticks(")
+      logger.write_object(n)
+      logger.write_string(")")
+    }
+    RightBrack => logger.write_string("RightBrack")
+    RightParen => logger.write_string("RightParen")
+    EmphasisMarks(c) => {
+      logger.write_string("EmphasisMarks(")
+      logger.write_object(c)
+      logger.write_string(")")
+    }
+    StrikethroughMarks => logger.write_string("StrikethroughMarks")
+    MathSpanMarks(n) => {
+      logger.write_string("MathSpanMarks(")
+      logger.write_object(n)
+      logger.write_string(")")
+    }
+  }
+}
 
 ///|
 test {
@@ -25,12 +49,11 @@ test {
 type PosSet = Set[Int]
 
 ///|
-priv struct CloserIndex(Map[Closer, PosSet]) derive(Show, ToJson)
+priv struct CloserIndex(Map[Closer, PosSet]) derive(ToJson)
 
 ///|
 test {
-  // Prevent warning about unused Show and ToJson
-  (fn(c : CloserIndex) { c.to_string() }) |> ignore()
+  // Prevent warning about unused ToJson
   (fn(c : CloserIndex) { c.to_json() }) |> ignore()
 }
 
