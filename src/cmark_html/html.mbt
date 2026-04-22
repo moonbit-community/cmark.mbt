@@ -777,7 +777,7 @@ fn table(c : Context, t : @cmark.Table) -> Unit raise {
         cols(c, tag, [][:], count - 1, cs)
       }
       ([], []) =>
-        for i in 0..<count {
+        for _ in 0..<count {
           start(c, None, tag)
           close(c, tag)
         }
