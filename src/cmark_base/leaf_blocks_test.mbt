@@ -215,8 +215,14 @@ test "list_marker ordered list without space" {
 
 ///|
 test "ext_task_marker returns None when start >= last" {
-  debug_inspect(@cmark_base.ext_task_marker("", last=0, start=1), content="None")
-  debug_inspect(@cmark_base.ext_task_marker("", last=0, start=0), content="None")
+  debug_inspect(
+    @cmark_base.ext_task_marker("", last=0, start=1),
+    content="None",
+  )
+  debug_inspect(
+    @cmark_base.ext_task_marker("", last=0, start=0),
+    content="None",
+  )
 }
 
 ///|

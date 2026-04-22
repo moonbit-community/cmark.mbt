@@ -372,9 +372,7 @@ fn _utf_16_clean_unesc_unref(
   let last = @cmp.minimum(last, max)
   let first = @cmp.maximum(first, 0)
   for k = first {
-    guard k <= last else {
-      break s[first:last + 1].to_string()
-    }
+    guard k <= last else { break s[first:last + 1].to_string() }
     match (s.code_unit_at(k), do_unesc) {
       ('\\', true) | ('&', _) | ('\u{0}', _) => {
         buf.reset()

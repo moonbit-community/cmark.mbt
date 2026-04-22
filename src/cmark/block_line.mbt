@@ -81,10 +81,7 @@ fn BlockLine::flush_tight(
   }
   // On the first line the blanks are legit 
   if acc.is_empty() {
-    acc.push({
-      blanks: "",
-      node: { meta, v: s[start:last + 1].to_string() },
-    })
+    acc.push({ blanks: "", node: { meta, v: s[start:last + 1].to_string() } })
     return
   }
   let nb = @cmark_base.first_non_blank(s, last~, start~)

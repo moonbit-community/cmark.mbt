@@ -27,7 +27,10 @@ test "link_destination test with no end delimiter" {
   let input = "<some_url"
   let last = 8
   let start = 0
-  debug_inspect(@cmark_base.link_destination(input, last~, start~), content="None")
+  debug_inspect(
+    @cmark_base.link_destination(input, last~, start~),
+    content="None",
+  )
 }
 
 ///|
@@ -62,7 +65,10 @@ test "trigger uncovered line 28 and 29" {
   let input : String = "<test<text"
   let last : Int = 10
   let start : Int = 0
-  debug_inspect(@cmark_base.link_destination(input, last~, start~), content="None")
+  debug_inspect(
+    @cmark_base.link_destination(input, last~, start~),
+    content="None",
+  )
 }
 
 ///|

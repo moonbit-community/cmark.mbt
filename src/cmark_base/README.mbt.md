@@ -52,10 +52,16 @@ test "string analysis" {
   let start = 0
 
   // Find first non-blank character
-  debug_inspect(@cmark_base.first_non_blank("  hello", last=7, start~), content="2")
+  debug_inspect(
+    @cmark_base.first_non_blank("  hello", last=7, start~),
+    content="2",
+  )
 
   // Count repeated characters
-  debug_inspect(@cmark_base.run_of(char='-', "---hello", last=8, start~), content="2")
+  debug_inspect(
+    @cmark_base.run_of(char='-', "---hello", last=8, start~),
+    content="2",
+  )
 }
 ```
 

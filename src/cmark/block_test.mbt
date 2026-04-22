@@ -20,7 +20,10 @@ test "language_of_info_string with empty string" {
 
 ///|
 test "language_of_info_string with only whitespace in language" {
-  debug_inspect(@cmark.CodeBlock::language_of_info_string("   "), content="None")
+  debug_inspect(
+    @cmark.CodeBlock::language_of_info_string("   "),
+    content="None",
+  )
 }
 
 ///|

@@ -16,5 +16,8 @@ test "rev_drop_spaces with spaces" {
 
 ///|
 test "rev_drop_spaces with no spaces" {
-  debug_inspect(@cmark_base.rev_drop_spaces("hello", first=0, start=4), content="4")
+  debug_inspect(
+    @cmark_base.rev_drop_spaces("hello", first=0, start=4),
+    content="4",
+  )
 }

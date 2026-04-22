@@ -421,7 +421,7 @@ pub fn LineType::html_block_start(
         | 62)
       }
       let is_open_close_end = is_open_end ||
-      (tag_last + 2 <= last && s[tag_last + 1:tag_last + 3] == "/>")
+        (tag_last + 2 <= last && s[tag_last + 1:tag_last + 3] == "/>")
       if c != '/' {
         if html_start_cond_1_set.contains(tag) && is_open_end {
           LineType::HtmlBlockLine(EndCond1) // 1

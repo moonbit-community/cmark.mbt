@@ -138,7 +138,10 @@ test "panic inline_ext_none raises error" {
 test "map_inline default case" {
   let mapper = @cmark.Mapper::new()
   let text = @cmark.Inline::Text(@cmark.Node::new("hello"))
-  debug_inspect(mapper.map_inline(text), content="Some(Text(Node::new(\"hello\")))")
+  debug_inspect(
+    mapper.map_inline(text),
+    content="Some(Text(Node::new(\"hello\")))",
+  )
 }
 
 ///|
