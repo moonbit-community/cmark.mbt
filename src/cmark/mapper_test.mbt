@@ -62,7 +62,42 @@ test "map_inline with StrongEmphasis" {
   debug_inspect(
     result,
     content=(
-      #|Some(StrongEmphasis(Node::new({delim: '*', inline: Text(Node::new("strongly emphasized text"))})))
+      #|Some(
+      #|  StrongEmphasis(
+      #|    {
+      #|      v: {
+      #|        delim: '*',
+      #|        inline: Text(
+      #|          {
+      #|            v: "strongly emphasized text",
+      #|            meta: {
+      #|              id: 0,
+      #|              loc: {
+      #|                file: "-",
+      #|                first_ccode: -1,
+      #|                last_ccode: -1,
+      #|                first_line: LinePos(-1, -1),
+      #|                last_line: LinePos(-1, -1),
+      #|              },
+      #|              extra: None,
+      #|            },
+      #|          },
+      #|        ),
+      #|      },
+      #|      meta: {
+      #|        id: 0,
+      #|        loc: {
+      #|          file: "-",
+      #|          first_ccode: -1,
+      #|          last_ccode: -1,
+      #|          first_line: LinePos(-1, -1),
+      #|          last_line: LinePos(-1, -1),
+      #|        },
+      #|        extra: None,
+      #|      },
+      #|    },
+      #|  ),
+      #|)
     ),
   )
 }
@@ -97,7 +132,42 @@ test "map_inline with Emphasis" {
   debug_inspect(
     result,
     content=(
-      #|Some(Emphasis(Node::new({delim: '*', inline: Text(Node::new("emphasized text"))})))
+      #|Some(
+      #|  Emphasis(
+      #|    {
+      #|      v: {
+      #|        delim: '*',
+      #|        inline: Text(
+      #|          {
+      #|            v: "emphasized text",
+      #|            meta: {
+      #|              id: 0,
+      #|              loc: {
+      #|                file: "-",
+      #|                first_ccode: -1,
+      #|                last_ccode: -1,
+      #|                first_line: LinePos(-1, -1),
+      #|                last_line: LinePos(-1, -1),
+      #|              },
+      #|              extra: None,
+      #|            },
+      #|          },
+      #|        ),
+      #|      },
+      #|      meta: {
+      #|        id: 0,
+      #|        loc: {
+      #|          file: "-",
+      #|          first_ccode: -1,
+      #|          last_ccode: -1,
+      #|          first_line: LinePos(-1, -1),
+      #|          last_line: LinePos(-1, -1),
+      #|        },
+      #|        extra: None,
+      #|      },
+      #|    },
+      #|  ),
+      #|)
     ),
   )
 }
@@ -140,7 +210,26 @@ test "map_inline default case" {
   let text = @cmark.Inline::Text(@cmark.Node::new("hello"))
   debug_inspect(
     mapper.map_inline(text),
-    content="Some(Text(Node::new(\"hello\")))",
+    content=(
+      #|Some(
+      #|  Text(
+      #|    {
+      #|      v: "hello",
+      #|      meta: {
+      #|        id: 0,
+      #|        loc: {
+      #|          file: "-",
+      #|          first_ccode: -1,
+      #|          last_ccode: -1,
+      #|          first_line: LinePos(-1, -1),
+      #|          last_line: LinePos(-1, -1),
+      #|        },
+      #|        extra: None,
+      #|      },
+      #|    },
+      #|  ),
+      #|)
+    ),
   )
 }
 
@@ -149,7 +238,27 @@ test "map_doc with empty document" {
   let mapper = @cmark.Mapper::new()
   let doc = @cmark.Doc::empty()
   let result = mapper.map_doc(doc)
-  debug_inspect(result.block, content="Blocks(Node::new(Seq([])))")
+  debug_inspect(
+    result.block,
+    content=(
+      #|Blocks(
+      #|  {
+      #|    v: Seq([]),
+      #|    meta: {
+      #|      id: 0,
+      #|      loc: {
+      #|        file: "-",
+      #|        first_ccode: -1,
+      #|        last_ccode: -1,
+      #|        first_line: LinePos(-1, -1),
+      #|        last_line: LinePos(-1, -1),
+      #|      },
+      #|      extra: None,
+      #|    },
+      #|  },
+      #|)
+    ),
+  )
 }
 
 ///|
@@ -165,7 +274,29 @@ test "map_block with default case" {
   let mapper = @cmark.Mapper::new()
   let block = @cmark.Block::BlankLine(@cmark.Node::new(""))
   let result = mapper.map_block(block)
-  debug_inspect(result, content="Some(BlankLine(Node::new(\"\")))")
+  debug_inspect(
+    result,
+    content=(
+      #|Some(
+      #|  BlankLine(
+      #|    {
+      #|      v: "",
+      #|      meta: {
+      #|        id: 0,
+      #|        loc: {
+      #|          file: "-",
+      #|          first_ccode: -1,
+      #|          last_ccode: -1,
+      #|          first_line: LinePos(-1, -1),
+      #|          last_line: LinePos(-1, -1),
+      #|        },
+      #|        extra: None,
+      #|      },
+      #|    },
+      #|  ),
+      #|)
+    ),
+  )
 }
 
 ///|
@@ -180,7 +311,43 @@ test "map_block with blocks" {
   debug_inspect(
     result,
     content=(
-      #|Some(Blocks(Node::new(Seq([BlankLine(Node::new(""))]))))
+      #|Some(
+      #|  Blocks(
+      #|    {
+      #|      v: Seq(
+      #|        [
+      #|          BlankLine(
+      #|            {
+      #|              v: "",
+      #|              meta: {
+      #|                id: 0,
+      #|                loc: {
+      #|                  file: "-",
+      #|                  first_ccode: -1,
+      #|                  last_ccode: -1,
+      #|                  first_line: LinePos(-1, -1),
+      #|                  last_line: LinePos(-1, -1),
+      #|                },
+      #|                extra: None,
+      #|              },
+      #|            },
+      #|          ),
+      #|        ],
+      #|      ),
+      #|      meta: {
+      #|        id: 0,
+      #|        loc: {
+      #|          file: "-",
+      #|          first_ccode: -1,
+      #|          last_ccode: -1,
+      #|          first_line: LinePos(-1, -1),
+      #|          last_line: LinePos(-1, -1),
+      #|        },
+      #|        extra: None,
+      #|      },
+      #|    },
+      #|  ),
+      #|)
     ),
   )
 }
@@ -239,7 +406,24 @@ test "mapper map_inline identity" {
   debug_inspect(
     mapper.map_inline(text),
     content=(
-      #|Some(Text(Node::new("text")))
+      #|Some(
+      #|  Text(
+      #|    {
+      #|      v: "text",
+      #|      meta: {
+      #|        id: 0,
+      #|        loc: {
+      #|          file: "-",
+      #|          first_ccode: -1,
+      #|          last_ccode: -1,
+      #|          first_line: LinePos(-1, -1),
+      #|          last_line: LinePos(-1, -1),
+      #|        },
+      #|        extra: None,
+      #|      },
+      #|    },
+      #|  ),
+      #|)
     ),
   )
 }
@@ -251,7 +435,24 @@ test "mapper map_block identity" {
   debug_inspect(
     mapper.map_block(block),
     content=(
-      #|Some(BlankLine(Node::new("")))
+      #|Some(
+      #|  BlankLine(
+      #|    {
+      #|      v: "",
+      #|      meta: {
+      #|        id: 0,
+      #|        loc: {
+      #|          file: "-",
+      #|          first_ccode: -1,
+      #|          last_ccode: -1,
+      #|          first_line: LinePos(-1, -1),
+      #|          last_line: LinePos(-1, -1),
+      #|        },
+      #|        extra: None,
+      #|      },
+      #|    },
+      #|  ),
+      #|)
     ),
   )
 }
@@ -270,7 +471,70 @@ test "map_inline with Image" {
   debug_inspect(
     result,
     content=(
-      #|Some(Image(Node::new({text: Text(Node::new("alt text")), reference: Inline(Node::new({layout: {indent: 0, angled_dest: false, before_dest: Seq([]), after_dest: Seq([]), title_open_delim: '"', after_title: Seq([])}, label: None, defined_label: None, dest: None, title: None}))})))
+      #|Some(
+      #|  Image(
+      #|    {
+      #|      v: {
+      #|        text: Text(
+      #|          {
+      #|            v: "alt text",
+      #|            meta: {
+      #|              id: 0,
+      #|              loc: {
+      #|                file: "-",
+      #|                first_ccode: -1,
+      #|                last_ccode: -1,
+      #|                first_line: LinePos(-1, -1),
+      #|                last_line: LinePos(-1, -1),
+      #|              },
+      #|              extra: None,
+      #|            },
+      #|          },
+      #|        ),
+      #|        reference: Inline(
+      #|          {
+      #|            v: {
+      #|              layout: {
+      #|                indent: 0,
+      #|                angled_dest: false,
+      #|                before_dest: Seq([]),
+      #|                after_dest: Seq([]),
+      #|                title_open_delim: '"',
+      #|                after_title: Seq([]),
+      #|              },
+      #|              label: None,
+      #|              defined_label: None,
+      #|              dest: None,
+      #|              title: None,
+      #|            },
+      #|            meta: {
+      #|              id: 0,
+      #|              loc: {
+      #|                file: "-",
+      #|                first_ccode: -1,
+      #|                last_ccode: -1,
+      #|                first_line: LinePos(-1, -1),
+      #|                last_line: LinePos(-1, -1),
+      #|              },
+      #|              extra: None,
+      #|            },
+      #|          },
+      #|        ),
+      #|      },
+      #|      meta: {
+      #|        id: 0,
+      #|        loc: {
+      #|          file: "-",
+      #|          first_ccode: -1,
+      #|          last_ccode: -1,
+      #|          first_line: LinePos(-1, -1),
+      #|          last_line: LinePos(-1, -1),
+      #|        },
+      #|        extra: None,
+      #|      },
+      #|    },
+      #|  ),
+      #|)
     ),
   )
 }
@@ -288,7 +552,70 @@ test "map_inline with Link" {
   debug_inspect(
     result,
     content=(
-      #|Some(Link(Node::new({text: Text(Node::new("link text")), reference: Inline(Node::new({layout: {indent: 0, angled_dest: false, before_dest: Seq([]), after_dest: Seq([]), title_open_delim: '"', after_title: Seq([])}, label: None, defined_label: None, dest: None, title: None}))})))
+      #|Some(
+      #|  Link(
+      #|    {
+      #|      v: {
+      #|        text: Text(
+      #|          {
+      #|            v: "link text",
+      #|            meta: {
+      #|              id: 0,
+      #|              loc: {
+      #|                file: "-",
+      #|                first_ccode: -1,
+      #|                last_ccode: -1,
+      #|                first_line: LinePos(-1, -1),
+      #|                last_line: LinePos(-1, -1),
+      #|              },
+      #|              extra: None,
+      #|            },
+      #|          },
+      #|        ),
+      #|        reference: Inline(
+      #|          {
+      #|            v: {
+      #|              layout: {
+      #|                indent: 0,
+      #|                angled_dest: false,
+      #|                before_dest: Seq([]),
+      #|                after_dest: Seq([]),
+      #|                title_open_delim: '"',
+      #|                after_title: Seq([]),
+      #|              },
+      #|              label: None,
+      #|              defined_label: None,
+      #|              dest: None,
+      #|              title: None,
+      #|            },
+      #|            meta: {
+      #|              id: 0,
+      #|              loc: {
+      #|                file: "-",
+      #|                first_ccode: -1,
+      #|                last_ccode: -1,
+      #|                first_line: LinePos(-1, -1),
+      #|                last_line: LinePos(-1, -1),
+      #|              },
+      #|              extra: None,
+      #|            },
+      #|          },
+      #|        ),
+      #|      },
+      #|      meta: {
+      #|        id: 0,
+      #|        loc: {
+      #|          file: "-",
+      #|          first_ccode: -1,
+      #|          last_ccode: -1,
+      #|          first_line: LinePos(-1, -1),
+      #|          last_line: LinePos(-1, -1),
+      #|        },
+      #|        extra: None,
+      #|      },
+      #|    },
+      #|  ),
+      #|)
     ),
   )
 }
@@ -305,7 +632,42 @@ test "map_inline with Emphasis (2)" {
   debug_inspect(
     result,
     content=(
-      #|Some(Emphasis(Node::new({delim: '*', inline: Text(Node::new("emphasized text"))})))
+      #|Some(
+      #|  Emphasis(
+      #|    {
+      #|      v: {
+      #|        delim: '*',
+      #|        inline: Text(
+      #|          {
+      #|            v: "emphasized text",
+      #|            meta: {
+      #|              id: 0,
+      #|              loc: {
+      #|                file: "-",
+      #|                first_ccode: -1,
+      #|                last_ccode: -1,
+      #|                first_line: LinePos(-1, -1),
+      #|                last_line: LinePos(-1, -1),
+      #|              },
+      #|              extra: None,
+      #|            },
+      #|          },
+      #|        ),
+      #|      },
+      #|      meta: {
+      #|        id: 0,
+      #|        loc: {
+      #|          file: "-",
+      #|          first_ccode: -1,
+      #|          last_ccode: -1,
+      #|          first_line: LinePos(-1, -1),
+      #|          last_line: LinePos(-1, -1),
+      #|        },
+      #|        extra: None,
+      #|      },
+      #|    },
+      #|  ),
+      #|)
     ),
   )
 }
@@ -342,7 +704,61 @@ test "map_inline with Inlines" {
   let result = mapper.map_inline(inlines)
   debug_inspect(
     result,
-    content="Some(Inlines(Node::new(Seq([Text(Node::new(\"text 1\")), Text(Node::new(\"text 2\"))]))))",
+    content=(
+      #|Some(
+      #|  Inlines(
+      #|    {
+      #|      v: Seq(
+      #|        [
+      #|          Text(
+      #|            {
+      #|              v: "text 1",
+      #|              meta: {
+      #|                id: 0,
+      #|                loc: {
+      #|                  file: "-",
+      #|                  first_ccode: -1,
+      #|                  last_ccode: -1,
+      #|                  first_line: LinePos(-1, -1),
+      #|                  last_line: LinePos(-1, -1),
+      #|                },
+      #|                extra: None,
+      #|              },
+      #|            },
+      #|          ),
+      #|          Text(
+      #|            {
+      #|              v: "text 2",
+      #|              meta: {
+      #|                id: 0,
+      #|                loc: {
+      #|                  file: "-",
+      #|                  first_ccode: -1,
+      #|                  last_ccode: -1,
+      #|                  first_line: LinePos(-1, -1),
+      #|                  last_line: LinePos(-1, -1),
+      #|                },
+      #|                extra: None,
+      #|              },
+      #|            },
+      #|          ),
+      #|        ],
+      #|      ),
+      #|      meta: {
+      #|        id: 0,
+      #|        loc: {
+      #|          file: "-",
+      #|          first_ccode: -1,
+      #|          last_ccode: -1,
+      #|          first_line: LinePos(-1, -1),
+      #|          last_line: LinePos(-1, -1),
+      #|        },
+      #|        extra: None,
+      #|      },
+      #|    },
+      #|  ),
+      #|)
+    ),
   )
 }
 
@@ -378,7 +794,41 @@ test "map_inline with ExtStrikethrough" {
   debug_inspect(
     result,
     content=(
-      #|Some(ExtStrikethrough(Node::new(InlineStrikethrough(Text(Node::new("strikethrough text"))))))
+      #|Some(
+      #|  ExtStrikethrough(
+      #|    {
+      #|      v: InlineStrikethrough(
+      #|        Text(
+      #|          {
+      #|            v: "strikethrough text",
+      #|            meta: {
+      #|              id: 0,
+      #|              loc: {
+      #|                file: "-",
+      #|                first_ccode: -1,
+      #|                last_ccode: -1,
+      #|                first_line: LinePos(-1, -1),
+      #|                last_line: LinePos(-1, -1),
+      #|              },
+      #|              extra: None,
+      #|            },
+      #|          },
+      #|        ),
+      #|      ),
+      #|      meta: {
+      #|        id: 0,
+      #|        loc: {
+      #|          file: "-",
+      #|          first_ccode: -1,
+      #|          last_ccode: -1,
+      #|          first_line: LinePos(-1, -1),
+      #|          last_line: LinePos(-1, -1),
+      #|        },
+      #|        extra: None,
+      #|      },
+      #|    },
+      #|  ),
+      #|)
     ),
   )
 }
@@ -423,7 +873,44 @@ test "map_block with Heading" {
   debug_inspect(
     result,
     content=(
-      #|Some(Heading(Node::new({layout: Atx({indent: 0, after_opening: "", closing: ""}), level: 1, inline: Text(Node::new("Heading")), id: None})))
+      #|Some(
+      #|  Heading(
+      #|    {
+      #|      v: {
+      #|        layout: Atx({ indent: 0, after_opening: "", closing: "" }),
+      #|        level: 1,
+      #|        inline: Text(
+      #|          {
+      #|            v: "Heading",
+      #|            meta: {
+      #|              id: 0,
+      #|              loc: {
+      #|                file: "-",
+      #|                first_ccode: -1,
+      #|                last_ccode: -1,
+      #|                first_line: LinePos(-1, -1),
+      #|                last_line: LinePos(-1, -1),
+      #|              },
+      #|              extra: None,
+      #|            },
+      #|          },
+      #|        ),
+      #|        id: None,
+      #|      },
+      #|      meta: {
+      #|        id: 0,
+      #|        loc: {
+      #|          file: "-",
+      #|          first_ccode: -1,
+      #|          last_ccode: -1,
+      #|          first_line: LinePos(-1, -1),
+      #|          last_line: LinePos(-1, -1),
+      #|        },
+      #|        extra: None,
+      #|      },
+      #|    },
+      #|  ),
+      #|)
     ),
   )
 }
@@ -444,6 +931,62 @@ test "map_block with BlockQuote" {
   let result = mapper.map_block(blockquote)
   debug_inspect(
     result,
-    content="Some(BlockQuote(Node::new({indent: 0, block: Paragraph(Node::new({leading_indent: 0, inline: Text(Node::new(\"quoted text\")), trailing_blanks: \"\"}))})))",
+    content=(
+      #|Some(
+      #|  BlockQuote(
+      #|    {
+      #|      v: {
+      #|        indent: 0,
+      #|        block: Paragraph(
+      #|          {
+      #|            v: {
+      #|              leading_indent: 0,
+      #|              inline: Text(
+      #|                {
+      #|                  v: "quoted text",
+      #|                  meta: {
+      #|                    id: 0,
+      #|                    loc: {
+      #|                      file: "-",
+      #|                      first_ccode: -1,
+      #|                      last_ccode: -1,
+      #|                      first_line: LinePos(-1, -1),
+      #|                      last_line: LinePos(-1, -1),
+      #|                    },
+      #|                    extra: None,
+      #|                  },
+      #|                },
+      #|              ),
+      #|              trailing_blanks: "",
+      #|            },
+      #|            meta: {
+      #|              id: 0,
+      #|              loc: {
+      #|                file: "-",
+      #|                first_ccode: -1,
+      #|                last_ccode: -1,
+      #|                first_line: LinePos(-1, -1),
+      #|                last_line: LinePos(-1, -1),
+      #|              },
+      #|              extra: None,
+      #|            },
+      #|          },
+      #|        ),
+      #|      },
+      #|      meta: {
+      #|        id: 0,
+      #|        loc: {
+      #|          file: "-",
+      #|          first_ccode: -1,
+      #|          last_ccode: -1,
+      #|          first_line: LinePos(-1, -1),
+      #|          last_line: LinePos(-1, -1),
+      #|        },
+      #|        extra: None,
+      #|      },
+      #|    },
+      #|  ),
+      #|)
+    ),
   )
 }

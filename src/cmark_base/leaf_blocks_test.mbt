@@ -151,12 +151,12 @@ test "html block start with open tag" {
 test "html_block_end with EndStr" {
   let s = "Hello -->World"
   let end_cond = @cmark_base.HtmlBlockEndCond::EndStr("-->")
-  debug_inspect(
+  inspect(
     @cmark_base.LineType::html_block_end(s, end_cond~, last=11, start=0),
     content="true",
   )
   let s2 = "Hello World"
-  debug_inspect(
+  inspect(
     @cmark_base.LineType::html_block_end(s2, end_cond~, last=10, start=0),
     content="false",
   )
@@ -166,12 +166,12 @@ test "html_block_end with EndStr" {
 test "html_block_end with EndCond1" {
   let s = "Hello </pre>World"
   let end_cond = @cmark_base.HtmlBlockEndCond::EndCond1
-  debug_inspect(
+  inspect(
     @cmark_base.LineType::html_block_end(s, end_cond~, last=12, start=0),
     content="true",
   )
   let s2 = "Hello World"
-  debug_inspect(
+  inspect(
     @cmark_base.LineType::html_block_end(s2, end_cond~, last=10, start=0),
     content="false",
   )
@@ -215,20 +215,14 @@ test "list_marker ordered list without space" {
 
 ///|
 test "ext_task_marker returns None when start >= last" {
-  debug_inspect(
-    @cmark_base.ext_task_marker("", last=0, start=1),
-    content="None",
-  )
-  debug_inspect(
-    @cmark_base.ext_task_marker("", last=0, start=0),
-    content="None",
-  )
+  inspect(@cmark_base.ext_task_marker("", last=0, start=1), content="None")
+  inspect(@cmark_base.ext_task_marker("", last=0, start=0), content="None")
 }
 
 ///|
 test "ext_task_marker returns None when the marker is too long" {
   let s = "[\u{d8}00]"
-  debug_inspect(
+  inspect(
     @cmark_base.ext_task_marker(s, last=s.length(), start=0),
     content="None",
   )
@@ -442,7 +436,7 @@ test "fenced code block continue - another short blank line" {
 ///|
 test "could_be_link_ref_definition empty input" {
   let s = ""
-  debug_inspect(
+  inspect(
     @cmark_base.could_be_link_ref_definition(s, last=0, start=1),
     content="false",
   )
@@ -451,7 +445,7 @@ test "could_be_link_ref_definition empty input" {
 ///|
 test "could_be_link_ref_definition exceed boundary" {
   let s = "   "
-  debug_inspect(
+  inspect(
     @cmark_base.could_be_link_ref_definition(s, last=2, start=3),
     content="false",
   )
@@ -468,7 +462,7 @@ test "html block start with closing tag that is not in cond 6 set - no whitespac
 
 ///|
 test "could_be_link_ref_definition no bracket" {
-  debug_inspect(
+  inspect(
     @cmark_base.could_be_link_ref_definition("   ", last=2, start=0),
     content="false",
   )

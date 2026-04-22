@@ -3,8 +3,8 @@ test "InlineAutolink::new with link" {
   let meta = @cmark_base.Meta::none()
   let link = @cmark.Node::new("example.com", meta~)
   let autolink = @cmark.InlineAutolink::new(link)
-  debug_inspect(autolink.is_email, content="false")
-  debug_inspect(autolink.link.v, content="example.com")
+  inspect(autolink.is_email, content="false")
+  inspect(autolink.link.v, content="example.com")
 }
 
 ///|
@@ -13,7 +13,7 @@ test "Inline::is_empty checks if inline content is empty" {
 
   // Test empty inlines list
   let empty_inlines = @cmark.Inline::Inlines({ v: @cmark.Seq::empty(), meta })
-  debug_inspect(empty_inlines.is_empty(), content="true")
+  inspect(empty_inlines.is_empty(), content="true")
 
   // Test non-empty inlines list
   let text_node = @cmark.Inline::Text(@cmark.Node::new("text", meta~))
@@ -21,15 +21,15 @@ test "Inline::is_empty checks if inline content is empty" {
     v: @cmark.Seq::from_array([text_node]),
     meta,
   })
-  debug_inspect(non_empty_inlines.is_empty(), content="false")
+  inspect(non_empty_inlines.is_empty(), content="false")
 
   // Test empty text
   let empty_text = @cmark.Inline::Text(@cmark.Node::new("", meta~))
-  debug_inspect(empty_text.is_empty(), content="true")
+  inspect(empty_text.is_empty(), content="true")
 
   // Test non-empty text
   let non_empty_text = @cmark.Inline::Text(@cmark.Node::new("Some text", meta~))
-  debug_inspect(non_empty_text.is_empty(), content="false")
+  inspect(non_empty_text.is_empty(), content="false")
 
   // Test other cases which always return false
   let al_node = @cmark.Node::new(
@@ -37,28 +37,28 @@ test "Inline::is_empty checks if inline content is empty" {
     meta~,
   )
   let autolink = @cmark.Inline::Autolink(al_node)
-  debug_inspect(autolink.is_empty(), content="false")
+  inspect(autolink.is_empty(), content="false")
 }
 
 ///|
 test "InlineCodeSpan::code with empty content" {
   let empty_code = @cmark.InlineCodeSpan::from_string("")
-  debug_inspect(empty_code.code(), content="")
+  inspect(empty_code.code(), content="")
 }
 
 ///|
 test "is_unsafe for data URLs" {
   // Test data URL with image/gif
   let data_url = "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7"
-  debug_inspect(@cmark.InlineLink::is_unsafe(data_url), content="false")
+  inspect(@cmark.InlineLink::is_unsafe(data_url), content="false")
 
   // Test data URL with missing comma after base64
   let invalid_data = "data:image/gif;base64"
-  debug_inspect(@cmark.InlineLink::is_unsafe(invalid_data), content="true")
+  inspect(@cmark.InlineLink::is_unsafe(invalid_data), content="true")
 
   // Test data URL with no semicolon
   let data_no_semi = "data:image/gif,content"
-  debug_inspect(@cmark.InlineLink::is_unsafe(data_no_semi), content="false")
+  inspect(@cmark.InlineLink::is_unsafe(data_no_semi), content="false")
 }
 
 ///|
@@ -68,10 +68,10 @@ test "is_unsafe for data URLs with various media types" {
   let data_png = "data:image/png,iVBOR"
   let data_jpeg = "data:image/jpeg,/9j/4"
   let data_webp = "data:image/webp,UklGR"
-  debug_inspect(@cmark.InlineLink::is_unsafe(data_gif), content="false")
-  debug_inspect(@cmark.InlineLink::is_unsafe(data_png), content="false")
-  debug_inspect(@cmark.InlineLink::is_unsafe(data_jpeg), content="false")
-  debug_inspect(@cmark.InlineLink::is_unsafe(data_webp), content="false")
+  inspect(@cmark.InlineLink::is_unsafe(data_gif), content="false")
+  inspect(@cmark.InlineLink::is_unsafe(data_png), content="false")
+  inspect(@cmark.InlineLink::is_unsafe(data_jpeg), content="false")
+  inspect(@cmark.InlineLink::is_unsafe(data_webp), content="false")
 }
 
 ///|
@@ -93,28 +93,28 @@ test "inline id with text containing backticks" {
       ]),
     }),
   )
-  debug_inspect(inline.id(), content="text")
+  inspect(inline.id(), content="text")
 }
 
 ///|
 test "inline id with whitespace and punctuation" {
   let text = " Hello, World! \t"
   let inline = @cmark.Inline::Text(@cmark.Node::new(text))
-  debug_inspect(inline.id(), content="hello-world")
+  inspect(inline.id(), content="hello-world")
 }
 
 ///|
 test "inline id with underscore and dash" {
   let text = "hello_world-test"
   let inline = @cmark.Inline::Text(@cmark.Node::new(text))
-  debug_inspect(inline.id(), content="hello_world-test")
+  inspect(inline.id(), content="hello_world-test")
 }
 
 ///|
 test "inline id with mixed case and punctuation" {
   let text = "Hello, World! This is a Test."
   let inline = @cmark.Inline::Text(@cmark.Node::new(text))
-  debug_inspect(inline.id(), content="hello-world-this-is-a-test")
+  inspect(inline.id(), content="hello-world-this-is-a-test")
 }
 
 ///|
@@ -165,8 +165,8 @@ test "InlineBreak::new creates a break with specified parameters" {
     break_type,
   )
   debug_inspect(line_break.ty, content="Hard")
-  debug_inspect(line_break.layout_before.v, content="  ")
-  debug_inspect(line_break.layout_after.v, content="   ")
+  inspect(line_break.layout_before.v, content="  ")
+  inspect(line_break.layout_after.v, content="   ")
 }
 
 ///|
@@ -178,7 +178,7 @@ test "Inline::id with null character" {
 
   // Should replace null with replacement character in output
   let id = text.id()
-  debug_inspect(id, content="text�more")
+  inspect(id, content="text�more")
 }
 
 ///|
@@ -195,7 +195,7 @@ test "Inline::normalize with Link type" {
   let normalized = link.normalize()
 
   // Check that the result is correctly normalized
-  debug_inspect(normalized.is_empty(), content="false")
+  inspect(normalized.is_empty(), content="false")
 }
 
 ///|
@@ -274,7 +274,39 @@ test "Inline::normalize with ExtStrikethrough type" {
   debug_inspect(
     normalized,
     content=(
-      #|ExtStrikethrough(Node::new(InlineStrikethrough(Text(Node::new("strikethrough")))))
+      #|ExtStrikethrough(
+      #|  {
+      #|    v: InlineStrikethrough(
+      #|      Text(
+      #|        {
+      #|          v: "strikethrough",
+      #|          meta: {
+      #|            id: 0,
+      #|            loc: {
+      #|              file: "-",
+      #|              first_ccode: -1,
+      #|              last_ccode: -1,
+      #|              first_line: LinePos(-1, -1),
+      #|              last_line: LinePos(-1, -1),
+      #|            },
+      #|            extra: None,
+      #|          },
+      #|        },
+      #|      ),
+      #|    ),
+      #|    meta: {
+      #|      id: 0,
+      #|      loc: {
+      #|        file: "-",
+      #|        first_ccode: -1,
+      #|        last_ccode: -1,
+      #|        first_line: LinePos(-1, -1),
+      #|        last_line: LinePos(-1, -1),
+      #|      },
+      #|      extra: None,
+      #|    },
+      #|  },
+      #|)
     ),
   )
 }
@@ -295,21 +327,21 @@ test "Inline::normalize with complex structure - has nested inlines" {
 
   // Normalize should flatten nested Inlines
   let normalized = outer.normalize()
-  debug_inspect(normalized.is_empty(), content="false")
+  inspect(normalized.is_empty(), content="false")
 }
 
 ///|
 test "InlineCodeSpan::from_string with simple content" {
   // Test with string that needs spaces (contains backticks)
   let code_with_backticks = @cmark.InlineCodeSpan::from_string("`code`")
-  debug_inspect(code_with_backticks.code(), content="`code`")
+  inspect(code_with_backticks.code(), content="`code`")
 }
 
 ///|
 test "InlineCodeSpan::from_string with empty string" {
   // Test with empty string
   let empty_code = @cmark.InlineCodeSpan::from_string("")
-  debug_inspect(empty_code.code(), content="")
+  inspect(empty_code.code(), content="")
 }
 
 ///|
@@ -320,14 +352,14 @@ test "InlineCodeSpan::from_string with newlines" {
     meta~,
     "code\nwith\nnewlines",
   )
-  debug_inspect(code_with_newlines.code(), content="code with newlines")
+  inspect(code_with_newlines.code(), content="code with newlines")
 
   // Test with CRLF
   let code_with_crlf = @cmark.InlineCodeSpan::from_string(
     meta~,
     "code\r\nwith\r\ncrlf",
   )
-  debug_inspect(code_with_crlf.code(), content="code with crlf")
+  inspect(code_with_crlf.code(), content="code with crlf")
 }
 
 ///|
@@ -341,8 +373,8 @@ test "InlineCodeSpan::new creates a code span directly" {
 
   // Create with explicit backtick count
   let code_span = @cmark.InlineCodeSpan::new(backticks=2, code_layout)
-  debug_inspect(code_span.backticks, content="2")
-  debug_inspect(code_span.code(), content="code")
+  inspect(code_span.backticks, content="2")
+  inspect(code_span.code(), content="code")
 }
 
 ///|
@@ -359,7 +391,7 @@ test "Inline::to_plain_text with hard line break" {
     ),
   )
   let result = hard_break.to_plain_text(break_on_soft=false)
-  debug_inspect(result.length(), content="2")
+  inspect(result.length(), content="2")
 }
 
 ///|
@@ -378,11 +410,11 @@ test "Inline::to_plain_text with soft line break" {
 
   // With break_on_soft=true
   let result_true = soft_break.to_plain_text(break_on_soft=true)
-  debug_inspect(result_true.length(), content="2")
+  inspect(result_true.length(), content="2")
 
   // With break_on_soft=false
   let result_false = soft_break.to_plain_text(break_on_soft=false)
-  debug_inspect(result_false.length(), content="1")
+  inspect(result_false.length(), content="1")
 }
 
 ///|
@@ -393,7 +425,7 @@ test "Inline::to_plain_text with autolink" {
     @cmark.Node::new(@cmark.InlineAutolink::new(link_node), meta~),
   )
   let result = autolink.to_plain_text(break_on_soft=false)
-  debug_inspect(result.length(), content="1")
+  inspect(result.length(), content="1")
 }
 
 ///|
@@ -406,14 +438,14 @@ test "Inline::to_plain_text with emphasis and strong emphasis" {
     @cmark.Node::new({ delim: '*', inline: text }, meta~),
   )
   let emphasis_result = emphasis.to_plain_text(break_on_soft=false)
-  debug_inspect(emphasis_result.length(), content="1")
+  inspect(emphasis_result.length(), content="1")
 
   // Test with StrongEmphasis
   let strong = @cmark.Inline::StrongEmphasis(
     @cmark.Node::new({ delim: '*', inline: text }, meta~),
   )
   let strong_result = strong.to_plain_text(break_on_soft=false)
-  debug_inspect(strong_result.length(), content="1")
+  inspect(strong_result.length(), content="1")
 }
 
 ///|
@@ -427,7 +459,7 @@ test "Inline::to_plain_text with inlines and link" {
     @cmark.Node::new(@cmark.Seq::from_array([text1, text2]), meta~),
   )
   let inlines_result = inlines.to_plain_text(break_on_soft=false)
-  debug_inspect(inlines_result.length(), content="1")
+  inspect(inlines_result.length(), content="1")
 
   // Test with Link
   let link_def = @cmark.Node::new(@cmark.LinkDefinition::new(), meta~)
@@ -436,7 +468,7 @@ test "Inline::to_plain_text with inlines and link" {
     @cmark.Node::new({ text: text1, reference }, meta~),
   )
   let link_result = link.to_plain_text(break_on_soft=false)
-  debug_inspect(link_result.length(), content="1")
+  inspect(link_result.length(), content="1")
 }
 
 ///|
@@ -447,7 +479,7 @@ test "Inline::to_plain_text with raw html and strikethrough" {
   let raw_content = @cmark.Seq::from_array([@cmark.Tight::empty(meta~)])
   let raw_html = @cmark.Inline::RawHtml(@cmark.Node::new(raw_content, meta~))
   let raw_html_result = raw_html.to_plain_text(break_on_soft=false)
-  debug_inspect(raw_html_result.length(), content="1")
+  inspect(raw_html_result.length(), content="1")
 
   // Test with Strikethrough
   let text = @cmark.Inline::Text(@cmark.Node::new("strikethrough", meta~))
@@ -455,7 +487,7 @@ test "Inline::to_plain_text with raw html and strikethrough" {
     @cmark.Node::new(text, meta~),
   )
   let strikethrough_result = strikethrough.to_plain_text(break_on_soft=false)
-  debug_inspect(strikethrough_result.length(), content="1")
+  inspect(strikethrough_result.length(), content="1")
 }
 
 ///|
@@ -469,7 +501,7 @@ test "Inline::to_plain_text with math span" {
     @cmark.Node::new({ display: false, tex_layout }, meta~),
   )
   let math_result = math_span.to_plain_text(break_on_soft=false)
-  debug_inspect(math_result.length(), content="1")
+  inspect(math_result.length(), content="1")
 }
 
 ///|
@@ -486,5 +518,25 @@ test "Inline::normalize with singleton list" {
 
   // Normalize should return just the inner item
   let normalized = inlines.normalize()
-  debug_inspect(normalized, content="Text(Node::new(\"single item\"))")
+  debug_inspect(
+    normalized,
+    content=(
+      #|Text(
+      #|  {
+      #|    v: "single item",
+      #|    meta: {
+      #|      id: 0,
+      #|      loc: {
+      #|        file: "-",
+      #|        first_ccode: -1,
+      #|        last_ccode: -1,
+      #|        first_line: LinePos(-1, -1),
+      #|        last_line: LinePos(-1, -1),
+      #|      },
+      #|      extra: None,
+      #|    },
+      #|  },
+      #|)
+    ),
+  )
 }

@@ -8,7 +8,7 @@ test "folder_none" {
 test "fold_block with blank line" {
   let folder = @cmark.Folder::new()
   let block = @cmark.Block::BlankLine(@cmark.Node::new(""))
-  debug_inspect(folder.fold_block(0, block), content="0")
+  inspect(folder.fold_block(0, block), content="0")
 }
 
 ///|
@@ -21,7 +21,7 @@ test "fold_block with paragraph" {
       trailing_blanks: "",
     }),
   )
-  debug_inspect(folder.fold_block(0, block), content="0")
+  inspect(folder.fold_block(0, block), content="0")
 }
 
 ///|
@@ -37,7 +37,7 @@ test "fold_block with heading" {
       id: None,
     }),
   )
-  debug_inspect(folder.fold_block(0, heading), content="0")
+  inspect(folder.fold_block(0, heading), content="0")
 }
 
 ///|
@@ -55,7 +55,7 @@ test "fold_block with blockquote" {
       ),
     }),
   )
-  debug_inspect(folder.fold_block(0, quote), content="0")
+  inspect(folder.fold_block(0, quote), content="0")
 }
 
 ///|
@@ -81,7 +81,7 @@ test "fold_block with blocks" {
       ]),
     ),
   )
-  debug_inspect(folder.fold_block(0, blocks), content="0")
+  inspect(folder.fold_block(0, blocks), content="0")
 }
 
 ///|
@@ -146,7 +146,7 @@ test "folder block with table" {
     }),
   )
   let result = folder.fold_block(0, table)
-  debug_inspect(result, content="0")
+  inspect(result, content="0")
 }
 
 ///|
@@ -165,7 +165,7 @@ test "folder block with footnote definition" {
     }),
   )
   let result = folder.fold_block(0, footnote)
-  debug_inspect(result, content="0")
+  inspect(result, content="0")
 }
 
 ///|
@@ -174,5 +174,5 @@ test "folder fold_block with default block handler" {
     @cmark.Folder::ret(acc)
   })
   let block = @cmark.Block::empty()
-  debug_inspect(folder.fold_block(0, block), content="0")
+  inspect(folder.fold_block(0, block), content="0")
 }

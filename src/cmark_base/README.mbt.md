@@ -17,14 +17,14 @@ test "text location handling" {
     last_line: LinePos(1, 10),
   }
   let after_loc = loc.after()
-  debug_inspect(
+  inspect(
     after_loc,
     content=(
-      #|{file: "test.md", first_ccode: 1, last_ccode: -1, first_line: LinePos(1, 10), last_line: LinePos(-1, -1)}
+      #|{"file":"test.md","first_ccode":1,"last_ccode":-1,"first_line":["LinePos",1,10],"last_line":["LinePos",-1,-1]}
     ),
   )
   let none_loc = @cmark_base.TextLoc::none()
-  debug_inspect(none_loc.is_none(), content="true")
+  inspect(none_loc.is_none(), content="true")
 }
 ```
 
@@ -36,9 +36,9 @@ The package provides functions for parsing links, URIs and email addresses:
 ///|
 test "link parsing" {
   let txt = "Visit <https://mooncakes.io/>!"
-  debug_inspect(@cmark_base.autolink_uri(txt, start=6), content="Some(28)")
+  inspect(@cmark_base.autolink_uri(txt, start=6), content="Some(28)")
   let email = "Contact <user@example.com> today!"
-  debug_inspect(@cmark_base.autolink_email(email, start=8), content="Some(25)")
+  inspect(@cmark_base.autolink_email(email, start=8), content="Some(25)")
 }
 ```
 
@@ -52,16 +52,10 @@ test "string analysis" {
   let start = 0
 
   // Find first non-blank character
-  debug_inspect(
-    @cmark_base.first_non_blank("  hello", last=7, start~),
-    content="2",
-  )
+  inspect(@cmark_base.first_non_blank("  hello", last=7, start~), content="2")
 
   // Count repeated characters
-  debug_inspect(
-    @cmark_base.run_of(char='-', "---hello", last=8, start~),
-    content="2",
-  )
+  inspect(@cmark_base.run_of(char='-', "---hello", last=8, start~), content="2")
 }
 ```
 
@@ -109,8 +103,8 @@ test "list types" {
   let ordered = @cmark_base.ListType::Ordered(1, '.')
 
   // Check if lists are of same type
-  debug_inspect(unordered.is_same_type(unordered), content="true")
-  debug_inspect(unordered.is_same_type(ordered), content="false")
+  inspect(unordered.is_same_type(unordered), content="true")
+  inspect(unordered.is_same_type(ordered), content="false")
 }
 ```
 
@@ -126,7 +120,7 @@ test "html blocks" {
     @cmark_base.LineType::html_block_start("<div>", last=5, start~),
     content="HtmlBlockLine(EndBlank)",
   )
-  debug_inspect(
+  inspect(
     @cmark_base.LineType::html_block_end(
       "</div></br>",
       end_cond=@cmark_base.HtmlBlockEndCond::EndStr("</div>"),
@@ -153,8 +147,8 @@ test "metadata handling" {
     last_line: LinePos(1, 10),
   }
   let meta = @cmark_base.Meta::new(loc~)
-  debug_inspect(meta.is_none(), content="false")
+  inspect(meta.is_none(), content="false")
   let none_meta = @cmark_base.Meta::none()
-  debug_inspect(none_meta.is_none(), content="true")
+  inspect(none_meta.is_none(), content="true")
 }
 ```
