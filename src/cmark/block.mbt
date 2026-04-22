@@ -468,18 +468,23 @@ pub fn Table::new(
 fn Table::parse_sep_row(
   cs : ArrayView[(Inline, TableCellLayout)],
 ) -> Array[Node[TableSep]]? {
-  loop ([], cs) {
-    (acc, []) => Some(acc)
-    (acc, [(Text({ v, meta }), TableCellLayout(("", ""))), .. cs]) => {
-      guard !v.is_empty() else { None }
-      let max = v.length() - 1
-      let first_colon = v.code_unit_at(0) == ':'
-      let last_colon = v.code_unit_at(max) == ':'
-      let first = if first_colon { 1 } else { 0 }
-      let last = if last_colon { max - 1 } else { max }
-      for i in first..<=last {
-        guard v.code_unit_at(i) == '-' else { break None }
-      } nobreak {
+  let acc : Array[_] = []
+  for cs = cs {
+    match cs {
+      [] => break Some(acc)
+      [(Text({ v, meta }), TableCellLayout(("", ""))), .. cs] => {
+        guard !v.is_empty() else { break None }
+        let max = v.length() - 1
+        let first_colon = v.code_unit_at(0) == ':'
+        let last_colon = v.code_unit_at(max) == ':'
+        let first = if first_colon { 1 } else { 0 }
+        let last = if last_colon { max - 1 } else { max }
+        let all_dashes = for i in first..<=last {
+          guard v.code_unit_at(i) == '-' else { break false }
+        } nobreak {
+          true
+        }
+        guard all_dashes else { break None }
         let count = last - first + 1
         let sep = match (first_colon, last_colon) {
           (false, false) => None
@@ -488,9 +493,9 @@ fn Table::parse_sep_row(
           (false, true) => Some(Right)
         }
         acc.push({ v: (sep, count), meta })
-        continue (acc, cs)
+        continue cs
       }
+      _ => break None
     }
-    _ => None
   }
 }

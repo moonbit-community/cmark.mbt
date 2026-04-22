@@ -616,21 +616,22 @@ fn item_block(tight~ : Bool, c : Context, b : @cmark.Block) -> Unit raise {
     (BlankLine(_), _) => ()
     (Paragraph({ v, .. }), true) => c.inline(v.inline)
     (Blocks({ v, .. }), _) =>
-      loop (c, true, v.to_array()[:], tight) {
-        (c, add_nl, [BlankLine(_), .. bs], tight) =>
-          continue (c, add_nl, bs, tight)
-        (c, _, [Paragraph({ v, .. }), .. bs], true as tight) => {
-          c.inline(v.inline)
-          continue (c, true, bs, tight)
-        }
-        (c, add_nl, [b, .. bs], tight) => {
-          if add_nl {
-            c.b.write_char('\n')
+      for add_nl = true, bs = v.to_array()[:] {
+        match (bs, tight) {
+          ([BlankLine(_), .. bs], _) => continue add_nl, bs
+          ([Paragraph({ v, .. }), .. bs], true) => {
+            c.inline(v.inline)
+            continue true, bs
           }
-          c.block(b)
-          continue (c, false, bs, tight)
+          ([b, .. bs], _) => {
+            if add_nl {
+              c.b.write_char('\n')
+            }
+            c.block(b)
+            continue false, bs
+          }
+          _ => break
         }
-        _ => ()
       }
     _ => {
       c.b.write_char('\n')
