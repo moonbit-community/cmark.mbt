@@ -1572,24 +1572,27 @@ fn Parser::block_struct_to_table(
   rows : Array[(LineSpan, LineSpan)],
 ) -> Block {
   guard rows.last() is Some((last, _))
-  let (first, col_count, rows) = loop (0, false, [], rows[:]) {
-    (col_count, last_was_sep, acc, [.. rs, (row, blanks)]) => {
-      let meta = self.meta(self.text_loc_of_span(row))
-      let row1 = { ..row, first: row.first + 1, last: row.last }
-      let cols = self.parse_table_row(row1)
-      let col_count = @cmp.maximum(col_count, cols.length())
-      let (r, last_was_sep) = match Table::parse_sep_row(cols[:]) {
-        Some(seps) => ({ v: Sep(seps), meta }, true)
-        None => {
-          let v = if last_was_sep { Header(cols) } else { Data(cols) }
-          ({ v, meta }, false)
+  let acc : Array[_] = []
+  let (first, col_count, rows) = for col_count = 0, last_was_sep = false, rs = rows[:] {
+    match rs {
+      [.. rs, (row, blanks)] => {
+        let meta = self.meta(self.text_loc_of_span(row))
+        let row1 = { ..row, first: row.first + 1, last: row.last }
+        let cols = self.parse_table_row(row1)
+        let col_count = @cmp.maximum(col_count, cols.length())
+        let (r, last_was_sep) = match Table::parse_sep_row(cols[:]) {
+          Some(seps) => ({ v: Sep(seps), meta }, true)
+          None => {
+            let v = if last_was_sep { Header(cols) } else { Data(cols) }
+            ({ v, meta }, false)
+          }
         }
+        acc.push((r, self.layout_clean_raw_span1(blanks)))
+        guard rs.length() != 0 else { break (row, col_count, acc) }
+        continue col_count, last_was_sep, rs
       }
-      acc.push((r, self.layout_clean_raw_span1(blanks)))
-      guard rs.length() != 0 else { break (row, col_count, acc) }
-      continue (col_count, last_was_sep, acc, rs)
+      [] => abort("unreachable")
     }
-    (_, _, _, []) => abort("unreachable")
   }
   rows.rev_in_place()
   let meta = self.meta_of_spans(first~, last~)
@@ -1663,30 +1666,27 @@ fn Parser::block_struct_to_list_item(
   i : ListItemStruct,
 ) -> (Node[ListItem], Bool) {
   fn go(bstate : BState, tight, acc : Array[_], bs : ArrayView[BlockStruct]) {
-    loop (bstate, tight, acc, bs) {
-      (bstate, tight, acc, [BlankLine(_) as bl, .. bs]) => {
-        let bstate = if bstate == TrailBlank { TrailBlank } else { Blank }
-        acc.push(self.block_struct_to_block(bl))
-        continue (bstate, tight, acc, bs)
-      }
-      (
-        bstate,
-        _,
-        acc,
+    for bstate = bstate, tight = tight, bs = bs {
+      match bs {
+        [BlankLine(_) as bl, .. bs] => {
+          let bstate = if bstate == TrailBlank { TrailBlank } else { Blank }
+          acc.push(self.block_struct_to_block(bl))
+          continue bstate, tight, bs
+        }
         [
           List({ items: [.., { blocks: [.., BlankLine(_)], .. }], .. }) as l,
           .. bs,
-        ],
-      ) => {
-        acc.push(self.block_struct_to_block(l))
-        continue (bstate, false, acc, bs)
+        ] => {
+          acc.push(self.block_struct_to_block(l))
+          continue bstate, false, bs
+        }
+        [b, .. bs] => {
+          let tight = tight && bstate != Blank
+          acc.push(self.block_struct_to_block(b))
+          continue NonBlank, tight, bs
+        }
+        [] => break (tight, acc)
       }
-      (bstate, tight, acc, [b, .. bs]) => {
-        let tight = tight && bstate != Blank
-        acc.push(self.block_struct_to_block(b))
-        continue (NonBlank, tight, acc, bs)
-      }
-      (_, tight, acc, []) => (tight, acc)
     }
   }
 
@@ -1728,19 +1728,19 @@ fn Parser::block_struct_to_list_item(
 fn Parser::block_struct_to_list(self : Parser, list : ListBlockStruct) -> Block {
   let items = list.items
   let (first, tight) = self.block_struct_to_list_item(items[0])
-  let (tight, items) = loop (!list.loose && tight, [first], items[1:]) {
-    (tight, acc, []) => (tight, acc)
-    (tight, acc, [item, .. items]) => {
-      let (item, item_tight) = self.block_struct_to_list_item(item)
-      acc.push(item)
-      continue (tight && item_tight, acc, items)
+  let acc = [first]
+  let tight = for tight = !list.loose && tight, items = items[1:] {
+    match items {
+      [] => break tight
+      [item, .. items] => {
+        let (item, item_tight) = self.block_struct_to_list_item(item)
+        acc.push(item)
+        continue tight && item_tight, items
+      }
     }
   }
-  let meta = self.meta_of_metas(
-    first=first.meta,
-    last=items.last().unwrap().meta,
-  )
-  List({ v: { ty: list.list_type, tight, items }, meta })
+  let meta = self.meta_of_metas(first=first.meta, last=acc.last().unwrap().meta)
+  List({ v: { ty: list.list_type, tight, items: acc }, meta })
 }
 
 ///|
