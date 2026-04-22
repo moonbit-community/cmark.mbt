@@ -63,7 +63,7 @@ pub fn autolink_uri(s : String, last? : Int = -1, start? : Int = 0) -> Last? {
   let rest = fn(s : String, last, k) {
     for k in k..<=last {
       let sk = s.get_char(k).unwrap()
-      guard !(char_is_uri(sk)) else { continue }
+      guard !char_is_uri(sk) else { continue }
       break if sk == '>' { Some(k) } else { None }
     } nobreak {
       None

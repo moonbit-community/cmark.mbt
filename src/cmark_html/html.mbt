@@ -142,7 +142,7 @@ fn make_footnote_ref_ids(
 fn joined_string(c : Context, join : Joined[String]) -> Unit {
   let mut first = true
   for s in join.iter {
-    if !(first) {
+    if !first {
       c.b.write_string(join.sep)
     }
     html_escaped_string(c, s)
@@ -514,7 +514,7 @@ fn math_span(c : Context, ms : @cmark.InlineMathSpan) -> Unit {
   }
 
   let tex = ms.tex_layout
-  guard !(tex.is_empty()) else { return }
+  guard !tex.is_empty() else { return }
   let (lb, rb) = if ms.display { ("\\[", "\\]") } else { ("\\(", "\\)") }
   c.b.write_string(lb)
   tex_lines(c, tex.to_array()[:])
@@ -563,7 +563,7 @@ fn code_block(c : Context, cb : @cmark.CodeBlock) -> Unit {
   }
   if lang is Some((lang, _env)) {
     if backend_blocks(c) && lang.code_unit_at(0) == '=' {
-      if lang == "=html" && !(safe(c)) {
+      if lang == "=html" && !safe(c) {
         block_lines(c, cb.code.to_array())
       }
       return
@@ -914,7 +914,7 @@ fn doc(c : Context, d : Doc) -> Bool raise {
   let _ = c.block(d.block)
   if c.state is Some(fs) {
     guard fs is EState({ footnotes: fs, .. })
-    if !(fs.is_empty()) {
+    if !fs.is_empty() {
       footnotes(c, fs)
     }
   }

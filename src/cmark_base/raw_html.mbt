@@ -34,8 +34,7 @@ fn attribute_name(s : String, last? : Int = -1, start? : Int = 0) -> Next? {
     return None
   }
   for k = start + 1 {
-    if k > last ||
-      !(s.code_unit_at(k).to_char() is Some(c) && char_is_cont(c)) {
+    if k > last || !(s.code_unit_at(k).to_char() is Some(c) && char_is_cont(c)) {
       break Some(k - 1)
     }
     continue k + 1

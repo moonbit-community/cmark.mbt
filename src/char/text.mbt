@@ -312,7 +312,7 @@ fn _utf_16_clean_unesc_unref(
             continue start, next
           }
           let nc = s.code_unit_at(next).unsafe_to_char()
-          if !(is_ascii_punctuation(nc)) {
+          if !is_ascii_punctuation(nc) {
             continue start, next
           }
           let next1 = next + 1
