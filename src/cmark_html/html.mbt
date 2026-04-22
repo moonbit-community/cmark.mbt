@@ -94,7 +94,7 @@ fn uid(c : Context, id : String) -> String {
 fn footnote_id(l : String) -> String {
   let res = StringBuilder::new()
   res.write_string("fn-")
-  let l = l[1:] catch { _ => panic() }
+  let l = l[1:]
   for c in l {
     res.write_char(
       match c {
@@ -168,7 +168,7 @@ fn buffer_add_html_escaped_string(b : StringBuilder, s : String) -> Unit {
   let max_idx = len - 1
   fn flush(b : StringBuilder, start : Int, i : Int) {
     if start < len {
-      b.write_view(s[start:i] catch { _ => panic() })
+      b.write_view(s[start:i])
     }
   }
 
@@ -251,7 +251,7 @@ fn buffer_add_pct_encoded_string(b : StringBuilder, s : String) -> Unit { // Per
 
   let flush = fn(b : StringBuilder, max : Int, start : Int, i : Int) -> Unit {
     if start <= max {
-      b.write_view(s[start:i] catch { _ => panic() })
+      b.write_view(s[start:i])
     }
   }
   let max = s.length() - 1

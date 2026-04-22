@@ -89,7 +89,7 @@ pub fn utf_16_clean_raw(
   fn clean(last, first, dirty) {
     let flush = fn(last, start, k) {
       if start <= last {
-        buf.write_view(s[start:k] catch { _ => panic() })
+        buf.write_view(s[start:k])
       }
     }
     flush(last, first, dirty)
@@ -125,9 +125,7 @@ pub fn utf_16_clean_raw(
   fn check(last, first, k) {
     for k = k {
       break if k > last {
-        s[first:last + 1].to_string() catch {
-          _ => panic()
-        }
+        s[first:last + 1].to_string()
       } else if s.code_unit_at(k) == '\u{0}' {
         buf.reset()
         clean(last, first, k)
@@ -196,7 +194,7 @@ fn flush(
   k : Int,
 ) -> Unit {
   if start <= last {
-    buf.write_view(s[start:k] catch { _ => panic() })
+    buf.write_view(s[start:k])
   }
 }
 
@@ -275,7 +273,7 @@ fn _utf_16_clean_unesc_unref(
       }
       match s.code_unit_at(k) {
         ';' => {
-          let name = s[name_start:k].to_string() catch { _ => panic() }
+          let name = s[name_start:k].to_string()
           match html_named_entity(name) {
             None => return resolve(last, start, k + 1)
             Some(e) => {
@@ -375,7 +373,7 @@ fn _utf_16_clean_unesc_unref(
   let first = @cmp.maximum(first, 0)
   for k = first {
     guard k <= last else {
-      break s[first:last + 1].to_string() catch { _ => panic() }
+      break s[first:last + 1].to_string()
     }
     match (s.code_unit_at(k), do_unesc) {
       ('\\', true) | ('&', _) | ('\u{0}', _) => {
