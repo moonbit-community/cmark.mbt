@@ -140,11 +140,11 @@ fn[A] accept_upto(
       let prev_bslash = false
       continue newline, prev_bslash, start, start
     } else {
-      if s.code_unit_at(k) == char.to_int().to_uint16() && !(prev_bslash) {
+      if s.code_unit_at(k) == char.to_int().to_uint16() && !prev_bslash {
         push_span(line~, start, k - 1, spans)
         break Some((line, k))
       }
-      let prev_bslash = s.code_unit_at(k) == '\\' && !(prev_bslash)
+      let prev_bslash = s.code_unit_at(k) == '\\' && !prev_bslash
       continue line, prev_bslash, start, k + 1
     }
   }

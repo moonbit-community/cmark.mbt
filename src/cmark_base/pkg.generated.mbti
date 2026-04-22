@@ -50,39 +50,23 @@ pub fn run_of(char~ : Char, String, last~ : Int, start~ : Int) -> Int
 pub(all) enum FencedCodeBlockContinue {
   Close(Int, Int)
   Code
-}
+} derive(Show, ToJson)
 pub fn FencedCodeBlockContinue::new(String, fence~ : (Char, Int), last~ : Int, start~ : Int) -> Self
-pub impl Show for FencedCodeBlockContinue
-pub impl ToJson for FencedCodeBlockContinue
 
 pub(all) enum HtmlBlockEndCond {
   EndStr(String)
   EndCond1
   EndBlank
   EndBlank7
-}
-pub impl Eq for HtmlBlockEndCond
-pub impl Show for HtmlBlockEndCond
-pub impl ToJson for HtmlBlockEndCond
+} derive(Eq, Show, ToJson)
 
-pub(all) struct LinePos(Int, Int)
-
-
-pub impl Compare for LinePos
-pub impl Eq for LinePos
-pub impl Show for LinePos
-pub impl ToJson for LinePos
-pub impl @json.FromJson for LinePos
+pub(all) struct LinePos(Int, Int) derive(Compare, Eq, Show, ToJson, @json.FromJson)
 
 pub(all) struct LineSpan {
   pos : LinePos
   first : Int
   last : Int
-}
-pub impl Compare for LineSpan
-pub impl Eq for LineSpan
-pub impl Show for LineSpan
-pub impl ToJson for LineSpan
+} derive(Compare, Eq, Show, ToJson)
 
 pub(all) enum LineType {
   AtxHeadingLine(Int, Int, Int, Int)
@@ -98,7 +82,7 @@ pub(all) enum LineType {
   ExtTableRow(Int)
   ExtFootnoteLabel(Array[Span], Int, String)
   Nomatch
-}
+} derive(Eq, Show, ToJson)
 pub fn LineType::atx_heading(String, last~ : Int, start~ : Int) -> Self
 pub fn LineType::ext_footnote_label(StringBuilder, String, line_pos~ : LinePos, last~ : Int, start~ : Int) -> Self
 pub fn LineType::ext_table_row(String, last~ : Int, start~ : Int) -> Self
@@ -108,19 +92,12 @@ pub fn LineType::html_block_start(String, last~ : Int, start~ : Int) -> Self
 pub fn LineType::list_marker(String, last~ : Int, start~ : Int) -> Self
 pub fn LineType::setext_heading_underline(String, last~ : Int, start~ : Int) -> Self
 pub fn LineType::thematic_break(String, last~ : Int, start~ : Int) -> Self
-pub impl Eq for LineType
-pub impl Show for LineType
-pub impl ToJson for LineType
 
 pub(all) enum ListType {
   Unordered(Char)
   Ordered(Int, Char)
-}
+} derive(Eq, Show, ToJson, @json.FromJson)
 pub fn ListType::is_same_type(Self, Self) -> Bool
-pub impl Eq for ListType
-pub impl Show for ListType
-pub impl ToJson for ListType
-pub impl @json.FromJson for ListType
 
 pub(all) struct Meta {
   id : Int
@@ -137,24 +114,16 @@ pub impl Show for Meta
 pub impl ToJson for Meta
 
 pub(all) struct NextLineFn[A]((A) -> LineSpan?)
-#deprecated
-pub fn[A] NextLineFn::inner(Self[A]) -> (A) -> LineSpan?
 
 pub(all) enum NextLineResult {
   ThisLine(Int)
   NextLine(LineSpan, Int)
-}
-pub impl Show for NextLineResult
-pub impl ToJson for NextLineResult
+} derive(Show, ToJson)
 
 pub(all) struct Span {
   start : Int
   span : LineSpan
-}
-pub impl Compare for Span
-pub impl Eq for Span
-pub impl Show for Span
-pub impl ToJson for Span
+} derive(Compare, Eq, Show, ToJson)
 
 pub(all) struct TextLoc {
   file : String
@@ -162,7 +131,7 @@ pub(all) struct TextLoc {
   last_ccode : Int
   first_line : LinePos
   last_line : LinePos
-}
+} derive(Compare, Eq, Show, ToJson, @json.FromJson)
 pub fn TextLoc::after(Self) -> Self
 pub fn TextLoc::is_empty(Self) -> Bool
 pub fn TextLoc::is_none(Self) -> Bool
@@ -171,11 +140,6 @@ pub fn TextLoc::reloc(Self, Self) -> Self
 pub fn TextLoc::span(Self, Self) -> Self
 pub fn TextLoc::to_first(Self) -> Self
 pub fn TextLoc::to_last(Self) -> Self
-pub impl Compare for TextLoc
-pub impl Eq for TextLoc
-pub impl Show for TextLoc
-pub impl ToJson for TextLoc
-pub impl @json.FromJson for TextLoc
 
 // Type aliases
 pub type CharCodePos = Int
