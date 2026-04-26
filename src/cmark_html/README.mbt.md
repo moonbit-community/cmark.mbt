@@ -13,12 +13,10 @@ test "basic rendering" {
     #|
     #|This is a paragraph.
   let rendered = @cmark_html.render(safe=false, strict=false, doc)
-  inspect(
+  debug_inspect(
     rendered,
     content=(
-      #|<h1>Hello World</h1>
-      #|<p>This is a paragraph.</p>
-      #|
+      #|"<h1>Hello World</h1>\n<p>This is a paragraph.</p>\n"
     ),
   )
 }
@@ -38,12 +36,10 @@ test "rendering from @cmark.Doc" {
     ),
   )
   let rendered = @cmark_html.from_doc(safe=false, doc)
-  inspect(
+  debug_inspect(
     rendered,
     content=(
-      #|<h1>Hello World</h1>
-      #|<p>This is a paragraph.</p>
-      #|
+      #|"<h1>Hello World</h1>\n<p>This is a paragraph.</p>\n"
     ),
   )
 }

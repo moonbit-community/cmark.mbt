@@ -4,7 +4,12 @@ test "context char" {
   let r = @cmark_renderer.Renderer::new()
   let ctx = @cmark_renderer.Context::new(r, b)
   ctx.char('A')
-  inspect(b.to_string(), content="A")
+  debug_inspect(
+    b.to_string(),
+    content=(
+      #|"A"
+    ),
+  )
 }
 
 ///|
@@ -13,7 +18,12 @@ test "context_string" {
   let renderer = @cmark_renderer.Renderer::new()
   let context = @cmark_renderer.Context::new(renderer, buf)
   context.string("hello")
-  inspect(buf.to_string(), content="hello")
+  debug_inspect(
+    buf.to_string(),
+    content=(
+      #|"hello"
+    ),
+  )
 }
 
 ///|
@@ -55,7 +65,12 @@ test "renderer_compose" {
     let buf = StringBuilder::new(size_hint=0)
     let ctx = @cmark_renderer.Context::new(composed, buf)
     ctx.init(@cmark.Doc::empty())
-    inspect(buf.to_string(), content="r1-initr2-init")
+    debug_inspect(
+      buf.to_string(),
+      content=(
+        #|"r1-initr2-init"
+      ),
+    )
   }
 
   // Test inline handler - should call r2 first, if that returns true, r1 shouldn't be called
@@ -63,7 +78,12 @@ test "renderer_compose" {
     let buf = StringBuilder::new(size_hint=0)
     let ctx = @cmark_renderer.Context::new(composed, buf)
     ctx.inline(@cmark.Inline::empty())
-    inspect(buf.to_string(), content="r2-inline")
+    debug_inspect(
+      buf.to_string(),
+      content=(
+        #|"r2-inline"
+      ),
+    )
   }
 
   // Test block handler
@@ -71,14 +91,24 @@ test "renderer_compose" {
     let buf = StringBuilder::new(size_hint=0)
     let ctx = @cmark_renderer.Context::new(composed, buf)
     ctx.block(@cmark.Block::empty())
-    inspect(buf.to_string(), content="r2-block")
+    debug_inspect(
+      buf.to_string(),
+      content=(
+        #|"r2-block"
+      ),
+    )
   }
 
   // Test doc handler
   let buf = StringBuilder::new(size_hint=0)
   let ctx = @cmark_renderer.Context::new(composed, buf)
   ctx.doc(@cmark.Doc::empty())
-  inspect(buf.to_string(), content="r1-initr2-initr2-doc")
+  debug_inspect(
+    buf.to_string(),
+    content=(
+      #|"r1-initr2-initr2-doc"
+    ),
+  )
 }
 
 ///|
@@ -89,7 +119,7 @@ test "renderer_error_handling_inline" {
   let buf = StringBuilder::new(size_hint=0)
   let ctx = @cmark_renderer.Context::new(r, buf)
   let result = try? ctx.inline(@cmark.Inline::empty())
-  inspect(
+  debug_inspect(
     result,
     content=(
       #|Err(RenderError("unknown inline type"))
@@ -105,7 +135,7 @@ test "renderer_error_handling_block" {
   let buf = StringBuilder::new(size_hint=0)
   let ctx = @cmark_renderer.Context::new(r, buf)
   let result = try? ctx.block(@cmark.Block::empty())
-  inspect(
+  debug_inspect(
     result,
     content=(
       #|Err(RenderError("unknown block type"))
@@ -121,7 +151,7 @@ test "renderer_error_handling_doc" {
   let buf = StringBuilder::new(size_hint=0)
   let ctx = @cmark_renderer.Context::new(r, buf)
   let result = try? ctx.doc(@cmark.Doc::empty())
-  inspect(
+  debug_inspect(
     result,
     content=(
       #|Err(RenderError("unhandled doc"))
@@ -138,12 +168,22 @@ test "doc_to_string_and_buffer_add_doc" {
 
   // Test doc_to_string!
   let result = r.doc_to_string(@cmark.Doc::empty())
-  inspect(result, content="doc content")
+  debug_inspect(
+    result,
+    content=(
+      #|"doc content"
+    ),
+  )
 
   // Test buffer_add_doc!
   let buf = StringBuilder::new(size_hint=0)
   r.buffer_add_doc(buf, @cmark.Doc::empty())
-  inspect(buf.to_string(), content="doc content")
+  debug_inspect(
+    buf.to_string(),
+    content=(
+      #|"doc content"
+    ),
+  )
 }
 
 ///|
@@ -175,7 +215,12 @@ test "renderer_fallback" {
     let buf = StringBuilder::new(size_hint=0)
     let ctx = @cmark_renderer.Context::new(composed, buf)
     ctx.inline(@cmark.Inline::empty())
-    inspect(buf.to_string(), content="r2-inline")
+    debug_inspect(
+      buf.to_string(),
+      content=(
+        #|"r2-inline"
+      ),
+    )
   }
 
   // Test block handler with fallback
@@ -183,12 +228,22 @@ test "renderer_fallback" {
     let buf = StringBuilder::new(size_hint=0)
     let ctx = @cmark_renderer.Context::new(composed, buf)
     ctx.block(@cmark.Block::empty())
-    inspect(buf.to_string(), content="r2-block")
+    debug_inspect(
+      buf.to_string(),
+      content=(
+        #|"r2-block"
+      ),
+    )
   }
 
   // Test doc handler with fallback
   let buf = StringBuilder::new(size_hint=0)
   let ctx = @cmark_renderer.Context::new(composed, buf)
   ctx.doc(@cmark.Doc::empty())
-  inspect(buf.to_string(), content="r2-doc")
+  debug_inspect(
+    buf.to_string(),
+    content=(
+      #|"r2-doc"
+    ),
+  )
 }

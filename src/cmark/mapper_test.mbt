@@ -2,25 +2,25 @@
 test "mapper ret function" {
   // Test ret function by passing in different types of values
   let int_result = @cmark.Mapper::ret(42)
-  inspect(int_result, content="Map(Some(42))")
+  debug_inspect(int_result, content="Map(Some(42))")
   let str_result = @cmark.Mapper::ret("hello")
-  inspect(str_result, content="Map(Some(\"hello\"))")
+  debug_inspect(str_result, content="Map(Some(\"hello\"))")
   let bool_result = @cmark.Mapper::ret(true)
-  inspect(bool_result, content="Map(Some(true))")
+  debug_inspect(bool_result, content="Map(Some(true))")
 }
 
 ///|
 test "mapper delete function" {
   // Test delete function to ensure it returns None
   let delete_result : @cmark.MapperResult[Unit] = @cmark.Mapper::delete()
-  inspect(delete_result, content="Map(None)")
+  debug_inspect(delete_result, content="Map(None)")
 }
 
 ///|
 test "Default for MapperResult" {
   // Test Default impl
   let default_result : @cmark.MapperResult[Int] = @cmark.MapperResult::default()
-  inspect(default_result, content="Default")
+  debug_inspect(default_result, content="Default")
 }
 
 ///|
@@ -28,7 +28,7 @@ test "mapper_none" {
   // Create a new Mapper with default parameters
   let mapper = @cmark.Mapper::new()
   // Call none with any value to trigger line 44
-  inspect(mapper.none(42), content="Default")
+  debug_inspect(mapper.none(42), content="Default")
 }
 
 ///|
@@ -48,7 +48,7 @@ test "map_inline with Link returns None when text is None" {
     @cmark.Node::new(@cmark.InlineLink::new(text, reference)),
   )
   let result = mapper.map_inline(link)
-  inspect(result, content="None")
+  debug_inspect(result, content="None")
 }
 
 ///|
@@ -59,10 +59,10 @@ test "map_inline with StrongEmphasis" {
     @cmark.Node::new({ delim: '*', inline: text }),
   )
   let result = mapper.map_inline(strong)
-  inspect(
+  debug_inspect(
     result,
     content=(
-      #|Some(StrongEmphasis(Node::new({delim: '*', inline: Text(Node::new("strongly emphasized text"))})))
+      #|Some(StrongEmphasis(Node::new({ delim: '*', inline: Text(Node::new("strongly emphasized text")) })))
     ),
   )
 }
@@ -82,7 +82,7 @@ test "map_inline with StrongEmphasis returns None when inner inline is None" {
     @cmark.Node::new({ delim: '*', inline: text }),
   )
   let result = mapper.map_inline(strong)
-  inspect(result, content="None")
+  debug_inspect(result, content="None")
 }
 
 ///|
@@ -94,10 +94,10 @@ test "map_inline with Emphasis" {
     @cmark.Node::new({ delim: '*', inline: text }),
   )
   let result = mapper.map_inline(emphasis)
-  inspect(
+  debug_inspect(
     result,
     content=(
-      #|Some(Emphasis(Node::new({delim: '*', inline: Text(Node::new("emphasized text"))})))
+      #|Some(Emphasis(Node::new({ delim: '*', inline: Text(Node::new("emphasized text")) })))
     ),
   )
 }
@@ -117,7 +117,7 @@ test "map_inline with Emphasis returns None when inner text is None" {
     @cmark.Node::new({ delim: '*', inline: text }),
   )
   let result = mapper.map_inline(emphasis)
-  inspect(result, content="None")
+  debug_inspect(result, content="None")
 }
 
 ///|
@@ -138,7 +138,10 @@ test "panic inline_ext_none raises error" {
 test "map_inline default case" {
   let mapper = @cmark.Mapper::new()
   let text = @cmark.Inline::Text(@cmark.Node::new("hello"))
-  inspect(mapper.map_inline(text), content="Some(Text(Node::new(\"hello\")))")
+  debug_inspect(
+    mapper.map_inline(text),
+    content="Some(Text(Node::new(\"hello\")))",
+  )
 }
 
 ///|
@@ -146,7 +149,7 @@ test "map_doc with empty document" {
   let mapper = @cmark.Mapper::new()
   let doc = @cmark.Doc::empty()
   let result = mapper.map_doc(doc)
-  inspect(result.block, content="Blocks(Node::new(Seq([])))")
+  debug_inspect(result.block, content="Blocks(Node::new(Seq([])))")
 }
 
 ///|
@@ -154,7 +157,7 @@ test "map_block blocks" {
   // Test blocks mapping
   let mapper = @cmark.Mapper::new()
   let blocks = @cmark.Block::Blocks(@cmark.Node::new(@cmark.Seq::empty()))
-  inspect(mapper.map_block(blocks), content="None")
+  debug_inspect(mapper.map_block(blocks), content="None")
 }
 
 ///|
@@ -162,7 +165,7 @@ test "map_block with default case" {
   let mapper = @cmark.Mapper::new()
   let block = @cmark.Block::BlankLine(@cmark.Node::new(""))
   let result = mapper.map_block(block)
-  inspect(result, content="Some(BlankLine(Node::new(\"\")))")
+  debug_inspect(result, content="Some(BlankLine(Node::new(\"\")))")
 }
 
 ///|
@@ -174,7 +177,7 @@ test "map_block with blocks" {
     ),
   )
   let result = mapper.map_block(block)
-  inspect(
+  debug_inspect(
     result,
     content=(
       #|Some(Blocks(Node::new(Seq([BlankLine(Node::new(""))]))))
@@ -226,14 +229,14 @@ test "map_block with paragraph with empty inline" {
   }
   let mapper = @cmark.Mapper::new(inline=inline_fn)
   let result = mapper.map_block(paragraph)
-  inspect(result, content="None")
+  debug_inspect(result, content="None")
 }
 
 ///|
 test "mapper map_inline identity" {
   let text = @cmark.Inline::Text(@cmark.Node::new("text"))
   let mapper = @cmark.Mapper::new()
-  inspect(
+  debug_inspect(
     mapper.map_inline(text),
     content=(
       #|Some(Text(Node::new("text")))
@@ -245,7 +248,7 @@ test "mapper map_inline identity" {
 test "mapper map_block identity" {
   let block = @cmark.Block::BlankLine(@cmark.Node::new(""))
   let mapper = @cmark.Mapper::new()
-  inspect(
+  debug_inspect(
     mapper.map_block(block),
     content=(
       #|Some(BlankLine(Node::new("")))
@@ -264,10 +267,36 @@ test "map_inline with Image" {
     @cmark.Node::new(@cmark.InlineLink::new(text, reference)),
   )
   let result = mapper.map_inline(image)
-  inspect(
+  debug_inspect(
     result,
     content=(
-      #|Some(Image(Node::new({text: Text(Node::new("alt text")), reference: Inline(Node::new({layout: {indent: 0, angled_dest: false, before_dest: Seq([]), after_dest: Seq([]), title_open_delim: '"', after_title: Seq([])}, label: None, defined_label: None, dest: None, title: None}))})))
+      #|Some(
+      #|  Image(
+      #|    Node::new(
+      #|      {
+      #|        text: Text(Node::new("alt text")),
+      #|        reference: Inline(
+      #|          Node::new(
+      #|            {
+      #|              layout: {
+      #|                indent: 0,
+      #|                angled_dest: false,
+      #|                before_dest: Seq([]),
+      #|                after_dest: Seq([]),
+      #|                title_open_delim: '"',
+      #|                after_title: Seq([]),
+      #|              },
+      #|              label: None,
+      #|              defined_label: None,
+      #|              dest: None,
+      #|              title: None,
+      #|            },
+      #|          ),
+      #|        ),
+      #|      },
+      #|    ),
+      #|  ),
+      #|)
     ),
   )
 }
@@ -282,10 +311,36 @@ test "map_inline with Link" {
     @cmark.Node::new(@cmark.InlineLink::new(text, reference)),
   )
   let result = mapper.map_inline(link)
-  inspect(
+  debug_inspect(
     result,
     content=(
-      #|Some(Link(Node::new({text: Text(Node::new("link text")), reference: Inline(Node::new({layout: {indent: 0, angled_dest: false, before_dest: Seq([]), after_dest: Seq([]), title_open_delim: '"', after_title: Seq([])}, label: None, defined_label: None, dest: None, title: None}))})))
+      #|Some(
+      #|  Link(
+      #|    Node::new(
+      #|      {
+      #|        text: Text(Node::new("link text")),
+      #|        reference: Inline(
+      #|          Node::new(
+      #|            {
+      #|              layout: {
+      #|                indent: 0,
+      #|                angled_dest: false,
+      #|                before_dest: Seq([]),
+      #|                after_dest: Seq([]),
+      #|                title_open_delim: '"',
+      #|                after_title: Seq([]),
+      #|              },
+      #|              label: None,
+      #|              defined_label: None,
+      #|              dest: None,
+      #|              title: None,
+      #|            },
+      #|          ),
+      #|        ),
+      #|      },
+      #|    ),
+      #|  ),
+      #|)
     ),
   )
 }
@@ -299,10 +354,10 @@ test "map_inline with Emphasis (2)" {
     @cmark.Node::new({ delim: '*', inline: text }),
   )
   let result = mapper.map_inline(emphasis)
-  inspect(
+  debug_inspect(
     result,
     content=(
-      #|Some(Emphasis(Node::new({delim: '*', inline: Text(Node::new("emphasized text"))})))
+      #|Some(Emphasis(Node::new({ delim: '*', inline: Text(Node::new("emphasized text")) })))
     ),
   )
 }
@@ -325,7 +380,7 @@ test "map_inline with StrongEmphasis with None inline result" {
   }
   let mapper = @cmark.Mapper::new(inline=inline_fn)
   let result = mapper.map_inline(strong)
-  inspect(result, content="None")
+  debug_inspect(result, content="None")
 }
 
 ///|
@@ -337,7 +392,7 @@ test "map_inline with Inlines" {
   ])
   let inlines = @cmark.Inline::Inlines(@cmark.Node::new(seq))
   let result = mapper.map_inline(inlines)
-  inspect(
+  debug_inspect(
     result,
     content="Some(Inlines(Node::new(Seq([Text(Node::new(\"text 1\")), Text(Node::new(\"text 2\"))]))))",
   )
@@ -360,7 +415,7 @@ test "map_inline with Inlines that becomes empty" {
   }
   let mapper = @cmark.Mapper::new(inline=inline_fn)
   let result = mapper.map_inline(inlines)
-  inspect(result, content="None")
+  debug_inspect(result, content="None")
 }
 
 ///|
@@ -372,7 +427,7 @@ test "map_inline with ExtStrikethrough" {
     ),
   )
   let result = mapper.map_inline(strikethrough)
-  inspect(
+  debug_inspect(
     result,
     content=(
       #|Some(ExtStrikethrough(Node::new(InlineStrikethrough(Text(Node::new("strikethrough text"))))))
@@ -397,7 +452,7 @@ test "map_inline with ExtStrikethrough with None inline result" {
   }
   let mapper = @cmark.Mapper::new(inline=inline_fn)
   let result = mapper.map_inline(strikethrough)
-  inspect(result, content="None")
+  debug_inspect(result, content="None")
 }
 
 ///|
@@ -417,10 +472,21 @@ test "map_block with Heading" {
     }),
   )
   let result = mapper.map_block(heading)
-  inspect(
+  debug_inspect(
     result,
     content=(
-      #|Some(Heading(Node::new({layout: Atx({indent: 0, after_opening: "", closing: ""}), level: 1, inline: Text(Node::new("Heading")), id: None})))
+      #|Some(
+      #|  Heading(
+      #|    Node::new(
+      #|      {
+      #|        layout: Atx({ indent: 0, after_opening: "", closing: "" }),
+      #|        level: 1,
+      #|        inline: Text(Node::new("Heading")),
+      #|        id: None,
+      #|      },
+      #|    ),
+      #|  ),
+      #|)
     ),
   )
 }
@@ -439,8 +505,27 @@ test "map_block with BlockQuote" {
     @cmark.Node::new({ indent: 0, block: para }),
   )
   let result = mapper.map_block(blockquote)
-  inspect(
+  debug_inspect(
     result,
-    content="Some(BlockQuote(Node::new({indent: 0, block: Paragraph(Node::new({leading_indent: 0, inline: Text(Node::new(\"quoted text\")), trailing_blanks: \"\"}))})))",
+    content=(
+      #|Some(
+      #|  BlockQuote(
+      #|    Node::new(
+      #|      {
+      #|        indent: 0,
+      #|        block: Paragraph(
+      #|          Node::new(
+      #|            {
+      #|              leading_indent: 0,
+      #|              inline: Text(Node::new("quoted text")),
+      #|              trailing_blanks: "",
+      #|            },
+      #|          ),
+      #|        ),
+      #|      },
+      #|    ),
+      #|  ),
+      #|)
+    ),
   )
 }

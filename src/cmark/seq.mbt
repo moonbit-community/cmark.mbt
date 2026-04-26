@@ -1,5 +1,5 @@
 ///|
-struct Seq[A](Array[A]) derive(Eq, Show)
+struct Seq[A](Array[A]) derive(Eq, Debug)
 
 ///|
 pub impl[A : ToJson] ToJson for Seq[A] with to_json(self) -> Json {

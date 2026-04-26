@@ -15,14 +15,12 @@ pub fn[A, B] Node::map(self : Node[A], f : (A) -> B) -> Node[B] {
 }
 
 ///|
-pub impl[A : Show] Show for Node[A] with output(self, logger) {
-  logger.write_string("Node::new(")
-  logger.write_object(self.v)
+pub impl[A : @debug.Debug] @debug.Debug for Node[A] with to_repr(self) {
+  let args : Array[(String?, @debug.Repr)] = [(None, @debug.to_repr(self.v))]
   if !self.meta.is_none() {
-    logger.write_string(", meta=")
-    logger.write_object(self.meta)
+    args.push((Some("meta"), @debug.to_repr(self.meta)))
   }
-  logger.write_char(')')
+  @debug.Repr::ctor("Node::new", args)
 }
 
 ///|

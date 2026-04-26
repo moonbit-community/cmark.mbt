@@ -38,8 +38,8 @@ pub fn Tight::empty(meta? : Meta = Meta::none()) -> Tight {
 }
 
 ///|
-pub impl Show for Tight with output(self, logger) {
-  logger.write_object(self.node.v)
+pub impl @debug.Debug for Tight with to_repr(self) {
+  @debug.to_repr(self.node.v)
 }
 
 ///|

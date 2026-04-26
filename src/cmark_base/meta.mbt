@@ -42,17 +42,15 @@ pub fn Meta::is_none(self : Meta) -> Bool {
 }
 
 ///|
-pub impl Show for Meta with output(self, logger) {
+pub impl @debug.Debug for Meta with to_repr(self) {
   if self.is_none() {
-    logger.write_string("Meta::none()")
+    @debug.Repr::ctor("Meta::none", [])
   } else {
-    logger.write_string("Meta::new(id=")
-    logger.write_object(self.id)
-    logger.write_string(", loc=")
-    logger.write_object(self.loc)
-    logger.write_string(", dict=")
-    logger.write_object(self.extra)
-    logger.write_string(")")
+    @debug.Repr::ctor("Meta::new", [
+      (Some("id"), @debug.to_repr(self.id)),
+      (Some("loc"), @debug.to_repr(self.loc)),
+      (Some("dict"), @debug.to_repr(self.extra.map(fn(e) { e.to_string() }))),
+    ])
   }
 }
 
@@ -61,10 +59,14 @@ pub impl ToJson for Meta with to_json(self) {
   if self.is_none() {
     return {}
   }
+  let extra = match self.extra {
+    None => "None"
+    Some(e) => "Some(\{e})"
+  }
   {
     "id": self.id.to_json(),
     "loc": self.loc.to_json(),
-    "dict": self.extra.to_string().to_json(),
+    "dict": extra.to_json(),
   }
 }
 

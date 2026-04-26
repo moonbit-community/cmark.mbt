@@ -8,12 +8,24 @@ priv struct State {
   ids : StringSet
   mut footnote_count : Int
   footnotes : Map[LabelKey, HtmlRenderFootnote]
-} derive(Show)
+}
+
+///|
+// Manual Debug impl: Set[String] does not derive Debug yet.
+impl @debug.Debug for State with to_repr(self) {
+  @debug.Repr::ctor("State", [
+    (Some("safe"), @debug.to_repr(self.safe)),
+    (Some("backend_blocks"), @debug.to_repr(self.backend_blocks)),
+    (Some("ids"), @debug.to_repr(self.ids.iter().to_array())),
+    (Some("footnote_count"), @debug.to_repr(self.footnote_count)),
+    (Some("footnotes"), @debug.to_repr(self.footnotes)),
+  ])
+}
 
 ///|
 test {
-  // Prevent warning about unused Show
-  (fn(s : State) { s.to_string() }) |> ignore()
+  // Prevent warning about unused Debug
+  (fn(s : State) { @debug.to_string(s) }) |> ignore()
 }
 
 ///|
@@ -22,7 +34,7 @@ priv struct HtmlRenderFootnote {
   id : String
   mut count : Int
   footnote : @cmark.Footnote
-} derive(Show, ToJson)
+} derive(Debug, ToJson)
 
 ///|
 test {
