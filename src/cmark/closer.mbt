@@ -35,6 +35,7 @@ type PosSet = Set[Int]
 priv struct CloserIndex(Map[Closer, PosSet]) derive(ToJson)
 
 ///|
+// Set[Int] does not implement Debug yet; manually walk the Map.
 impl @debug.Debug for CloserIndex with to_repr(self) {
   let entries = self.0
     .iter()

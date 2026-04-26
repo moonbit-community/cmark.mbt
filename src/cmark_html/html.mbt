@@ -8,19 +8,7 @@ priv struct State {
   ids : StringSet
   mut footnote_count : Int
   footnotes : Map[LabelKey, HtmlRenderFootnote]
-}
-
-///|
-// Manual Debug impl: Set[String] does not derive Debug yet.
-impl @debug.Debug for State with to_repr(self) {
-  @debug.Repr::ctor("State", [
-    (Some("safe"), @debug.to_repr(self.safe)),
-    (Some("backend_blocks"), @debug.to_repr(self.backend_blocks)),
-    (Some("ids"), @debug.to_repr(self.ids.iter().to_array())),
-    (Some("footnote_count"), @debug.to_repr(self.footnote_count)),
-    (Some("footnotes"), @debug.to_repr(self.footnotes)),
-  ])
-}
+} derive(Debug(ignore=[StringSet]))
 
 ///|
 test {
