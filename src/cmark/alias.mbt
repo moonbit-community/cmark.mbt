@@ -26,12 +26,7 @@ using @cmark_base {type Span}
 using @cmark_base {type LineSpan}
 
 ///|
-priv struct Tokens(@deque.Deque[Token])
-
-///|
-impl @debug.Debug for Tokens with to_repr(self) {
-  @debug.to_repr(self.0)
-}
+priv struct Tokens(@deque.Deque[Token]) derive(Debug)
 
 ///|
 impl ToJson for Tokens with to_json(self) {
@@ -55,12 +50,7 @@ fn Tokens::push(self : Tokens, t : Token) -> Unit {
 // }
 
 ///|
-priv struct RevTokens(@deque.Deque[Token])
-
-///|
-impl @debug.Debug for RevTokens with to_repr(self) {
-  @debug.to_repr(self.0)
-}
+priv struct RevTokens(@deque.Deque[Token]) derive(Debug)
 
 ///|
 impl ToJson for RevTokens with to_json(self) {

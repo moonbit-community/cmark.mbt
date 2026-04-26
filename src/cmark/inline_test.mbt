@@ -319,7 +319,39 @@ test "Inline::normalize with ExtStrikethrough type" {
   debug_inspect(
     normalized,
     content=(
-      #|ExtStrikethrough(Node::new(InlineStrikethrough(Text(Node::new("strikethrough")))))
+      #|ExtStrikethrough(
+      #|  {
+      #|    v: InlineStrikethrough(
+      #|      Text(
+      #|        {
+      #|          v: "strikethrough",
+      #|          meta: {
+      #|            id: 0,
+      #|            loc: {
+      #|              file: "-",
+      #|              first_ccode: -1,
+      #|              last_ccode: -1,
+      #|              first_line: LinePos(-1, -1),
+      #|              last_line: LinePos(-1, -1),
+      #|            },
+      #|            extra: None,
+      #|          },
+      #|        },
+      #|      ),
+      #|    ),
+      #|    meta: {
+      #|      id: 0,
+      #|      loc: {
+      #|        file: "-",
+      #|        first_ccode: -1,
+      #|        last_ccode: -1,
+      #|        first_line: LinePos(-1, -1),
+      #|        last_line: LinePos(-1, -1),
+      #|      },
+      #|      extra: None,
+      #|    },
+      #|  },
+      #|)
     ),
   )
 }
@@ -556,5 +588,25 @@ test "Inline::normalize with singleton list" {
 
   // Normalize should return just the inner item
   let normalized = inlines.normalize()
-  debug_inspect(normalized, content="Text(Node::new(\"single item\"))")
+  debug_inspect(
+    normalized,
+    content=(
+      #|Text(
+      #|  {
+      #|    v: "single item",
+      #|    meta: {
+      #|      id: 0,
+      #|      loc: {
+      #|        file: "-",
+      #|        first_ccode: -1,
+      #|        last_ccode: -1,
+      #|        first_line: LinePos(-1, -1),
+      #|        last_line: LinePos(-1, -1),
+      #|      },
+      #|      extra: None,
+      #|    },
+      #|  },
+      #|)
+    ),
+  )
 }

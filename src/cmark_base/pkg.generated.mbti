@@ -104,7 +104,7 @@ pub(all) struct Meta {
   id : Int
   loc : TextLoc
   extra : Error?
-}
+} derive(@debug.Debug)
 pub fn Meta::compare(Self, Self) -> Int
 pub fn Meta::is_none(Self) -> Bool
 pub fn Meta::new(loc? : TextLoc) -> Self
@@ -112,7 +112,6 @@ pub fn Meta::none() -> Self
 pub fn Meta::to_json(Self) -> Json
 pub impl Eq for Meta
 pub impl ToJson for Meta
-pub impl @debug.Debug for Meta
 
 pub(all) struct NextLineFn[A]((A) -> LineSpan?)
 

@@ -17,7 +17,7 @@ test "show_implementation_for_meta_none" {
   debug_inspect(
     @debug.to_string(none_meta),
     content=(
-      #|"Meta::none"
+      #|"{\n  id: 0,\n  loc: {\n    file: \"-\",\n    first_ccode: -1,\n    last_ccode: -1,\n    first_line: LinePos(-1, -1),\n    last_line: LinePos(-1, -1),\n  },\n  extra: None,\n}"
     ),
   )
 }

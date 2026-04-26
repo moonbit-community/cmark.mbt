@@ -4,7 +4,7 @@ test "Show for Tight outputs the node content" {
   debug_inspect(
     @debug.to_string(tight),
     content=(
-      #|"\"\""
+      #|"{\n  blanks: \"\",\n  node: {\n    v: \"\",\n    meta: {\n      id: 0,\n      loc: {\n        file: \"-\",\n        first_ccode: -1,\n        last_ccode: -1,\n        first_line: LinePos(-1, -1),\n        last_line: LinePos(-1, -1),\n      },\n      extra: None,\n    },\n  },\n}"
     ),
   )
 }

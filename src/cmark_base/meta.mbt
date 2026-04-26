@@ -3,7 +3,7 @@ pub(all) struct Meta {
   id : MetaId
   loc : TextLoc
   extra : Error?
-}
+} derive(Debug)
 
 ///|
 type MetaId = Int
@@ -39,19 +39,6 @@ pub fn Meta::compare(self : Meta, other : Meta) -> Int {
 ///|
 pub fn Meta::is_none(self : Meta) -> Bool {
   self == meta_none
-}
-
-///|
-pub impl @debug.Debug for Meta with to_repr(self) {
-  if self.is_none() {
-    @debug.Repr::ctor("Meta::none", [])
-  } else {
-    @debug.Repr::ctor("Meta::new", [
-      (Some("id"), @debug.to_repr(self.id)),
-      (Some("loc"), @debug.to_repr(self.loc)),
-      (Some("dict"), @debug.to_repr(self.extra.map(fn(e) { e.to_string() }))),
-    ])
-  }
 }
 
 ///|

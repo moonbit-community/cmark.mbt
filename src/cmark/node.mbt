@@ -2,7 +2,7 @@
 pub(all) struct Node[A] {
   v : A
   meta : Meta
-} derive(Eq)
+} derive(Eq, Debug)
 
 ///|
 pub fn[A] Node::new(v : A, meta? : Meta = Meta::none()) -> Node[A] {
@@ -12,15 +12,6 @@ pub fn[A] Node::new(v : A, meta? : Meta = Meta::none()) -> Node[A] {
 ///|
 pub fn[A, B] Node::map(self : Node[A], f : (A) -> B) -> Node[B] {
   { v: f(self.v), meta: self.meta }
-}
-
-///|
-pub impl[A : @debug.Debug] @debug.Debug for Node[A] with to_repr(self) {
-  let args : Array[(String?, @debug.Repr)] = [(None, @debug.to_repr(self.v))]
-  if !self.meta.is_none() {
-    args.push((Some("meta"), @debug.to_repr(self.meta)))
-  }
-  @debug.Repr::ctor("Node::new", args)
 }
 
 ///|

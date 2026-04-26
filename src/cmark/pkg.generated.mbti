@@ -348,12 +348,11 @@ pub impl[A] Default for MapperResult[A]
 pub(all) struct Node[A] {
   v : A
   meta : @cmark_base.Meta
-} derive(Eq)
+} derive(Eq, @debug.Debug)
 pub fn Node::empty(meta? : @cmark_base.Meta) -> Self[String]
 pub fn[A, B] Node::map(Self[A], (A) -> B) -> Self[B]
 pub fn[A] Node::new(A, meta? : @cmark_base.Meta) -> Self[A]
 pub impl[A : ToJson] ToJson for Node[A]
-pub impl[A : @debug.Debug] @debug.Debug for Node[A]
 
 pub(all) enum ReferenceKind {
   Inline(Node[LinkDefinition])
@@ -408,11 +407,10 @@ pub(all) struct TableSep((TableAlign?, Int)) derive(ToJson, @debug.Debug)
 pub(all) struct Tight {
   blanks : String
   node : Node[String]
-} derive(Eq, ToJson)
+} derive(Eq, ToJson, @debug.Debug)
 pub fn Tight::empty(meta? : @cmark_base.Meta) -> Self
 pub fn Tight::list_text_loc(Seq[Self]) -> @cmark_base.TextLoc
 pub fn Tight::to_string(Self) -> String
-pub impl @debug.Debug for Tight
 
 // Type aliases
 pub type Blanks = String
