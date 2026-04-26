@@ -333,7 +333,7 @@ pub fn InlineCodeSpan::code(self : InlineCodeSpan) -> String {
   let s = self.code_layout.iter().map(Tight::to_string).to_array().join(" ")
   guard s != "" else { "" }
   if s is [' ', .. mid, ' '] && !mid.iter().all(fn(it) { it == ' ' }) {
-    return s[1:s.length() - 1].to_string() catch { _ => panic() }
+    return s[1:s.length() - 1].to_string()
   }
   s
 }
@@ -431,7 +431,7 @@ pub fn InlineLink::is_unsafe(l : String) -> Bool {
       None => j
     }
     let allowed = ["image/gif", "image/png", "image/jpeg", "image/webp"]
-    allowed.contains(l[5:@cmp.minimum(j, k)].to_string() catch { _ => panic() })
+    allowed.contains(l[5:@cmp.minimum(j, k)].to_string())
   }
   let lower = @casefold.casefold(l)
   lower.has_prefix("javascript:") ||
