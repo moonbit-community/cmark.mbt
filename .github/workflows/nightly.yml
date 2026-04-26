@@ -1,0 +1,62 @@
+name: nightly
+
+on:
+  schedule:
+    - cron: "0 6 * * *" # Daily at 06:00 UTC
+  workflow_dispatch:
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        os:
+          - name: ubuntu-latest
+          - name: macos-latest
+          - name: windows-latest
+
+    runs-on: ${{ matrix.os.name }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: install nightly
+        if: ${{ matrix.os.name != 'windows-latest' }}
+        run: |
+          curl -fsSL https://cli.moonbitlang.com/install/unix.sh | bash -s nightly
+          echo "$HOME/.moon/bin" >> $GITHUB_PATH
+
+      - name: install nightly on windows
+        if: ${{ matrix.os.name == 'windows-latest' }}
+        run: |
+          $env:MOONBIT_INSTALL_VERSION = "nightly"
+          Set-ExecutionPolicy RemoteSigned -Scope CurrentUser; irm https://cli.moonbitlang.com/install/powershell.ps1 | iex
+          "C:\Users\runneradmin\.moon\bin" | Out-File -FilePath $env:GITHUB_PATH -Append
+
+      - name: moon version
+        run: |
+          moon version --all
+          moonrun --version
+
+      - name: moon check
+        run: |
+          moon update
+          moon check
+
+      - name: moon info and moon fmt
+        run: |
+          moon info
+          moon fmt
+          git diff --exit-code
+
+      - name: moon test
+        env:
+          OCAMLRUNPARAM: b
+        run: |
+          moon test --target wasm
+          moon test --target wasm --release
+          moon test --target wasm-gc
+          moon test --target wasm-gc --release
+          moon test --target js
+          moon test --target js --release
+          moon test --target native
+          moon test --target native --release
