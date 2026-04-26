@@ -206,9 +206,9 @@ pub fn CodeBlock::language_of_info_string(s : String) -> (String, String)? {
     }
   }
   let rem_first = @cmark_base.first_non_blank(s, last=max, start=white)
-  let lang = s[0:white].to_string()
+  let lang = s[0:white].to_owned()
   guard !lang.is_empty() else { None }
-  Some((lang, s[rem_first:max + 1].to_string()))
+  Some((lang, s[rem_first:max + 1].to_owned()))
 }
 
 ///|

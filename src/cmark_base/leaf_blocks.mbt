@@ -410,7 +410,7 @@ pub fn LineType::html_block_start(
         }
         continue i + 1
       }
-      let tag = s[tag_first:tag_last + 1].to_string().to_lower()
+      let tag = s[tag_first:tag_last + 1].to_owned().to_lower()
       let is_open_end = {
         let n = tag_last + 1
         n > last ||
