@@ -12,12 +12,19 @@ priv enum Closer {
   EmphasisMarks(Char)
   StrikethroughMarks
   MathSpanMarks(Int)
-} derive(Eq, Hash, Show, ToJson)
+} derive(Eq, Hash, Debug, ToJson)
+
+///|
+// Manual Show impl bridges Closer's Debug output through Map's ToJson,
+// which requires Show on the key type.
+impl Show for Closer with output(self, logger) {
+  logger.write_string(@debug.to_string(self))
+}
 
 ///|
 test {
-  // Prevent warning about unused Show and ToJson
-  (fn(c : Closer) { c.to_string() }) |> ignore()
+  // Prevent warning about unused Debug and ToJson
+  (fn(c : Closer) { @debug.to_string(c) }) |> ignore()
   (fn(c : Closer) { c.to_json() }) |> ignore()
 }
 
@@ -25,12 +32,25 @@ test {
 type PosSet = Set[Int]
 
 ///|
-priv struct CloserIndex(Map[Closer, PosSet]) derive(Show, ToJson)
+priv struct CloserIndex(Map[Closer, PosSet]) derive(ToJson)
+
+///|
+// Set[Int] does not implement Debug yet; manually walk the Map.
+impl @debug.Debug for CloserIndex with to_repr(self) {
+  let entries = self.0
+    .iter()
+    .map(fn(kv) {
+      let (k, v) = kv
+      (@debug.to_repr(k), @debug.to_repr(v.iter().to_array()))
+    })
+    .to_array()
+  @debug.Repr::map(entries)
+}
 
 ///|
 test {
-  // Prevent warning about unused Show and ToJson
-  (fn(c : CloserIndex) { c.to_string() }) |> ignore()
+  // Prevent warning about unused Debug and ToJson
+  (fn(c : CloserIndex) { @debug.to_string(c) }) |> ignore()
   (fn(c : CloserIndex) { c.to_json() }) |> ignore()
 }
 

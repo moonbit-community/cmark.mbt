@@ -3,7 +3,7 @@ pub(all) struct Meta {
   id : MetaId
   loc : TextLoc
   extra : Error?
-}
+} derive(Debug)
 
 ///|
 type MetaId = Int
@@ -42,29 +42,18 @@ pub fn Meta::is_none(self : Meta) -> Bool {
 }
 
 ///|
-pub impl Show for Meta with output(self, logger) {
-  if self.is_none() {
-    logger.write_string("Meta::none()")
-  } else {
-    logger.write_string("Meta::new(id=")
-    logger.write_object(self.id)
-    logger.write_string(", loc=")
-    logger.write_object(self.loc)
-    logger.write_string(", dict=")
-    logger.write_object(self.extra)
-    logger.write_string(")")
-  }
-}
-
-///|
 pub impl ToJson for Meta with to_json(self) {
   if self.is_none() {
     return {}
   }
+  let extra = match self.extra {
+    None => "None"
+    Some(e) => "Some(\{e})"
+  }
   {
     "id": self.id.to_json(),
     "loc": self.loc.to_json(),
-    "dict": self.extra.to_string().to_json(),
+    "dict": extra.to_json(),
   }
 }
 

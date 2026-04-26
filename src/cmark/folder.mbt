@@ -18,7 +18,7 @@ pub(all) struct FolderFn[A, B]((Folder[B], B, A) -> FolderResult[B])
 pub(all) enum FolderResult[A] {
   Default
   Fold(A)
-} derive(Eq, Show, ToJson)
+} derive(Eq, Debug, ToJson)
 
 ///|
 pub impl[A] Default for FolderResult[A] with default() {

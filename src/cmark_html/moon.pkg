@@ -3,6 +3,7 @@ import {
   "moonbit-community/cmark/cmark_base",
   "moonbit-community/cmark/cmark",
   "moonbit-community/cmark/cmark_renderer",
+  "moonbitlang/core/debug",
 }
 
 import {

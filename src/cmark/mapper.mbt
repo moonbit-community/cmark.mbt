@@ -30,7 +30,7 @@ pub(all) struct MapperFn[A]((Mapper, A) -> MapperResult[A])
 pub(all) enum MapperResult[A] {
   Default
   Map(A?)
-} derive(Eq, Show, ToJson)
+} derive(Eq, Debug, ToJson)
 
 ///|
 pub impl[A] Default for MapperResult[A] with default() {
