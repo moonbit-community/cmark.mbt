@@ -3,6 +3,7 @@ package "moonbit-community/cmark/cmark_renderer"
 
 import {
   "moonbit-community/cmark/cmark",
+  "moonbit-community/cmark/cmark_base",
 }
 
 // Values
@@ -17,7 +18,7 @@ pub(all) struct BlockFn((Context, @cmark.Block) -> Bool raise)
 
 pub(all) struct Context {
   renderer : Renderer
-  mut state : Error?
+  mut state : @cmark_base.ContextState?
   b : StringBuilder
   mut doc : @cmark.Doc
 }

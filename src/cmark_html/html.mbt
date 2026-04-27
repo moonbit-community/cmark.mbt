@@ -41,7 +41,8 @@ impl Compare for HtmlRenderFootnote with compare(self, other) {
 }
 
 ///|
-priv suberror EState {
+/// Extend `ContextState` with the HTML renderer's private state.
+extenum @cmark_base.ContextState += {
   EState(State)
 }
 
@@ -925,6 +926,13 @@ fn doc(c : Context, d : Doc) -> Bool raise {
 // Renderer
 
 ///|
+/// Create an HTML renderer.
+///
+/// Parameters:
+///
+/// - `safe` — when `true`, unsafe raw HTML and links are replaced by comments.
+/// - `backend_blocks` — when `true`, fenced code blocks whose info string
+///   starts with `=` are treated as backend-specific blocks (e.g. `=html`).
 pub fn renderer(
   backend_blocks? : Bool = false,
   safe~ : Bool,
@@ -938,6 +946,7 @@ pub fn renderer(
 }
 
 ///|
+/// Create an XHTML renderer (self-closing tags like `<br />` and `<hr />`).
 pub fn xhtml_renderer(
   backend_blocks? : Bool = false,
   safe~ : Bool,
@@ -951,6 +960,7 @@ pub fn xhtml_renderer(
 }
 
 ///|
+/// Render a parsed `Doc` to an HTML string.
 pub fn from_doc(
   backend_blocks? : Bool = false,
   safe~ : Bool,

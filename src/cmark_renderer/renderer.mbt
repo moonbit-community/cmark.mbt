@@ -32,9 +32,13 @@ pub fn Renderer::compose(self : Renderer, other : Renderer) -> Renderer {
 }
 
 ///|
+/// Mutable rendering context threaded through every render callback.
+///
+/// `state` holds renderer-specific data via the `@cmark_base.ContextState`
+/// extensible enum — each concrete renderer extends it with its own variant.
 pub(all) struct Context {
   renderer : Renderer
-  mut state : Error?
+  mut state : @cmark_base.ContextState?
   b : StringBuilder
   mut doc : Doc
 }
