@@ -47,6 +47,9 @@ pub fn run_of(char~ : Char, String, last~ : Int, start~ : Int) -> Int
 // Errors
 
 // Types and methods
+pub extenum ContextState {
+}
+
 pub(all) enum FencedCodeBlockContinue {
   Close(Int, Int)
   Code
