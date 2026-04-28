@@ -30,16 +30,11 @@ pub fn BlockLine::list_text_loc(ls : Seq[BlockLine]) -> TextLoc {
 pub(all) struct Tight {
   blanks : Blanks
   node : StringNode
-} derive(Eq, ToJson)
+} derive(Eq, Debug)
 
 ///|
 pub fn Tight::empty(meta? : Meta = Meta::none()) -> Tight {
   { blanks: "", node: StringNode::empty(meta~) }
-}
-
-///|
-pub impl Show for Tight with to_string(self) {
-  self.node.v
 }
 
 ///|

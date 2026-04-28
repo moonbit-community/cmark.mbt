@@ -26,23 +26,12 @@ using @cmark_base {type Span}
 using @cmark_base {type LineSpan}
 
 ///|
-priv struct Tokens(@deque.Deque[Token])
-
-///|
-impl Show for Tokens with output(self, logger) {
-  logger.write_object(self.0)
-}
-
-///|
-impl ToJson for Tokens with to_json(self) {
-  Json::array(Array::from_iter(self.0.iter().map(ToJson::to_json)))
-}
+priv struct Tokens(@deque.Deque[Token]) derive(Debug)
 
 ///|
 test {
-  // Prevent warning about unused Show and ToJson
-  (fn(t : Tokens) { t.to_string() }) |> ignore()
-  (fn(t : Tokens) { t.to_json() }) |> ignore()
+  // Prevent warning about unused Debug.
+  (fn(t : Tokens) { @debug.to_string(t) }) |> ignore()
 }
 
 ///|
@@ -55,23 +44,12 @@ fn Tokens::push(self : Tokens, t : Token) -> Unit {
 // }
 
 ///|
-priv struct RevTokens(@deque.Deque[Token])
-
-///|
-impl Show for RevTokens with output(self, logger) {
-  logger.write_object(self.0)
-}
-
-///|
-impl ToJson for RevTokens with to_json(self) {
-  Json::array(Array::from_iter(self.0.iter().map(ToJson::to_json)))
-}
+priv struct RevTokens(@deque.Deque[Token]) derive(Debug)
 
 ///|
 test {
-  // Prevent warning about unused Show and ToJson
-  (fn(t : RevTokens) { t.to_string() }) |> ignore()
-  (fn(t : RevTokens) { t.to_json() }) |> ignore()
+  // Prevent warning about unused Debug.
+  (fn(t : RevTokens) { @debug.to_string(t) }) |> ignore()
 }
 
 ///|

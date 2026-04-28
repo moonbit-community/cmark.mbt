@@ -135,7 +135,7 @@ priv struct IndentedCodeLine {
   pad : SpacePad
   code : LineSpan
   is_blank : Bool
-} derive(Show, ToJson)
+} derive(Debug)
 
 ///|
 priv struct Fence {
@@ -144,19 +144,19 @@ priv struct Fence {
   fence : (Char, Int) // Fence length
   info_string : LineSpan? // We drop the trailing blanks
   closing_fence : LineSpan?
-} derive(Show, ToJson)
+} derive(Debug)
 
 ///|
 priv struct FenceCodeBlockStruct {
   fence : Fence
   code : Array[(SpacePad, LineSpan)]
-} derive(Show, ToJson)
+} derive(Debug)
 
 ///|
 priv enum CodeBlockStruct {
   Indented(Array[IndentedCodeLine])
   Fenced(FenceCodeBlockStruct)
-} derive(Show, ToJson)
+} derive(Debug)
 
 ///|
 priv struct Atx {
@@ -165,7 +165,7 @@ priv struct Atx {
   after_open : CharCodePos
   heading : LineSpan
   layout_after : LineSpan
-} derive(Show, ToJson)
+} derive(Debug)
 
 ///|
 priv struct Setext {
@@ -173,25 +173,25 @@ priv struct Setext {
   heading_lines : Array[LineSpan]
   /// Indent, underline char count, blanks
   underline : (Indent, LineSpan, LineSpan)
-} derive(Show, ToJson)
+} derive(Debug)
 
 ///|
 priv enum Heading {
   Atx(Atx)
   Setext(Setext)
-} derive(Show, ToJson)
+} derive(Debug)
 
 ///|
 priv struct HtmlBlockStruct {
   end_cond : HtmlBlockEndCond?
   html : Array[LineSpan]
-} derive(Show, ToJson)
+} derive(Debug)
 
 ///|
 priv struct Paragraph {
   maybe_ref : Bool
   lines : Array[LineSpan]
-} derive(Show, ToJson)
+} derive(Debug)
 
 ///|
 priv enum BlockStruct {
@@ -206,7 +206,7 @@ priv enum BlockStruct {
   ThematicBreak(Indent, LineSpan) // Including trailing blanks
   ExtTable(Indent, Array[(LineSpan, LineSpan)]) // The second `LineSpan` is for trailing blanks
   ExtFootnote(Indent, (Label, Label?), Array[BlockStruct])
-} derive(Show, ToJson)
+} derive(Debug)
 
 ///|
 priv struct ListItemStruct {
@@ -215,7 +215,7 @@ priv struct ListItemStruct {
   after_marker : Indent
   ext_task_marker : (Char, LineSpan)?
   blocks : Array[BlockStruct]
-} derive(Show, ToJson)
+} derive(Debug)
 
 ///|
 priv struct ListBlockStruct {
@@ -224,7 +224,7 @@ priv struct ListBlockStruct {
   item_min_indent : Indent // Last item minimal indent
   list_type : ListType
   items : Array[ListItemStruct]
-} derive(Show, ToJson)
+} derive(Debug)
 
 ///|
 fn BlockStruct::is_blank_line(self : BlockStruct) -> Bool {

@@ -1,1941 +1,6036 @@
 ///|
 test "basic" {
   let rendered = @cmark.Doc::from_string(test_base_md_str)
-  json_inspect(rendered, content={
-    "nl": "\n",
-    "block": [
-      "Blocks",
-      [
-        [
-          [
-            "Heading",
-            [
-              {
-                "layout": [
-                  "Setext",
-                  {
-                    "leading_indent": 0,
-                    "trailing_blanks": "",
-                    "underline_indent": 0,
-                    "underline_count": [11],
-                    "underline_blanks": "",
-                  },
-                ],
-                "level": 1,
-                "inline": ["Text", ["Basic tests"]],
-              },
-            ],
-          ],
-          ["BlankLine", [""]],
-          [
-            "Paragraph",
-            [
-              {
-                "leading_indent": 0,
-                "inline": [
-                  "Text",
-                  ["Basic tests for all CommonMark constructs."],
-                ],
-                "trailing_blanks": "",
-              },
-            ],
-          ],
-          ["BlankLine", [""]],
-          [
-            "Heading",
-            [
-              {
-                "layout": [
-                  "Atx",
-                  { "indent": 0, "after_opening": "", "closing": "" },
-                ],
-                "level": 2,
-                "inline": ["Text", ["Testing autolinks"]],
-              },
-            ],
-          ],
-          ["BlankLine", [""]],
-          [
-            "Paragraph",
-            [
-              {
-                "leading_indent": 0,
-                "inline": [
-                  "Inlines",
-                  [
-                    [
-                      ["Text", ["This is an "]],
-                      [
-                        "Autolink",
-                        [{ "is_email": false, "link": ["http://example.org"] }],
-                      ],
-                      ["Text", [" and another one "]],
-                      [
-                        "Autolink",
-                        [{ "is_email": true, "link": ["you@example.org"] }],
-                      ],
-                      ["Text", ["."]],
-                    ],
-                  ],
-                ],
-                "trailing_blanks": "",
-              },
-            ],
-          ],
-          ["BlankLine", [""]],
-          ["BlankLine", [""]],
-          [
-            "Heading",
-            [
-              {
-                "layout": [
-                  "Atx",
-                  { "indent": 0, "after_opening": "", "closing": "" },
-                ],
-                "level": 2,
-                "inline": ["Text", ["Testing breaks"]],
-              },
-            ],
-          ],
-          ["BlankLine", [""]],
-          [
-            "Paragraph",
-            [
-              {
-                "leading_indent": 0,
-                "inline": [
-                  "Inlines",
-                  [
-                    [
-                      [
-                        "Text",
-                        [
-                          "A line ending (not in a code span or HTML tag) that is preceded by two",
-                        ],
-                      ],
-                      [
-                        "Break",
-                        [
-                          {
-                            "layout_before": [""],
-                            "ty": "Soft",
-                            "layout_after": [""],
-                          },
-                        ],
-                      ],
-                      [
-                        "Text",
-                        [
-                          "or more spaces and does not occur at the end of a block is parsed as a",
-                        ],
-                      ],
-                      [
-                        "Break",
-                        [
-                          {
-                            "layout_before": [""],
-                            "ty": "Soft",
-                            "layout_after": [""],
-                          },
-                        ],
-                      ],
-                      ["Text", ["hard line break."]],
-                    ],
-                  ],
-                ],
-                "trailing_blanks": "",
-              },
-            ],
-          ],
-          ["BlankLine", [""]],
-          [
-            "Paragraph",
-            [
-              {
-                "leading_indent": 0,
-                "inline": [
-                  "Inlines",
-                  [
-                    [
-                      [
-                        "Text",
-                        [
-                          "So this means we had softbreaks so far and now we get  ",
-                        ],
-                      ],
-                      [
-                        "Break",
-                        [
-                          {
-                            "layout_before": [""],
-                            "ty": "Hard",
-                            "layout_after": [""],
-                          },
-                        ],
-                      ],
-                      ["Text", ["a hard break"]],
-                      [
-                        "Break",
-                        [
-                          {
-                            "layout_before": [""],
-                            "ty": "Hard",
-                            "layout_after": [""],
-                          },
-                        ],
-                      ],
-                      ["Text", ["and another one."]],
-                    ],
-                  ],
-                ],
-                "trailing_blanks": "",
-              },
-            ],
-          ],
-          ["BlankLine", [""]],
-          [
-            "BlockQuote",
-            [
-              {
-                "indent": 0,
-                "block": [
-                  "Paragraph",
-                  [
-                    {
-                      "leading_indent": 0,
-                      "inline": [
-                        "Inlines",
-                        [
-                          [
-                            [
-                              "Text",
-                              [
-                                "So this means we had softbreaks so far and now we get  ",
-                              ],
-                            ],
-                            [
-                              "Break",
-                              [
-                                {
-                                  "layout_before": [""],
-                                  "ty": "Hard",
-                                  "layout_after": [""],
-                                },
-                              ],
-                            ],
-                            ["Text", ["a hard break"]],
-                            [
-                              "Break",
-                              [
-                                {
-                                  "layout_before": [""],
-                                  "ty": "Hard",
-                                  "layout_after": [""],
-                                },
-                              ],
-                            ],
-                            ["Text", ["and another one."]],
-                            [
-                              "Break",
-                              [
-                                {
-                                  "layout_before": [""],
-                                  "ty": "Soft",
-                                  "layout_after": [""],
-                                },
-                              ],
-                            ],
-                            ["Text", ["This is very soooft."]],
-                          ],
-                        ],
-                      ],
-                      "trailing_blanks": "",
-                    },
-                  ],
-                ],
-              },
-            ],
-          ],
-          ["BlankLine", [""]],
-          [
-            "Heading",
-            [
-              {
-                "layout": [
-                  "Atx",
-                  { "indent": 0, "after_opening": "", "closing": "" },
-                ],
-                "level": 2,
-                "inline": ["Text", ["Testing code spans"]],
-              },
-            ],
-          ],
-          ["BlankLine", [""]],
-          [
-            "Paragraph",
-            [
-              {
-                "leading_indent": 0,
-                "inline": [
-                  "Inlines",
-                  [
-                    [
-                      ["Text", ["This is a multi-line code"]],
-                      [
-                        "CodeSpan",
-                        [
-                          {
-                            "backticks": 1,
-                            "code_layout": [
-                              { "blanks": "", "node": [""] },
-                              {
-                                "blanks": "",
-                                "node": ["code span `` it has backticks"],
-                              },
-                              { "blanks": "", "node": ["in there"] },
-                            ],
-                          },
-                        ],
-                      ],
-                    ],
-                  ],
-                ],
-                "trailing_blanks": "",
-              },
-            ],
-          ],
-          ["BlankLine", [""]],
-          [
-            "Paragraph",
-            [
-              {
-                "leading_indent": 0,
-                "inline": [
-                  "Inlines",
-                  [
-                    [
-                      ["Text", ["Sometimes code spans "]],
-                      [
-                        "CodeSpan",
-                        [
-                          {
-                            "backticks": 2,
-                            "code_layout": [
-                              { "blanks": "", "node": [" `can have"] },
-                              { "blanks": "", "node": ["really ```"] },
-                              { "blanks": "", "node": ["strange"] },
-                              { "blanks": "", "node": ["layout "] },
-                            ],
-                          },
-                        ],
-                      ],
-                      ["Text", [". Do you fancy "]],
-                      [
-                        "CodeSpan",
-                        [
-                          {
-                            "backticks": 2,
-                            "code_layout": [
-                              {
-                                "blanks": "",
-                                "node": [" `A_polymorphic_variant "],
-                              },
-                            ],
-                          },
-                        ],
-                      ],
-                      ["Text", [" ?"]],
-                    ],
-                  ],
-                ],
-                "trailing_blanks": "",
-              },
-            ],
-          ],
-          ["BlankLine", [""]],
-          ["BlankLine", [""]],
-          [
-            "Heading",
-            [
-              {
-                "layout": [
-                  "Atx",
-                  { "indent": 0, "after_opening": "", "closing": "" },
-                ],
-                "level": 2,
-                "inline": ["Text", ["Testing emphasis"]],
-              },
-            ],
-          ],
-          ["BlankLine", [""]],
-          [
-            "Paragraph",
-            [
-              {
-                "leading_indent": 0,
-                "inline": [
-                  "Inlines",
-                  [
-                    [
-                      ["Text", ["There is "]],
-                      [
-                        "Emphasis",
-                        [{ "delim": "_", "inline": ["Text", ["more"]] }],
-                      ],
-                      ["Text", [" than "]],
-                      [
-                        "Emphasis",
-                        [{ "delim": "*", "inline": ["Text", ["one syntax"]] }],
-                      ],
-                      ["Text", [" for "]],
-                      [
-                        "StrongEmphasis",
-                        [{ "delim": "_", "inline": ["Text", ["emphasis"]] }],
-                      ],
-                      ["Text", [" and "]],
-                      [
-                        "StrongEmphasis",
-                        [
-                          {
-                            "delim": "*",
-                            "inline": [
-                              "Inlines",
-                              [
-                                [
-                                  ["Text", ["strong"]],
-                                  [
-                                    "Break",
-                                    [
-                                      {
-                                        "layout_before": [""],
-                                        "ty": "Soft",
-                                        "layout_after": [""],
-                                      },
-                                    ],
-                                  ],
-                                  ["Text", ["emphasis"]],
-                                ],
-                              ],
-                            ],
-                          },
-                        ],
-                      ],
-                      ["Text", [".  We should be careful about "]],
-                      [
-                        "StrongEmphasis",
-                        [
-                          {
-                            "delim": "*",
-                            "inline": ["Text", ["embedded * marker"]],
-                          },
-                        ],
-                      ],
-                      ["Text", [". This"]],
-                      [
-                        "Break",
-                        [
-                          {
-                            "layout_before": [""],
-                            "ty": "Soft",
-                            "layout_after": [""],
-                          },
-                        ],
-                      ],
-                      ["Text", ["will be "]],
-                      [
-                        "StrongEmphasis",
-                        [
-                          {
-                            "delim": "*",
-                            "inline": ["Text", ["tricky * to handle"]],
-                          },
-                        ],
-                      ],
-                      ["Text", [". This "]],
-                      [
-                        "Emphasis",
-                        [
-                          {
-                            "delim": "*",
-                            "inline": ["Text", ["is not ** what"]],
-                          },
-                        ],
-                      ],
-                      ["Text", [" you want ?"]],
-                    ],
-                  ],
-                ],
-                "trailing_blanks": "",
-              },
-            ],
-          ],
-          ["BlankLine", [""]],
-          ["BlankLine", [""]],
-          [
-            "Heading",
-            [
-              {
-                "layout": [
-                  "Atx",
-                  { "indent": 0, "after_opening": "", "closing": "" },
-                ],
-                "level": 2,
-                "inline": [
-                  "Text",
-                  ["Testing links, images and link reference definitions"],
-                ],
-              },
-            ],
-          ],
-          ["BlankLine", [""]],
-          [
-            "Paragraph",
-            [
-              {
-                "leading_indent": 0,
-                "inline": [
-                  "Inlines",
-                  [
-                    [
-                      ["Text", ["This is an "]],
-                      [
-                        "Image",
-                        [
-                          {
-                            "text": ["Text", ["inline image"]],
-                            "reference": [
-                              "Inline",
-                              [
-                                {
-                                  "layout": {
-                                    "indent": 0,
-                                    "angled_dest": false,
-                                    "before_dest": [[""], ["  "]],
-                                    "after_dest": [["    "]],
-                                    "title_open_delim": "(",
-                                    "after_title": [],
-                                  },
-                                  "dest": ["/heyho"],
-                                  "title": [
-                                    { "blanks": "", "node": ["The"] },
-                                    {
-                                      "blanks": "",
-                                      "node": ["multiline title"],
-                                    },
-                                  ],
-                                },
-                              ],
-                            ],
-                          },
-                        ],
-                      ],
-                    ],
-                  ],
-                ],
-                "trailing_blanks": "",
-              },
-            ],
-          ],
-          ["BlankLine", [""]],
-          [
-            "Paragraph",
-            [
-              {
-                "leading_indent": 2,
-                "inline": [
-                  "Inlines",
-                  [
-                    [
-                      ["Text", ["That is totally "]],
-                      [
-                        "Link",
-                        [
-                          {
-                            "text": ["Text", ["colla    psed"]],
-                            "reference": [
-                              "Ref",
-                              "Collapsed",
-                              {
-                                "meta": {},
-                                "key": "colla psed",
-                                "text": [
-                                  { "blanks": "", "node": ["colla    psed"] },
-                                ],
-                              },
-                              {
-                                "meta": {},
-                                "key": "colla psed",
-                                "text": [
-                                  { "blanks": "", "node": ["colla psed"] },
-                                ],
-                              },
-                            ],
-                          },
-                        ],
-                      ],
-                      ["Text", [" and"]],
-                      [
-                        "Break",
-                        [
-                          {
-                            "layout_before": [""],
-                            "ty": "Soft",
-                            "layout_after": [""],
-                          },
-                        ],
-                      ],
-                      ["Text", ["that is "]],
-                      [
-                        "Link",
-                        [
-                          {
-                            "text": [
-                              "CodeSpan",
-                              [
-                                {
-                                  "backticks": 1,
-                                  "code_layout": [
-                                    { "blanks": "", "node": ["short cuted"] },
-                                  ],
-                                },
-                              ],
-                            ],
-                            "reference": [
-                              "Ref",
-                              "Shortcut",
-                              {
-                                "meta": {},
-                                "key": "`short cuted`",
-                                "text": [
-                                  { "blanks": "", "node": ["`short cuted`"] },
-                                ],
-                              },
-                              {
-                                "meta": {},
-                                "key": "`short cuted`",
-                                "text": [
-                                  { "blanks": "", "node": ["`short cuted`"] },
-                                ],
-                              },
-                            ],
-                          },
-                        ],
-                      ],
-                    ],
-                  ],
-                ],
-                "trailing_blanks": "",
-              },
-            ],
-          ],
-          ["BlankLine", [""]],
-          [
-            "Paragraph",
-            [
-              {
-                "leading_indent": 0,
-                "inline": [
-                  "Inlines",
-                  [
-                    [
-                      ["Text", ["Shortcuts can be better than "]],
-                      [
-                        "Link",
-                        [
-                          {
-                            "text": ["Text", ["full references"]],
-                            "reference": [
-                              "Ref",
-                              "Full",
-                              {
-                                "meta": {},
-                                "key": "`short cuted`",
-                                "text": [
-                                  { "blanks": "", "node": ["`short "] },
-                                  { "blanks": "", "node": ["cuted`"] },
-                                ],
-                              },
-                              {
-                                "meta": {},
-                                "key": "`short cuted`",
-                                "text": [
-                                  { "blanks": "", "node": ["`short cuted`"] },
-                                ],
-                              },
-                            ],
-                          },
-                        ],
-                      ],
-                      ["Text", [" but not"]],
-                      [
-                        "Break",
-                        [
-                          {
-                            "layout_before": [""],
-                            "ty": "Soft",
-                            "layout_after": [""],
-                          },
-                        ],
-                      ],
-                      ["Text", ["always and we'd like to trip their "]],
-                      [
-                        "Link",
-                        [
-                          {
-                            "text": ["Text", ["label"]],
-                            "reference": [
-                              "Ref",
-                              "Full",
-                              {
-                                "meta": {},
-                                "key": "`short cuted`",
-                                "text": [
-                                  { "blanks": "", "node": ["`short    cuted`"] },
-                                ],
-                              },
-                              {
-                                "meta": {},
-                                "key": "`short cuted`",
-                                "text": [
-                                  { "blanks": "", "node": ["`short cuted`"] },
-                                ],
-                              },
-                            ],
-                          },
-                        ],
-                      ],
-                      ["Text", ["."]],
-                    ],
-                  ],
-                ],
-                "trailing_blanks": "",
-              },
-            ],
-          ],
-          ["BlankLine", [""]],
-          [
-            "BlockQuote",
-            [
-              {
-                "indent": 0,
-                "block": [
-                  "LinkRefDefinition",
-                  [
-                    {
-                      "layout": {
-                        "indent": 0,
-                        "angled_dest": false,
-                        "before_dest": [[" "]],
-                        "after_dest": [[" "]],
-                        "title_open_delim": "\"",
-                        "after_title": [[""]],
-                      },
-                      "label": {
-                        "meta": {},
-                        "key": "colla psed",
-                        "text": [{ "blanks": "", "node": ["colla psed"] }],
-                      },
-                      "defined_label": {
-                        "meta": {},
-                        "key": "colla psed",
-                        "text": [{ "blanks": "", "node": ["colla psed"] }],
-                      },
-                      "dest": ["/hohoho"],
-                      "title": [
-                        { "blanks": "", "node": ["And again these "] },
-                        { "blanks": "", "node": ["multi"] },
-                        { "blanks": "", "node": ["line titles"] },
-                      ],
-                    },
-                  ],
-                ],
-              },
-            ],
-          ],
-          ["BlankLine", [""]],
-          [
-            "LinkRefDefinition",
-            [
-              {
-                "layout": {
-                  "indent": 1,
-                  "angled_dest": false,
-                  "before_dest": [["    "]],
-                  "after_dest": [["   "]],
-                  "title_open_delim": "\"",
-                  "after_title": [[""]],
-                },
-                "label": {
-                  "meta": {},
-                  "key": "`short cuted`",
-                  "text": [{ "blanks": "", "node": ["`short cuted`"] }],
-                },
-                "defined_label": {
-                  "meta": {},
-                  "key": "`short cuted`",
-                  "text": [{ "blanks": "", "node": ["`short cuted`"] }],
-                },
-                "dest": ["/veryshort"],
-                "title": [
-                  { "blanks": "", "node": ["But very"] },
-                  { "blanks": "", "node": ["important"] },
-                ],
-              },
-            ],
-          ],
-          ["BlankLine", ["  "]],
-          ["BlankLine", [""]],
-          [
-            "Heading",
-            [
-              {
-                "layout": [
-                  "Atx",
-                  { "indent": 0, "after_opening": "", "closing": "" },
-                ],
-                "level": 2,
-                "inline": ["Text", ["Testing raw HTML"]],
-              },
-            ],
-          ],
-          ["BlankLine", [""]],
-          [
-            "Paragraph",
-            [
-              {
-                "leading_indent": 0,
-                "inline": [
-                  "Inlines",
-                  [
-                    [
-                      ["Text", ["Haha "]],
-                      [
-                        "RawHtml",
-                        [["InlineRawHtml", [{ "blanks": "", "node": ["<a>"] }]]],
-                      ],
-                      ["Text", ["a"]],
-                      [
-                        "RawHtml",
-                        [
-                          [
-                            "InlineRawHtml",
-                            [{ "blanks": "", "node": ["</a>"] }],
-                          ],
-                        ],
-                      ],
-                      [
-                        "RawHtml",
-                        [
-                          [
-                            "InlineRawHtml",
-                            [
-                              { "blanks": "", "node": ["<b2"] },
-                              { "blanks": "", "node": ["data=\"foo\" >"] },
-                            ],
-                          ],
-                        ],
-                      ],
-                      ["Text", [" hihi this is not the end yet."]],
-                    ],
-                  ],
-                ],
-                "trailing_blanks": "",
-              },
-            ],
-          ],
-          ["BlankLine", [""]],
-          [
-            "Paragraph",
-            [
-              {
-                "leading_indent": 0,
-                "inline": [
-                  "Inlines",
-                  [
-                    [
-                      ["Text", ["foo "]],
-                      [
-                        "RawHtml",
-                        [
-                          [
-                            "InlineRawHtml",
-                            [{ "blanks": "", "node": ["<a href=\"\\*\" />"] }],
-                          ],
-                        ],
-                      ],
-                      ["Text", ["u"]],
-                      [
-                        "RawHtml",
-                        [
-                          [
-                            "InlineRawHtml",
-                            [{ "blanks": "", "node": ["</a>"] }],
-                          ],
-                        ],
-                      ],
-                    ],
-                  ],
-                ],
-                "trailing_blanks": "",
-              },
-            ],
-          ],
-          ["BlankLine", [""]],
-          [
-            "BlockQuote",
-            [
-              {
-                "indent": 0,
-                "block": [
-                  "Paragraph",
-                  [
-                    {
-                      "leading_indent": 1,
-                      "inline": [
-                        "Inlines",
-                        [
-                          [
-                            ["Text", ["Haha "]],
-                            [
-                              "RawHtml",
-                              [
-                                [
-                                  "InlineRawHtml",
-                                  [{ "blanks": "", "node": ["<a>"] }],
-                                ],
-                              ],
-                            ],
-                            ["Text", ["a"]],
-                            [
-                              "RawHtml",
-                              [
-                                [
-                                  "InlineRawHtml",
-                                  [{ "blanks": "", "node": ["</a>"] }],
-                                ],
-                              ],
-                            ],
-                            [
-                              "RawHtml",
-                              [
-                                [
-                                  "InlineRawHtml",
-                                  [
-                                    { "blanks": "", "node": ["<b2"] },
-                                    { "blanks": "", "node": ["data=\"foo\" >"] },
-                                  ],
-                                ],
-                              ],
-                            ],
-                            ["Text", [" hihi this is not the end yet."]],
-                          ],
-                        ],
-                      ],
-                      "trailing_blanks": "",
-                    },
-                  ],
-                ],
-              },
-            ],
-          ],
-          ["BlankLine", [""]],
-          [
-            "Heading",
-            [
-              {
-                "layout": [
-                  "Atx",
-                  { "indent": 0, "after_opening": "", "closing": "" },
-                ],
-                "level": 2,
-                "inline": ["Text", ["Testing blank lines"]],
-              },
-            ],
-          ],
-          ["BlankLine", [""]],
-          ["BlankLine", ["    "]],
-          ["BlankLine", ["     "]],
-          [
-            "Paragraph",
-            [
-              {
-                "leading_indent": 0,
-                "inline": ["Text", ["Impressive isn't it ?"]],
-                "trailing_blanks": "",
-              },
-            ],
-          ],
-          ["BlankLine", [""]],
-          [
-            "Heading",
-            [
-              {
-                "layout": [
-                  "Atx",
-                  { "indent": 0, "after_opening": "", "closing": "" },
-                ],
-                "level": 2,
-                "inline": ["Text", ["Testing block quotes"]],
-              },
-            ],
-          ],
-          ["BlankLine", [""]],
-          ["BlankLine", [""]],
-          [
-            "BlockQuote",
-            [
-              {
-                "indent": 2,
-                "block": [
-                  "BlockQuote",
-                  [
-                    {
-                      "indent": 2,
-                      "block": [
-                        "Paragraph",
-                        [
-                          {
-                            "leading_indent": 0,
-                            "inline": [
-                              "Inlines",
-                              [
-                                [
-                                  ["Text", ["How is"]],
-                                  [
-                                    "Break",
-                                    [
-                                      {
-                                        "layout_before": [""],
-                                        "ty": "Soft",
-                                        "layout_after": [""],
-                                      },
-                                    ],
-                                  ],
-                                  ["Text", ["Nestyfing going on"]],
-                                  [
-                                    "Break",
-                                    [
-                                      {
-                                        "layout_before": [""],
-                                        "ty": "Soft",
-                                        "layout_after": [""],
-                                      },
-                                    ],
-                                  ],
-                                  ["Text", ["These irregularities "]],
-                                  [
-                                    "StrongEmphasis",
-                                    [
-                                      {
-                                        "delim": "*",
-                                        "inline": ["Text", ["will"]],
-                                      },
-                                    ],
-                                  ],
-                                  ["Text", [" normalize"]],
-                                  [
-                                    "Break",
-                                    [
-                                      {
-                                        "layout_before": [""],
-                                        "ty": "Soft",
-                                        "layout_after": [""],
-                                      },
-                                    ],
-                                  ],
-                                  [
-                                    "Text",
-                                    [
-                                      "We keep only the first block quote indent",
-                                    ],
-                                  ],
-                                ],
-                              ],
-                            ],
-                            "trailing_blanks": "",
-                          },
-                        ],
-                      ],
-                    },
-                  ],
-                ],
-              },
-            ],
-          ],
-          ["BlankLine", [""]],
-          [
-            "BlockQuote",
-            [
-              {
-                "indent": 0,
-                "block": [
-                  "Heading",
-                  [
-                    {
-                      "layout": [
-                        "Atx",
-                        { "indent": 1, "after_opening": "", "closing": "" },
-                      ],
-                      "level": 2,
-                      "inline": ["Text", ["Further tests"]],
-                    },
-                  ],
-                ],
-              },
-            ],
-          ],
-          ["BlankLine", [""]],
-          [
-            "Paragraph",
-            [
-              {
-                "leading_indent": 2,
-                "inline": ["Text", ["We need a little quote here"]],
-                "trailing_blanks": "",
-              },
-            ],
-          ],
-          [
-            "BlockQuote",
-            [
-              {
-                "indent": 0,
-                "block": [
-                  "Paragraph",
-                  [
-                    {
-                      "leading_indent": 1,
-                      "inline": ["Text", ["It's warranted."]],
-                      "trailing_blanks": "",
-                    },
-                  ],
-                ],
-              },
-            ],
-          ],
-          ["BlankLine", [""]],
-          ["BlankLine", [""]],
-          [
-            "Heading",
-            [
-              {
-                "layout": [
-                  "Atx",
-                  { "indent": 0, "after_opening": "", "closing": "" },
-                ],
-                "level": 2,
-                "inline": ["Text", ["Testing code blocks"]],
-              },
-            ],
-          ],
-          ["BlankLine", [""]],
-          [
-            "CodeBlock",
-            [
-              {
-                "layout": [
-                  "Fenced",
-                  { "indent": 0, "opening_fence": [""], "closing_fence": [""] },
-                ],
-                "info_string": ["layout after info is not kept"],
-                "code": [],
-              },
-            ],
-          ],
-          ["BlankLine", [""]],
-          [
-            "CodeBlock",
-            [
-              {
-                "layout": [
-                  "Fenced",
-                  { "indent": 1, "opening_fence": [""], "closing_fence": [""] },
-                ],
-                "info_string": ["ocaml module M"],
-                "code": [
-                  [""],
-                  ["type t = "],
-                  ["| A of int"],
-                  ["| B of string"],
-                  [""],
-                  ["let square x = x *. x"],
-                ],
-              },
-            ],
-          ],
-          ["BlankLine", [""]],
-          [
-            "Paragraph",
-            [
-              {
-                "leading_indent": 0,
-                "inline": ["Text", ["The indented code block:"]],
-                "trailing_blanks": "",
-              },
-            ],
-          ],
-          ["BlankLine", [""]],
-          [
-            "CodeBlock",
-            [
-              {
-                "layout": "Indented",
-                "code": [
-                  ["a b c d "],
-                  [" a b c d"],
-                  [" a b c d"],
-                  ["  "],
-                  [""],
-                  ["a"],
-                  ["   a b c"],
-                ],
-              },
-            ],
-          ],
-          ["BlankLine", [""]],
-          ["BlankLine", [""]],
-          [
-            "BlockQuote",
-            [
-              {
-                "indent": 0,
-                "block": [
-                  "CodeBlock",
-                  [
-                    {
-                      "layout": [
-                        "Fenced",
-                        {
-                          "indent": 0,
-                          "opening_fence": [""],
-                          "closing_fence": [""],
-                        },
-                      ],
-                      "info_string": ["ocaml module M"],
-                      "code": [
-                        [""],
-                        ["type t = "],
-                        ["| A of int"],
-                        ["| B of string"],
-                        [""],
-                        ["let square x = x *. x"],
-                      ],
-                    },
-                  ],
-                ],
-              },
-            ],
-          ],
-          ["BlankLine", [""]],
-          ["BlankLine", [""]],
-          [
-            "Heading",
-            [
-              {
-                "layout": [
-                  "Atx",
-                  { "indent": 0, "after_opening": "", "closing": "" },
-                ],
-                "level": 2,
-                "inline": ["Text", ["Testing headings"]],
-              },
-            ],
-          ],
-          ["BlankLine", [""]],
-          [
-            "Heading",
-            [
-              {
-                "layout": [
-                  "Setext",
-                  {
-                    "leading_indent": 0,
-                    "trailing_blanks": "",
-                    "underline_indent": 0,
-                    "underline_count": [8],
-                    "underline_blanks": "",
-                  },
-                ],
-                "level": 1,
-                "inline": [
-                  "Inlines",
-                  [
-                    [
-                      ["Text", ["aaa"]],
-                      [
-                        "Break",
-                        [
-                          {
-                            "layout_before": [""],
-                            "ty": "Soft",
-                            "layout_after": [""],
-                          },
-                        ],
-                      ],
-                      ["Text", ["aaaa"]],
-                    ],
-                  ],
-                ],
-              },
-            ],
-          ],
-          ["BlankLine", [""]],
-          [
-            "BlockQuote",
-            [
-              {
-                "indent": 0,
-                "block": [
-                  "Heading",
-                  [
-                    {
-                      "layout": [
-                        "Setext",
-                        {
-                          "leading_indent": 0,
-                          "trailing_blanks": "",
-                          "underline_indent": 0,
-                          "underline_count": [8],
-                          "underline_blanks": "",
-                        },
-                      ],
-                      "level": 2,
-                      "inline": [
-                        "Inlines",
-                        [
-                          [
-                            ["Text", ["bbb "]],
-                            [
-                              "CodeSpan",
-                              [
-                                {
-                                  "backticks": 1,
-                                  "code_layout": [
-                                    { "blanks": "", "node": ["hey"] },
-                                  ],
-                                },
-                              ],
-                            ],
-                            [
-                              "Break",
-                              [
-                                {
-                                  "layout_before": [""],
-                                  "ty": "Soft",
-                                  "layout_after": [""],
-                                },
-                              ],
-                            ],
-                            ["Text", ["bbbb"]],
-                          ],
-                        ],
-                      ],
-                    },
-                  ],
-                ],
-              },
-            ],
-          ],
-          ["BlankLine", [""]],
-          [
-            "Heading",
-            [
-              {
-                "layout": [
-                  "Atx",
-                  { "indent": 2, "after_opening": "", "closing": "" },
-                ],
-                "level": 1,
-                "inline": ["Text", ["That's one way"]],
-              },
-            ],
-          ],
-          ["BlankLine", ["  "]],
-          [
-            "Heading",
-            [
-              {
-                "layout": [
-                  "Atx",
-                  { "indent": 3, "after_opening": "", "closing": "" },
-                ],
-                "level": 3,
-                "inline": ["Text", ["It's a long way to the heading"]],
-              },
-            ],
-          ],
-          ["BlankLine", [""]],
-          [
-            "Heading",
-            [
-              {
-                "layout": [
-                  "Atx",
-                  { "indent": 0, "after_opening": "", "closing": "" },
-                ],
-                "level": 2,
-                "inline": ["Text", ["Testing HTML block"]],
-              },
-            ],
-          ],
-          ["BlankLine", [""]],
-          [
-            "HtmlBlock",
-            [
-              [
-                "HtmlBlock",
-                [["<aside>"], ["<p>There is no aside</p>"], ["</aside>"]],
-              ],
-            ],
-          ],
-          ["BlankLine", [""]],
-          [
-            "List",
-            [
-              {
-                "ty": ["Unordered", "*"],
-                "tight": true,
-                "items": [
-                  [
-                    {
-                      "before_marker": 0,
-                      "marker": ["*"],
-                      "after_marker": 1,
-                      "block": [
-                        "HtmlBlock",
-                        [
-                          [
-                            "HtmlBlock",
-                            [
-                              ["<aside>"],
-                              ["<p>There is no aside</p>"],
-                              ["</aside>"],
-                            ],
-                          ],
-                        ],
-                      ],
-                    },
-                  ],
-                ],
-              },
-            ],
-          ],
-          ["BlankLine", [""]],
-          [
-            "Heading",
-            [
-              {
-                "layout": [
-                  "Atx",
-                  { "indent": 0, "after_opening": "", "closing": "" },
-                ],
-                "level": 2,
-                "inline": ["Text", ["Testing lists"]],
-              },
-            ],
-          ],
-          ["BlankLine", [""]],
-          [
-            "Paragraph",
-            [
-              {
-                "leading_indent": 0,
-                "inline": [
-                  "Inlines",
-                  [
-                    [
-                      ["Text", ["The "]],
-                      [
-                        "CodeSpan",
-                        [
-                          {
-                            "backticks": 1,
-                            "code_layout": [
-                              { "blanks": "", "node": ["square"] },
-                            ],
-                          },
-                        ],
-                      ],
-                      [
-                        "Text",
-                        [" function is the root. There are reasons for this:"],
-                      ],
-                    ],
-                  ],
-                ],
-                "trailing_blanks": "",
-              },
-            ],
-          ],
-          ["BlankLine", [""]],
-          [
-            "List",
-            [
-              {
-                "ty": ["Ordered", 1, "."],
-                "tight": true,
-                "items": [
-                  [
-                    {
-                      "before_marker": 1,
-                      "marker": ["1."],
-                      "after_marker": 1,
-                      "block": [
-                        "Paragraph",
-                        [
-                          {
-                            "leading_indent": 0,
-                            "inline": [
-                              "Inlines",
-                              [
-                                [
-                                  [
-                                    "Text",
-                                    [
-                                      "There is no reason. There should be a reason or an ",
-                                    ],
-                                  ],
-                                  [
-                                    "Autolink",
-                                    [
-                                      {
-                                        "is_email": false,
-                                        "link": ["http://example.org"],
-                                      },
-                                    ],
-                                  ],
-                                ],
-                              ],
-                            ],
-                            "trailing_blanks": "",
-                          },
-                        ],
-                      ],
-                    },
-                  ],
-                  [
-                    {
-                      "before_marker": 0,
-                      "marker": ["2."],
-                      "after_marker": 1,
-                      "block": [
-                        "Paragraph",
-                        [
-                          {
-                            "leading_indent": 0,
-                            "inline": [
-                              "Text",
-                              [
-                                "Maybe that's the reason. But it may not be the reason.",
-                              ],
-                            ],
-                            "trailing_blanks": "",
-                          },
-                        ],
-                      ],
-                    },
-                  ],
-                  [
-                    {
-                      "before_marker": 1,
-                      "marker": ["3."],
-                      "after_marker": 1,
-                      "block": [
-                        "Paragraph",
-                        [
-                          {
-                            "leading_indent": 0,
-                            "inline": ["Text", ["Is reason the only tool ?"]],
-                            "trailing_blanks": "",
-                          },
-                        ],
-                      ],
-                    },
-                  ],
-                ],
-              },
-            ],
-          ],
-          ["BlankLine", [""]],
-          [
-            "BlockQuote",
-            [
-              {
-                "indent": 0,
-                "block": [
-                  "Blocks",
-                  [
-                    [
-                      [
-                        "Paragraph",
-                        [
-                          {
-                            "leading_indent": 0,
-                            "inline": ["Text", ["Quoted bullets"]],
-                            "trailing_blanks": "",
-                          },
-                        ],
-                      ],
-                      [
-                        "List",
-                        [
-                          {
-                            "ty": ["Unordered", "*"],
-                            "tight": true,
-                            "items": [
-                              [
-                                {
-                                  "before_marker": 0,
-                                  "marker": ["*"],
-                                  "after_marker": 1,
-                                  "block": [
-                                    "Paragraph",
-                                    [
-                                      {
-                                        "leading_indent": 0,
-                                        "inline": [
-                                          "Text",
-                                          ["Is this important ?"],
-                                        ],
-                                        "trailing_blanks": "",
-                                      },
-                                    ],
-                                  ],
-                                },
-                              ],
-                            ],
-                          },
-                        ],
-                      ],
-                    ],
-                  ],
-                ],
-              },
-            ],
-          ],
-          [
-            "List",
-            [
-              {
-                "ty": ["Unordered", "*"],
-                "tight": true,
-                "items": [
-                  [
-                    {
-                      "before_marker": 0,
-                      "marker": ["*"],
-                      "after_marker": 1,
-                      "block": [
-                        "List",
-                        [
-                          {
-                            "ty": ["Unordered", "*"],
-                            "tight": true,
-                            "items": [
-                              [
-                                {
-                                  "before_marker": 0,
-                                  "marker": ["*"],
-                                  "after_marker": 1,
-                                  "block": [
-                                    "Paragraph",
-                                    [
-                                      {
-                                        "leading_indent": 0,
-                                        "inline": [
-                                          "Text",
-                                          ["Well it's in the spec"],
-                                        ],
-                                        "trailing_blanks": "",
-                                      },
-                                    ],
-                                  ],
-                                },
-                              ],
-                            ],
-                          },
-                        ],
-                      ],
-                    },
-                  ],
-                  [
-                    {
-                      "before_marker": 0,
-                      "marker": ["*"],
-                      "after_marker": 1,
-                      "block": ["BlankLine", [""]],
-                    },
-                  ],
-                ],
-              },
-            ],
-          ],
-          [
-            "Paragraph",
-            [
-              {
-                "leading_indent": 0,
-                "inline": ["Text", ["Empty list item above"]],
-                "trailing_blanks": "",
-              },
-            ],
-          ],
-          ["BlankLine", [""]],
-          [
-            "Heading",
-            [
-              {
-                "layout": [
-                  "Atx",
-                  { "indent": 0, "after_opening": "", "closing": "" },
-                ],
-                "level": 2,
-                "inline": ["Text", ["Testing paragraphs"]],
-              },
-            ],
-          ],
-          ["BlankLine", [""]],
-          [
-            "Paragraph",
-            [
-              {
-                "leading_indent": 3,
-                "inline": [
-                  "Inlines",
-                  [
-                    [
-                      [
-                        "Text",
-                        ["We really want your paragraph layout preserved."],
-                      ],
-                      [
-                        "Break",
-                        [
-                          {
-                            "layout_before": [""],
-                            "ty": "Soft",
-                            "layout_after": [""],
-                          },
-                        ],
-                      ],
-                      ["Text", ["Really ?"]],
-                      [
-                        "Break",
-                        [
-                          {
-                            "layout_before": [""],
-                            "ty": "Soft",
-                            "layout_after": [""],
-                          },
-                        ],
-                      ],
-                      ["Text", ["Really."]],
-                      [
-                        "Break",
-                        [
-                          {
-                            "layout_before": [""],
-                            "ty": "Soft",
-                            "layout_after": [""],
-                          },
-                        ],
-                      ],
-                      ["Text", ["Really."]],
-                      [
-                        "Break",
-                        [
-                          {
-                            "layout_before": [""],
-                            "ty": "Soft",
-                            "layout_after": [""],
-                          },
-                        ],
-                      ],
-                      ["Text", ["Really."]],
-                    ],
-                  ],
-                ],
-                "trailing_blanks": "",
-              },
-            ],
-          ],
-          ["BlankLine", [""]],
-          ["BlankLine", [""]],
-          [
-            "BlockQuote",
-            [
-              {
-                "indent": 0,
-                "block": [
-                  "Paragraph",
-                  [
-                    {
-                      "leading_indent": 2,
-                      "inline": [
-                        "Inlines",
-                        [
-                          [
-                            [
-                              "Text",
-                              [
-                                "We really want your paragraph layout preserved.",
-                              ],
-                            ],
-                            [
-                              "Break",
-                              [
-                                {
-                                  "layout_before": [""],
-                                  "ty": "Soft",
-                                  "layout_after": [""],
-                                },
-                              ],
-                            ],
-                            ["Text", ["Really ?"]],
-                            [
-                              "Break",
-                              [
-                                {
-                                  "layout_before": [""],
-                                  "ty": "Soft",
-                                  "layout_after": [""],
-                                },
-                              ],
-                            ],
-                            ["Text", ["Really."]],
-                            [
-                              "Break",
-                              [
-                                {
-                                  "layout_before": [""],
-                                  "ty": "Soft",
-                                  "layout_after": [""],
-                                },
-                              ],
-                            ],
-                            ["Text", ["Really."]],
-                            [
-                              "Break",
-                              [
-                                {
-                                  "layout_before": [""],
-                                  "ty": "Soft",
-                                  "layout_after": [""],
-                                },
-                              ],
-                            ],
-                            ["Text", ["Really."]],
-                          ],
-                        ],
-                      ],
-                      "trailing_blanks": "",
-                    },
-                  ],
-                ],
-              },
-            ],
-          ],
-          ["BlankLine", [" "]],
-          ["BlankLine", [""]],
-          ["BlankLine", [""]],
-          [
-            "Heading",
-            [
-              {
-                "layout": [
-                  "Atx",
-                  { "indent": 0, "after_opening": "", "closing": "" },
-                ],
-                "level": 2,
-                "inline": ["Text", ["Testing thematic breaks"]],
-              },
-            ],
-          ],
-          ["BlankLine", [""]],
-          ["ThematicBreak", [{ "indent": 1, "layout": "***" }]],
-          ["ThematicBreak", [{ "indent": 2, "layout": "---" }]],
-          ["ThematicBreak", [{ "indent": 3, "layout": "___" }]],
-          ["BlankLine", [""]],
-          ["ThematicBreak", [{ "indent": 0, "layout": "_ _ _ _ _ " }]],
-          ["BlankLine", [""]],
-          [
-            "BlockQuote",
-            [
-              {
-                "indent": 0,
-                "block": [
-                  "ThematicBreak",
-                  [{ "indent": 1, "layout": "*******" }],
-                ],
-              },
-            ],
-          ],
-          ["BlankLine", [""]],
-        ],
-      ],
-    ],
-    "defs": {
-      "colla psed": [
-        "LinkDef",
-        [
-          {
-            "layout": {
-              "indent": 0,
-              "angled_dest": false,
-              "before_dest": [[" "]],
-              "after_dest": [[" "]],
-              "title_open_delim": "\"",
-              "after_title": [[""]],
-            },
-            "label": {
-              "meta": {},
-              "key": "colla psed",
-              "text": [{ "blanks": "", "node": ["colla psed"] }],
-            },
-            "defined_label": {
-              "meta": {},
-              "key": "colla psed",
-              "text": [{ "blanks": "", "node": ["colla psed"] }],
-            },
-            "dest": ["/hohoho"],
-            "title": [
-              { "blanks": "", "node": ["And again these "] },
-              { "blanks": "", "node": ["multi"] },
-              { "blanks": "", "node": ["line titles"] },
-            ],
-          },
-        ],
-      ],
-      "`short cuted`": [
-        "LinkDef",
-        [
-          {
-            "layout": {
-              "indent": 1,
-              "angled_dest": false,
-              "before_dest": [["    "]],
-              "after_dest": [["   "]],
-              "title_open_delim": "\"",
-              "after_title": [[""]],
-            },
-            "label": {
-              "meta": {},
-              "key": "`short cuted`",
-              "text": [{ "blanks": "", "node": ["`short cuted`"] }],
-            },
-            "defined_label": {
-              "meta": {},
-              "key": "`short cuted`",
-              "text": [{ "blanks": "", "node": ["`short cuted`"] }],
-            },
-            "dest": ["/veryshort"],
-            "title": [
-              { "blanks": "", "node": ["But very"] },
-              { "blanks": "", "node": ["important"] },
-            ],
-          },
-        ],
-      ],
-    },
-  })
+  debug_inspect(
+    rendered,
+    content=(
+      #|{
+      #|  nl: "\n",
+      #|  block: Blocks(
+      #|    {
+      #|      v: Seq(
+      #|        [
+      #|          Heading(
+      #|            {
+      #|              v: {
+      #|                layout: Setext(
+      #|                  {
+      #|                    leading_indent: 0,
+      #|                    trailing_blanks: "",
+      #|                    underline_indent: 0,
+      #|                    underline_count: {
+      #|                      v: 11,
+      #|                      meta: {
+      #|                        id: 0,
+      #|                        loc: {
+      #|                          file: "-",
+      #|                          first_ccode: -1,
+      #|                          last_ccode: -1,
+      #|                          first_line: LinePos(-1, -1),
+      #|                          last_line: LinePos(-1, -1),
+      #|                        },
+      #|                        extra: None,
+      #|                      },
+      #|                    },
+      #|                    underline_blanks: "",
+      #|                  },
+      #|                ),
+      #|                level: 1,
+      #|                inline: Text(
+      #|                  {
+      #|                    v: "Basic tests",
+      #|                    meta: {
+      #|                      id: 0,
+      #|                      loc: {
+      #|                        file: "-",
+      #|                        first_ccode: -1,
+      #|                        last_ccode: -1,
+      #|                        first_line: LinePos(-1, -1),
+      #|                        last_line: LinePos(-1, -1),
+      #|                      },
+      #|                      extra: None,
+      #|                    },
+      #|                  },
+      #|                ),
+      #|                id: None,
+      #|              },
+      #|              meta: {
+      #|                id: 0,
+      #|                loc: {
+      #|                  file: "-",
+      #|                  first_ccode: -1,
+      #|                  last_ccode: -1,
+      #|                  first_line: LinePos(-1, -1),
+      #|                  last_line: LinePos(-1, -1),
+      #|                },
+      #|                extra: None,
+      #|              },
+      #|            },
+      #|          ),
+      #|          BlankLine(
+      #|            {
+      #|              v: "",
+      #|              meta: {
+      #|                id: 0,
+      #|                loc: {
+      #|                  file: "-",
+      #|                  first_ccode: -1,
+      #|                  last_ccode: -1,
+      #|                  first_line: LinePos(-1, -1),
+      #|                  last_line: LinePos(-1, -1),
+      #|                },
+      #|                extra: None,
+      #|              },
+      #|            },
+      #|          ),
+      #|          Paragraph(
+      #|            {
+      #|              v: {
+      #|                leading_indent: 0,
+      #|                inline: Text(
+      #|                  {
+      #|                    v: "Basic tests for all CommonMark constructs.",
+      #|                    meta: {
+      #|                      id: 0,
+      #|                      loc: {
+      #|                        file: "-",
+      #|                        first_ccode: -1,
+      #|                        last_ccode: -1,
+      #|                        first_line: LinePos(-1, -1),
+      #|                        last_line: LinePos(-1, -1),
+      #|                      },
+      #|                      extra: None,
+      #|                    },
+      #|                  },
+      #|                ),
+      #|                trailing_blanks: "",
+      #|              },
+      #|              meta: {
+      #|                id: 0,
+      #|                loc: {
+      #|                  file: "-",
+      #|                  first_ccode: -1,
+      #|                  last_ccode: -1,
+      #|                  first_line: LinePos(-1, -1),
+      #|                  last_line: LinePos(-1, -1),
+      #|                },
+      #|                extra: None,
+      #|              },
+      #|            },
+      #|          ),
+      #|          BlankLine(
+      #|            {
+      #|              v: "",
+      #|              meta: {
+      #|                id: 0,
+      #|                loc: {
+      #|                  file: "-",
+      #|                  first_ccode: -1,
+      #|                  last_ccode: -1,
+      #|                  first_line: LinePos(-1, -1),
+      #|                  last_line: LinePos(-1, -1),
+      #|                },
+      #|                extra: None,
+      #|              },
+      #|            },
+      #|          ),
+      #|          Heading(
+      #|            {
+      #|              v: {
+      #|                layout: Atx({ indent: 0, after_opening: "", closing: "" }),
+      #|                level: 2,
+      #|                inline: Text(
+      #|                  {
+      #|                    v: "Testing autolinks",
+      #|                    meta: {
+      #|                      id: 0,
+      #|                      loc: {
+      #|                        file: "-",
+      #|                        first_ccode: -1,
+      #|                        last_ccode: -1,
+      #|                        first_line: LinePos(-1, -1),
+      #|                        last_line: LinePos(-1, -1),
+      #|                      },
+      #|                      extra: None,
+      #|                    },
+      #|                  },
+      #|                ),
+      #|                id: None,
+      #|              },
+      #|              meta: {
+      #|                id: 0,
+      #|                loc: {
+      #|                  file: "-",
+      #|                  first_ccode: -1,
+      #|                  last_ccode: -1,
+      #|                  first_line: LinePos(-1, -1),
+      #|                  last_line: LinePos(-1, -1),
+      #|                },
+      #|                extra: None,
+      #|              },
+      #|            },
+      #|          ),
+      #|          BlankLine(
+      #|            {
+      #|              v: "",
+      #|              meta: {
+      #|                id: 0,
+      #|                loc: {
+      #|                  file: "-",
+      #|                  first_ccode: -1,
+      #|                  last_ccode: -1,
+      #|                  first_line: LinePos(-1, -1),
+      #|                  last_line: LinePos(-1, -1),
+      #|                },
+      #|                extra: None,
+      #|              },
+      #|            },
+      #|          ),
+      #|          Paragraph(
+      #|            {
+      #|              v: {
+      #|                leading_indent: 0,
+      #|                inline: Inlines(
+      #|                  {
+      #|                    v: Seq(
+      #|                      [
+      #|                        Text(
+      #|                          {
+      #|                            v: "This is an ",
+      #|                            meta: {
+      #|                              id: 0,
+      #|                              loc: {
+      #|                                file: "-",
+      #|                                first_ccode: -1,
+      #|                                last_ccode: -1,
+      #|                                first_line: ...,
+      #|                                last_line: ...,
+      #|                              },
+      #|                              extra: None,
+      #|                            },
+      #|                          },
+      #|                        ),
+      #|                        Autolink(
+      #|                          {
+      #|                            v: { is_email: false, link: { v: "http://example.org", meta: ... } },
+      #|                            meta: {
+      #|                              id: 0,
+      #|                              loc: {
+      #|                                file: "-",
+      #|                                first_ccode: -1,
+      #|                                last_ccode: -1,
+      #|                                first_line: ...,
+      #|                                last_line: ...,
+      #|                              },
+      #|                              extra: None,
+      #|                            },
+      #|                          },
+      #|                        ),
+      #|                        Text(
+      #|                          {
+      #|                            v: " and another one ",
+      #|                            meta: {
+      #|                              id: 0,
+      #|                              loc: {
+      #|                                file: "-",
+      #|                                first_ccode: -1,
+      #|                                last_ccode: -1,
+      #|                                first_line: ...,
+      #|                                last_line: ...,
+      #|                              },
+      #|                              extra: None,
+      #|                            },
+      #|                          },
+      #|                        ),
+      #|                        Autolink(
+      #|                          {
+      #|                            v: { is_email: true, link: { v: "you@example.org", meta: ... } },
+      #|                            meta: {
+      #|                              id: 0,
+      #|                              loc: {
+      #|                                file: "-",
+      #|                                first_ccode: -1,
+      #|                                last_ccode: -1,
+      #|                                first_line: ...,
+      #|                                last_line: ...,
+      #|                              },
+      #|                              extra: None,
+      #|                            },
+      #|                          },
+      #|                        ),
+      #|                        Text(
+      #|                          {
+      #|                            v: ".",
+      #|                            meta: {
+      #|                              id: 0,
+      #|                              loc: {
+      #|                                file: "-",
+      #|                                first_ccode: -1,
+      #|                                last_ccode: -1,
+      #|                                first_line: ...,
+      #|                                last_line: ...,
+      #|                              },
+      #|                              extra: None,
+      #|                            },
+      #|                          },
+      #|                        ),
+      #|                      ],
+      #|                    ),
+      #|                    meta: {
+      #|                      id: 0,
+      #|                      loc: {
+      #|                        file: "-",
+      #|                        first_ccode: -1,
+      #|                        last_ccode: -1,
+      #|                        first_line: LinePos(-1, -1),
+      #|                        last_line: LinePos(-1, -1),
+      #|                      },
+      #|                      extra: None,
+      #|                    },
+      #|                  },
+      #|                ),
+      #|                trailing_blanks: "",
+      #|              },
+      #|              meta: {
+      #|                id: 0,
+      #|                loc: {
+      #|                  file: "-",
+      #|                  first_ccode: -1,
+      #|                  last_ccode: -1,
+      #|                  first_line: LinePos(-1, -1),
+      #|                  last_line: LinePos(-1, -1),
+      #|                },
+      #|                extra: None,
+      #|              },
+      #|            },
+      #|          ),
+      #|          BlankLine(
+      #|            {
+      #|              v: "",
+      #|              meta: {
+      #|                id: 0,
+      #|                loc: {
+      #|                  file: "-",
+      #|                  first_ccode: -1,
+      #|                  last_ccode: -1,
+      #|                  first_line: LinePos(-1, -1),
+      #|                  last_line: LinePos(-1, -1),
+      #|                },
+      #|                extra: None,
+      #|              },
+      #|            },
+      #|          ),
+      #|          BlankLine(
+      #|            {
+      #|              v: "",
+      #|              meta: {
+      #|                id: 0,
+      #|                loc: {
+      #|                  file: "-",
+      #|                  first_ccode: -1,
+      #|                  last_ccode: -1,
+      #|                  first_line: LinePos(-1, -1),
+      #|                  last_line: LinePos(-1, -1),
+      #|                },
+      #|                extra: None,
+      #|              },
+      #|            },
+      #|          ),
+      #|          Heading(
+      #|            {
+      #|              v: {
+      #|                layout: Atx({ indent: 0, after_opening: "", closing: "" }),
+      #|                level: 2,
+      #|                inline: Text(
+      #|                  {
+      #|                    v: "Testing breaks",
+      #|                    meta: {
+      #|                      id: 0,
+      #|                      loc: {
+      #|                        file: "-",
+      #|                        first_ccode: -1,
+      #|                        last_ccode: -1,
+      #|                        first_line: LinePos(-1, -1),
+      #|                        last_line: LinePos(-1, -1),
+      #|                      },
+      #|                      extra: None,
+      #|                    },
+      #|                  },
+      #|                ),
+      #|                id: None,
+      #|              },
+      #|              meta: {
+      #|                id: 0,
+      #|                loc: {
+      #|                  file: "-",
+      #|                  first_ccode: -1,
+      #|                  last_ccode: -1,
+      #|                  first_line: LinePos(-1, -1),
+      #|                  last_line: LinePos(-1, -1),
+      #|                },
+      #|                extra: None,
+      #|              },
+      #|            },
+      #|          ),
+      #|          BlankLine(
+      #|            {
+      #|              v: "",
+      #|              meta: {
+      #|                id: 0,
+      #|                loc: {
+      #|                  file: "-",
+      #|                  first_ccode: -1,
+      #|                  last_ccode: -1,
+      #|                  first_line: LinePos(-1, -1),
+      #|                  last_line: LinePos(-1, -1),
+      #|                },
+      #|                extra: None,
+      #|              },
+      #|            },
+      #|          ),
+      #|          Paragraph(
+      #|            {
+      #|              v: {
+      #|                leading_indent: 0,
+      #|                inline: Inlines(
+      #|                  {
+      #|                    v: Seq(
+      #|                      [
+      #|                        Text(
+      #|                          {
+      #|                            v: "A line ending (not in a code span or HTML tag) that is preceded by two",
+      #|                            meta: {
+      #|                              id: 0,
+      #|                              loc: {
+      #|                                file: "-",
+      #|                                first_ccode: -1,
+      #|                                last_ccode: -1,
+      #|                                first_line: ...,
+      #|                                last_line: ...,
+      #|                              },
+      #|                              extra: None,
+      #|                            },
+      #|                          },
+      #|                        ),
+      #|                        Break(
+      #|                          {
+      #|                            v: {
+      #|                              layout_before: { v: "", meta: ... },
+      #|                              ty: Soft,
+      #|                              layout_after: { v: "", meta: ... },
+      #|                            },
+      #|                            meta: {
+      #|                              id: 0,
+      #|                              loc: {
+      #|                                file: "-",
+      #|                                first_ccode: -1,
+      #|                                last_ccode: -1,
+      #|                                first_line: ...,
+      #|                                last_line: ...,
+      #|                              },
+      #|                              extra: None,
+      #|                            },
+      #|                          },
+      #|                        ),
+      #|                        Text(
+      #|                          {
+      #|                            v: "or more spaces and does not occur at the end of a block is parsed as a",
+      #|                            meta: {
+      #|                              id: 0,
+      #|                              loc: {
+      #|                                file: "-",
+      #|                                first_ccode: -1,
+      #|                                last_ccode: -1,
+      #|                                first_line: ...,
+      #|                                last_line: ...,
+      #|                              },
+      #|                              extra: None,
+      #|                            },
+      #|                          },
+      #|                        ),
+      #|                        Break(
+      #|                          {
+      #|                            v: {
+      #|                              layout_before: { v: "", meta: ... },
+      #|                              ty: Soft,
+      #|                              layout_after: { v: "", meta: ... },
+      #|                            },
+      #|                            meta: {
+      #|                              id: 0,
+      #|                              loc: {
+      #|                                file: "-",
+      #|                                first_ccode: -1,
+      #|                                last_ccode: -1,
+      #|                                first_line: ...,
+      #|                                last_line: ...,
+      #|                              },
+      #|                              extra: None,
+      #|                            },
+      #|                          },
+      #|                        ),
+      #|                        Text(
+      #|                          {
+      #|                            v: "hard line break.",
+      #|                            meta: {
+      #|                              id: 0,
+      #|                              loc: {
+      #|                                file: "-",
+      #|                                first_ccode: -1,
+      #|                                last_ccode: -1,
+      #|                                first_line: ...,
+      #|                                last_line: ...,
+      #|                              },
+      #|                              extra: None,
+      #|                            },
+      #|                          },
+      #|                        ),
+      #|                      ],
+      #|                    ),
+      #|                    meta: {
+      #|                      id: 0,
+      #|                      loc: {
+      #|                        file: "-",
+      #|                        first_ccode: -1,
+      #|                        last_ccode: -1,
+      #|                        first_line: LinePos(-1, -1),
+      #|                        last_line: LinePos(-1, -1),
+      #|                      },
+      #|                      extra: None,
+      #|                    },
+      #|                  },
+      #|                ),
+      #|                trailing_blanks: "",
+      #|              },
+      #|              meta: {
+      #|                id: 0,
+      #|                loc: {
+      #|                  file: "-",
+      #|                  first_ccode: -1,
+      #|                  last_ccode: -1,
+      #|                  first_line: LinePos(-1, -1),
+      #|                  last_line: LinePos(-1, -1),
+      #|                },
+      #|                extra: None,
+      #|              },
+      #|            },
+      #|          ),
+      #|          BlankLine(
+      #|            {
+      #|              v: "",
+      #|              meta: {
+      #|                id: 0,
+      #|                loc: {
+      #|                  file: "-",
+      #|                  first_ccode: -1,
+      #|                  last_ccode: -1,
+      #|                  first_line: LinePos(-1, -1),
+      #|                  last_line: LinePos(-1, -1),
+      #|                },
+      #|                extra: None,
+      #|              },
+      #|            },
+      #|          ),
+      #|          Paragraph(
+      #|            {
+      #|              v: {
+      #|                leading_indent: 0,
+      #|                inline: Inlines(
+      #|                  {
+      #|                    v: Seq(
+      #|                      [
+      #|                        Text(
+      #|                          {
+      #|                            v: "So this means we had softbreaks so far and now we get  ",
+      #|                            meta: {
+      #|                              id: 0,
+      #|                              loc: {
+      #|                                file: "-",
+      #|                                first_ccode: -1,
+      #|                                last_ccode: -1,
+      #|                                first_line: ...,
+      #|                                last_line: ...,
+      #|                              },
+      #|                              extra: None,
+      #|                            },
+      #|                          },
+      #|                        ),
+      #|                        Break(
+      #|                          {
+      #|                            v: {
+      #|                              layout_before: { v: "", meta: ... },
+      #|                              ty: Hard,
+      #|                              layout_after: { v: "", meta: ... },
+      #|                            },
+      #|                            meta: {
+      #|                              id: 0,
+      #|                              loc: {
+      #|                                file: "-",
+      #|                                first_ccode: -1,
+      #|                                last_ccode: -1,
+      #|                                first_line: ...,
+      #|                                last_line: ...,
+      #|                              },
+      #|                              extra: None,
+      #|                            },
+      #|                          },
+      #|                        ),
+      #|                        Text(
+      #|                          {
+      #|                            v: "a hard break",
+      #|                            meta: {
+      #|                              id: 0,
+      #|                              loc: {
+      #|                                file: "-",
+      #|                                first_ccode: -1,
+      #|                                last_ccode: -1,
+      #|                                first_line: ...,
+      #|                                last_line: ...,
+      #|                              },
+      #|                              extra: None,
+      #|                            },
+      #|                          },
+      #|                        ),
+      #|                        Break(
+      #|                          {
+      #|                            v: {
+      #|                              layout_before: { v: "", meta: ... },
+      #|                              ty: Hard,
+      #|                              layout_after: { v: "", meta: ... },
+      #|                            },
+      #|                            meta: {
+      #|                              id: 0,
+      #|                              loc: {
+      #|                                file: "-",
+      #|                                first_ccode: -1,
+      #|                                last_ccode: -1,
+      #|                                first_line: ...,
+      #|                                last_line: ...,
+      #|                              },
+      #|                              extra: None,
+      #|                            },
+      #|                          },
+      #|                        ),
+      #|                        Text(
+      #|                          {
+      #|                            v: "and another one.",
+      #|                            meta: {
+      #|                              id: 0,
+      #|                              loc: {
+      #|                                file: "-",
+      #|                                first_ccode: -1,
+      #|                                last_ccode: -1,
+      #|                                first_line: ...,
+      #|                                last_line: ...,
+      #|                              },
+      #|                              extra: None,
+      #|                            },
+      #|                          },
+      #|                        ),
+      #|                      ],
+      #|                    ),
+      #|                    meta: {
+      #|                      id: 0,
+      #|                      loc: {
+      #|                        file: "-",
+      #|                        first_ccode: -1,
+      #|                        last_ccode: -1,
+      #|                        first_line: LinePos(-1, -1),
+      #|                        last_line: LinePos(-1, -1),
+      #|                      },
+      #|                      extra: None,
+      #|                    },
+      #|                  },
+      #|                ),
+      #|                trailing_blanks: "",
+      #|              },
+      #|              meta: {
+      #|                id: 0,
+      #|                loc: {
+      #|                  file: "-",
+      #|                  first_ccode: -1,
+      #|                  last_ccode: -1,
+      #|                  first_line: LinePos(-1, -1),
+      #|                  last_line: LinePos(-1, -1),
+      #|                },
+      #|                extra: None,
+      #|              },
+      #|            },
+      #|          ),
+      #|          BlankLine(
+      #|            {
+      #|              v: "",
+      #|              meta: {
+      #|                id: 0,
+      #|                loc: {
+      #|                  file: "-",
+      #|                  first_ccode: -1,
+      #|                  last_ccode: -1,
+      #|                  first_line: LinePos(-1, -1),
+      #|                  last_line: LinePos(-1, -1),
+      #|                },
+      #|                extra: None,
+      #|              },
+      #|            },
+      #|          ),
+      #|          BlockQuote(
+      #|            {
+      #|              v: {
+      #|                indent: 0,
+      #|                block: Paragraph(
+      #|                  {
+      #|                    v: {
+      #|                      leading_indent: 0,
+      #|                      inline: Inlines(
+      #|                        {
+      #|                          v: Seq(
+      #|                            [
+      #|                              Text(...),
+      #|                              Break(...),
+      #|                              Text(...),
+      #|                              Break(...),
+      #|                              Text(...),
+      #|                              Break(...),
+      #|                              Text(...),
+      #|                            ],
+      #|                          ),
+      #|                          meta: {
+      #|                            id: 0,
+      #|                            loc: {
+      #|                              file: "-",
+      #|                              first_ccode: -1,
+      #|                              last_ccode: -1,
+      #|                              first_line: LinePos(-1, -1),
+      #|                              last_line: LinePos(-1, -1),
+      #|                            },
+      #|                            extra: None,
+      #|                          },
+      #|                        },
+      #|                      ),
+      #|                      trailing_blanks: "",
+      #|                    },
+      #|                    meta: {
+      #|                      id: 0,
+      #|                      loc: {
+      #|                        file: "-",
+      #|                        first_ccode: -1,
+      #|                        last_ccode: -1,
+      #|                        first_line: LinePos(-1, -1),
+      #|                        last_line: LinePos(-1, -1),
+      #|                      },
+      #|                      extra: None,
+      #|                    },
+      #|                  },
+      #|                ),
+      #|              },
+      #|              meta: {
+      #|                id: 0,
+      #|                loc: {
+      #|                  file: "-",
+      #|                  first_ccode: -1,
+      #|                  last_ccode: -1,
+      #|                  first_line: LinePos(-1, -1),
+      #|                  last_line: LinePos(-1, -1),
+      #|                },
+      #|                extra: None,
+      #|              },
+      #|            },
+      #|          ),
+      #|          BlankLine(
+      #|            {
+      #|              v: "",
+      #|              meta: {
+      #|                id: 0,
+      #|                loc: {
+      #|                  file: "-",
+      #|                  first_ccode: -1,
+      #|                  last_ccode: -1,
+      #|                  first_line: LinePos(-1, -1),
+      #|                  last_line: LinePos(-1, -1),
+      #|                },
+      #|                extra: None,
+      #|              },
+      #|            },
+      #|          ),
+      #|          Heading(
+      #|            {
+      #|              v: {
+      #|                layout: Atx({ indent: 0, after_opening: "", closing: "" }),
+      #|                level: 2,
+      #|                inline: Text(
+      #|                  {
+      #|                    v: "Testing code spans",
+      #|                    meta: {
+      #|                      id: 0,
+      #|                      loc: {
+      #|                        file: "-",
+      #|                        first_ccode: -1,
+      #|                        last_ccode: -1,
+      #|                        first_line: LinePos(-1, -1),
+      #|                        last_line: LinePos(-1, -1),
+      #|                      },
+      #|                      extra: None,
+      #|                    },
+      #|                  },
+      #|                ),
+      #|                id: None,
+      #|              },
+      #|              meta: {
+      #|                id: 0,
+      #|                loc: {
+      #|                  file: "-",
+      #|                  first_ccode: -1,
+      #|                  last_ccode: -1,
+      #|                  first_line: LinePos(-1, -1),
+      #|                  last_line: LinePos(-1, -1),
+      #|                },
+      #|                extra: None,
+      #|              },
+      #|            },
+      #|          ),
+      #|          BlankLine(
+      #|            {
+      #|              v: "",
+      #|              meta: {
+      #|                id: 0,
+      #|                loc: {
+      #|                  file: "-",
+      #|                  first_ccode: -1,
+      #|                  last_ccode: -1,
+      #|                  first_line: LinePos(-1, -1),
+      #|                  last_line: LinePos(-1, -1),
+      #|                },
+      #|                extra: None,
+      #|              },
+      #|            },
+      #|          ),
+      #|          Paragraph(
+      #|            {
+      #|              v: {
+      #|                leading_indent: 0,
+      #|                inline: Inlines(
+      #|                  {
+      #|                    v: Seq(
+      #|                      [
+      #|                        Text(
+      #|                          {
+      #|                            v: "This is a multi-line code",
+      #|                            meta: {
+      #|                              id: 0,
+      #|                              loc: {
+      #|                                file: "-",
+      #|                                first_ccode: -1,
+      #|                                last_ccode: -1,
+      #|                                first_line: ...,
+      #|                                last_line: ...,
+      #|                              },
+      #|                              extra: None,
+      #|                            },
+      #|                          },
+      #|                        ),
+      #|                        CodeSpan(
+      #|                          {
+      #|                            v: { backticks: 1, code_layout: Seq(...) },
+      #|                            meta: {
+      #|                              id: 0,
+      #|                              loc: {
+      #|                                file: "-",
+      #|                                first_ccode: -1,
+      #|                                last_ccode: -1,
+      #|                                first_line: ...,
+      #|                                last_line: ...,
+      #|                              },
+      #|                              extra: None,
+      #|                            },
+      #|                          },
+      #|                        ),
+      #|                      ],
+      #|                    ),
+      #|                    meta: {
+      #|                      id: 0,
+      #|                      loc: {
+      #|                        file: "-",
+      #|                        first_ccode: -1,
+      #|                        last_ccode: -1,
+      #|                        first_line: LinePos(-1, -1),
+      #|                        last_line: LinePos(-1, -1),
+      #|                      },
+      #|                      extra: None,
+      #|                    },
+      #|                  },
+      #|                ),
+      #|                trailing_blanks: "",
+      #|              },
+      #|              meta: {
+      #|                id: 0,
+      #|                loc: {
+      #|                  file: "-",
+      #|                  first_ccode: -1,
+      #|                  last_ccode: -1,
+      #|                  first_line: LinePos(-1, -1),
+      #|                  last_line: LinePos(-1, -1),
+      #|                },
+      #|                extra: None,
+      #|              },
+      #|            },
+      #|          ),
+      #|          BlankLine(
+      #|            {
+      #|              v: "",
+      #|              meta: {
+      #|                id: 0,
+      #|                loc: {
+      #|                  file: "-",
+      #|                  first_ccode: -1,
+      #|                  last_ccode: -1,
+      #|                  first_line: LinePos(-1, -1),
+      #|                  last_line: LinePos(-1, -1),
+      #|                },
+      #|                extra: None,
+      #|              },
+      #|            },
+      #|          ),
+      #|          Paragraph(
+      #|            {
+      #|              v: {
+      #|                leading_indent: 0,
+      #|                inline: Inlines(
+      #|                  {
+      #|                    v: Seq(
+      #|                      [
+      #|                        Text(
+      #|                          {
+      #|                            v: "Sometimes code spans ",
+      #|                            meta: {
+      #|                              id: 0,
+      #|                              loc: {
+      #|                                file: "-",
+      #|                                first_ccode: -1,
+      #|                                last_ccode: -1,
+      #|                                first_line: ...,
+      #|                                last_line: ...,
+      #|                              },
+      #|                              extra: None,
+      #|                            },
+      #|                          },
+      #|                        ),
+      #|                        CodeSpan(
+      #|                          {
+      #|                            v: { backticks: 2, code_layout: Seq(...) },
+      #|                            meta: {
+      #|                              id: 0,
+      #|                              loc: {
+      #|                                file: "-",
+      #|                                first_ccode: -1,
+      #|                                last_ccode: -1,
+      #|                                first_line: ...,
+      #|                                last_line: ...,
+      #|                              },
+      #|                              extra: None,
+      #|                            },
+      #|                          },
+      #|                        ),
+      #|                        Text(
+      #|                          {
+      #|                            v: ". Do you fancy ",
+      #|                            meta: {
+      #|                              id: 0,
+      #|                              loc: {
+      #|                                file: "-",
+      #|                                first_ccode: -1,
+      #|                                last_ccode: -1,
+      #|                                first_line: ...,
+      #|                                last_line: ...,
+      #|                              },
+      #|                              extra: None,
+      #|                            },
+      #|                          },
+      #|                        ),
+      #|                        CodeSpan(
+      #|                          {
+      #|                            v: { backticks: 2, code_layout: Seq(...) },
+      #|                            meta: {
+      #|                              id: 0,
+      #|                              loc: {
+      #|                                file: "-",
+      #|                                first_ccode: -1,
+      #|                                last_ccode: -1,
+      #|                                first_line: ...,
+      #|                                last_line: ...,
+      #|                              },
+      #|                              extra: None,
+      #|                            },
+      #|                          },
+      #|                        ),
+      #|                        Text(
+      #|                          {
+      #|                            v: " ?",
+      #|                            meta: {
+      #|                              id: 0,
+      #|                              loc: {
+      #|                                file: "-",
+      #|                                first_ccode: -1,
+      #|                                last_ccode: -1,
+      #|                                first_line: ...,
+      #|                                last_line: ...,
+      #|                              },
+      #|                              extra: None,
+      #|                            },
+      #|                          },
+      #|                        ),
+      #|                      ],
+      #|                    ),
+      #|                    meta: {
+      #|                      id: 0,
+      #|                      loc: {
+      #|                        file: "-",
+      #|                        first_ccode: -1,
+      #|                        last_ccode: -1,
+      #|                        first_line: LinePos(-1, -1),
+      #|                        last_line: LinePos(-1, -1),
+      #|                      },
+      #|                      extra: None,
+      #|                    },
+      #|                  },
+      #|                ),
+      #|                trailing_blanks: "",
+      #|              },
+      #|              meta: {
+      #|                id: 0,
+      #|                loc: {
+      #|                  file: "-",
+      #|                  first_ccode: -1,
+      #|                  last_ccode: -1,
+      #|                  first_line: LinePos(-1, -1),
+      #|                  last_line: LinePos(-1, -1),
+      #|                },
+      #|                extra: None,
+      #|              },
+      #|            },
+      #|          ),
+      #|          BlankLine(
+      #|            {
+      #|              v: "",
+      #|              meta: {
+      #|                id: 0,
+      #|                loc: {
+      #|                  file: "-",
+      #|                  first_ccode: -1,
+      #|                  last_ccode: -1,
+      #|                  first_line: LinePos(-1, -1),
+      #|                  last_line: LinePos(-1, -1),
+      #|                },
+      #|                extra: None,
+      #|              },
+      #|            },
+      #|          ),
+      #|          BlankLine(
+      #|            {
+      #|              v: "",
+      #|              meta: {
+      #|                id: 0,
+      #|                loc: {
+      #|                  file: "-",
+      #|                  first_ccode: -1,
+      #|                  last_ccode: -1,
+      #|                  first_line: LinePos(-1, -1),
+      #|                  last_line: LinePos(-1, -1),
+      #|                },
+      #|                extra: None,
+      #|              },
+      #|            },
+      #|          ),
+      #|          Heading(
+      #|            {
+      #|              v: {
+      #|                layout: Atx({ indent: 0, after_opening: "", closing: "" }),
+      #|                level: 2,
+      #|                inline: Text(
+      #|                  {
+      #|                    v: "Testing emphasis",
+      #|                    meta: {
+      #|                      id: 0,
+      #|                      loc: {
+      #|                        file: "-",
+      #|                        first_ccode: -1,
+      #|                        last_ccode: -1,
+      #|                        first_line: LinePos(-1, -1),
+      #|                        last_line: LinePos(-1, -1),
+      #|                      },
+      #|                      extra: None,
+      #|                    },
+      #|                  },
+      #|                ),
+      #|                id: None,
+      #|              },
+      #|              meta: {
+      #|                id: 0,
+      #|                loc: {
+      #|                  file: "-",
+      #|                  first_ccode: -1,
+      #|                  last_ccode: -1,
+      #|                  first_line: LinePos(-1, -1),
+      #|                  last_line: LinePos(-1, -1),
+      #|                },
+      #|                extra: None,
+      #|              },
+      #|            },
+      #|          ),
+      #|          BlankLine(
+      #|            {
+      #|              v: "",
+      #|              meta: {
+      #|                id: 0,
+      #|                loc: {
+      #|                  file: "-",
+      #|                  first_ccode: -1,
+      #|                  last_ccode: -1,
+      #|                  first_line: LinePos(-1, -1),
+      #|                  last_line: LinePos(-1, -1),
+      #|                },
+      #|                extra: None,
+      #|              },
+      #|            },
+      #|          ),
+      #|          Paragraph(
+      #|            {
+      #|              v: {
+      #|                leading_indent: 0,
+      #|                inline: Inlines(
+      #|                  {
+      #|                    v: Seq(
+      #|                      [
+      #|                        Text(
+      #|                          {
+      #|                            v: "There is ",
+      #|                            meta: {
+      #|                              id: 0,
+      #|                              loc: {
+      #|                                file: "-",
+      #|                                first_ccode: -1,
+      #|                                last_ccode: -1,
+      #|                                first_line: ...,
+      #|                                last_line: ...,
+      #|                              },
+      #|                              extra: None,
+      #|                            },
+      #|                          },
+      #|                        ),
+      #|                        Emphasis(
+      #|                          {
+      #|                            v: { delim: '_', inline: Text(...) },
+      #|                            meta: {
+      #|                              id: 0,
+      #|                              loc: {
+      #|                                file: "-",
+      #|                                first_ccode: -1,
+      #|                                last_ccode: -1,
+      #|                                first_line: ...,
+      #|                                last_line: ...,
+      #|                              },
+      #|                              extra: None,
+      #|                            },
+      #|                          },
+      #|                        ),
+      #|                        Text(
+      #|                          {
+      #|                            v: " than ",
+      #|                            meta: {
+      #|                              id: 0,
+      #|                              loc: {
+      #|                                file: "-",
+      #|                                first_ccode: -1,
+      #|                                last_ccode: -1,
+      #|                                first_line: ...,
+      #|                                last_line: ...,
+      #|                              },
+      #|                              extra: None,
+      #|                            },
+      #|                          },
+      #|                        ),
+      #|                        Emphasis(
+      #|                          {
+      #|                            v: { delim: '*', inline: Text(...) },
+      #|                            meta: {
+      #|                              id: 0,
+      #|                              loc: {
+      #|                                file: "-",
+      #|                                first_ccode: -1,
+      #|                                last_ccode: -1,
+      #|                                first_line: ...,
+      #|                                last_line: ...,
+      #|                              },
+      #|                              extra: None,
+      #|                            },
+      #|                          },
+      #|                        ),
+      #|                        Text(
+      #|                          {
+      #|                            v: " for ",
+      #|                            meta: {
+      #|                              id: 0,
+      #|                              loc: {
+      #|                                file: "-",
+      #|                                first_ccode: -1,
+      #|                                last_ccode: -1,
+      #|                                first_line: ...,
+      #|                                last_line: ...,
+      #|                              },
+      #|                              extra: None,
+      #|                            },
+      #|                          },
+      #|                        ),
+      #|                        StrongEmphasis(
+      #|                          {
+      #|                            v: { delim: '_', inline: Text(...) },
+      #|                            meta: {
+      #|                              id: 0,
+      #|                              loc: {
+      #|                                file: "-",
+      #|                                first_ccode: -1,
+      #|                                last_ccode: -1,
+      #|                                first_line: ...,
+      #|                                last_line: ...,
+      #|                              },
+      #|                              extra: None,
+      #|                            },
+      #|                          },
+      #|                        ),
+      #|                        Text(
+      #|                          {
+      #|                            v: " and ",
+      #|                            meta: {
+      #|                              id: 0,
+      #|                              loc: {
+      #|                                file: "-",
+      #|                                first_ccode: -1,
+      #|                                last_ccode: -1,
+      #|                                first_line: ...,
+      #|                                last_line: ...,
+      #|                              },
+      #|                              extra: None,
+      #|                            },
+      #|                          },
+      #|                        ),
+      #|                        StrongEmphasis(
+      #|                          {
+      #|                            v: { delim: '*', inline: Inlines(...) },
+      #|                            meta: {
+      #|                              id: 0,
+      #|                              loc: {
+      #|                                file: "-",
+      #|                                first_ccode: -1,
+      #|                                last_ccode: -1,
+      #|                                first_line: ...,
+      #|                                last_line: ...,
+      #|                              },
+      #|                              extra: None,
+      #|                            },
+      #|                          },
+      #|                        ),
+      #|                        Text(
+      #|                          {
+      #|                            v: ".  We should be careful about ",
+      #|                            meta: {
+      #|                              id: 0,
+      #|                              loc: {
+      #|                                file: "-",
+      #|                                first_ccode: -1,
+      #|                                last_ccode: -1,
+      #|                                first_line: ...,
+      #|                                last_line: ...,
+      #|                              },
+      #|                              extra: None,
+      #|                            },
+      #|                          },
+      #|                        ),
+      #|                        StrongEmphasis(
+      #|                          {
+      #|                            v: { delim: '*', inline: Text(...) },
+      #|                            meta: {
+      #|                              id: 0,
+      #|                              loc: {
+      #|                                file: "-",
+      #|                                first_ccode: -1,
+      #|                                last_ccode: -1,
+      #|                                first_line: ...,
+      #|                                last_line: ...,
+      #|                              },
+      #|                              extra: None,
+      #|                            },
+      #|                          },
+      #|                        ),
+      #|                        Text(
+      #|                          {
+      #|                            v: ". This",
+      #|                            meta: {
+      #|                              id: 0,
+      #|                              loc: {
+      #|                                file: "-",
+      #|                                first_ccode: -1,
+      #|                                last_ccode: -1,
+      #|                                first_line: ...,
+      #|                                last_line: ...,
+      #|                              },
+      #|                              extra: None,
+      #|                            },
+      #|                          },
+      #|                        ),
+      #|                        Break(
+      #|                          {
+      #|                            v: {
+      #|                              layout_before: { v: "", meta: ... },
+      #|                              ty: Soft,
+      #|                              layout_after: { v: "", meta: ... },
+      #|                            },
+      #|                            meta: {
+      #|                              id: 0,
+      #|                              loc: {
+      #|                                file: "-",
+      #|                                first_ccode: -1,
+      #|                                last_ccode: -1,
+      #|                                first_line: ...,
+      #|                                last_line: ...,
+      #|                              },
+      #|                              extra: None,
+      #|                            },
+      #|                          },
+      #|                        ),
+      #|                        Text(
+      #|                          {
+      #|                            v: "will be ",
+      #|                            meta: {
+      #|                              id: 0,
+      #|                              loc: {
+      #|                                file: "-",
+      #|                                first_ccode: -1,
+      #|                                last_ccode: -1,
+      #|                                first_line: ...,
+      #|                                last_line: ...,
+      #|                              },
+      #|                              extra: None,
+      #|                            },
+      #|                          },
+      #|                        ),
+      #|                        StrongEmphasis(
+      #|                          {
+      #|                            v: { delim: '*', inline: Text(...) },
+      #|                            meta: {
+      #|                              id: 0,
+      #|                              loc: {
+      #|                                file: "-",
+      #|                                first_ccode: -1,
+      #|                                last_ccode: -1,
+      #|                                first_line: ...,
+      #|                                last_line: ...,
+      #|                              },
+      #|                              extra: None,
+      #|                            },
+      #|                          },
+      #|                        ),
+      #|                        Text(
+      #|                          {
+      #|                            v: ". This ",
+      #|                            meta: {
+      #|                              id: 0,
+      #|                              loc: {
+      #|                                file: "-",
+      #|                                first_ccode: -1,
+      #|                                last_ccode: -1,
+      #|                                first_line: ...,
+      #|                                last_line: ...,
+      #|                              },
+      #|                              extra: None,
+      #|                            },
+      #|                          },
+      #|                        ),
+      #|                        Emphasis(
+      #|                          {
+      #|                            v: { delim: '*', inline: Text(...) },
+      #|                            meta: {
+      #|                              id: 0,
+      #|                              loc: {
+      #|                                file: "-",
+      #|                                first_ccode: -1,
+      #|                                last_ccode: -1,
+      #|                                first_line: ...,
+      #|                                last_line: ...,
+      #|                              },
+      #|                              extra: None,
+      #|                            },
+      #|                          },
+      #|                        ),
+      #|                        Text(
+      #|                          {
+      #|                            v: " you want ?",
+      #|                            meta: {
+      #|                              id: 0,
+      #|                              loc: {
+      #|                                file: "-",
+      #|                                first_ccode: -1,
+      #|                                last_ccode: -1,
+      #|                                first_line: ...,
+      #|                                last_line: ...,
+      #|                              },
+      #|                              extra: None,
+      #|                            },
+      #|                          },
+      #|                        ),
+      #|                      ],
+      #|                    ),
+      #|                    meta: {
+      #|                      id: 0,
+      #|                      loc: {
+      #|                        file: "-",
+      #|                        first_ccode: -1,
+      #|                        last_ccode: -1,
+      #|                        first_line: LinePos(-1, -1),
+      #|                        last_line: LinePos(-1, -1),
+      #|                      },
+      #|                      extra: None,
+      #|                    },
+      #|                  },
+      #|                ),
+      #|                trailing_blanks: "",
+      #|              },
+      #|              meta: {
+      #|                id: 0,
+      #|                loc: {
+      #|                  file: "-",
+      #|                  first_ccode: -1,
+      #|                  last_ccode: -1,
+      #|                  first_line: LinePos(-1, -1),
+      #|                  last_line: LinePos(-1, -1),
+      #|                },
+      #|                extra: None,
+      #|              },
+      #|            },
+      #|          ),
+      #|          BlankLine(
+      #|            {
+      #|              v: "",
+      #|              meta: {
+      #|                id: 0,
+      #|                loc: {
+      #|                  file: "-",
+      #|                  first_ccode: -1,
+      #|                  last_ccode: -1,
+      #|                  first_line: LinePos(-1, -1),
+      #|                  last_line: LinePos(-1, -1),
+      #|                },
+      #|                extra: None,
+      #|              },
+      #|            },
+      #|          ),
+      #|          BlankLine(
+      #|            {
+      #|              v: "",
+      #|              meta: {
+      #|                id: 0,
+      #|                loc: {
+      #|                  file: "-",
+      #|                  first_ccode: -1,
+      #|                  last_ccode: -1,
+      #|                  first_line: LinePos(-1, -1),
+      #|                  last_line: LinePos(-1, -1),
+      #|                },
+      #|                extra: None,
+      #|              },
+      #|            },
+      #|          ),
+      #|          Heading(
+      #|            {
+      #|              v: {
+      #|                layout: Atx({ indent: 0, after_opening: "", closing: "" }),
+      #|                level: 2,
+      #|                inline: Text(
+      #|                  {
+      #|                    v: "Testing links, images and link reference definitions",
+      #|                    meta: {
+      #|                      id: 0,
+      #|                      loc: {
+      #|                        file: "-",
+      #|                        first_ccode: -1,
+      #|                        last_ccode: -1,
+      #|                        first_line: LinePos(-1, -1),
+      #|                        last_line: LinePos(-1, -1),
+      #|                      },
+      #|                      extra: None,
+      #|                    },
+      #|                  },
+      #|                ),
+      #|                id: None,
+      #|              },
+      #|              meta: {
+      #|                id: 0,
+      #|                loc: {
+      #|                  file: "-",
+      #|                  first_ccode: -1,
+      #|                  last_ccode: -1,
+      #|                  first_line: LinePos(-1, -1),
+      #|                  last_line: LinePos(-1, -1),
+      #|                },
+      #|                extra: None,
+      #|              },
+      #|            },
+      #|          ),
+      #|          BlankLine(
+      #|            {
+      #|              v: "",
+      #|              meta: {
+      #|                id: 0,
+      #|                loc: {
+      #|                  file: "-",
+      #|                  first_ccode: -1,
+      #|                  last_ccode: -1,
+      #|                  first_line: LinePos(-1, -1),
+      #|                  last_line: LinePos(-1, -1),
+      #|                },
+      #|                extra: None,
+      #|              },
+      #|            },
+      #|          ),
+      #|          Paragraph(
+      #|            {
+      #|              v: {
+      #|                leading_indent: 0,
+      #|                inline: Inlines(
+      #|                  {
+      #|                    v: Seq(
+      #|                      [
+      #|                        Text(
+      #|                          {
+      #|                            v: "This is an ",
+      #|                            meta: {
+      #|                              id: 0,
+      #|                              loc: {
+      #|                                file: "-",
+      #|                                first_ccode: -1,
+      #|                                last_ccode: -1,
+      #|                                first_line: ...,
+      #|                                last_line: ...,
+      #|                              },
+      #|                              extra: None,
+      #|                            },
+      #|                          },
+      #|                        ),
+      #|                        Image(
+      #|                          {
+      #|                            v: { text: Text(...), reference: Inline(...) },
+      #|                            meta: {
+      #|                              id: 0,
+      #|                              loc: {
+      #|                                file: "-",
+      #|                                first_ccode: -1,
+      #|                                last_ccode: -1,
+      #|                                first_line: ...,
+      #|                                last_line: ...,
+      #|                              },
+      #|                              extra: None,
+      #|                            },
+      #|                          },
+      #|                        ),
+      #|                      ],
+      #|                    ),
+      #|                    meta: {
+      #|                      id: 0,
+      #|                      loc: {
+      #|                        file: "-",
+      #|                        first_ccode: -1,
+      #|                        last_ccode: -1,
+      #|                        first_line: LinePos(-1, -1),
+      #|                        last_line: LinePos(-1, -1),
+      #|                      },
+      #|                      extra: None,
+      #|                    },
+      #|                  },
+      #|                ),
+      #|                trailing_blanks: "",
+      #|              },
+      #|              meta: {
+      #|                id: 0,
+      #|                loc: {
+      #|                  file: "-",
+      #|                  first_ccode: -1,
+      #|                  last_ccode: -1,
+      #|                  first_line: LinePos(-1, -1),
+      #|                  last_line: LinePos(-1, -1),
+      #|                },
+      #|                extra: None,
+      #|              },
+      #|            },
+      #|          ),
+      #|          BlankLine(
+      #|            {
+      #|              v: "",
+      #|              meta: {
+      #|                id: 0,
+      #|                loc: {
+      #|                  file: "-",
+      #|                  first_ccode: -1,
+      #|                  last_ccode: -1,
+      #|                  first_line: LinePos(-1, -1),
+      #|                  last_line: LinePos(-1, -1),
+      #|                },
+      #|                extra: None,
+      #|              },
+      #|            },
+      #|          ),
+      #|          Paragraph(
+      #|            {
+      #|              v: {
+      #|                leading_indent: 2,
+      #|                inline: Inlines(
+      #|                  {
+      #|                    v: Seq(
+      #|                      [
+      #|                        Text(
+      #|                          {
+      #|                            v: "That is totally ",
+      #|                            meta: {
+      #|                              id: 0,
+      #|                              loc: {
+      #|                                file: "-",
+      #|                                first_ccode: -1,
+      #|                                last_ccode: -1,
+      #|                                first_line: ...,
+      #|                                last_line: ...,
+      #|                              },
+      #|                              extra: None,
+      #|                            },
+      #|                          },
+      #|                        ),
+      #|                        Link(
+      #|                          {
+      #|                            v: { text: Text(...), reference: Ref(Collapsed, ..., ...) },
+      #|                            meta: {
+      #|                              id: 0,
+      #|                              loc: {
+      #|                                file: "-",
+      #|                                first_ccode: -1,
+      #|                                last_ccode: -1,
+      #|                                first_line: ...,
+      #|                                last_line: ...,
+      #|                              },
+      #|                              extra: None,
+      #|                            },
+      #|                          },
+      #|                        ),
+      #|                        Text(
+      #|                          {
+      #|                            v: " and",
+      #|                            meta: {
+      #|                              id: 0,
+      #|                              loc: {
+      #|                                file: "-",
+      #|                                first_ccode: -1,
+      #|                                last_ccode: -1,
+      #|                                first_line: ...,
+      #|                                last_line: ...,
+      #|                              },
+      #|                              extra: None,
+      #|                            },
+      #|                          },
+      #|                        ),
+      #|                        Break(
+      #|                          {
+      #|                            v: {
+      #|                              layout_before: { v: "", meta: ... },
+      #|                              ty: Soft,
+      #|                              layout_after: { v: "", meta: ... },
+      #|                            },
+      #|                            meta: {
+      #|                              id: 0,
+      #|                              loc: {
+      #|                                file: "-",
+      #|                                first_ccode: -1,
+      #|                                last_ccode: -1,
+      #|                                first_line: ...,
+      #|                                last_line: ...,
+      #|                              },
+      #|                              extra: None,
+      #|                            },
+      #|                          },
+      #|                        ),
+      #|                        Text(
+      #|                          {
+      #|                            v: "that is ",
+      #|                            meta: {
+      #|                              id: 0,
+      #|                              loc: {
+      #|                                file: "-",
+      #|                                first_ccode: -1,
+      #|                                last_ccode: -1,
+      #|                                first_line: ...,
+      #|                                last_line: ...,
+      #|                              },
+      #|                              extra: None,
+      #|                            },
+      #|                          },
+      #|                        ),
+      #|                        Link(
+      #|                          {
+      #|                            v: { text: CodeSpan(...), reference: Ref(Shortcut, ..., ...) },
+      #|                            meta: {
+      #|                              id: 0,
+      #|                              loc: {
+      #|                                file: "-",
+      #|                                first_ccode: -1,
+      #|                                last_ccode: -1,
+      #|                                first_line: ...,
+      #|                                last_line: ...,
+      #|                              },
+      #|                              extra: None,
+      #|                            },
+      #|                          },
+      #|                        ),
+      #|                      ],
+      #|                    ),
+      #|                    meta: {
+      #|                      id: 0,
+      #|                      loc: {
+      #|                        file: "-",
+      #|                        first_ccode: -1,
+      #|                        last_ccode: -1,
+      #|                        first_line: LinePos(-1, -1),
+      #|                        last_line: LinePos(-1, -1),
+      #|                      },
+      #|                      extra: None,
+      #|                    },
+      #|                  },
+      #|                ),
+      #|                trailing_blanks: "",
+      #|              },
+      #|              meta: {
+      #|                id: 0,
+      #|                loc: {
+      #|                  file: "-",
+      #|                  first_ccode: -1,
+      #|                  last_ccode: -1,
+      #|                  first_line: LinePos(-1, -1),
+      #|                  last_line: LinePos(-1, -1),
+      #|                },
+      #|                extra: None,
+      #|              },
+      #|            },
+      #|          ),
+      #|          BlankLine(
+      #|            {
+      #|              v: "",
+      #|              meta: {
+      #|                id: 0,
+      #|                loc: {
+      #|                  file: "-",
+      #|                  first_ccode: -1,
+      #|                  last_ccode: -1,
+      #|                  first_line: LinePos(-1, -1),
+      #|                  last_line: LinePos(-1, -1),
+      #|                },
+      #|                extra: None,
+      #|              },
+      #|            },
+      #|          ),
+      #|          Paragraph(
+      #|            {
+      #|              v: {
+      #|                leading_indent: 0,
+      #|                inline: Inlines(
+      #|                  {
+      #|                    v: Seq(
+      #|                      [
+      #|                        Text(
+      #|                          {
+      #|                            v: "Shortcuts can be better than ",
+      #|                            meta: {
+      #|                              id: 0,
+      #|                              loc: {
+      #|                                file: "-",
+      #|                                first_ccode: -1,
+      #|                                last_ccode: -1,
+      #|                                first_line: ...,
+      #|                                last_line: ...,
+      #|                              },
+      #|                              extra: None,
+      #|                            },
+      #|                          },
+      #|                        ),
+      #|                        Link(
+      #|                          {
+      #|                            v: { text: Text(...), reference: Ref(Full, ..., ...) },
+      #|                            meta: {
+      #|                              id: 0,
+      #|                              loc: {
+      #|                                file: "-",
+      #|                                first_ccode: -1,
+      #|                                last_ccode: -1,
+      #|                                first_line: ...,
+      #|                                last_line: ...,
+      #|                              },
+      #|                              extra: None,
+      #|                            },
+      #|                          },
+      #|                        ),
+      #|                        Text(
+      #|                          {
+      #|                            v: " but not",
+      #|                            meta: {
+      #|                              id: 0,
+      #|                              loc: {
+      #|                                file: "-",
+      #|                                first_ccode: -1,
+      #|                                last_ccode: -1,
+      #|                                first_line: ...,
+      #|                                last_line: ...,
+      #|                              },
+      #|                              extra: None,
+      #|                            },
+      #|                          },
+      #|                        ),
+      #|                        Break(
+      #|                          {
+      #|                            v: {
+      #|                              layout_before: { v: "", meta: ... },
+      #|                              ty: Soft,
+      #|                              layout_after: { v: "", meta: ... },
+      #|                            },
+      #|                            meta: {
+      #|                              id: 0,
+      #|                              loc: {
+      #|                                file: "-",
+      #|                                first_ccode: -1,
+      #|                                last_ccode: -1,
+      #|                                first_line: ...,
+      #|                                last_line: ...,
+      #|                              },
+      #|                              extra: None,
+      #|                            },
+      #|                          },
+      #|                        ),
+      #|                        Text(
+      #|                          {
+      #|                            v: "always and we'd like to trip their ",
+      #|                            meta: {
+      #|                              id: 0,
+      #|                              loc: {
+      #|                                file: "-",
+      #|                                first_ccode: -1,
+      #|                                last_ccode: -1,
+      #|                                first_line: ...,
+      #|                                last_line: ...,
+      #|                              },
+      #|                              extra: None,
+      #|                            },
+      #|                          },
+      #|                        ),
+      #|                        Link(
+      #|                          {
+      #|                            v: { text: Text(...), reference: Ref(Full, ..., ...) },
+      #|                            meta: {
+      #|                              id: 0,
+      #|                              loc: {
+      #|                                file: "-",
+      #|                                first_ccode: -1,
+      #|                                last_ccode: -1,
+      #|                                first_line: ...,
+      #|                                last_line: ...,
+      #|                              },
+      #|                              extra: None,
+      #|                            },
+      #|                          },
+      #|                        ),
+      #|                        Text(
+      #|                          {
+      #|                            v: ".",
+      #|                            meta: {
+      #|                              id: 0,
+      #|                              loc: {
+      #|                                file: "-",
+      #|                                first_ccode: -1,
+      #|                                last_ccode: -1,
+      #|                                first_line: ...,
+      #|                                last_line: ...,
+      #|                              },
+      #|                              extra: None,
+      #|                            },
+      #|                          },
+      #|                        ),
+      #|                      ],
+      #|                    ),
+      #|                    meta: {
+      #|                      id: 0,
+      #|                      loc: {
+      #|                        file: "-",
+      #|                        first_ccode: -1,
+      #|                        last_ccode: -1,
+      #|                        first_line: LinePos(-1, -1),
+      #|                        last_line: LinePos(-1, -1),
+      #|                      },
+      #|                      extra: None,
+      #|                    },
+      #|                  },
+      #|                ),
+      #|                trailing_blanks: "",
+      #|              },
+      #|              meta: {
+      #|                id: 0,
+      #|                loc: {
+      #|                  file: "-",
+      #|                  first_ccode: -1,
+      #|                  last_ccode: -1,
+      #|                  first_line: LinePos(-1, -1),
+      #|                  last_line: LinePos(-1, -1),
+      #|                },
+      #|                extra: None,
+      #|              },
+      #|            },
+      #|          ),
+      #|          BlankLine(
+      #|            {
+      #|              v: "",
+      #|              meta: {
+      #|                id: 0,
+      #|                loc: {
+      #|                  file: "-",
+      #|                  first_ccode: -1,
+      #|                  last_ccode: -1,
+      #|                  first_line: LinePos(-1, -1),
+      #|                  last_line: LinePos(-1, -1),
+      #|                },
+      #|                extra: None,
+      #|              },
+      #|            },
+      #|          ),
+      #|          BlockQuote(
+      #|            {
+      #|              v: {
+      #|                indent: 0,
+      #|                block: LinkRefDefinition(
+      #|                  {
+      #|                    v: {
+      #|                      layout: {
+      #|                        indent: 0,
+      #|                        angled_dest: false,
+      #|                        before_dest: Seq([{ v: " ", meta: { id: 0, loc: ..., extra: None } }]),
+      #|                        after_dest: Seq([{ v: " ", meta: { id: 0, loc: ..., extra: None } }]),
+      #|                        title_open_delim: '"',
+      #|                        after_title: Seq([{ v: "", meta: { id: 0, loc: ..., extra: None } }]),
+      #|                      },
+      #|                      label: Some(
+      #|                        {
+      #|                          meta: {
+      #|                            id: 0,
+      #|                            loc: {
+      #|                              file: "-",
+      #|                              first_ccode: -1,
+      #|                              last_ccode: -1,
+      #|                              first_line: LinePos(-1, -1),
+      #|                              last_line: LinePos(-1, -1),
+      #|                            },
+      #|                            extra: None,
+      #|                          },
+      #|                          key: "colla psed",
+      #|                          text: Seq([{ blanks: "", node: ... }]),
+      #|                        },
+      #|                      ),
+      #|                      defined_label: Some(
+      #|                        {
+      #|                          meta: {
+      #|                            id: 0,
+      #|                            loc: {
+      #|                              file: "-",
+      #|                              first_ccode: -1,
+      #|                              last_ccode: -1,
+      #|                              first_line: LinePos(-1, -1),
+      #|                              last_line: LinePos(-1, -1),
+      #|                            },
+      #|                            extra: None,
+      #|                          },
+      #|                          key: "colla psed",
+      #|                          text: Seq([{ blanks: "", node: ... }]),
+      #|                        },
+      #|                      ),
+      #|                      dest: Some(
+      #|                        {
+      #|                          v: "/hohoho",
+      #|                          meta: {
+      #|                            id: 0,
+      #|                            loc: {
+      #|                              file: "-",
+      #|                              first_ccode: -1,
+      #|                              last_ccode: -1,
+      #|                              first_line: LinePos(-1, -1),
+      #|                              last_line: LinePos(-1, -1),
+      #|                            },
+      #|                            extra: None,
+      #|                          },
+      #|                        },
+      #|                      ),
+      #|                      title: Some(
+      #|                        Seq(
+      #|                          [
+      #|                            { blanks: "", node: { v: "And again these ", meta: ... } },
+      #|                            { blanks: "", node: { v: "multi", meta: ... } },
+      #|                            { blanks: "", node: { v: "line titles", meta: ... } },
+      #|                          ],
+      #|                        ),
+      #|                      ),
+      #|                    },
+      #|                    meta: {
+      #|                      id: 0,
+      #|                      loc: {
+      #|                        file: "-",
+      #|                        first_ccode: -1,
+      #|                        last_ccode: -1,
+      #|                        first_line: LinePos(-1, -1),
+      #|                        last_line: LinePos(-1, -1),
+      #|                      },
+      #|                      extra: None,
+      #|                    },
+      #|                  },
+      #|                ),
+      #|              },
+      #|              meta: {
+      #|                id: 0,
+      #|                loc: {
+      #|                  file: "-",
+      #|                  first_ccode: -1,
+      #|                  last_ccode: -1,
+      #|                  first_line: LinePos(-1, -1),
+      #|                  last_line: LinePos(-1, -1),
+      #|                },
+      #|                extra: None,
+      #|              },
+      #|            },
+      #|          ),
+      #|          BlankLine(
+      #|            {
+      #|              v: "",
+      #|              meta: {
+      #|                id: 0,
+      #|                loc: {
+      #|                  file: "-",
+      #|                  first_ccode: -1,
+      #|                  last_ccode: -1,
+      #|                  first_line: LinePos(-1, -1),
+      #|                  last_line: LinePos(-1, -1),
+      #|                },
+      #|                extra: None,
+      #|              },
+      #|            },
+      #|          ),
+      #|          LinkRefDefinition(
+      #|            {
+      #|              v: {
+      #|                layout: {
+      #|                  indent: 1,
+      #|                  angled_dest: false,
+      #|                  before_dest: Seq(
+      #|                    [
+      #|                      {
+      #|                        v: "    ",
+      #|                        meta: {
+      #|                          id: 0,
+      #|                          loc: {
+      #|                            file: "-",
+      #|                            first_ccode: -1,
+      #|                            last_ccode: -1,
+      #|                            first_line: LinePos(-1, -1),
+      #|                            last_line: LinePos(-1, -1),
+      #|                          },
+      #|                          extra: None,
+      #|                        },
+      #|                      },
+      #|                    ],
+      #|                  ),
+      #|                  after_dest: Seq(
+      #|                    [
+      #|                      {
+      #|                        v: "   ",
+      #|                        meta: {
+      #|                          id: 0,
+      #|                          loc: {
+      #|                            file: "-",
+      #|                            first_ccode: -1,
+      #|                            last_ccode: -1,
+      #|                            first_line: LinePos(-1, -1),
+      #|                            last_line: LinePos(-1, -1),
+      #|                          },
+      #|                          extra: None,
+      #|                        },
+      #|                      },
+      #|                    ],
+      #|                  ),
+      #|                  title_open_delim: '"',
+      #|                  after_title: Seq(
+      #|                    [
+      #|                      {
+      #|                        v: "",
+      #|                        meta: {
+      #|                          id: 0,
+      #|                          loc: {
+      #|                            file: "-",
+      #|                            first_ccode: -1,
+      #|                            last_ccode: -1,
+      #|                            first_line: LinePos(-1, -1),
+      #|                            last_line: LinePos(-1, -1),
+      #|                          },
+      #|                          extra: None,
+      #|                        },
+      #|                      },
+      #|                    ],
+      #|                  ),
+      #|                },
+      #|                label: Some(
+      #|                  {
+      #|                    meta: {
+      #|                      id: 0,
+      #|                      loc: {
+      #|                        file: "-",
+      #|                        first_ccode: -1,
+      #|                        last_ccode: -1,
+      #|                        first_line: LinePos(-1, -1),
+      #|                        last_line: LinePos(-1, -1),
+      #|                      },
+      #|                      extra: None,
+      #|                    },
+      #|                    key: "`short cuted`",
+      #|                    text: Seq(
+      #|                      [
+      #|                        {
+      #|                          blanks: "",
+      #|                          node: {
+      #|                            v: "`short cuted`",
+      #|                            meta: {
+      #|                              id: 0,
+      #|                              loc: {
+      #|                                file: "-",
+      #|                                first_ccode: -1,
+      #|                                last_ccode: -1,
+      #|                                first_line: ...,
+      #|                                last_line: ...,
+      #|                              },
+      #|                              extra: None,
+      #|                            },
+      #|                          },
+      #|                        },
+      #|                      ],
+      #|                    ),
+      #|                  },
+      #|                ),
+      #|                defined_label: Some(
+      #|                  {
+      #|                    meta: {
+      #|                      id: 0,
+      #|                      loc: {
+      #|                        file: "-",
+      #|                        first_ccode: -1,
+      #|                        last_ccode: -1,
+      #|                        first_line: LinePos(-1, -1),
+      #|                        last_line: LinePos(-1, -1),
+      #|                      },
+      #|                      extra: None,
+      #|                    },
+      #|                    key: "`short cuted`",
+      #|                    text: Seq(
+      #|                      [
+      #|                        {
+      #|                          blanks: "",
+      #|                          node: {
+      #|                            v: "`short cuted`",
+      #|                            meta: {
+      #|                              id: 0,
+      #|                              loc: {
+      #|                                file: "-",
+      #|                                first_ccode: -1,
+      #|                                last_ccode: -1,
+      #|                                first_line: ...,
+      #|                                last_line: ...,
+      #|                              },
+      #|                              extra: None,
+      #|                            },
+      #|                          },
+      #|                        },
+      #|                      ],
+      #|                    ),
+      #|                  },
+      #|                ),
+      #|                dest: Some(
+      #|                  {
+      #|                    v: "/veryshort",
+      #|                    meta: {
+      #|                      id: 0,
+      #|                      loc: {
+      #|                        file: "-",
+      #|                        first_ccode: -1,
+      #|                        last_ccode: -1,
+      #|                        first_line: LinePos(-1, -1),
+      #|                        last_line: LinePos(-1, -1),
+      #|                      },
+      #|                      extra: None,
+      #|                    },
+      #|                  },
+      #|                ),
+      #|                title: Some(
+      #|                  Seq(
+      #|                    [
+      #|                      {
+      #|                        blanks: "",
+      #|                        node: {
+      #|                          v: "But very",
+      #|                          meta: {
+      #|                            id: 0,
+      #|                            loc: {
+      #|                              file: "-",
+      #|                              first_ccode: -1,
+      #|                              last_ccode: -1,
+      #|                              first_line: LinePos(-1, -1),
+      #|                              last_line: LinePos(-1, -1),
+      #|                            },
+      #|                            extra: None,
+      #|                          },
+      #|                        },
+      #|                      },
+      #|                      {
+      #|                        blanks: "",
+      #|                        node: {
+      #|                          v: "important",
+      #|                          meta: {
+      #|                            id: 0,
+      #|                            loc: {
+      #|                              file: "-",
+      #|                              first_ccode: -1,
+      #|                              last_ccode: -1,
+      #|                              first_line: LinePos(-1, -1),
+      #|                              last_line: LinePos(-1, -1),
+      #|                            },
+      #|                            extra: None,
+      #|                          },
+      #|                        },
+      #|                      },
+      #|                    ],
+      #|                  ),
+      #|                ),
+      #|              },
+      #|              meta: {
+      #|                id: 0,
+      #|                loc: {
+      #|                  file: "-",
+      #|                  first_ccode: -1,
+      #|                  last_ccode: -1,
+      #|                  first_line: LinePos(-1, -1),
+      #|                  last_line: LinePos(-1, -1),
+      #|                },
+      #|                extra: None,
+      #|              },
+      #|            },
+      #|          ),
+      #|          BlankLine(
+      #|            {
+      #|              v: "  ",
+      #|              meta: {
+      #|                id: 0,
+      #|                loc: {
+      #|                  file: "-",
+      #|                  first_ccode: -1,
+      #|                  last_ccode: -1,
+      #|                  first_line: LinePos(-1, -1),
+      #|                  last_line: LinePos(-1, -1),
+      #|                },
+      #|                extra: None,
+      #|              },
+      #|            },
+      #|          ),
+      #|          BlankLine(
+      #|            {
+      #|              v: "",
+      #|              meta: {
+      #|                id: 0,
+      #|                loc: {
+      #|                  file: "-",
+      #|                  first_ccode: -1,
+      #|                  last_ccode: -1,
+      #|                  first_line: LinePos(-1, -1),
+      #|                  last_line: LinePos(-1, -1),
+      #|                },
+      #|                extra: None,
+      #|              },
+      #|            },
+      #|          ),
+      #|          Heading(
+      #|            {
+      #|              v: {
+      #|                layout: Atx({ indent: 0, after_opening: "", closing: "" }),
+      #|                level: 2,
+      #|                inline: Text(
+      #|                  {
+      #|                    v: "Testing raw HTML",
+      #|                    meta: {
+      #|                      id: 0,
+      #|                      loc: {
+      #|                        file: "-",
+      #|                        first_ccode: -1,
+      #|                        last_ccode: -1,
+      #|                        first_line: LinePos(-1, -1),
+      #|                        last_line: LinePos(-1, -1),
+      #|                      },
+      #|                      extra: None,
+      #|                    },
+      #|                  },
+      #|                ),
+      #|                id: None,
+      #|              },
+      #|              meta: {
+      #|                id: 0,
+      #|                loc: {
+      #|                  file: "-",
+      #|                  first_ccode: -1,
+      #|                  last_ccode: -1,
+      #|                  first_line: LinePos(-1, -1),
+      #|                  last_line: LinePos(-1, -1),
+      #|                },
+      #|                extra: None,
+      #|              },
+      #|            },
+      #|          ),
+      #|          BlankLine(
+      #|            {
+      #|              v: "",
+      #|              meta: {
+      #|                id: 0,
+      #|                loc: {
+      #|                  file: "-",
+      #|                  first_ccode: -1,
+      #|                  last_ccode: -1,
+      #|                  first_line: LinePos(-1, -1),
+      #|                  last_line: LinePos(-1, -1),
+      #|                },
+      #|                extra: None,
+      #|              },
+      #|            },
+      #|          ),
+      #|          Paragraph(
+      #|            {
+      #|              v: {
+      #|                leading_indent: 0,
+      #|                inline: Inlines(
+      #|                  {
+      #|                    v: Seq(
+      #|                      [
+      #|                        Text(
+      #|                          {
+      #|                            v: "Haha ",
+      #|                            meta: {
+      #|                              id: 0,
+      #|                              loc: {
+      #|                                file: "-",
+      #|                                first_ccode: -1,
+      #|                                last_ccode: -1,
+      #|                                first_line: ...,
+      #|                                last_line: ...,
+      #|                              },
+      #|                              extra: None,
+      #|                            },
+      #|                          },
+      #|                        ),
+      #|                        RawHtml(
+      #|                          {
+      #|                            v: InlineRawHtml(Seq(...)),
+      #|                            meta: {
+      #|                              id: 0,
+      #|                              loc: {
+      #|                                file: "-",
+      #|                                first_ccode: -1,
+      #|                                last_ccode: -1,
+      #|                                first_line: ...,
+      #|                                last_line: ...,
+      #|                              },
+      #|                              extra: None,
+      #|                            },
+      #|                          },
+      #|                        ),
+      #|                        Text(
+      #|                          {
+      #|                            v: "a",
+      #|                            meta: {
+      #|                              id: 0,
+      #|                              loc: {
+      #|                                file: "-",
+      #|                                first_ccode: -1,
+      #|                                last_ccode: -1,
+      #|                                first_line: ...,
+      #|                                last_line: ...,
+      #|                              },
+      #|                              extra: None,
+      #|                            },
+      #|                          },
+      #|                        ),
+      #|                        RawHtml(
+      #|                          {
+      #|                            v: InlineRawHtml(Seq(...)),
+      #|                            meta: {
+      #|                              id: 0,
+      #|                              loc: {
+      #|                                file: "-",
+      #|                                first_ccode: -1,
+      #|                                last_ccode: -1,
+      #|                                first_line: ...,
+      #|                                last_line: ...,
+      #|                              },
+      #|                              extra: None,
+      #|                            },
+      #|                          },
+      #|                        ),
+      #|                        RawHtml(
+      #|                          {
+      #|                            v: InlineRawHtml(Seq(...)),
+      #|                            meta: {
+      #|                              id: 0,
+      #|                              loc: {
+      #|                                file: "-",
+      #|                                first_ccode: -1,
+      #|                                last_ccode: -1,
+      #|                                first_line: ...,
+      #|                                last_line: ...,
+      #|                              },
+      #|                              extra: None,
+      #|                            },
+      #|                          },
+      #|                        ),
+      #|                        Text(
+      #|                          {
+      #|                            v: " hihi this is not the end yet.",
+      #|                            meta: {
+      #|                              id: 0,
+      #|                              loc: {
+      #|                                file: "-",
+      #|                                first_ccode: -1,
+      #|                                last_ccode: -1,
+      #|                                first_line: ...,
+      #|                                last_line: ...,
+      #|                              },
+      #|                              extra: None,
+      #|                            },
+      #|                          },
+      #|                        ),
+      #|                      ],
+      #|                    ),
+      #|                    meta: {
+      #|                      id: 0,
+      #|                      loc: {
+      #|                        file: "-",
+      #|                        first_ccode: -1,
+      #|                        last_ccode: -1,
+      #|                        first_line: LinePos(-1, -1),
+      #|                        last_line: LinePos(-1, -1),
+      #|                      },
+      #|                      extra: None,
+      #|                    },
+      #|                  },
+      #|                ),
+      #|                trailing_blanks: "",
+      #|              },
+      #|              meta: {
+      #|                id: 0,
+      #|                loc: {
+      #|                  file: "-",
+      #|                  first_ccode: -1,
+      #|                  last_ccode: -1,
+      #|                  first_line: LinePos(-1, -1),
+      #|                  last_line: LinePos(-1, -1),
+      #|                },
+      #|                extra: None,
+      #|              },
+      #|            },
+      #|          ),
+      #|          BlankLine(
+      #|            {
+      #|              v: "",
+      #|              meta: {
+      #|                id: 0,
+      #|                loc: {
+      #|                  file: "-",
+      #|                  first_ccode: -1,
+      #|                  last_ccode: -1,
+      #|                  first_line: LinePos(-1, -1),
+      #|                  last_line: LinePos(-1, -1),
+      #|                },
+      #|                extra: None,
+      #|              },
+      #|            },
+      #|          ),
+      #|          Paragraph(
+      #|            {
+      #|              v: {
+      #|                leading_indent: 0,
+      #|                inline: Inlines(
+      #|                  {
+      #|                    v: Seq(
+      #|                      [
+      #|                        Text(
+      #|                          {
+      #|                            v: "foo ",
+      #|                            meta: {
+      #|                              id: 0,
+      #|                              loc: {
+      #|                                file: "-",
+      #|                                first_ccode: -1,
+      #|                                last_ccode: -1,
+      #|                                first_line: ...,
+      #|                                last_line: ...,
+      #|                              },
+      #|                              extra: None,
+      #|                            },
+      #|                          },
+      #|                        ),
+      #|                        RawHtml(
+      #|                          {
+      #|                            v: InlineRawHtml(Seq(...)),
+      #|                            meta: {
+      #|                              id: 0,
+      #|                              loc: {
+      #|                                file: "-",
+      #|                                first_ccode: -1,
+      #|                                last_ccode: -1,
+      #|                                first_line: ...,
+      #|                                last_line: ...,
+      #|                              },
+      #|                              extra: None,
+      #|                            },
+      #|                          },
+      #|                        ),
+      #|                        Text(
+      #|                          {
+      #|                            v: "u",
+      #|                            meta: {
+      #|                              id: 0,
+      #|                              loc: {
+      #|                                file: "-",
+      #|                                first_ccode: -1,
+      #|                                last_ccode: -1,
+      #|                                first_line: ...,
+      #|                                last_line: ...,
+      #|                              },
+      #|                              extra: None,
+      #|                            },
+      #|                          },
+      #|                        ),
+      #|                        RawHtml(
+      #|                          {
+      #|                            v: InlineRawHtml(Seq(...)),
+      #|                            meta: {
+      #|                              id: 0,
+      #|                              loc: {
+      #|                                file: "-",
+      #|                                first_ccode: -1,
+      #|                                last_ccode: -1,
+      #|                                first_line: ...,
+      #|                                last_line: ...,
+      #|                              },
+      #|                              extra: None,
+      #|                            },
+      #|                          },
+      #|                        ),
+      #|                      ],
+      #|                    ),
+      #|                    meta: {
+      #|                      id: 0,
+      #|                      loc: {
+      #|                        file: "-",
+      #|                        first_ccode: -1,
+      #|                        last_ccode: -1,
+      #|                        first_line: LinePos(-1, -1),
+      #|                        last_line: LinePos(-1, -1),
+      #|                      },
+      #|                      extra: None,
+      #|                    },
+      #|                  },
+      #|                ),
+      #|                trailing_blanks: "",
+      #|              },
+      #|              meta: {
+      #|                id: 0,
+      #|                loc: {
+      #|                  file: "-",
+      #|                  first_ccode: -1,
+      #|                  last_ccode: -1,
+      #|                  first_line: LinePos(-1, -1),
+      #|                  last_line: LinePos(-1, -1),
+      #|                },
+      #|                extra: None,
+      #|              },
+      #|            },
+      #|          ),
+      #|          BlankLine(
+      #|            {
+      #|              v: "",
+      #|              meta: {
+      #|                id: 0,
+      #|                loc: {
+      #|                  file: "-",
+      #|                  first_ccode: -1,
+      #|                  last_ccode: -1,
+      #|                  first_line: LinePos(-1, -1),
+      #|                  last_line: LinePos(-1, -1),
+      #|                },
+      #|                extra: None,
+      #|              },
+      #|            },
+      #|          ),
+      #|          BlockQuote(
+      #|            {
+      #|              v: {
+      #|                indent: 0,
+      #|                block: Paragraph(
+      #|                  {
+      #|                    v: {
+      #|                      leading_indent: 1,
+      #|                      inline: Inlines(
+      #|                        {
+      #|                          v: Seq(
+      #|                            [
+      #|                              Text(...),
+      #|                              RawHtml(...),
+      #|                              Text(...),
+      #|                              RawHtml(...),
+      #|                              RawHtml(...),
+      #|                              Text(...),
+      #|                            ],
+      #|                          ),
+      #|                          meta: {
+      #|                            id: 0,
+      #|                            loc: {
+      #|                              file: "-",
+      #|                              first_ccode: -1,
+      #|                              last_ccode: -1,
+      #|                              first_line: LinePos(-1, -1),
+      #|                              last_line: LinePos(-1, -1),
+      #|                            },
+      #|                            extra: None,
+      #|                          },
+      #|                        },
+      #|                      ),
+      #|                      trailing_blanks: "",
+      #|                    },
+      #|                    meta: {
+      #|                      id: 0,
+      #|                      loc: {
+      #|                        file: "-",
+      #|                        first_ccode: -1,
+      #|                        last_ccode: -1,
+      #|                        first_line: LinePos(-1, -1),
+      #|                        last_line: LinePos(-1, -1),
+      #|                      },
+      #|                      extra: None,
+      #|                    },
+      #|                  },
+      #|                ),
+      #|              },
+      #|              meta: {
+      #|                id: 0,
+      #|                loc: {
+      #|                  file: "-",
+      #|                  first_ccode: -1,
+      #|                  last_ccode: -1,
+      #|                  first_line: LinePos(-1, -1),
+      #|                  last_line: LinePos(-1, -1),
+      #|                },
+      #|                extra: None,
+      #|              },
+      #|            },
+      #|          ),
+      #|          BlankLine(
+      #|            {
+      #|              v: "",
+      #|              meta: {
+      #|                id: 0,
+      #|                loc: {
+      #|                  file: "-",
+      #|                  first_ccode: -1,
+      #|                  last_ccode: -1,
+      #|                  first_line: LinePos(-1, -1),
+      #|                  last_line: LinePos(-1, -1),
+      #|                },
+      #|                extra: None,
+      #|              },
+      #|            },
+      #|          ),
+      #|          Heading(
+      #|            {
+      #|              v: {
+      #|                layout: Atx({ indent: 0, after_opening: "", closing: "" }),
+      #|                level: 2,
+      #|                inline: Text(
+      #|                  {
+      #|                    v: "Testing blank lines",
+      #|                    meta: {
+      #|                      id: 0,
+      #|                      loc: {
+      #|                        file: "-",
+      #|                        first_ccode: -1,
+      #|                        last_ccode: -1,
+      #|                        first_line: LinePos(-1, -1),
+      #|                        last_line: LinePos(-1, -1),
+      #|                      },
+      #|                      extra: None,
+      #|                    },
+      #|                  },
+      #|                ),
+      #|                id: None,
+      #|              },
+      #|              meta: {
+      #|                id: 0,
+      #|                loc: {
+      #|                  file: "-",
+      #|                  first_ccode: -1,
+      #|                  last_ccode: -1,
+      #|                  first_line: LinePos(-1, -1),
+      #|                  last_line: LinePos(-1, -1),
+      #|                },
+      #|                extra: None,
+      #|              },
+      #|            },
+      #|          ),
+      #|          BlankLine(
+      #|            {
+      #|              v: "",
+      #|              meta: {
+      #|                id: 0,
+      #|                loc: {
+      #|                  file: "-",
+      #|                  first_ccode: -1,
+      #|                  last_ccode: -1,
+      #|                  first_line: LinePos(-1, -1),
+      #|                  last_line: LinePos(-1, -1),
+      #|                },
+      #|                extra: None,
+      #|              },
+      #|            },
+      #|          ),
+      #|          BlankLine(
+      #|            {
+      #|              v: "    ",
+      #|              meta: {
+      #|                id: 0,
+      #|                loc: {
+      #|                  file: "-",
+      #|                  first_ccode: -1,
+      #|                  last_ccode: -1,
+      #|                  first_line: LinePos(-1, -1),
+      #|                  last_line: LinePos(-1, -1),
+      #|                },
+      #|                extra: None,
+      #|              },
+      #|            },
+      #|          ),
+      #|          BlankLine(
+      #|            {
+      #|              v: "     ",
+      #|              meta: {
+      #|                id: 0,
+      #|                loc: {
+      #|                  file: "-",
+      #|                  first_ccode: -1,
+      #|                  last_ccode: -1,
+      #|                  first_line: LinePos(-1, -1),
+      #|                  last_line: LinePos(-1, -1),
+      #|                },
+      #|                extra: None,
+      #|              },
+      #|            },
+      #|          ),
+      #|          Paragraph(
+      #|            {
+      #|              v: {
+      #|                leading_indent: 0,
+      #|                inline: Text(
+      #|                  {
+      #|                    v: "Impressive isn't it ?",
+      #|                    meta: {
+      #|                      id: 0,
+      #|                      loc: {
+      #|                        file: "-",
+      #|                        first_ccode: -1,
+      #|                        last_ccode: -1,
+      #|                        first_line: LinePos(-1, -1),
+      #|                        last_line: LinePos(-1, -1),
+      #|                      },
+      #|                      extra: None,
+      #|                    },
+      #|                  },
+      #|                ),
+      #|                trailing_blanks: "",
+      #|              },
+      #|              meta: {
+      #|                id: 0,
+      #|                loc: {
+      #|                  file: "-",
+      #|                  first_ccode: -1,
+      #|                  last_ccode: -1,
+      #|                  first_line: LinePos(-1, -1),
+      #|                  last_line: LinePos(-1, -1),
+      #|                },
+      #|                extra: None,
+      #|              },
+      #|            },
+      #|          ),
+      #|          BlankLine(
+      #|            {
+      #|              v: "",
+      #|              meta: {
+      #|                id: 0,
+      #|                loc: {
+      #|                  file: "-",
+      #|                  first_ccode: -1,
+      #|                  last_ccode: -1,
+      #|                  first_line: LinePos(-1, -1),
+      #|                  last_line: LinePos(-1, -1),
+      #|                },
+      #|                extra: None,
+      #|              },
+      #|            },
+      #|          ),
+      #|          Heading(
+      #|            {
+      #|              v: {
+      #|                layout: Atx({ indent: 0, after_opening: "", closing: "" }),
+      #|                level: 2,
+      #|                inline: Text(
+      #|                  {
+      #|                    v: "Testing block quotes",
+      #|                    meta: {
+      #|                      id: 0,
+      #|                      loc: {
+      #|                        file: "-",
+      #|                        first_ccode: -1,
+      #|                        last_ccode: -1,
+      #|                        first_line: LinePos(-1, -1),
+      #|                        last_line: LinePos(-1, -1),
+      #|                      },
+      #|                      extra: None,
+      #|                    },
+      #|                  },
+      #|                ),
+      #|                id: None,
+      #|              },
+      #|              meta: {
+      #|                id: 0,
+      #|                loc: {
+      #|                  file: "-",
+      #|                  first_ccode: -1,
+      #|                  last_ccode: -1,
+      #|                  first_line: LinePos(-1, -1),
+      #|                  last_line: LinePos(-1, -1),
+      #|                },
+      #|                extra: None,
+      #|              },
+      #|            },
+      #|          ),
+      #|          BlankLine(
+      #|            {
+      #|              v: "",
+      #|              meta: {
+      #|                id: 0,
+      #|                loc: {
+      #|                  file: "-",
+      #|                  first_ccode: -1,
+      #|                  last_ccode: -1,
+      #|                  first_line: LinePos(-1, -1),
+      #|                  last_line: LinePos(-1, -1),
+      #|                },
+      #|                extra: None,
+      #|              },
+      #|            },
+      #|          ),
+      #|          BlankLine(
+      #|            {
+      #|              v: "",
+      #|              meta: {
+      #|                id: 0,
+      #|                loc: {
+      #|                  file: "-",
+      #|                  first_ccode: -1,
+      #|                  last_ccode: -1,
+      #|                  first_line: LinePos(-1, -1),
+      #|                  last_line: LinePos(-1, -1),
+      #|                },
+      #|                extra: None,
+      #|              },
+      #|            },
+      #|          ),
+      #|          BlockQuote(
+      #|            {
+      #|              v: {
+      #|                indent: 2,
+      #|                block: BlockQuote(
+      #|                  {
+      #|                    v: {
+      #|                      indent: 2,
+      #|                      block: Paragraph(
+      #|                        {
+      #|                          v: {
+      #|                            leading_indent: 0,
+      #|                            inline: Inlines({ v: ..., meta: ... }),
+      #|                            trailing_blanks: "",
+      #|                          },
+      #|                          meta: {
+      #|                            id: 0,
+      #|                            loc: {
+      #|                              file: "-",
+      #|                              first_ccode: -1,
+      #|                              last_ccode: -1,
+      #|                              first_line: LinePos(-1, -1),
+      #|                              last_line: LinePos(-1, -1),
+      #|                            },
+      #|                            extra: None,
+      #|                          },
+      #|                        },
+      #|                      ),
+      #|                    },
+      #|                    meta: {
+      #|                      id: 0,
+      #|                      loc: {
+      #|                        file: "-",
+      #|                        first_ccode: -1,
+      #|                        last_ccode: -1,
+      #|                        first_line: LinePos(-1, -1),
+      #|                        last_line: LinePos(-1, -1),
+      #|                      },
+      #|                      extra: None,
+      #|                    },
+      #|                  },
+      #|                ),
+      #|              },
+      #|              meta: {
+      #|                id: 0,
+      #|                loc: {
+      #|                  file: "-",
+      #|                  first_ccode: -1,
+      #|                  last_ccode: -1,
+      #|                  first_line: LinePos(-1, -1),
+      #|                  last_line: LinePos(-1, -1),
+      #|                },
+      #|                extra: None,
+      #|              },
+      #|            },
+      #|          ),
+      #|          BlankLine(
+      #|            {
+      #|              v: "",
+      #|              meta: {
+      #|                id: 0,
+      #|                loc: {
+      #|                  file: "-",
+      #|                  first_ccode: -1,
+      #|                  last_ccode: -1,
+      #|                  first_line: LinePos(-1, -1),
+      #|                  last_line: LinePos(-1, -1),
+      #|                },
+      #|                extra: None,
+      #|              },
+      #|            },
+      #|          ),
+      #|          BlockQuote(
+      #|            {
+      #|              v: {
+      #|                indent: 0,
+      #|                block: Heading(
+      #|                  {
+      #|                    v: {
+      #|                      layout: Atx({ indent: 1, after_opening: "", closing: "" }),
+      #|                      level: 2,
+      #|                      inline: Text(
+      #|                        {
+      #|                          v: "Further tests",
+      #|                          meta: {
+      #|                            id: 0,
+      #|                            loc: {
+      #|                              file: "-",
+      #|                              first_ccode: -1,
+      #|                              last_ccode: -1,
+      #|                              first_line: LinePos(-1, -1),
+      #|                              last_line: LinePos(-1, -1),
+      #|                            },
+      #|                            extra: None,
+      #|                          },
+      #|                        },
+      #|                      ),
+      #|                      id: None,
+      #|                    },
+      #|                    meta: {
+      #|                      id: 0,
+      #|                      loc: {
+      #|                        file: "-",
+      #|                        first_ccode: -1,
+      #|                        last_ccode: -1,
+      #|                        first_line: LinePos(-1, -1),
+      #|                        last_line: LinePos(-1, -1),
+      #|                      },
+      #|                      extra: None,
+      #|                    },
+      #|                  },
+      #|                ),
+      #|              },
+      #|              meta: {
+      #|                id: 0,
+      #|                loc: {
+      #|                  file: "-",
+      #|                  first_ccode: -1,
+      #|                  last_ccode: -1,
+      #|                  first_line: LinePos(-1, -1),
+      #|                  last_line: LinePos(-1, -1),
+      #|                },
+      #|                extra: None,
+      #|              },
+      #|            },
+      #|          ),
+      #|          BlankLine(
+      #|            {
+      #|              v: "",
+      #|              meta: {
+      #|                id: 0,
+      #|                loc: {
+      #|                  file: "-",
+      #|                  first_ccode: -1,
+      #|                  last_ccode: -1,
+      #|                  first_line: LinePos(-1, -1),
+      #|                  last_line: LinePos(-1, -1),
+      #|                },
+      #|                extra: None,
+      #|              },
+      #|            },
+      #|          ),
+      #|          Paragraph(
+      #|            {
+      #|              v: {
+      #|                leading_indent: 2,
+      #|                inline: Text(
+      #|                  {
+      #|                    v: "We need a little quote here",
+      #|                    meta: {
+      #|                      id: 0,
+      #|                      loc: {
+      #|                        file: "-",
+      #|                        first_ccode: -1,
+      #|                        last_ccode: -1,
+      #|                        first_line: LinePos(-1, -1),
+      #|                        last_line: LinePos(-1, -1),
+      #|                      },
+      #|                      extra: None,
+      #|                    },
+      #|                  },
+      #|                ),
+      #|                trailing_blanks: "",
+      #|              },
+      #|              meta: {
+      #|                id: 0,
+      #|                loc: {
+      #|                  file: "-",
+      #|                  first_ccode: -1,
+      #|                  last_ccode: -1,
+      #|                  first_line: LinePos(-1, -1),
+      #|                  last_line: LinePos(-1, -1),
+      #|                },
+      #|                extra: None,
+      #|              },
+      #|            },
+      #|          ),
+      #|          BlockQuote(
+      #|            {
+      #|              v: {
+      #|                indent: 0,
+      #|                block: Paragraph(
+      #|                  {
+      #|                    v: {
+      #|                      leading_indent: 1,
+      #|                      inline: Text(
+      #|                        {
+      #|                          v: "It's warranted.",
+      #|                          meta: {
+      #|                            id: 0,
+      #|                            loc: {
+      #|                              file: "-",
+      #|                              first_ccode: -1,
+      #|                              last_ccode: -1,
+      #|                              first_line: LinePos(-1, -1),
+      #|                              last_line: LinePos(-1, -1),
+      #|                            },
+      #|                            extra: None,
+      #|                          },
+      #|                        },
+      #|                      ),
+      #|                      trailing_blanks: "",
+      #|                    },
+      #|                    meta: {
+      #|                      id: 0,
+      #|                      loc: {
+      #|                        file: "-",
+      #|                        first_ccode: -1,
+      #|                        last_ccode: -1,
+      #|                        first_line: LinePos(-1, -1),
+      #|                        last_line: LinePos(-1, -1),
+      #|                      },
+      #|                      extra: None,
+      #|                    },
+      #|                  },
+      #|                ),
+      #|              },
+      #|              meta: {
+      #|                id: 0,
+      #|                loc: {
+      #|                  file: "-",
+      #|                  first_ccode: -1,
+      #|                  last_ccode: -1,
+      #|                  first_line: LinePos(-1, -1),
+      #|                  last_line: LinePos(-1, -1),
+      #|                },
+      #|                extra: None,
+      #|              },
+      #|            },
+      #|          ),
+      #|          BlankLine(
+      #|            {
+      #|              v: "",
+      #|              meta: {
+      #|                id: 0,
+      #|                loc: {
+      #|                  file: "-",
+      #|                  first_ccode: -1,
+      #|                  last_ccode: -1,
+      #|                  first_line: LinePos(-1, -1),
+      #|                  last_line: LinePos(-1, -1),
+      #|                },
+      #|                extra: None,
+      #|              },
+      #|            },
+      #|          ),
+      #|          BlankLine(
+      #|            {
+      #|              v: "",
+      #|              meta: {
+      #|                id: 0,
+      #|                loc: {
+      #|                  file: "-",
+      #|                  first_ccode: -1,
+      #|                  last_ccode: -1,
+      #|                  first_line: LinePos(-1, -1),
+      #|                  last_line: LinePos(-1, -1),
+      #|                },
+      #|                extra: None,
+      #|              },
+      #|            },
+      #|          ),
+      #|          Heading(
+      #|            {
+      #|              v: {
+      #|                layout: Atx({ indent: 0, after_opening: "", closing: "" }),
+      #|                level: 2,
+      #|                inline: Text(
+      #|                  {
+      #|                    v: "Testing code blocks",
+      #|                    meta: {
+      #|                      id: 0,
+      #|                      loc: {
+      #|                        file: "-",
+      #|                        first_ccode: -1,
+      #|                        last_ccode: -1,
+      #|                        first_line: LinePos(-1, -1),
+      #|                        last_line: LinePos(-1, -1),
+      #|                      },
+      #|                      extra: None,
+      #|                    },
+      #|                  },
+      #|                ),
+      #|                id: None,
+      #|              },
+      #|              meta: {
+      #|                id: 0,
+      #|                loc: {
+      #|                  file: "-",
+      #|                  first_ccode: -1,
+      #|                  last_ccode: -1,
+      #|                  first_line: LinePos(-1, -1),
+      #|                  last_line: LinePos(-1, -1),
+      #|                },
+      #|                extra: None,
+      #|              },
+      #|            },
+      #|          ),
+      #|          BlankLine(
+      #|            {
+      #|              v: "",
+      #|              meta: {
+      #|                id: 0,
+      #|                loc: {
+      #|                  file: "-",
+      #|                  first_ccode: -1,
+      #|                  last_ccode: -1,
+      #|                  first_line: LinePos(-1, -1),
+      #|                  last_line: LinePos(-1, -1),
+      #|                },
+      #|                extra: None,
+      #|              },
+      #|            },
+      #|          ),
+      #|          CodeBlock(
+      #|            {
+      #|              v: {
+      #|                layout: Fenced(
+      #|                  {
+      #|                    indent: 0,
+      #|                    opening_fence: {
+      #|                      v: "",
+      #|                      meta: {
+      #|                        id: 0,
+      #|                        loc: {
+      #|                          file: "-",
+      #|                          first_ccode: -1,
+      #|                          last_ccode: -1,
+      #|                          first_line: LinePos(-1, -1),
+      #|                          last_line: LinePos(-1, -1),
+      #|                        },
+      #|                        extra: None,
+      #|                      },
+      #|                    },
+      #|                    closing_fence: Some(
+      #|                      {
+      #|                        v: "",
+      #|                        meta: {
+      #|                          id: 0,
+      #|                          loc: {
+      #|                            file: "-",
+      #|                            first_ccode: -1,
+      #|                            last_ccode: -1,
+      #|                            first_line: LinePos(-1, -1),
+      #|                            last_line: LinePos(-1, -1),
+      #|                          },
+      #|                          extra: None,
+      #|                        },
+      #|                      },
+      #|                    ),
+      #|                  },
+      #|                ),
+      #|                info_string: Some(
+      #|                  {
+      #|                    v: "layout after info is not kept",
+      #|                    meta: {
+      #|                      id: 0,
+      #|                      loc: {
+      #|                        file: "-",
+      #|                        first_ccode: -1,
+      #|                        last_ccode: -1,
+      #|                        first_line: LinePos(-1, -1),
+      #|                        last_line: LinePos(-1, -1),
+      #|                      },
+      #|                      extra: None,
+      #|                    },
+      #|                  },
+      #|                ),
+      #|                code: Seq([]),
+      #|              },
+      #|              meta: {
+      #|                id: 0,
+      #|                loc: {
+      #|                  file: "-",
+      #|                  first_ccode: -1,
+      #|                  last_ccode: -1,
+      #|                  first_line: LinePos(-1, -1),
+      #|                  last_line: LinePos(-1, -1),
+      #|                },
+      #|                extra: None,
+      #|              },
+      #|            },
+      #|          ),
+      #|          BlankLine(
+      #|            {
+      #|              v: "",
+      #|              meta: {
+      #|                id: 0,
+      #|                loc: {
+      #|                  file: "-",
+      #|                  first_ccode: -1,
+      #|                  last_ccode: -1,
+      #|                  first_line: LinePos(-1, -1),
+      #|                  last_line: LinePos(-1, -1),
+      #|                },
+      #|                extra: None,
+      #|              },
+      #|            },
+      #|          ),
+      #|          CodeBlock(
+      #|            {
+      #|              v: {
+      #|                layout: Fenced(
+      #|                  {
+      #|                    indent: 1,
+      #|                    opening_fence: {
+      #|                      v: "",
+      #|                      meta: {
+      #|                        id: 0,
+      #|                        loc: {
+      #|                          file: "-",
+      #|                          first_ccode: -1,
+      #|                          last_ccode: -1,
+      #|                          first_line: LinePos(-1, -1),
+      #|                          last_line: LinePos(-1, -1),
+      #|                        },
+      #|                        extra: None,
+      #|                      },
+      #|                    },
+      #|                    closing_fence: Some(
+      #|                      {
+      #|                        v: "",
+      #|                        meta: {
+      #|                          id: 0,
+      #|                          loc: {
+      #|                            file: "-",
+      #|                            first_ccode: -1,
+      #|                            last_ccode: -1,
+      #|                            first_line: LinePos(-1, -1),
+      #|                            last_line: LinePos(-1, -1),
+      #|                          },
+      #|                          extra: None,
+      #|                        },
+      #|                      },
+      #|                    ),
+      #|                  },
+      #|                ),
+      #|                info_string: Some(
+      #|                  {
+      #|                    v: "ocaml module M",
+      #|                    meta: {
+      #|                      id: 0,
+      #|                      loc: {
+      #|                        file: "-",
+      #|                        first_ccode: -1,
+      #|                        last_ccode: -1,
+      #|                        first_line: LinePos(-1, -1),
+      #|                        last_line: LinePos(-1, -1),
+      #|                      },
+      #|                      extra: None,
+      #|                    },
+      #|                  },
+      #|                ),
+      #|                code: Seq(
+      #|                  [
+      #|                    {
+      #|                      v: "",
+      #|                      meta: {
+      #|                        id: 0,
+      #|                        loc: {
+      #|                          file: "-",
+      #|                          first_ccode: -1,
+      #|                          last_ccode: -1,
+      #|                          first_line: LinePos(-1, -1),
+      #|                          last_line: LinePos(-1, -1),
+      #|                        },
+      #|                        extra: None,
+      #|                      },
+      #|                    },
+      #|                    {
+      #|                      v: "type t = ",
+      #|                      meta: {
+      #|                        id: 0,
+      #|                        loc: {
+      #|                          file: "-",
+      #|                          first_ccode: -1,
+      #|                          last_ccode: -1,
+      #|                          first_line: LinePos(-1, -1),
+      #|                          last_line: LinePos(-1, -1),
+      #|                        },
+      #|                        extra: None,
+      #|                      },
+      #|                    },
+      #|                    {
+      #|                      v: "| A of int",
+      #|                      meta: {
+      #|                        id: 0,
+      #|                        loc: {
+      #|                          file: "-",
+      #|                          first_ccode: -1,
+      #|                          last_ccode: -1,
+      #|                          first_line: LinePos(-1, -1),
+      #|                          last_line: LinePos(-1, -1),
+      #|                        },
+      #|                        extra: None,
+      #|                      },
+      #|                    },
+      #|                    {
+      #|                      v: "| B of string",
+      #|                      meta: {
+      #|                        id: 0,
+      #|                        loc: {
+      #|                          file: "-",
+      #|                          first_ccode: -1,
+      #|                          last_ccode: -1,
+      #|                          first_line: LinePos(-1, -1),
+      #|                          last_line: LinePos(-1, -1),
+      #|                        },
+      #|                        extra: None,
+      #|                      },
+      #|                    },
+      #|                    {
+      #|                      v: "",
+      #|                      meta: {
+      #|                        id: 0,
+      #|                        loc: {
+      #|                          file: "-",
+      #|                          first_ccode: -1,
+      #|                          last_ccode: -1,
+      #|                          first_line: LinePos(-1, -1),
+      #|                          last_line: LinePos(-1, -1),
+      #|                        },
+      #|                        extra: None,
+      #|                      },
+      #|                    },
+      #|                    {
+      #|                      v: "let square x = x *. x",
+      #|                      meta: {
+      #|                        id: 0,
+      #|                        loc: {
+      #|                          file: "-",
+      #|                          first_ccode: -1,
+      #|                          last_ccode: -1,
+      #|                          first_line: LinePos(-1, -1),
+      #|                          last_line: LinePos(-1, -1),
+      #|                        },
+      #|                        extra: None,
+      #|                      },
+      #|                    },
+      #|                  ],
+      #|                ),
+      #|              },
+      #|              meta: {
+      #|                id: 0,
+      #|                loc: {
+      #|                  file: "-",
+      #|                  first_ccode: -1,
+      #|                  last_ccode: -1,
+      #|                  first_line: LinePos(-1, -1),
+      #|                  last_line: LinePos(-1, -1),
+      #|                },
+      #|                extra: None,
+      #|              },
+      #|            },
+      #|          ),
+      #|          BlankLine(
+      #|            {
+      #|              v: "",
+      #|              meta: {
+      #|                id: 0,
+      #|                loc: {
+      #|                  file: "-",
+      #|                  first_ccode: -1,
+      #|                  last_ccode: -1,
+      #|                  first_line: LinePos(-1, -1),
+      #|                  last_line: LinePos(-1, -1),
+      #|                },
+      #|                extra: None,
+      #|              },
+      #|            },
+      #|          ),
+      #|          Paragraph(
+      #|            {
+      #|              v: {
+      #|                leading_indent: 0,
+      #|                inline: Text(
+      #|                  {
+      #|                    v: "The indented code block:",
+      #|                    meta: {
+      #|                      id: 0,
+      #|                      loc: {
+      #|                        file: "-",
+      #|                        first_ccode: -1,
+      #|                        last_ccode: -1,
+      #|                        first_line: LinePos(-1, -1),
+      #|                        last_line: LinePos(-1, -1),
+      #|                      },
+      #|                      extra: None,
+      #|                    },
+      #|                  },
+      #|                ),
+      #|                trailing_blanks: "",
+      #|              },
+      #|              meta: {
+      #|                id: 0,
+      #|                loc: {
+      #|                  file: "-",
+      #|                  first_ccode: -1,
+      #|                  last_ccode: -1,
+      #|                  first_line: LinePos(-1, -1),
+      #|                  last_line: LinePos(-1, -1),
+      #|                },
+      #|                extra: None,
+      #|              },
+      #|            },
+      #|          ),
+      #|          BlankLine(
+      #|            {
+      #|              v: "",
+      #|              meta: {
+      #|                id: 0,
+      #|                loc: {
+      #|                  file: "-",
+      #|                  first_ccode: -1,
+      #|                  last_ccode: -1,
+      #|                  first_line: LinePos(-1, -1),
+      #|                  last_line: LinePos(-1, -1),
+      #|                },
+      #|                extra: None,
+      #|              },
+      #|            },
+      #|          ),
+      #|          CodeBlock(
+      #|            {
+      #|              v: {
+      #|                layout: Indented,
+      #|                info_string: None,
+      #|                code: Seq(
+      #|                  [
+      #|                    {
+      #|                      v: "a b c d ",
+      #|                      meta: {
+      #|                        id: 0,
+      #|                        loc: {
+      #|                          file: "-",
+      #|                          first_ccode: -1,
+      #|                          last_ccode: -1,
+      #|                          first_line: LinePos(-1, -1),
+      #|                          last_line: LinePos(-1, -1),
+      #|                        },
+      #|                        extra: None,
+      #|                      },
+      #|                    },
+      #|                    {
+      #|                      v: " a b c d",
+      #|                      meta: {
+      #|                        id: 0,
+      #|                        loc: {
+      #|                          file: "-",
+      #|                          first_ccode: -1,
+      #|                          last_ccode: -1,
+      #|                          first_line: LinePos(-1, -1),
+      #|                          last_line: LinePos(-1, -1),
+      #|                        },
+      #|                        extra: None,
+      #|                      },
+      #|                    },
+      #|                    {
+      #|                      v: " a b c d",
+      #|                      meta: {
+      #|                        id: 0,
+      #|                        loc: {
+      #|                          file: "-",
+      #|                          first_ccode: -1,
+      #|                          last_ccode: -1,
+      #|                          first_line: LinePos(-1, -1),
+      #|                          last_line: LinePos(-1, -1),
+      #|                        },
+      #|                        extra: None,
+      #|                      },
+      #|                    },
+      #|                    {
+      #|                      v: "  ",
+      #|                      meta: {
+      #|                        id: 0,
+      #|                        loc: {
+      #|                          file: "-",
+      #|                          first_ccode: -1,
+      #|                          last_ccode: -1,
+      #|                          first_line: LinePos(-1, -1),
+      #|                          last_line: LinePos(-1, -1),
+      #|                        },
+      #|                        extra: None,
+      #|                      },
+      #|                    },
+      #|                    {
+      #|                      v: "",
+      #|                      meta: {
+      #|                        id: 0,
+      #|                        loc: {
+      #|                          file: "-",
+      #|                          first_ccode: -1,
+      #|                          last_ccode: -1,
+      #|                          first_line: LinePos(-1, -1),
+      #|                          last_line: LinePos(-1, -1),
+      #|                        },
+      #|                        extra: None,
+      #|                      },
+      #|                    },
+      #|                    {
+      #|                      v: "a",
+      #|                      meta: {
+      #|                        id: 0,
+      #|                        loc: {
+      #|                          file: "-",
+      #|                          first_ccode: -1,
+      #|                          last_ccode: -1,
+      #|                          first_line: LinePos(-1, -1),
+      #|                          last_line: LinePos(-1, -1),
+      #|                        },
+      #|                        extra: None,
+      #|                      },
+      #|                    },
+      #|                    {
+      #|                      v: "   a b c",
+      #|                      meta: {
+      #|                        id: 0,
+      #|                        loc: {
+      #|                          file: "-",
+      #|                          first_ccode: -1,
+      #|                          last_ccode: -1,
+      #|                          first_line: LinePos(-1, -1),
+      #|                          last_line: LinePos(-1, -1),
+      #|                        },
+      #|                        extra: None,
+      #|                      },
+      #|                    },
+      #|                  ],
+      #|                ),
+      #|              },
+      #|              meta: {
+      #|                id: 0,
+      #|                loc: {
+      #|                  file: "-",
+      #|                  first_ccode: -1,
+      #|                  last_ccode: -1,
+      #|                  first_line: LinePos(-1, -1),
+      #|                  last_line: LinePos(-1, -1),
+      #|                },
+      #|                extra: None,
+      #|              },
+      #|            },
+      #|          ),
+      #|          BlankLine(
+      #|            {
+      #|              v: "",
+      #|              meta: {
+      #|                id: 0,
+      #|                loc: {
+      #|                  file: "-",
+      #|                  first_ccode: -1,
+      #|                  last_ccode: -1,
+      #|                  first_line: LinePos(-1, -1),
+      #|                  last_line: LinePos(-1, -1),
+      #|                },
+      #|                extra: None,
+      #|              },
+      #|            },
+      #|          ),
+      #|          BlankLine(
+      #|            {
+      #|              v: "",
+      #|              meta: {
+      #|                id: 0,
+      #|                loc: {
+      #|                  file: "-",
+      #|                  first_ccode: -1,
+      #|                  last_ccode: -1,
+      #|                  first_line: LinePos(-1, -1),
+      #|                  last_line: LinePos(-1, -1),
+      #|                },
+      #|                extra: None,
+      #|              },
+      #|            },
+      #|          ),
+      #|          BlockQuote(
+      #|            {
+      #|              v: {
+      #|                indent: 0,
+      #|                block: CodeBlock(
+      #|                  {
+      #|                    v: {
+      #|                      layout: Fenced(
+      #|                        {
+      #|                          indent: 0,
+      #|                          opening_fence: {
+      #|                            v: "",
+      #|                            meta: {
+      #|                              id: 0,
+      #|                              loc: {
+      #|                                file: "-",
+      #|                                first_ccode: -1,
+      #|                                last_ccode: -1,
+      #|                                first_line: ...,
+      #|                                last_line: ...,
+      #|                              },
+      #|                              extra: None,
+      #|                            },
+      #|                          },
+      #|                          closing_fence: Some({ v: "", meta: { id: 0, loc: ..., extra: None } }),
+      #|                        },
+      #|                      ),
+      #|                      info_string: Some(
+      #|                        {
+      #|                          v: "ocaml module M",
+      #|                          meta: {
+      #|                            id: 0,
+      #|                            loc: {
+      #|                              file: "-",
+      #|                              first_ccode: -1,
+      #|                              last_ccode: -1,
+      #|                              first_line: LinePos(-1, -1),
+      #|                              last_line: LinePos(-1, -1),
+      #|                            },
+      #|                            extra: None,
+      #|                          },
+      #|                        },
+      #|                      ),
+      #|                      code: Seq(
+      #|                        [
+      #|                          {
+      #|                            v: "",
+      #|                            meta: {
+      #|                              id: 0,
+      #|                              loc: {
+      #|                                file: "-",
+      #|                                first_ccode: -1,
+      #|                                last_ccode: -1,
+      #|                                first_line: ...,
+      #|                                last_line: ...,
+      #|                              },
+      #|                              extra: None,
+      #|                            },
+      #|                          },
+      #|                          {
+      #|                            v: "type t = ",
+      #|                            meta: {
+      #|                              id: 0,
+      #|                              loc: {
+      #|                                file: "-",
+      #|                                first_ccode: -1,
+      #|                                last_ccode: -1,
+      #|                                first_line: ...,
+      #|                                last_line: ...,
+      #|                              },
+      #|                              extra: None,
+      #|                            },
+      #|                          },
+      #|                          {
+      #|                            v: "| A of int",
+      #|                            meta: {
+      #|                              id: 0,
+      #|                              loc: {
+      #|                                file: "-",
+      #|                                first_ccode: -1,
+      #|                                last_ccode: -1,
+      #|                                first_line: ...,
+      #|                                last_line: ...,
+      #|                              },
+      #|                              extra: None,
+      #|                            },
+      #|                          },
+      #|                          {
+      #|                            v: "| B of string",
+      #|                            meta: {
+      #|                              id: 0,
+      #|                              loc: {
+      #|                                file: "-",
+      #|                                first_ccode: -1,
+      #|                                last_ccode: -1,
+      #|                                first_line: ...,
+      #|                                last_line: ...,
+      #|                              },
+      #|                              extra: None,
+      #|                            },
+      #|                          },
+      #|                          {
+      #|                            v: "",
+      #|                            meta: {
+      #|                              id: 0,
+      #|                              loc: {
+      #|                                file: "-",
+      #|                                first_ccode: -1,
+      #|                                last_ccode: -1,
+      #|                                first_line: ...,
+      #|                                last_line: ...,
+      #|                              },
+      #|                              extra: None,
+      #|                            },
+      #|                          },
+      #|                          {
+      #|                            v: "let square x = x *. x",
+      #|                            meta: {
+      #|                              id: 0,
+      #|                              loc: {
+      #|                                file: "-",
+      #|                                first_ccode: -1,
+      #|                                last_ccode: -1,
+      #|                                first_line: ...,
+      #|                                last_line: ...,
+      #|                              },
+      #|                              extra: None,
+      #|                            },
+      #|                          },
+      #|                        ],
+      #|                      ),
+      #|                    },
+      #|                    meta: {
+      #|                      id: 0,
+      #|                      loc: {
+      #|                        file: "-",
+      #|                        first_ccode: -1,
+      #|                        last_ccode: -1,
+      #|                        first_line: LinePos(-1, -1),
+      #|                        last_line: LinePos(-1, -1),
+      #|                      },
+      #|                      extra: None,
+      #|                    },
+      #|                  },
+      #|                ),
+      #|              },
+      #|              meta: {
+      #|                id: 0,
+      #|                loc: {
+      #|                  file: "-",
+      #|                  first_ccode: -1,
+      #|                  last_ccode: -1,
+      #|                  first_line: LinePos(-1, -1),
+      #|                  last_line: LinePos(-1, -1),
+      #|                },
+      #|                extra: None,
+      #|              },
+      #|            },
+      #|          ),
+      #|          BlankLine(
+      #|            {
+      #|              v: "",
+      #|              meta: {
+      #|                id: 0,
+      #|                loc: {
+      #|                  file: "-",
+      #|                  first_ccode: -1,
+      #|                  last_ccode: -1,
+      #|                  first_line: LinePos(-1, -1),
+      #|                  last_line: LinePos(-1, -1),
+      #|                },
+      #|                extra: None,
+      #|              },
+      #|            },
+      #|          ),
+      #|          BlankLine(
+      #|            {
+      #|              v: "",
+      #|              meta: {
+      #|                id: 0,
+      #|                loc: {
+      #|                  file: "-",
+      #|                  first_ccode: -1,
+      #|                  last_ccode: -1,
+      #|                  first_line: LinePos(-1, -1),
+      #|                  last_line: LinePos(-1, -1),
+      #|                },
+      #|                extra: None,
+      #|              },
+      #|            },
+      #|          ),
+      #|          Heading(
+      #|            {
+      #|              v: {
+      #|                layout: Atx({ indent: 0, after_opening: "", closing: "" }),
+      #|                level: 2,
+      #|                inline: Text(
+      #|                  {
+      #|                    v: "Testing headings",
+      #|                    meta: {
+      #|                      id: 0,
+      #|                      loc: {
+      #|                        file: "-",
+      #|                        first_ccode: -1,
+      #|                        last_ccode: -1,
+      #|                        first_line: LinePos(-1, -1),
+      #|                        last_line: LinePos(-1, -1),
+      #|                      },
+      #|                      extra: None,
+      #|                    },
+      #|                  },
+      #|                ),
+      #|                id: None,
+      #|              },
+      #|              meta: {
+      #|                id: 0,
+      #|                loc: {
+      #|                  file: "-",
+      #|                  first_ccode: -1,
+      #|                  last_ccode: -1,
+      #|                  first_line: LinePos(-1, -1),
+      #|                  last_line: LinePos(-1, -1),
+      #|                },
+      #|                extra: None,
+      #|              },
+      #|            },
+      #|          ),
+      #|          BlankLine(
+      #|            {
+      #|              v: "",
+      #|              meta: {
+      #|                id: 0,
+      #|                loc: {
+      #|                  file: "-",
+      #|                  first_ccode: -1,
+      #|                  last_ccode: -1,
+      #|                  first_line: LinePos(-1, -1),
+      #|                  last_line: LinePos(-1, -1),
+      #|                },
+      #|                extra: None,
+      #|              },
+      #|            },
+      #|          ),
+      #|          Heading(
+      #|            {
+      #|              v: {
+      #|                layout: Setext(
+      #|                  {
+      #|                    leading_indent: 0,
+      #|                    trailing_blanks: "",
+      #|                    underline_indent: 0,
+      #|                    underline_count: {
+      #|                      v: 8,
+      #|                      meta: {
+      #|                        id: 0,
+      #|                        loc: {
+      #|                          file: "-",
+      #|                          first_ccode: -1,
+      #|                          last_ccode: -1,
+      #|                          first_line: LinePos(-1, -1),
+      #|                          last_line: LinePos(-1, -1),
+      #|                        },
+      #|                        extra: None,
+      #|                      },
+      #|                    },
+      #|                    underline_blanks: "",
+      #|                  },
+      #|                ),
+      #|                level: 1,
+      #|                inline: Inlines(
+      #|                  {
+      #|                    v: Seq(
+      #|                      [
+      #|                        Text(
+      #|                          {
+      #|                            v: "aaa",
+      #|                            meta: {
+      #|                              id: 0,
+      #|                              loc: {
+      #|                                file: "-",
+      #|                                first_ccode: -1,
+      #|                                last_ccode: -1,
+      #|                                first_line: ...,
+      #|                                last_line: ...,
+      #|                              },
+      #|                              extra: None,
+      #|                            },
+      #|                          },
+      #|                        ),
+      #|                        Break(
+      #|                          {
+      #|                            v: {
+      #|                              layout_before: { v: "", meta: ... },
+      #|                              ty: Soft,
+      #|                              layout_after: { v: "", meta: ... },
+      #|                            },
+      #|                            meta: {
+      #|                              id: 0,
+      #|                              loc: {
+      #|                                file: "-",
+      #|                                first_ccode: -1,
+      #|                                last_ccode: -1,
+      #|                                first_line: ...,
+      #|                                last_line: ...,
+      #|                              },
+      #|                              extra: None,
+      #|                            },
+      #|                          },
+      #|                        ),
+      #|                        Text(
+      #|                          {
+      #|                            v: "aaaa",
+      #|                            meta: {
+      #|                              id: 0,
+      #|                              loc: {
+      #|                                file: "-",
+      #|                                first_ccode: -1,
+      #|                                last_ccode: -1,
+      #|                                first_line: ...,
+      #|                                last_line: ...,
+      #|                              },
+      #|                              extra: None,
+      #|                            },
+      #|                          },
+      #|                        ),
+      #|                      ],
+      #|                    ),
+      #|                    meta: {
+      #|                      id: 0,
+      #|                      loc: {
+      #|                        file: "-",
+      #|                        first_ccode: -1,
+      #|                        last_ccode: -1,
+      #|                        first_line: LinePos(-1, -1),
+      #|                        last_line: LinePos(-1, -1),
+      #|                      },
+      #|                      extra: None,
+      #|                    },
+      #|                  },
+      #|                ),
+      #|                id: None,
+      #|              },
+      #|              meta: {
+      #|                id: 0,
+      #|                loc: {
+      #|                  file: "-",
+      #|                  first_ccode: -1,
+      #|                  last_ccode: -1,
+      #|                  first_line: LinePos(-1, -1),
+      #|                  last_line: LinePos(-1, -1),
+      #|                },
+      #|                extra: None,
+      #|              },
+      #|            },
+      #|          ),
+      #|          BlankLine(
+      #|            {
+      #|              v: "",
+      #|              meta: {
+      #|                id: 0,
+      #|                loc: {
+      #|                  file: "-",
+      #|                  first_ccode: -1,
+      #|                  last_ccode: -1,
+      #|                  first_line: LinePos(-1, -1),
+      #|                  last_line: LinePos(-1, -1),
+      #|                },
+      #|                extra: None,
+      #|              },
+      #|            },
+      #|          ),
+      #|          BlockQuote(
+      #|            {
+      #|              v: {
+      #|                indent: 0,
+      #|                block: Heading(
+      #|                  {
+      #|                    v: {
+      #|                      layout: Setext(
+      #|                        {
+      #|                          leading_indent: 0,
+      #|                          trailing_blanks: "",
+      #|                          underline_indent: 0,
+      #|                          underline_count: {
+      #|                            v: 8,
+      #|                            meta: {
+      #|                              id: 0,
+      #|                              loc: {
+      #|                                file: "-",
+      #|                                first_ccode: -1,
+      #|                                last_ccode: -1,
+      #|                                first_line: ...,
+      #|                                last_line: ...,
+      #|                              },
+      #|                              extra: None,
+      #|                            },
+      #|                          },
+      #|                          underline_blanks: "",
+      #|                        },
+      #|                      ),
+      #|                      level: 2,
+      #|                      inline: Inlines(
+      #|                        {
+      #|                          v: Seq([Text(...), CodeSpan(...), Break(...), Text(...)]),
+      #|                          meta: {
+      #|                            id: 0,
+      #|                            loc: {
+      #|                              file: "-",
+      #|                              first_ccode: -1,
+      #|                              last_ccode: -1,
+      #|                              first_line: LinePos(-1, -1),
+      #|                              last_line: LinePos(-1, -1),
+      #|                            },
+      #|                            extra: None,
+      #|                          },
+      #|                        },
+      #|                      ),
+      #|                      id: None,
+      #|                    },
+      #|                    meta: {
+      #|                      id: 0,
+      #|                      loc: {
+      #|                        file: "-",
+      #|                        first_ccode: -1,
+      #|                        last_ccode: -1,
+      #|                        first_line: LinePos(-1, -1),
+      #|                        last_line: LinePos(-1, -1),
+      #|                      },
+      #|                      extra: None,
+      #|                    },
+      #|                  },
+      #|                ),
+      #|              },
+      #|              meta: {
+      #|                id: 0,
+      #|                loc: {
+      #|                  file: "-",
+      #|                  first_ccode: -1,
+      #|                  last_ccode: -1,
+      #|                  first_line: LinePos(-1, -1),
+      #|                  last_line: LinePos(-1, -1),
+      #|                },
+      #|                extra: None,
+      #|              },
+      #|            },
+      #|          ),
+      #|          BlankLine(
+      #|            {
+      #|              v: "",
+      #|              meta: {
+      #|                id: 0,
+      #|                loc: {
+      #|                  file: "-",
+      #|                  first_ccode: -1,
+      #|                  last_ccode: -1,
+      #|                  first_line: LinePos(-1, -1),
+      #|                  last_line: LinePos(-1, -1),
+      #|                },
+      #|                extra: None,
+      #|              },
+      #|            },
+      #|          ),
+      #|          Heading(
+      #|            {
+      #|              v: {
+      #|                layout: Atx({ indent: 2, after_opening: "", closing: "" }),
+      #|                level: 1,
+      #|                inline: Text(
+      #|                  {
+      #|                    v: "That's one way",
+      #|                    meta: {
+      #|                      id: 0,
+      #|                      loc: {
+      #|                        file: "-",
+      #|                        first_ccode: -1,
+      #|                        last_ccode: -1,
+      #|                        first_line: LinePos(-1, -1),
+      #|                        last_line: LinePos(-1, -1),
+      #|                      },
+      #|                      extra: None,
+      #|                    },
+      #|                  },
+      #|                ),
+      #|                id: None,
+      #|              },
+      #|              meta: {
+      #|                id: 0,
+      #|                loc: {
+      #|                  file: "-",
+      #|                  first_ccode: -1,
+      #|                  last_ccode: -1,
+      #|                  first_line: LinePos(-1, -1),
+      #|                  last_line: LinePos(-1, -1),
+      #|                },
+      #|                extra: None,
+      #|              },
+      #|            },
+      #|          ),
+      #|          BlankLine(
+      #|            {
+      #|              v: "  ",
+      #|              meta: {
+      #|                id: 0,
+      #|                loc: {
+      #|                  file: "-",
+      #|                  first_ccode: -1,
+      #|                  last_ccode: -1,
+      #|                  first_line: LinePos(-1, -1),
+      #|                  last_line: LinePos(-1, -1),
+      #|                },
+      #|                extra: None,
+      #|              },
+      #|            },
+      #|          ),
+      #|          Heading(
+      #|            {
+      #|              v: {
+      #|                layout: Atx({ indent: 3, after_opening: "", closing: "" }),
+      #|                level: 3,
+      #|                inline: Text(
+      #|                  {
+      #|                    v: "It's a long way to the heading",
+      #|                    meta: {
+      #|                      id: 0,
+      #|                      loc: {
+      #|                        file: "-",
+      #|                        first_ccode: -1,
+      #|                        last_ccode: -1,
+      #|                        first_line: LinePos(-1, -1),
+      #|                        last_line: LinePos(-1, -1),
+      #|                      },
+      #|                      extra: None,
+      #|                    },
+      #|                  },
+      #|                ),
+      #|                id: None,
+      #|              },
+      #|              meta: {
+      #|                id: 0,
+      #|                loc: {
+      #|                  file: "-",
+      #|                  first_ccode: -1,
+      #|                  last_ccode: -1,
+      #|                  first_line: LinePos(-1, -1),
+      #|                  last_line: LinePos(-1, -1),
+      #|                },
+      #|                extra: None,
+      #|              },
+      #|            },
+      #|          ),
+      #|          BlankLine(
+      #|            {
+      #|              v: "",
+      #|              meta: {
+      #|                id: 0,
+      #|                loc: {
+      #|                  file: "-",
+      #|                  first_ccode: -1,
+      #|                  last_ccode: -1,
+      #|                  first_line: LinePos(-1, -1),
+      #|                  last_line: LinePos(-1, -1),
+      #|                },
+      #|                extra: None,
+      #|              },
+      #|            },
+      #|          ),
+      #|          Heading(
+      #|            {
+      #|              v: {
+      #|                layout: Atx({ indent: 0, after_opening: "", closing: "" }),
+      #|                level: 2,
+      #|                inline: Text(
+      #|                  {
+      #|                    v: "Testing HTML block",
+      #|                    meta: {
+      #|                      id: 0,
+      #|                      loc: {
+      #|                        file: "-",
+      #|                        first_ccode: -1,
+      #|                        last_ccode: -1,
+      #|                        first_line: LinePos(-1, -1),
+      #|                        last_line: LinePos(-1, -1),
+      #|                      },
+      #|                      extra: None,
+      #|                    },
+      #|                  },
+      #|                ),
+      #|                id: None,
+      #|              },
+      #|              meta: {
+      #|                id: 0,
+      #|                loc: {
+      #|                  file: "-",
+      #|                  first_ccode: -1,
+      #|                  last_ccode: -1,
+      #|                  first_line: LinePos(-1, -1),
+      #|                  last_line: LinePos(-1, -1),
+      #|                },
+      #|                extra: None,
+      #|              },
+      #|            },
+      #|          ),
+      #|          BlankLine(
+      #|            {
+      #|              v: "",
+      #|              meta: {
+      #|                id: 0,
+      #|                loc: {
+      #|                  file: "-",
+      #|                  first_ccode: -1,
+      #|                  last_ccode: -1,
+      #|                  first_line: LinePos(-1, -1),
+      #|                  last_line: LinePos(-1, -1),
+      #|                },
+      #|                extra: None,
+      #|              },
+      #|            },
+      #|          ),
+      #|          HtmlBlock(
+      #|            {
+      #|              v: HtmlBlock(
+      #|                Seq(
+      #|                  [
+      #|                    {
+      #|                      v: "<aside>",
+      #|                      meta: {
+      #|                        id: 0,
+      #|                        loc: {
+      #|                          file: "-",
+      #|                          first_ccode: -1,
+      #|                          last_ccode: -1,
+      #|                          first_line: LinePos(-1, -1),
+      #|                          last_line: LinePos(-1, -1),
+      #|                        },
+      #|                        extra: None,
+      #|                      },
+      #|                    },
+      #|                    {
+      #|                      v: "<p>There is no aside</p>",
+      #|                      meta: {
+      #|                        id: 0,
+      #|                        loc: {
+      #|                          file: "-",
+      #|                          first_ccode: -1,
+      #|                          last_ccode: -1,
+      #|                          first_line: LinePos(-1, -1),
+      #|                          last_line: LinePos(-1, -1),
+      #|                        },
+      #|                        extra: None,
+      #|                      },
+      #|                    },
+      #|                    {
+      #|                      v: "</aside>",
+      #|                      meta: {
+      #|                        id: 0,
+      #|                        loc: {
+      #|                          file: "-",
+      #|                          first_ccode: -1,
+      #|                          last_ccode: -1,
+      #|                          first_line: LinePos(-1, -1),
+      #|                          last_line: LinePos(-1, -1),
+      #|                        },
+      #|                        extra: None,
+      #|                      },
+      #|                    },
+      #|                  ],
+      #|                ),
+      #|              ),
+      #|              meta: {
+      #|                id: 0,
+      #|                loc: {
+      #|                  file: "-",
+      #|                  first_ccode: -1,
+      #|                  last_ccode: -1,
+      #|                  first_line: LinePos(-1, -1),
+      #|                  last_line: LinePos(-1, -1),
+      #|                },
+      #|                extra: None,
+      #|              },
+      #|            },
+      #|          ),
+      #|          BlankLine(
+      #|            {
+      #|              v: "",
+      #|              meta: {
+      #|                id: 0,
+      #|                loc: {
+      #|                  file: "-",
+      #|                  first_ccode: -1,
+      #|                  last_ccode: -1,
+      #|                  first_line: LinePos(-1, -1),
+      #|                  last_line: LinePos(-1, -1),
+      #|                },
+      #|                extra: None,
+      #|              },
+      #|            },
+      #|          ),
+      #|          List(
+      #|            {
+      #|              v: {
+      #|                ty: Unordered('*'),
+      #|                tight: true,
+      #|                items: Seq(
+      #|                  [
+      #|                    {
+      #|                      v: {
+      #|                        before_marker: 0,
+      #|                        marker: {
+      #|                          v: "*",
+      #|                          meta: {
+      #|                            id: 0,
+      #|                            loc: {
+      #|                              file: "-",
+      #|                              first_ccode: -1,
+      #|                              last_ccode: -1,
+      #|                              first_line: LinePos(-1, -1),
+      #|                              last_line: LinePos(-1, -1),
+      #|                            },
+      #|                            extra: None,
+      #|                          },
+      #|                        },
+      #|                        after_marker: 1,
+      #|                        block: HtmlBlock(
+      #|                          {
+      #|                            v: HtmlBlock(Seq(...)),
+      #|                            meta: {
+      #|                              id: 0,
+      #|                              loc: {
+      #|                                file: "-",
+      #|                                first_ccode: -1,
+      #|                                last_ccode: -1,
+      #|                                first_line: ...,
+      #|                                last_line: ...,
+      #|                              },
+      #|                              extra: None,
+      #|                            },
+      #|                          },
+      #|                        ),
+      #|                        ext_task_marker: None,
+      #|                      },
+      #|                      meta: {
+      #|                        id: 0,
+      #|                        loc: {
+      #|                          file: "-",
+      #|                          first_ccode: -1,
+      #|                          last_ccode: -1,
+      #|                          first_line: LinePos(-1, -1),
+      #|                          last_line: LinePos(-1, -1),
+      #|                        },
+      #|                        extra: None,
+      #|                      },
+      #|                    },
+      #|                  ],
+      #|                ),
+      #|              },
+      #|              meta: {
+      #|                id: 0,
+      #|                loc: {
+      #|                  file: "-",
+      #|                  first_ccode: -1,
+      #|                  last_ccode: -1,
+      #|                  first_line: LinePos(-1, -1),
+      #|                  last_line: LinePos(-1, -1),
+      #|                },
+      #|                extra: None,
+      #|              },
+      #|            },
+      #|          ),
+      #|          BlankLine(
+      #|            {
+      #|              v: "",
+      #|              meta: {
+      #|                id: 0,
+      #|                loc: {
+      #|                  file: "-",
+      #|                  first_ccode: -1,
+      #|                  last_ccode: -1,
+      #|                  first_line: LinePos(-1, -1),
+      #|                  last_line: LinePos(-1, -1),
+      #|                },
+      #|                extra: None,
+      #|              },
+      #|            },
+      #|          ),
+      #|          Heading(
+      #|            {
+      #|              v: {
+      #|                layout: Atx({ indent: 0, after_opening: "", closing: "" }),
+      #|                level: 2,
+      #|                inline: Text(
+      #|                  {
+      #|                    v: "Testing lists",
+      #|                    meta: {
+      #|                      id: 0,
+      #|                      loc: {
+      #|                        file: "-",
+      #|                        first_ccode: -1,
+      #|                        last_ccode: -1,
+      #|                        first_line: LinePos(-1, -1),
+      #|                        last_line: LinePos(-1, -1),
+      #|                      },
+      #|                      extra: None,
+      #|                    },
+      #|                  },
+      #|                ),
+      #|                id: None,
+      #|              },
+      #|              meta: {
+      #|                id: 0,
+      #|                loc: {
+      #|                  file: "-",
+      #|                  first_ccode: -1,
+      #|                  last_ccode: -1,
+      #|                  first_line: LinePos(-1, -1),
+      #|                  last_line: LinePos(-1, -1),
+      #|                },
+      #|                extra: None,
+      #|              },
+      #|            },
+      #|          ),
+      #|          BlankLine(
+      #|            {
+      #|              v: "",
+      #|              meta: {
+      #|                id: 0,
+      #|                loc: {
+      #|                  file: "-",
+      #|                  first_ccode: -1,
+      #|                  last_ccode: -1,
+      #|                  first_line: LinePos(-1, -1),
+      #|                  last_line: LinePos(-1, -1),
+      #|                },
+      #|                extra: None,
+      #|              },
+      #|            },
+      #|          ),
+      #|          Paragraph(
+      #|            {
+      #|              v: {
+      #|                leading_indent: 0,
+      #|                inline: Inlines(
+      #|                  {
+      #|                    v: Seq(
+      #|                      [
+      #|                        Text(
+      #|                          {
+      #|                            v: "The ",
+      #|                            meta: {
+      #|                              id: 0,
+      #|                              loc: {
+      #|                                file: "-",
+      #|                                first_ccode: -1,
+      #|                                last_ccode: -1,
+      #|                                first_line: ...,
+      #|                                last_line: ...,
+      #|                              },
+      #|                              extra: None,
+      #|                            },
+      #|                          },
+      #|                        ),
+      #|                        CodeSpan(
+      #|                          {
+      #|                            v: { backticks: 1, code_layout: Seq(...) },
+      #|                            meta: {
+      #|                              id: 0,
+      #|                              loc: {
+      #|                                file: "-",
+      #|                                first_ccode: -1,
+      #|                                last_ccode: -1,
+      #|                                first_line: ...,
+      #|                                last_line: ...,
+      #|                              },
+      #|                              extra: None,
+      #|                            },
+      #|                          },
+      #|                        ),
+      #|                        Text(
+      #|                          {
+      #|                            v: " function is the root. There are reasons for this:",
+      #|                            meta: {
+      #|                              id: 0,
+      #|                              loc: {
+      #|                                file: "-",
+      #|                                first_ccode: -1,
+      #|                                last_ccode: -1,
+      #|                                first_line: ...,
+      #|                                last_line: ...,
+      #|                              },
+      #|                              extra: None,
+      #|                            },
+      #|                          },
+      #|                        ),
+      #|                      ],
+      #|                    ),
+      #|                    meta: {
+      #|                      id: 0,
+      #|                      loc: {
+      #|                        file: "-",
+      #|                        first_ccode: -1,
+      #|                        last_ccode: -1,
+      #|                        first_line: LinePos(-1, -1),
+      #|                        last_line: LinePos(-1, -1),
+      #|                      },
+      #|                      extra: None,
+      #|                    },
+      #|                  },
+      #|                ),
+      #|                trailing_blanks: "",
+      #|              },
+      #|              meta: {
+      #|                id: 0,
+      #|                loc: {
+      #|                  file: "-",
+      #|                  first_ccode: -1,
+      #|                  last_ccode: -1,
+      #|                  first_line: LinePos(-1, -1),
+      #|                  last_line: LinePos(-1, -1),
+      #|                },
+      #|                extra: None,
+      #|              },
+      #|            },
+      #|          ),
+      #|          BlankLine(
+      #|            {
+      #|              v: "",
+      #|              meta: {
+      #|                id: 0,
+      #|                loc: {
+      #|                  file: "-",
+      #|                  first_ccode: -1,
+      #|                  last_ccode: -1,
+      #|                  first_line: LinePos(-1, -1),
+      #|                  last_line: LinePos(-1, -1),
+      #|                },
+      #|                extra: None,
+      #|              },
+      #|            },
+      #|          ),
+      #|          List(
+      #|            {
+      #|              v: {
+      #|                ty: Ordered(1, '.'),
+      #|                tight: true,
+      #|                items: Seq(
+      #|                  [
+      #|                    {
+      #|                      v: {
+      #|                        before_marker: 1,
+      #|                        marker: {
+      #|                          v: "1.",
+      #|                          meta: {
+      #|                            id: 0,
+      #|                            loc: {
+      #|                              file: "-",
+      #|                              first_ccode: -1,
+      #|                              last_ccode: -1,
+      #|                              first_line: LinePos(-1, -1),
+      #|                              last_line: LinePos(-1, -1),
+      #|                            },
+      #|                            extra: None,
+      #|                          },
+      #|                        },
+      #|                        after_marker: 1,
+      #|                        block: Paragraph(
+      #|                          {
+      #|                            v: { leading_indent: 0, inline: Inlines(...), trailing_blanks: "" },
+      #|                            meta: {
+      #|                              id: 0,
+      #|                              loc: {
+      #|                                file: "-",
+      #|                                first_ccode: -1,
+      #|                                last_ccode: -1,
+      #|                                first_line: ...,
+      #|                                last_line: ...,
+      #|                              },
+      #|                              extra: None,
+      #|                            },
+      #|                          },
+      #|                        ),
+      #|                        ext_task_marker: None,
+      #|                      },
+      #|                      meta: {
+      #|                        id: 0,
+      #|                        loc: {
+      #|                          file: "-",
+      #|                          first_ccode: -1,
+      #|                          last_ccode: -1,
+      #|                          first_line: LinePos(-1, -1),
+      #|                          last_line: LinePos(-1, -1),
+      #|                        },
+      #|                        extra: None,
+      #|                      },
+      #|                    },
+      #|                    {
+      #|                      v: {
+      #|                        before_marker: 0,
+      #|                        marker: {
+      #|                          v: "2.",
+      #|                          meta: {
+      #|                            id: 0,
+      #|                            loc: {
+      #|                              file: "-",
+      #|                              first_ccode: -1,
+      #|                              last_ccode: -1,
+      #|                              first_line: LinePos(-1, -1),
+      #|                              last_line: LinePos(-1, -1),
+      #|                            },
+      #|                            extra: None,
+      #|                          },
+      #|                        },
+      #|                        after_marker: 1,
+      #|                        block: Paragraph(
+      #|                          {
+      #|                            v: { leading_indent: 0, inline: Text(...), trailing_blanks: "" },
+      #|                            meta: {
+      #|                              id: 0,
+      #|                              loc: {
+      #|                                file: "-",
+      #|                                first_ccode: -1,
+      #|                                last_ccode: -1,
+      #|                                first_line: ...,
+      #|                                last_line: ...,
+      #|                              },
+      #|                              extra: None,
+      #|                            },
+      #|                          },
+      #|                        ),
+      #|                        ext_task_marker: None,
+      #|                      },
+      #|                      meta: {
+      #|                        id: 0,
+      #|                        loc: {
+      #|                          file: "-",
+      #|                          first_ccode: -1,
+      #|                          last_ccode: -1,
+      #|                          first_line: LinePos(-1, -1),
+      #|                          last_line: LinePos(-1, -1),
+      #|                        },
+      #|                        extra: None,
+      #|                      },
+      #|                    },
+      #|                    {
+      #|                      v: {
+      #|                        before_marker: 1,
+      #|                        marker: {
+      #|                          v: "3.",
+      #|                          meta: {
+      #|                            id: 0,
+      #|                            loc: {
+      #|                              file: "-",
+      #|                              first_ccode: -1,
+      #|                              last_ccode: -1,
+      #|                              first_line: LinePos(-1, -1),
+      #|                              last_line: LinePos(-1, -1),
+      #|                            },
+      #|                            extra: None,
+      #|                          },
+      #|                        },
+      #|                        after_marker: 1,
+      #|                        block: Paragraph(
+      #|                          {
+      #|                            v: { leading_indent: 0, inline: Text(...), trailing_blanks: "" },
+      #|                            meta: {
+      #|                              id: 0,
+      #|                              loc: {
+      #|                                file: "-",
+      #|                                first_ccode: -1,
+      #|                                last_ccode: -1,
+      #|                                first_line: ...,
+      #|                                last_line: ...,
+      #|                              },
+      #|                              extra: None,
+      #|                            },
+      #|                          },
+      #|                        ),
+      #|                        ext_task_marker: None,
+      #|                      },
+      #|                      meta: {
+      #|                        id: 0,
+      #|                        loc: {
+      #|                          file: "-",
+      #|                          first_ccode: -1,
+      #|                          last_ccode: -1,
+      #|                          first_line: LinePos(-1, -1),
+      #|                          last_line: LinePos(-1, -1),
+      #|                        },
+      #|                        extra: None,
+      #|                      },
+      #|                    },
+      #|                  ],
+      #|                ),
+      #|              },
+      #|              meta: {
+      #|                id: 0,
+      #|                loc: {
+      #|                  file: "-",
+      #|                  first_ccode: -1,
+      #|                  last_ccode: -1,
+      #|                  first_line: LinePos(-1, -1),
+      #|                  last_line: LinePos(-1, -1),
+      #|                },
+      #|                extra: None,
+      #|              },
+      #|            },
+      #|          ),
+      #|          BlankLine(
+      #|            {
+      #|              v: "",
+      #|              meta: {
+      #|                id: 0,
+      #|                loc: {
+      #|                  file: "-",
+      #|                  first_ccode: -1,
+      #|                  last_ccode: -1,
+      #|                  first_line: LinePos(-1, -1),
+      #|                  last_line: LinePos(-1, -1),
+      #|                },
+      #|                extra: None,
+      #|              },
+      #|            },
+      #|          ),
+      #|          BlockQuote(
+      #|            {
+      #|              v: {
+      #|                indent: 0,
+      #|                block: Blocks(
+      #|                  {
+      #|                    v: Seq(
+      #|                      [
+      #|                        Paragraph(
+      #|                          {
+      #|                            v: { leading_indent: 0, inline: Text(...), trailing_blanks: "" },
+      #|                            meta: {
+      #|                              id: 0,
+      #|                              loc: {
+      #|                                file: "-",
+      #|                                first_ccode: -1,
+      #|                                last_ccode: -1,
+      #|                                first_line: ...,
+      #|                                last_line: ...,
+      #|                              },
+      #|                              extra: None,
+      #|                            },
+      #|                          },
+      #|                        ),
+      #|                        List(
+      #|                          {
+      #|                            v: { ty: Unordered('*'), tight: true, items: Seq(...) },
+      #|                            meta: {
+      #|                              id: 0,
+      #|                              loc: {
+      #|                                file: "-",
+      #|                                first_ccode: -1,
+      #|                                last_ccode: -1,
+      #|                                first_line: ...,
+      #|                                last_line: ...,
+      #|                              },
+      #|                              extra: None,
+      #|                            },
+      #|                          },
+      #|                        ),
+      #|                      ],
+      #|                    ),
+      #|                    meta: {
+      #|                      id: 0,
+      #|                      loc: {
+      #|                        file: "-",
+      #|                        first_ccode: -1,
+      #|                        last_ccode: -1,
+      #|                        first_line: LinePos(-1, -1),
+      #|                        last_line: LinePos(-1, -1),
+      #|                      },
+      #|                      extra: None,
+      #|                    },
+      #|                  },
+      #|                ),
+      #|              },
+      #|              meta: {
+      #|                id: 0,
+      #|                loc: {
+      #|                  file: "-",
+      #|                  first_ccode: -1,
+      #|                  last_ccode: -1,
+      #|                  first_line: LinePos(-1, -1),
+      #|                  last_line: LinePos(-1, -1),
+      #|                },
+      #|                extra: None,
+      #|              },
+      #|            },
+      #|          ),
+      #|          List(
+      #|            {
+      #|              v: {
+      #|                ty: Unordered('*'),
+      #|                tight: true,
+      #|                items: Seq(
+      #|                  [
+      #|                    {
+      #|                      v: {
+      #|                        before_marker: 0,
+      #|                        marker: {
+      #|                          v: "*",
+      #|                          meta: {
+      #|                            id: 0,
+      #|                            loc: {
+      #|                              file: "-",
+      #|                              first_ccode: -1,
+      #|                              last_ccode: -1,
+      #|                              first_line: LinePos(-1, -1),
+      #|                              last_line: LinePos(-1, -1),
+      #|                            },
+      #|                            extra: None,
+      #|                          },
+      #|                        },
+      #|                        after_marker: 1,
+      #|                        block: List(
+      #|                          {
+      #|                            v: { ty: Unordered('*'), tight: true, items: Seq(...) },
+      #|                            meta: {
+      #|                              id: 0,
+      #|                              loc: {
+      #|                                file: "-",
+      #|                                first_ccode: -1,
+      #|                                last_ccode: -1,
+      #|                                first_line: ...,
+      #|                                last_line: ...,
+      #|                              },
+      #|                              extra: None,
+      #|                            },
+      #|                          },
+      #|                        ),
+      #|                        ext_task_marker: None,
+      #|                      },
+      #|                      meta: {
+      #|                        id: 0,
+      #|                        loc: {
+      #|                          file: "-",
+      #|                          first_ccode: -1,
+      #|                          last_ccode: -1,
+      #|                          first_line: LinePos(-1, -1),
+      #|                          last_line: LinePos(-1, -1),
+      #|                        },
+      #|                        extra: None,
+      #|                      },
+      #|                    },
+      #|                    {
+      #|                      v: {
+      #|                        before_marker: 0,
+      #|                        marker: {
+      #|                          v: "*",
+      #|                          meta: {
+      #|                            id: 0,
+      #|                            loc: {
+      #|                              file: "-",
+      #|                              first_ccode: -1,
+      #|                              last_ccode: -1,
+      #|                              first_line: LinePos(-1, -1),
+      #|                              last_line: LinePos(-1, -1),
+      #|                            },
+      #|                            extra: None,
+      #|                          },
+      #|                        },
+      #|                        after_marker: 1,
+      #|                        block: BlankLine(
+      #|                          {
+      #|                            v: "",
+      #|                            meta: {
+      #|                              id: 0,
+      #|                              loc: {
+      #|                                file: "-",
+      #|                                first_ccode: -1,
+      #|                                last_ccode: -1,
+      #|                                first_line: ...,
+      #|                                last_line: ...,
+      #|                              },
+      #|                              extra: None,
+      #|                            },
+      #|                          },
+      #|                        ),
+      #|                        ext_task_marker: None,
+      #|                      },
+      #|                      meta: {
+      #|                        id: 0,
+      #|                        loc: {
+      #|                          file: "-",
+      #|                          first_ccode: -1,
+      #|                          last_ccode: -1,
+      #|                          first_line: LinePos(-1, -1),
+      #|                          last_line: LinePos(-1, -1),
+      #|                        },
+      #|                        extra: None,
+      #|                      },
+      #|                    },
+      #|                  ],
+      #|                ),
+      #|              },
+      #|              meta: {
+      #|                id: 0,
+      #|                loc: {
+      #|                  file: "-",
+      #|                  first_ccode: -1,
+      #|                  last_ccode: -1,
+      #|                  first_line: LinePos(-1, -1),
+      #|                  last_line: LinePos(-1, -1),
+      #|                },
+      #|                extra: None,
+      #|              },
+      #|            },
+      #|          ),
+      #|          Paragraph(
+      #|            {
+      #|              v: {
+      #|                leading_indent: 0,
+      #|                inline: Text(
+      #|                  {
+      #|                    v: "Empty list item above",
+      #|                    meta: {
+      #|                      id: 0,
+      #|                      loc: {
+      #|                        file: "-",
+      #|                        first_ccode: -1,
+      #|                        last_ccode: -1,
+      #|                        first_line: LinePos(-1, -1),
+      #|                        last_line: LinePos(-1, -1),
+      #|                      },
+      #|                      extra: None,
+      #|                    },
+      #|                  },
+      #|                ),
+      #|                trailing_blanks: "",
+      #|              },
+      #|              meta: {
+      #|                id: 0,
+      #|                loc: {
+      #|                  file: "-",
+      #|                  first_ccode: -1,
+      #|                  last_ccode: -1,
+      #|                  first_line: LinePos(-1, -1),
+      #|                  last_line: LinePos(-1, -1),
+      #|                },
+      #|                extra: None,
+      #|              },
+      #|            },
+      #|          ),
+      #|          BlankLine(
+      #|            {
+      #|              v: "",
+      #|              meta: {
+      #|                id: 0,
+      #|                loc: {
+      #|                  file: "-",
+      #|                  first_ccode: -1,
+      #|                  last_ccode: -1,
+      #|                  first_line: LinePos(-1, -1),
+      #|                  last_line: LinePos(-1, -1),
+      #|                },
+      #|                extra: None,
+      #|              },
+      #|            },
+      #|          ),
+      #|          Heading(
+      #|            {
+      #|              v: {
+      #|                layout: Atx({ indent: 0, after_opening: "", closing: "" }),
+      #|                level: 2,
+      #|                inline: Text(
+      #|                  {
+      #|                    v: "Testing paragraphs",
+      #|                    meta: {
+      #|                      id: 0,
+      #|                      loc: {
+      #|                        file: "-",
+      #|                        first_ccode: -1,
+      #|                        last_ccode: -1,
+      #|                        first_line: LinePos(-1, -1),
+      #|                        last_line: LinePos(-1, -1),
+      #|                      },
+      #|                      extra: None,
+      #|                    },
+      #|                  },
+      #|                ),
+      #|                id: None,
+      #|              },
+      #|              meta: {
+      #|                id: 0,
+      #|                loc: {
+      #|                  file: "-",
+      #|                  first_ccode: -1,
+      #|                  last_ccode: -1,
+      #|                  first_line: LinePos(-1, -1),
+      #|                  last_line: LinePos(-1, -1),
+      #|                },
+      #|                extra: None,
+      #|              },
+      #|            },
+      #|          ),
+      #|          BlankLine(
+      #|            {
+      #|              v: "",
+      #|              meta: {
+      #|                id: 0,
+      #|                loc: {
+      #|                  file: "-",
+      #|                  first_ccode: -1,
+      #|                  last_ccode: -1,
+      #|                  first_line: LinePos(-1, -1),
+      #|                  last_line: LinePos(-1, -1),
+      #|                },
+      #|                extra: None,
+      #|              },
+      #|            },
+      #|          ),
+      #|          Paragraph(
+      #|            {
+      #|              v: {
+      #|                leading_indent: 3,
+      #|                inline: Inlines(
+      #|                  {
+      #|                    v: Seq(
+      #|                      [
+      #|                        Text(
+      #|                          {
+      #|                            v: "We really want your paragraph layout preserved.",
+      #|                            meta: {
+      #|                              id: 0,
+      #|                              loc: {
+      #|                                file: "-",
+      #|                                first_ccode: -1,
+      #|                                last_ccode: -1,
+      #|                                first_line: ...,
+      #|                                last_line: ...,
+      #|                              },
+      #|                              extra: None,
+      #|                            },
+      #|                          },
+      #|                        ),
+      #|                        Break(
+      #|                          {
+      #|                            v: {
+      #|                              layout_before: { v: "", meta: ... },
+      #|                              ty: Soft,
+      #|                              layout_after: { v: "", meta: ... },
+      #|                            },
+      #|                            meta: {
+      #|                              id: 0,
+      #|                              loc: {
+      #|                                file: "-",
+      #|                                first_ccode: -1,
+      #|                                last_ccode: -1,
+      #|                                first_line: ...,
+      #|                                last_line: ...,
+      #|                              },
+      #|                              extra: None,
+      #|                            },
+      #|                          },
+      #|                        ),
+      #|                        Text(
+      #|                          {
+      #|                            v: "Really ?",
+      #|                            meta: {
+      #|                              id: 0,
+      #|                              loc: {
+      #|                                file: "-",
+      #|                                first_ccode: -1,
+      #|                                last_ccode: -1,
+      #|                                first_line: ...,
+      #|                                last_line: ...,
+      #|                              },
+      #|                              extra: None,
+      #|                            },
+      #|                          },
+      #|                        ),
+      #|                        Break(
+      #|                          {
+      #|                            v: {
+      #|                              layout_before: { v: "", meta: ... },
+      #|                              ty: Soft,
+      #|                              layout_after: { v: "", meta: ... },
+      #|                            },
+      #|                            meta: {
+      #|                              id: 0,
+      #|                              loc: {
+      #|                                file: "-",
+      #|                                first_ccode: -1,
+      #|                                last_ccode: -1,
+      #|                                first_line: ...,
+      #|                                last_line: ...,
+      #|                              },
+      #|                              extra: None,
+      #|                            },
+      #|                          },
+      #|                        ),
+      #|                        Text(
+      #|                          {
+      #|                            v: "Really.",
+      #|                            meta: {
+      #|                              id: 0,
+      #|                              loc: {
+      #|                                file: "-",
+      #|                                first_ccode: -1,
+      #|                                last_ccode: -1,
+      #|                                first_line: ...,
+      #|                                last_line: ...,
+      #|                              },
+      #|                              extra: None,
+      #|                            },
+      #|                          },
+      #|                        ),
+      #|                        Break(
+      #|                          {
+      #|                            v: {
+      #|                              layout_before: { v: "", meta: ... },
+      #|                              ty: Soft,
+      #|                              layout_after: { v: "", meta: ... },
+      #|                            },
+      #|                            meta: {
+      #|                              id: 0,
+      #|                              loc: {
+      #|                                file: "-",
+      #|                                first_ccode: -1,
+      #|                                last_ccode: -1,
+      #|                                first_line: ...,
+      #|                                last_line: ...,
+      #|                              },
+      #|                              extra: None,
+      #|                            },
+      #|                          },
+      #|                        ),
+      #|                        Text(
+      #|                          {
+      #|                            v: "Really.",
+      #|                            meta: {
+      #|                              id: 0,
+      #|                              loc: {
+      #|                                file: "-",
+      #|                                first_ccode: -1,
+      #|                                last_ccode: -1,
+      #|                                first_line: ...,
+      #|                                last_line: ...,
+      #|                              },
+      #|                              extra: None,
+      #|                            },
+      #|                          },
+      #|                        ),
+      #|                        Break(
+      #|                          {
+      #|                            v: {
+      #|                              layout_before: { v: "", meta: ... },
+      #|                              ty: Soft,
+      #|                              layout_after: { v: "", meta: ... },
+      #|                            },
+      #|                            meta: {
+      #|                              id: 0,
+      #|                              loc: {
+      #|                                file: "-",
+      #|                                first_ccode: -1,
+      #|                                last_ccode: -1,
+      #|                                first_line: ...,
+      #|                                last_line: ...,
+      #|                              },
+      #|                              extra: None,
+      #|                            },
+      #|                          },
+      #|                        ),
+      #|                        Text(
+      #|                          {
+      #|                            v: "Really.",
+      #|                            meta: {
+      #|                              id: 0,
+      #|                              loc: {
+      #|                                file: "-",
+      #|                                first_ccode: -1,
+      #|                                last_ccode: -1,
+      #|                                first_line: ...,
+      #|                                last_line: ...,
+      #|                              },
+      #|                              extra: None,
+      #|                            },
+      #|                          },
+      #|                        ),
+      #|                      ],
+      #|                    ),
+      #|                    meta: {
+      #|                      id: 0,
+      #|                      loc: {
+      #|                        file: "-",
+      #|                        first_ccode: -1,
+      #|                        last_ccode: -1,
+      #|                        first_line: LinePos(-1, -1),
+      #|                        last_line: LinePos(-1, -1),
+      #|                      },
+      #|                      extra: None,
+      #|                    },
+      #|                  },
+      #|                ),
+      #|                trailing_blanks: "",
+      #|              },
+      #|              meta: {
+      #|                id: 0,
+      #|                loc: {
+      #|                  file: "-",
+      #|                  first_ccode: -1,
+      #|                  last_ccode: -1,
+      #|                  first_line: LinePos(-1, -1),
+      #|                  last_line: LinePos(-1, -1),
+      #|                },
+      #|                extra: None,
+      #|              },
+      #|            },
+      #|          ),
+      #|          BlankLine(
+      #|            {
+      #|              v: "",
+      #|              meta: {
+      #|                id: 0,
+      #|                loc: {
+      #|                  file: "-",
+      #|                  first_ccode: -1,
+      #|                  last_ccode: -1,
+      #|                  first_line: LinePos(-1, -1),
+      #|                  last_line: LinePos(-1, -1),
+      #|                },
+      #|                extra: None,
+      #|              },
+      #|            },
+      #|          ),
+      #|          BlankLine(
+      #|            {
+      #|              v: "",
+      #|              meta: {
+      #|                id: 0,
+      #|                loc: {
+      #|                  file: "-",
+      #|                  first_ccode: -1,
+      #|                  last_ccode: -1,
+      #|                  first_line: LinePos(-1, -1),
+      #|                  last_line: LinePos(-1, -1),
+      #|                },
+      #|                extra: None,
+      #|              },
+      #|            },
+      #|          ),
+      #|          BlockQuote(
+      #|            {
+      #|              v: {
+      #|                indent: 0,
+      #|                block: Paragraph(
+      #|                  {
+      #|                    v: {
+      #|                      leading_indent: 2,
+      #|                      inline: Inlines(
+      #|                        {
+      #|                          v: Seq(
+      #|                            [
+      #|                              Text(...),
+      #|                              Break(...),
+      #|                              Text(...),
+      #|                              Break(...),
+      #|                              Text(...),
+      #|                              Break(...),
+      #|                              Text(...),
+      #|                              Break(...),
+      #|                              Text(...),
+      #|                            ],
+      #|                          ),
+      #|                          meta: {
+      #|                            id: 0,
+      #|                            loc: {
+      #|                              file: "-",
+      #|                              first_ccode: -1,
+      #|                              last_ccode: -1,
+      #|                              first_line: LinePos(-1, -1),
+      #|                              last_line: LinePos(-1, -1),
+      #|                            },
+      #|                            extra: None,
+      #|                          },
+      #|                        },
+      #|                      ),
+      #|                      trailing_blanks: "",
+      #|                    },
+      #|                    meta: {
+      #|                      id: 0,
+      #|                      loc: {
+      #|                        file: "-",
+      #|                        first_ccode: -1,
+      #|                        last_ccode: -1,
+      #|                        first_line: LinePos(-1, -1),
+      #|                        last_line: LinePos(-1, -1),
+      #|                      },
+      #|                      extra: None,
+      #|                    },
+      #|                  },
+      #|                ),
+      #|              },
+      #|              meta: {
+      #|                id: 0,
+      #|                loc: {
+      #|                  file: "-",
+      #|                  first_ccode: -1,
+      #|                  last_ccode: -1,
+      #|                  first_line: LinePos(-1, -1),
+      #|                  last_line: LinePos(-1, -1),
+      #|                },
+      #|                extra: None,
+      #|              },
+      #|            },
+      #|          ),
+      #|          BlankLine(
+      #|            {
+      #|              v: " ",
+      #|              meta: {
+      #|                id: 0,
+      #|                loc: {
+      #|                  file: "-",
+      #|                  first_ccode: -1,
+      #|                  last_ccode: -1,
+      #|                  first_line: LinePos(-1, -1),
+      #|                  last_line: LinePos(-1, -1),
+      #|                },
+      #|                extra: None,
+      #|              },
+      #|            },
+      #|          ),
+      #|          BlankLine(
+      #|            {
+      #|              v: "",
+      #|              meta: {
+      #|                id: 0,
+      #|                loc: {
+      #|                  file: "-",
+      #|                  first_ccode: -1,
+      #|                  last_ccode: -1,
+      #|                  first_line: LinePos(-1, -1),
+      #|                  last_line: LinePos(-1, -1),
+      #|                },
+      #|                extra: None,
+      #|              },
+      #|            },
+      #|          ),
+      #|          BlankLine(
+      #|            {
+      #|              v: "",
+      #|              meta: {
+      #|                id: 0,
+      #|                loc: {
+      #|                  file: "-",
+      #|                  first_ccode: -1,
+      #|                  last_ccode: -1,
+      #|                  first_line: LinePos(-1, -1),
+      #|                  last_line: LinePos(-1, -1),
+      #|                },
+      #|                extra: None,
+      #|              },
+      #|            },
+      #|          ),
+      #|          Heading(
+      #|            {
+      #|              v: {
+      #|                layout: Atx({ indent: 0, after_opening: "", closing: "" }),
+      #|                level: 2,
+      #|                inline: Text(
+      #|                  {
+      #|                    v: "Testing thematic breaks",
+      #|                    meta: {
+      #|                      id: 0,
+      #|                      loc: {
+      #|                        file: "-",
+      #|                        first_ccode: -1,
+      #|                        last_ccode: -1,
+      #|                        first_line: LinePos(-1, -1),
+      #|                        last_line: LinePos(-1, -1),
+      #|                      },
+      #|                      extra: None,
+      #|                    },
+      #|                  },
+      #|                ),
+      #|                id: None,
+      #|              },
+      #|              meta: {
+      #|                id: 0,
+      #|                loc: {
+      #|                  file: "-",
+      #|                  first_ccode: -1,
+      #|                  last_ccode: -1,
+      #|                  first_line: LinePos(-1, -1),
+      #|                  last_line: LinePos(-1, -1),
+      #|                },
+      #|                extra: None,
+      #|              },
+      #|            },
+      #|          ),
+      #|          BlankLine(
+      #|            {
+      #|              v: "",
+      #|              meta: {
+      #|                id: 0,
+      #|                loc: {
+      #|                  file: "-",
+      #|                  first_ccode: -1,
+      #|                  last_ccode: -1,
+      #|                  first_line: LinePos(-1, -1),
+      #|                  last_line: LinePos(-1, -1),
+      #|                },
+      #|                extra: None,
+      #|              },
+      #|            },
+      #|          ),
+      #|          ThematicBreak(
+      #|            {
+      #|              v: { indent: 1, layout: "***" },
+      #|              meta: {
+      #|                id: 0,
+      #|                loc: {
+      #|                  file: "-",
+      #|                  first_ccode: -1,
+      #|                  last_ccode: -1,
+      #|                  first_line: LinePos(-1, -1),
+      #|                  last_line: LinePos(-1, -1),
+      #|                },
+      #|                extra: None,
+      #|              },
+      #|            },
+      #|          ),
+      #|          ThematicBreak(
+      #|            {
+      #|              v: { indent: 2, layout: "---" },
+      #|              meta: {
+      #|                id: 0,
+      #|                loc: {
+      #|                  file: "-",
+      #|                  first_ccode: -1,
+      #|                  last_ccode: -1,
+      #|                  first_line: LinePos(-1, -1),
+      #|                  last_line: LinePos(-1, -1),
+      #|                },
+      #|                extra: None,
+      #|              },
+      #|            },
+      #|          ),
+      #|          ThematicBreak(
+      #|            {
+      #|              v: { indent: 3, layout: "___" },
+      #|              meta: {
+      #|                id: 0,
+      #|                loc: {
+      #|                  file: "-",
+      #|                  first_ccode: -1,
+      #|                  last_ccode: -1,
+      #|                  first_line: LinePos(-1, -1),
+      #|                  last_line: LinePos(-1, -1),
+      #|                },
+      #|                extra: None,
+      #|              },
+      #|            },
+      #|          ),
+      #|          BlankLine(
+      #|            {
+      #|              v: "",
+      #|              meta: {
+      #|                id: 0,
+      #|                loc: {
+      #|                  file: "-",
+      #|                  first_ccode: -1,
+      #|                  last_ccode: -1,
+      #|                  first_line: LinePos(-1, -1),
+      #|                  last_line: LinePos(-1, -1),
+      #|                },
+      #|                extra: None,
+      #|              },
+      #|            },
+      #|          ),
+      #|          ThematicBreak(
+      #|            {
+      #|              v: { indent: 0, layout: "_ _ _ _ _ " },
+      #|              meta: {
+      #|                id: 0,
+      #|                loc: {
+      #|                  file: "-",
+      #|                  first_ccode: -1,
+      #|                  last_ccode: -1,
+      #|                  first_line: LinePos(-1, -1),
+      #|                  last_line: LinePos(-1, -1),
+      #|                },
+      #|                extra: None,
+      #|              },
+      #|            },
+      #|          ),
+      #|          BlankLine(
+      #|            {
+      #|              v: "",
+      #|              meta: {
+      #|                id: 0,
+      #|                loc: {
+      #|                  file: "-",
+      #|                  first_ccode: -1,
+      #|                  last_ccode: -1,
+      #|                  first_line: LinePos(-1, -1),
+      #|                  last_line: LinePos(-1, -1),
+      #|                },
+      #|                extra: None,
+      #|              },
+      #|            },
+      #|          ),
+      #|          BlockQuote(
+      #|            {
+      #|              v: {
+      #|                indent: 0,
+      #|                block: ThematicBreak(
+      #|                  {
+      #|                    v: { indent: 1, layout: "*******" },
+      #|                    meta: {
+      #|                      id: 0,
+      #|                      loc: {
+      #|                        file: "-",
+      #|                        first_ccode: -1,
+      #|                        last_ccode: -1,
+      #|                        first_line: LinePos(-1, -1),
+      #|                        last_line: LinePos(-1, -1),
+      #|                      },
+      #|                      extra: None,
+      #|                    },
+      #|                  },
+      #|                ),
+      #|              },
+      #|              meta: {
+      #|                id: 0,
+      #|                loc: {
+      #|                  file: "-",
+      #|                  first_ccode: -1,
+      #|                  last_ccode: -1,
+      #|                  first_line: LinePos(-1, -1),
+      #|                  last_line: LinePos(-1, -1),
+      #|                },
+      #|                extra: None,
+      #|              },
+      #|            },
+      #|          ),
+      #|          BlankLine(
+      #|            {
+      #|              v: "",
+      #|              meta: {
+      #|                id: 0,
+      #|                loc: {
+      #|                  file: "-",
+      #|                  first_ccode: -1,
+      #|                  last_ccode: -1,
+      #|                  first_line: LinePos(-1, -1),
+      #|                  last_line: LinePos(-1, -1),
+      #|                },
+      #|                extra: None,
+      #|              },
+      #|            },
+      #|          ),
+      #|        ],
+      #|      ),
+      #|      meta: {
+      #|        id: 0,
+      #|        loc: {
+      #|          file: "-",
+      #|          first_ccode: -1,
+      #|          last_ccode: -1,
+      #|          first_line: LinePos(-1, -1),
+      #|          last_line: LinePos(-1, -1),
+      #|        },
+      #|        extra: None,
+      #|      },
+      #|    },
+      #|  ),
+      #|  defs: {
+      #|    "colla psed": LinkDef(
+      #|      {
+      #|        v: {
+      #|          layout: {
+      #|            indent: 0,
+      #|            angled_dest: false,
+      #|            before_dest: Seq(
+      #|              [
+      #|                {
+      #|                  v: " ",
+      #|                  meta: {
+      #|                    id: 0,
+      #|                    loc: {
+      #|                      file: "-",
+      #|                      first_ccode: -1,
+      #|                      last_ccode: -1,
+      #|                      first_line: LinePos(-1, -1),
+      #|                      last_line: LinePos(-1, -1),
+      #|                    },
+      #|                    extra: None,
+      #|                  },
+      #|                },
+      #|              ],
+      #|            ),
+      #|            after_dest: Seq(
+      #|              [
+      #|                {
+      #|                  v: " ",
+      #|                  meta: {
+      #|                    id: 0,
+      #|                    loc: {
+      #|                      file: "-",
+      #|                      first_ccode: -1,
+      #|                      last_ccode: -1,
+      #|                      first_line: LinePos(-1, -1),
+      #|                      last_line: LinePos(-1, -1),
+      #|                    },
+      #|                    extra: None,
+      #|                  },
+      #|                },
+      #|              ],
+      #|            ),
+      #|            title_open_delim: '"',
+      #|            after_title: Seq(
+      #|              [
+      #|                {
+      #|                  v: "",
+      #|                  meta: {
+      #|                    id: 0,
+      #|                    loc: {
+      #|                      file: "-",
+      #|                      first_ccode: -1,
+      #|                      last_ccode: -1,
+      #|                      first_line: LinePos(-1, -1),
+      #|                      last_line: LinePos(-1, -1),
+      #|                    },
+      #|                    extra: None,
+      #|                  },
+      #|                },
+      #|              ],
+      #|            ),
+      #|          },
+      #|          label: Some(
+      #|            {
+      #|              meta: {
+      #|                id: 0,
+      #|                loc: {
+      #|                  file: "-",
+      #|                  first_ccode: -1,
+      #|                  last_ccode: -1,
+      #|                  first_line: LinePos(-1, -1),
+      #|                  last_line: LinePos(-1, -1),
+      #|                },
+      #|                extra: None,
+      #|              },
+      #|              key: "colla psed",
+      #|              text: Seq(
+      #|                [
+      #|                  {
+      #|                    blanks: "",
+      #|                    node: {
+      #|                      v: "colla psed",
+      #|                      meta: {
+      #|                        id: 0,
+      #|                        loc: {
+      #|                          file: "-",
+      #|                          first_ccode: -1,
+      #|                          last_ccode: -1,
+      #|                          first_line: LinePos(-1, -1),
+      #|                          last_line: LinePos(-1, -1),
+      #|                        },
+      #|                        extra: None,
+      #|                      },
+      #|                    },
+      #|                  },
+      #|                ],
+      #|              ),
+      #|            },
+      #|          ),
+      #|          defined_label: Some(
+      #|            {
+      #|              meta: {
+      #|                id: 0,
+      #|                loc: {
+      #|                  file: "-",
+      #|                  first_ccode: -1,
+      #|                  last_ccode: -1,
+      #|                  first_line: LinePos(-1, -1),
+      #|                  last_line: LinePos(-1, -1),
+      #|                },
+      #|                extra: None,
+      #|              },
+      #|              key: "colla psed",
+      #|              text: Seq(
+      #|                [
+      #|                  {
+      #|                    blanks: "",
+      #|                    node: {
+      #|                      v: "colla psed",
+      #|                      meta: {
+      #|                        id: 0,
+      #|                        loc: {
+      #|                          file: "-",
+      #|                          first_ccode: -1,
+      #|                          last_ccode: -1,
+      #|                          first_line: LinePos(-1, -1),
+      #|                          last_line: LinePos(-1, -1),
+      #|                        },
+      #|                        extra: None,
+      #|                      },
+      #|                    },
+      #|                  },
+      #|                ],
+      #|              ),
+      #|            },
+      #|          ),
+      #|          dest: Some(
+      #|            {
+      #|              v: "/hohoho",
+      #|              meta: {
+      #|                id: 0,
+      #|                loc: {
+      #|                  file: "-",
+      #|                  first_ccode: -1,
+      #|                  last_ccode: -1,
+      #|                  first_line: LinePos(-1, -1),
+      #|                  last_line: LinePos(-1, -1),
+      #|                },
+      #|                extra: None,
+      #|              },
+      #|            },
+      #|          ),
+      #|          title: Some(
+      #|            Seq(
+      #|              [
+      #|                {
+      #|                  blanks: "",
+      #|                  node: {
+      #|                    v: "And again these ",
+      #|                    meta: {
+      #|                      id: 0,
+      #|                      loc: {
+      #|                        file: "-",
+      #|                        first_ccode: -1,
+      #|                        last_ccode: -1,
+      #|                        first_line: LinePos(-1, -1),
+      #|                        last_line: LinePos(-1, -1),
+      #|                      },
+      #|                      extra: None,
+      #|                    },
+      #|                  },
+      #|                },
+      #|                {
+      #|                  blanks: "",
+      #|                  node: {
+      #|                    v: "multi",
+      #|                    meta: {
+      #|                      id: 0,
+      #|                      loc: {
+      #|                        file: "-",
+      #|                        first_ccode: -1,
+      #|                        last_ccode: -1,
+      #|                        first_line: LinePos(-1, -1),
+      #|                        last_line: LinePos(-1, -1),
+      #|                      },
+      #|                      extra: None,
+      #|                    },
+      #|                  },
+      #|                },
+      #|                {
+      #|                  blanks: "",
+      #|                  node: {
+      #|                    v: "line titles",
+      #|                    meta: {
+      #|                      id: 0,
+      #|                      loc: {
+      #|                        file: "-",
+      #|                        first_ccode: -1,
+      #|                        last_ccode: -1,
+      #|                        first_line: LinePos(-1, -1),
+      #|                        last_line: LinePos(-1, -1),
+      #|                      },
+      #|                      extra: None,
+      #|                    },
+      #|                  },
+      #|                },
+      #|              ],
+      #|            ),
+      #|          ),
+      #|        },
+      #|        meta: {
+      #|          id: 0,
+      #|          loc: {
+      #|            file: "-",
+      #|            first_ccode: -1,
+      #|            last_ccode: -1,
+      #|            first_line: LinePos(-1, -1),
+      #|            last_line: LinePos(-1, -1),
+      #|          },
+      #|          extra: None,
+      #|        },
+      #|      },
+      #|    ),
+      #|    "`short cuted`": LinkDef(
+      #|      {
+      #|        v: {
+      #|          layout: {
+      #|            indent: 1,
+      #|            angled_dest: false,
+      #|            before_dest: Seq(
+      #|              [
+      #|                {
+      #|                  v: "    ",
+      #|                  meta: {
+      #|                    id: 0,
+      #|                    loc: {
+      #|                      file: "-",
+      #|                      first_ccode: -1,
+      #|                      last_ccode: -1,
+      #|                      first_line: LinePos(-1, -1),
+      #|                      last_line: LinePos(-1, -1),
+      #|                    },
+      #|                    extra: None,
+      #|                  },
+      #|                },
+      #|              ],
+      #|            ),
+      #|            after_dest: Seq(
+      #|              [
+      #|                {
+      #|                  v: "   ",
+      #|                  meta: {
+      #|                    id: 0,
+      #|                    loc: {
+      #|                      file: "-",
+      #|                      first_ccode: -1,
+      #|                      last_ccode: -1,
+      #|                      first_line: LinePos(-1, -1),
+      #|                      last_line: LinePos(-1, -1),
+      #|                    },
+      #|                    extra: None,
+      #|                  },
+      #|                },
+      #|              ],
+      #|            ),
+      #|            title_open_delim: '"',
+      #|            after_title: Seq(
+      #|              [
+      #|                {
+      #|                  v: "",
+      #|                  meta: {
+      #|                    id: 0,
+      #|                    loc: {
+      #|                      file: "-",
+      #|                      first_ccode: -1,
+      #|                      last_ccode: -1,
+      #|                      first_line: LinePos(-1, -1),
+      #|                      last_line: LinePos(-1, -1),
+      #|                    },
+      #|                    extra: None,
+      #|                  },
+      #|                },
+      #|              ],
+      #|            ),
+      #|          },
+      #|          label: Some(
+      #|            {
+      #|              meta: {
+      #|                id: 0,
+      #|                loc: {
+      #|                  file: "-",
+      #|                  first_ccode: -1,
+      #|                  last_ccode: -1,
+      #|                  first_line: LinePos(-1, -1),
+      #|                  last_line: LinePos(-1, -1),
+      #|                },
+      #|                extra: None,
+      #|              },
+      #|              key: "`short cuted`",
+      #|              text: Seq(
+      #|                [
+      #|                  {
+      #|                    blanks: "",
+      #|                    node: {
+      #|                      v: "`short cuted`",
+      #|                      meta: {
+      #|                        id: 0,
+      #|                        loc: {
+      #|                          file: "-",
+      #|                          first_ccode: -1,
+      #|                          last_ccode: -1,
+      #|                          first_line: LinePos(-1, -1),
+      #|                          last_line: LinePos(-1, -1),
+      #|                        },
+      #|                        extra: None,
+      #|                      },
+      #|                    },
+      #|                  },
+      #|                ],
+      #|              ),
+      #|            },
+      #|          ),
+      #|          defined_label: Some(
+      #|            {
+      #|              meta: {
+      #|                id: 0,
+      #|                loc: {
+      #|                  file: "-",
+      #|                  first_ccode: -1,
+      #|                  last_ccode: -1,
+      #|                  first_line: LinePos(-1, -1),
+      #|                  last_line: LinePos(-1, -1),
+      #|                },
+      #|                extra: None,
+      #|              },
+      #|              key: "`short cuted`",
+      #|              text: Seq(
+      #|                [
+      #|                  {
+      #|                    blanks: "",
+      #|                    node: {
+      #|                      v: "`short cuted`",
+      #|                      meta: {
+      #|                        id: 0,
+      #|                        loc: {
+      #|                          file: "-",
+      #|                          first_ccode: -1,
+      #|                          last_ccode: -1,
+      #|                          first_line: LinePos(-1, -1),
+      #|                          last_line: LinePos(-1, -1),
+      #|                        },
+      #|                        extra: None,
+      #|                      },
+      #|                    },
+      #|                  },
+      #|                ],
+      #|              ),
+      #|            },
+      #|          ),
+      #|          dest: Some(
+      #|            {
+      #|              v: "/veryshort",
+      #|              meta: {
+      #|                id: 0,
+      #|                loc: {
+      #|                  file: "-",
+      #|                  first_ccode: -1,
+      #|                  last_ccode: -1,
+      #|                  first_line: LinePos(-1, -1),
+      #|                  last_line: LinePos(-1, -1),
+      #|                },
+      #|                extra: None,
+      #|              },
+      #|            },
+      #|          ),
+      #|          title: Some(
+      #|            Seq(
+      #|              [
+      #|                {
+      #|                  blanks: "",
+      #|                  node: {
+      #|                    v: "But very",
+      #|                    meta: {
+      #|                      id: 0,
+      #|                      loc: {
+      #|                        file: "-",
+      #|                        first_ccode: -1,
+      #|                        last_ccode: -1,
+      #|                        first_line: LinePos(-1, -1),
+      #|                        last_line: LinePos(-1, -1),
+      #|                      },
+      #|                      extra: None,
+      #|                    },
+      #|                  },
+      #|                },
+      #|                {
+      #|                  blanks: "",
+      #|                  node: {
+      #|                    v: "important",
+      #|                    meta: {
+      #|                      id: 0,
+      #|                      loc: {
+      #|                        file: "-",
+      #|                        first_ccode: -1,
+      #|                        last_ccode: -1,
+      #|                        first_line: LinePos(-1, -1),
+      #|                        last_line: LinePos(-1, -1),
+      #|                      },
+      #|                      extra: None,
+      #|                    },
+      #|                  },
+      #|                },
+      #|              ],
+      #|            ),
+      #|          ),
+      #|        },
+      #|        meta: {
+      #|          id: 0,
+      #|          loc: {
+      #|            file: "-",
+      #|            first_ccode: -1,
+      #|            last_ccode: -1,
+      #|            first_line: LinePos(-1, -1),
+      #|            last_line: LinePos(-1, -1),
+      #|          },
+      #|          extra: None,
+      #|        },
+      #|      },
+      #|    ),
+      #|  },
+      #|}
+    ),
+  )
 }
