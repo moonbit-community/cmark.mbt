@@ -14,7 +14,7 @@ pub(all) enum Block {
   ExtMathBlock(Node[CodeBlock])
   ExtTable(Node[Table])
   ExtFootnoteDefinition(Node[Footnote])
-} derive(Show, ToJson)
+} derive(Debug)
 
 ///|
 pub fn Block::empty() -> Block {
@@ -110,7 +110,7 @@ pub(all) struct BlockQuote {
   indent : Indent
   /// The quoted block.
   block : Block
-} derive(Show, ToJson)
+} derive(Debug)
 
 ///|
 pub fn BlockQuote::new(indent? : Int = 0, block : Block) -> BlockQuote {
@@ -137,20 +137,20 @@ pub(all) struct CodeBlock {
   layout : CodeBlockLayout
   info_string : StringNode?
   code : Seq[StringNode]
-} derive(Show, ToJson)
+} derive(Debug)
 
 ///|
 pub(all) enum CodeBlockLayout {
   Indented
   Fenced(CodeBlockFencedLayout)
-} derive(Show, ToJson)
+} derive(Debug)
 
 ///|
 pub(all) struct CodeBlockFencedLayout {
   indent : Indent
   opening_fence : StringNode
   closing_fence : StringNode?
-} derive(Show, ToJson)
+} derive(Debug)
 
 ///|
 pub fn CodeBlockFencedLayout::default() -> CodeBlockFencedLayout {
@@ -225,20 +225,20 @@ pub(all) struct BlockHeading {
   level : Int
   inline : Inline
   id : BlockHeadingId?
-} derive(Show, ToJson)
+} derive(Debug)
 
 ///|
 pub(all) enum BlockHeadingLayout {
   Atx(BlockHeadingAtxLayout)
   Setext(BlockHeadingSetextLayout)
-} derive(Show, ToJson)
+} derive(Debug)
 
 ///|
 pub(all) struct BlockHeadingAtxLayout {
   indent : Indent
   after_opening : Blanks
   closing : String
-} derive(Show, FromJson, ToJson)
+} derive(Debug, FromJson, ToJson)
 
 ///|
 pub fn BlockHeadingAtxLayout::default() -> BlockHeadingAtxLayout {
@@ -252,13 +252,13 @@ pub(all) struct BlockHeadingSetextLayout {
   underline_indent : Indent
   underline_count : Node[Count]
   underline_blanks : Blanks
-} derive(Show, ToJson)
+} derive(Debug)
 
 ///|
 pub(all) enum BlockHeadingId {
   Auto(String)
   Id(String)
-} derive(Show, FromJson, ToJson)
+} derive(Debug, FromJson, ToJson)
 
 ///|
 pub fn BlockHeading::new(
@@ -272,7 +272,7 @@ pub fn BlockHeading::new(
 
 ///|
 /// The type for [HTML blocks](https://spec.commonmark.org/0.30/#html-blocks).
-pub(all) struct HtmlBlock(Seq[StringNode]) derive(Show, ToJson)
+pub(all) struct HtmlBlock(Seq[StringNode]) derive(Debug)
 
 ///|
 pub(all) struct ListItem {
@@ -281,7 +281,7 @@ pub(all) struct ListItem {
   after_marker : Indent
   block : Block
   ext_task_marker : Node[Char]?
-} derive(Show, ToJson)
+} derive(Debug)
 
 ///|
 pub type ListItemBlock = ListItem
@@ -331,7 +331,7 @@ pub(all) struct BlockList {
   ty : ListType
   tight : Bool
   items : Seq[Node[ListItem]]
-} derive(Show, ToJson)
+} derive(Debug)
 
 ///|
 pub fn BlockList::map_items(
@@ -352,7 +352,7 @@ pub(all) struct BlockParagraph {
   leading_indent : Indent
   inline : Inline
   trailing_blanks : Blanks
-} derive(Show, ToJson)
+} derive(Debug)
 
 ///|
 pub fn BlockParagraph::new(
@@ -368,7 +368,7 @@ pub fn BlockParagraph::new(
 pub(all) struct BlockThematicBreak {
   indent : Indent
   layout : String
-} derive(Show, FromJson, ToJson)
+} derive(Debug, FromJson, ToJson)
 
 ///|
 pub fn BlockThematicBreak::new(
@@ -386,7 +386,7 @@ pub(all) struct Footnote {
   label : Label
   defined_label : Label?
   block : Block
-} derive(Show, ToJson)
+} derive(Debug)
 
 ///|
 pub fn Footnote::new(
@@ -421,32 +421,27 @@ pub(all) struct Table {
   indent : Indent
   col_count : Count
   rows : Seq[(Node[TableRow], Blanks)]
-} derive(Show, ToJson)
+} derive(Debug)
 
 ///|
 pub(all) enum TableAlign {
   Left
   Center
   Right
-} derive(Show, FromJson, ToJson)
+} derive(Debug, FromJson, ToJson)
 
 ///|
 pub(all) enum TableRow {
   Header(Seq[(Inline, TableCellLayout)])
   Sep(Seq[Node[TableSep]])
   Data(Seq[(Inline, TableCellLayout)])
-} derive(Show, ToJson)
+} derive(Debug)
 
 ///|
-pub(all) struct TableSep((TableAlign?, Count)) derive(Show, ToJson)
+pub(all) struct TableSep((TableAlign?, Count)) derive(Debug)
 
 ///|
-pub(all) struct TableCellLayout((Blanks, Blanks)) derive (
-  Show,
-  ToJson,
-  Eq,
-  Compare,
-)
+pub(all) struct TableCellLayout((Blanks, Blanks)) derive(Debug, Eq, Compare)
 
 ///|
 pub fn Table::new(

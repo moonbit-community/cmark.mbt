@@ -1,10 +1,5 @@
 ///|
-struct Seq[A](Array[A]) derive(Eq, Show)
-
-///|
-pub impl[A : ToJson] ToJson for Seq[A] with to_json(self) -> Json {
-  self.0.to_json()
-}
+struct Seq[A](Array[A]) derive(Eq, Debug)
 
 ///|
 /// @coverage.skip

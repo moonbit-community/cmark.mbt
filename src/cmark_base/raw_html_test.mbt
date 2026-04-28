@@ -22,7 +22,7 @@ test "raw_html with invalid input" {
     line=line_span,
     start=0,
   )
-  inspect(result, content="None")
+  debug_inspect(result, content="None")
 }
 
 ///|
@@ -41,9 +41,17 @@ test "raw_html with processing instruction" {
     line=line_span,
     start=0,
   )
-  inspect(
+  debug_inspect(
     result,
-    content="Some(({pos: LinePos(1, 0), first: 0, last: 20}, [{start: 0, span: {pos: LinePos(1, 0), first: 0, last: 20}}], 20))",
+    content=(
+      #|Some(
+      #|  (
+      #|    { pos: LinePos(1, 0), first: 0, last: 20 },
+      #|    [{ start: 0, span: { pos: LinePos(1, 0), first: 0, last: 20 } }],
+      #|    20,
+      #|  ),
+      #|)
+    ),
   )
 }
 
@@ -63,9 +71,17 @@ test "raw_html with HTML comment" {
     line=line_span,
     start=0,
   )
-  inspect(
+  debug_inspect(
     result,
-    content="Some(({pos: LinePos(1, 0), first: 0, last: 12}, [{start: 0, span: {pos: LinePos(1, 0), first: 0, last: 12}}], 12))",
+    content=(
+      #|Some(
+      #|  (
+      #|    { pos: LinePos(1, 0), first: 0, last: 12 },
+      #|    [{ start: 0, span: { pos: LinePos(1, 0), first: 0, last: 12 } }],
+      #|    12,
+      #|  ),
+      #|)
+    ),
   )
 }
 
@@ -85,9 +101,17 @@ test "raw_html with declaration" {
     line=line_span,
     start=0,
   )
-  inspect(
+  debug_inspect(
     result,
-    content="Some(({pos: LinePos(1, 0), first: 0, last: 14}, [{start: 0, span: {pos: LinePos(1, 0), first: 0, last: 14}}], 14))",
+    content=(
+      #|Some(
+      #|  (
+      #|    { pos: LinePos(1, 0), first: 0, last: 14 },
+      #|    [{ start: 0, span: { pos: LinePos(1, 0), first: 0, last: 14 } }],
+      #|    14,
+      #|  ),
+      #|)
+    ),
   )
 }
 
@@ -107,9 +131,17 @@ test "raw_html with CDATA section" {
     line=line_span,
     start=0,
   )
-  inspect(
+  debug_inspect(
     result,
-    content="Some(({pos: LinePos(1, 0), first: 0, last: 15}, [{start: 0, span: {pos: LinePos(1, 0), first: 0, last: 15}}], 15))",
+    content=(
+      #|Some(
+      #|  (
+      #|    { pos: LinePos(1, 0), first: 0, last: 15 },
+      #|    [{ start: 0, span: { pos: LinePos(1, 0), first: 0, last: 15 } }],
+      #|    15,
+      #|  ),
+      #|)
+    ),
   )
 }
 
@@ -129,7 +161,7 @@ test "raw_html with invalid char after <!" {
     line=line_span,
     start=0,
   )
-  inspect(result, content="None")
+  debug_inspect(result, content="None")
 }
 
 ///| Additional tests for raw_html.mbt to improve coverage
@@ -150,7 +182,7 @@ test "raw_html_invalid_start" {
     line=line_span,
     start=0,
   )
-  inspect(result, content="None")
+  debug_inspect(result, content="None")
 }
 
 ///|
@@ -169,9 +201,17 @@ test "raw_html_closing_tag_invalid_name" {
     line=line_span,
     start=0,
   )
-  inspect(
+  debug_inspect(
     result,
-    content="Some(({pos: LinePos(1, 0), first: 6, last: 6}, [{start: 0, span: {pos: LinePos(1, 0), first: 0, last: 6}}], 6))",
+    content=(
+      #|Some(
+      #|  (
+      #|    { pos: LinePos(1, 0), first: 6, last: 6 },
+      #|    [{ start: 0, span: { pos: LinePos(1, 0), first: 0, last: 6 } }],
+      #|    6,
+      #|  ),
+      #|)
+    ),
   )
 }
 
@@ -191,7 +231,7 @@ test "raw_html_closing_tag_no_end" {
     line=line_span,
     start=0,
   )
-  inspect(result, content="None")
+  debug_inspect(result, content="None")
 }
 
 ///|
@@ -210,9 +250,17 @@ test "raw_html_open_tag_invalid" {
     line=line_span,
     start=0,
   )
-  inspect(
+  debug_inspect(
     result,
-    content="Some(({pos: LinePos(1, 0), first: 5, last: 5}, [{start: 0, span: {pos: LinePos(1, 0), first: 0, last: 5}}], 5))",
+    content=(
+      #|Some(
+      #|  (
+      #|    { pos: LinePos(1, 0), first: 5, last: 5 },
+      #|    [{ start: 0, span: { pos: LinePos(1, 0), first: 0, last: 5 } }],
+      #|    5,
+      #|  ),
+      #|)
+    ),
   )
 }
 
@@ -232,7 +280,7 @@ test "raw_html_self_closing_tag_no_end" {
     line=line_span,
     start=0,
   )
-  inspect(result, content="None")
+  debug_inspect(result, content="None")
 }
 
 ///|
@@ -251,7 +299,7 @@ test "raw_html_attribute_invalid_name" {
     line=line_span,
     start=0,
   )
-  inspect(result, content="None")
+  debug_inspect(result, content="None")
 }
 
 ///|
@@ -270,9 +318,17 @@ test "raw_html_attribute_no_value" {
     line=line_span,
     start=0,
   )
-  inspect(
+  debug_inspect(
     result,
-    content="Some(({pos: LinePos(1, 0), first: 14, last: 14}, [{start: 0, span: {pos: LinePos(1, 0), first: 0, last: 14}}], 14))",
+    content=(
+      #|Some(
+      #|  (
+      #|    { pos: LinePos(1, 0), first: 14, last: 14 },
+      #|    [{ start: 0, span: { pos: LinePos(1, 0), first: 0, last: 14 } }],
+      #|    14,
+      #|  ),
+      #|)
+    ),
   )
 }
 
@@ -292,9 +348,17 @@ test "raw_html_attribute_unquoted_value" {
     line=line_span,
     start=0,
   )
-  inspect(
+  debug_inspect(
     result,
-    content="Some(({pos: LinePos(1, 0), first: 20, last: 20}, [{start: 0, span: {pos: LinePos(1, 0), first: 0, last: 20}}], 20))",
+    content=(
+      #|Some(
+      #|  (
+      #|    { pos: LinePos(1, 0), first: 20, last: 20 },
+      #|    [{ start: 0, span: { pos: LinePos(1, 0), first: 0, last: 20 } }],
+      #|    20,
+      #|  ),
+      #|)
+    ),
   )
 }
 
@@ -314,7 +378,7 @@ test "raw_html_exclamation_invalid" {
     line=line_span,
     start=0,
   )
-  inspect(result, content="None")
+  debug_inspect(result, content="None")
 }
 
 ///|
@@ -333,7 +397,7 @@ test "raw_html_exclamation_too_short" {
     line=line_span,
     start=0,
   )
-  inspect(result, content="None")
+  debug_inspect(result, content="None")
 }
 
 ///|
@@ -352,7 +416,7 @@ test "raw_html_comment_incomplete" {
     line=line_span,
     start=0,
   )
-  inspect(result, content="None")
+  debug_inspect(result, content="None")
 }
 
 ///|
@@ -371,7 +435,7 @@ test "raw_html_comment_invalid1" {
     line=line_span,
     start=0,
   )
-  inspect(result, content="None")
+  debug_inspect(result, content="None")
 }
 
 ///|
@@ -390,7 +454,7 @@ test "raw_html_comment_invalid2" {
     line=line_span,
     start=0,
   )
-  inspect(result, content="None")
+  debug_inspect(result, content="None")
 }
 
 ///|
@@ -409,7 +473,7 @@ test "raw_html_cdata_incomplete" {
     line=line_span,
     start=0,
   )
-  inspect(result, content="None")
+  debug_inspect(result, content="None")
 }
 
 ///|
@@ -428,5 +492,5 @@ test "raw_html_cdata_wrong_format" {
     line=line_span,
     start=0,
   )
-  inspect(result, content="None")
+  debug_inspect(result, content="None")
 }

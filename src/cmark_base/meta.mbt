@@ -3,7 +3,7 @@ pub(all) struct Meta {
   id : MetaId
   loc : TextLoc
   extra : Error?
-}
+} derive(Debug)
 
 ///|
 type MetaId = Int
@@ -39,36 +39,4 @@ pub fn Meta::compare(self : Meta, other : Meta) -> Int {
 ///|
 pub fn Meta::is_none(self : Meta) -> Bool {
   self == meta_none
-}
-
-///|
-pub impl Show for Meta with output(self, logger) {
-  if self.is_none() {
-    logger.write_string("Meta::none()")
-  } else {
-    logger.write_string("Meta::new(id=")
-    logger.write_object(self.id)
-    logger.write_string(", loc=")
-    logger.write_object(self.loc)
-    logger.write_string(", dict=")
-    logger.write_object(self.extra)
-    logger.write_string(")")
-  }
-}
-
-///|
-pub impl ToJson for Meta with to_json(self) {
-  if self.is_none() {
-    return {}
-  }
-  {
-    "id": self.id.to_json(),
-    "loc": self.loc.to_json(),
-    "dict": self.extra.to_string().to_json(),
-  }
-}
-
-///|
-pub fn Meta::to_json(self : Meta) -> Json {
-  ToJson::to_json(self)
 }

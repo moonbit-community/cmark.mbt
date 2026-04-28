@@ -4,7 +4,7 @@ pub(all) struct Doc {
   nl : String
   block : Block
   defs : LabelDefs
-} derive(Show, ToJson)
+} derive(Debug)
 
 ///|
 pub fn Doc::new(

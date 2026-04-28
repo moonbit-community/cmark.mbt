@@ -10,7 +10,7 @@ pub(all) struct Label {
   meta : Meta
   key : LabelKey
   text : Seq[Tight]
-} derive(Show, ToJson)
+} derive(Debug)
 
 ///|
 /// The type for label keys. These are
@@ -46,7 +46,7 @@ pub fn Label::compare(self : Label, other : Label) -> Int {
 pub(all) enum LabelDef {
   LinkDef(Node[LinkDefinition])
   FootnoteDef(Node[Footnote])
-} derive(Show, ToJson)
+} derive(Debug)
 
 ///|
 pub type LabelDefs = Map[LabelKey, LabelDef]

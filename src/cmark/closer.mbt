@@ -12,26 +12,18 @@ priv enum Closer {
   EmphasisMarks(Char)
   StrikethroughMarks
   MathSpanMarks(Int)
-} derive(Eq, Hash, Show, ToJson)
-
-///|
-test {
-  // Prevent warning about unused Show and ToJson
-  (fn(c : Closer) { c.to_string() }) |> ignore()
-  (fn(c : Closer) { c.to_json() }) |> ignore()
-}
+} derive(Eq, Hash, Debug)
 
 ///|
 type PosSet = Set[Int]
 
 ///|
-priv struct CloserIndex(Map[Closer, PosSet]) derive(Show, ToJson)
+priv struct CloserIndex(Map[Closer, PosSet]) derive(Debug)
 
 ///|
 test {
-  // Prevent warning about unused Show and ToJson
-  (fn(c : CloserIndex) { c.to_string() }) |> ignore()
-  (fn(c : CloserIndex) { c.to_json() }) |> ignore()
+  // Prevent warning about unused Debug.
+  (fn(c : CloserIndex) { @debug.to_string(c) }) |> ignore()
 }
 
 ///|
