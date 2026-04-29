@@ -7,7 +7,7 @@ pub(all) struct Doc {
 } derive(Debug)
 
 ///|
-pub fn Doc::new(
+fn Doc::new(
   nl? : String = "\n",
   defs? : LabelDefs = LabelDefs::new(),
   block : Block,
