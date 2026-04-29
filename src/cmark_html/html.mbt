@@ -960,12 +960,12 @@ pub fn from_doc(
 ///|
 /// Render CommonMark String to HTML with the default parsing preferences.
 ///
-/// For more parsing options, call `@cmark.Doc::from_string()` and `from_doc()` manually.
+/// For more parsing options, call `@cmark.Doc()` and `from_doc()` manually.
 pub fn render(
   backend_blocks? : Bool = false,
   safe? : Bool = false,
   strict? : Bool = true,
   s : String,
 ) -> String raise {
-  from_doc(backend_blocks~, safe~, @cmark.Doc::from_string(s, strict~))
+  from_doc(backend_blocks~, safe~, @cmark.Doc(s, strict~))
 }

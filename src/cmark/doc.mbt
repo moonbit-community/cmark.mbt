@@ -21,7 +21,8 @@ pub fn Doc::empty() -> Doc {
 }
 
 ///|
-pub fn Doc::from_string(
+#alias(from_string, deprecated)
+pub fn Doc::Doc(
   defs? : LabelDefs = LabelDefs::new(),
   resolver? : LabelResolverFn = LabelContext::default_resolver,
   nested_links? : Bool = false,

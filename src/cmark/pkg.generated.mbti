@@ -140,8 +140,9 @@ pub(all) struct Doc {
   block : Block
   defs : Map[String, LabelDef]
 } derive(@debug.Debug)
+#alias(from_string, deprecated)
+pub fn Doc::Doc(defs? : Map[String, LabelDef], resolver? : LabelResolverFn, nested_links? : Bool, heading_auto_ids? : Bool, layout? : Bool, locs? : Bool, file? : String, strict? : Bool, String) -> Self
 pub fn Doc::empty() -> Self
-pub fn Doc::from_string(defs? : Map[String, LabelDef], resolver? : LabelResolverFn, nested_links? : Bool, heading_auto_ids? : Bool, layout? : Bool, locs? : Bool, file? : String, strict? : Bool, String) -> Self
 pub fn Doc::new(nl? : String, defs? : Map[String, LabelDef], Block) -> Self
 
 pub(all) struct FoldFn[A, B]((Folder[B], B, A) -> B raise FolderError)

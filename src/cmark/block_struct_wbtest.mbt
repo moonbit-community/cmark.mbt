@@ -5,7 +5,7 @@ test "plain" {
     #|===========
     #|Basic tests for all CommonMark constructs.
   debug_inspect(
-    Doc::from_string(doc),
+    Doc(doc),
     content=(
       #|{
       #|  nl: "\n",
@@ -133,7 +133,7 @@ test "complex ref definitions" {
     #|> [c d]: /ha "Multi
     #|>   line titles"
   debug_inspect(
-    Doc::from_string(doc),
+    Doc(doc),
     content=(
       #|{
       #|  nl: "\n",
@@ -549,7 +549,7 @@ test "HTML block" {
     #|
     #| world
   debug_inspect(
-    Doc::from_string(doc),
+    Doc(doc),
     content=(
       #|{
       #|  nl: "\n",
@@ -743,7 +743,7 @@ test "should parse normal raw HTML block" {
     #|  <p>This is a paragraph inside a custom HTML container.</p>
     #|</div>
   debug_inspect(
-    Doc::from_string(doc),
+    Doc(doc),
     content=(
       #|{
       #|  nl: "\n",
@@ -964,7 +964,7 @@ test "should parse normal code block" {
     #| assert_true!(v[1:4].all(fn(elem) { elem % 2 == 0 }))
     #| ```
   debug_inspect(
-    Doc::from_string(doc),
+    Doc(doc),
     content=(
       #|{
       #|  nl: "\n",
@@ -1171,7 +1171,7 @@ test "should parse link refs" {
     #|[Extism PDK]: https://extism.org/docs/concepts/pdk
     #|[Extism Plug-ins]: https://extism.org/docs/concepts/plug-in
   debug_inspect(
-    Doc::from_string(doc),
+    Doc(doc),
     content=(
       #|{
       #|  nl: "\n",
@@ -1880,7 +1880,7 @@ test "should parse indented code block" {
     #|    a
     #|       a b c
   debug_inspect(
-    Doc::from_string(doc),
+    Doc(doc),
     content=(
       #|{
       #|  nl: "\n",
@@ -2090,7 +2090,7 @@ test "should parse quoted bullets" {
     #|*
     #|Empty list item above
   debug_inspect(
-    Doc::from_string(doc),
+    Doc(doc),
     content=(
       #|{
       #|  nl: "\n",
@@ -2369,7 +2369,7 @@ test "should parse list item with multiple inlines" {
     #|    (There are some relevant comments by John Gruber
     #|    [here](https://web.archive.org/web/20170611172104/http://article.gmane.org/gmane.text.markdown.general/2554).)
   debug_inspect(
-    Doc::from_string(doc),
+    Doc(doc),
     content=(
       #|{
       #|  nl: "\n",

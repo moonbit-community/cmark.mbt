@@ -1,6 +1,6 @@
 ///|
 test "basic" {
-  let rendered = @cmark.Doc::from_string(test_base_md_str)
+  let rendered = @cmark.Doc(test_base_md_str)
   debug_inspect(
     rendered,
     content=(

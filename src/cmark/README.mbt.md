@@ -13,7 +13,7 @@ test "basic parsing" {
     #|# Hello World
     #|
     #|This is a paragraph.
-  let doc = @cmark.Doc::from_string(input)
+  let doc = @cmark.Doc(input)
   // Should contain a heading and a paragraph
   debug_inspect(
     doc,
@@ -145,7 +145,7 @@ what the resulting syntax tree looks like. For more examples, please checkout th
 test "emphasis and strong emphasis" {
   let input =
     #|_Emphasis_ and **strong emphasis**
-  let doc = @cmark.Doc::from_string(input)
+  let doc = @cmark.Doc(input)
   debug_inspect(
     doc,
     content=(
@@ -287,7 +287,7 @@ test "emphasis and strong emphasis" {
 test "inline code and math" {
   let input =
     $|$E = mc^2$ in Python: `E = m * (c ** 2)`
-  let doc = @cmark.Doc::from_string(input, strict=false)
+  let doc = @cmark.Doc(input, strict=false)
   debug_inspect(
     doc,
     content=(
@@ -415,7 +415,7 @@ test "inline code and math" {
 test "headings" {
   let input =
     #|# Level 1
-  let doc = @cmark.Doc::from_string(input)
+  let doc = @cmark.Doc(input)
   // Should contain a heading and a paragraph
   debug_inspect(
     doc,
@@ -474,7 +474,7 @@ test "lists" {
     #|- First item
     #|- Second item
     #|  1. Nested item
-  let doc = @cmark.Doc::from_string(input)
+  let doc = @cmark.Doc(input)
   // Should find an ordered list within an unordered one.
   debug_inspect(
     doc,
@@ -673,7 +673,7 @@ test "code blocks" {
     #|  println("Hello")
     #|}
     $|\{tick3}
-  let doc = @cmark.Doc::from_string(input)
+  let doc = @cmark.Doc(input)
   debug_inspect(
     doc,
     content=(
@@ -809,7 +809,7 @@ test "tables" {
     #|| Header 1 | Header 2 |
     #||----------|----------|
     #|| Cell 1   | Cell 2   |
-  let doc = @cmark.Doc::from_string(input, strict=false)
+  let doc = @cmark.Doc(input, strict=false)
   debug_inspect(
     doc,
     content=(
@@ -1024,7 +1024,7 @@ test "footnotes" {
     #|Text[^1]
     #|
     #|[^1]: Footnote content
-  let doc = @cmark.Doc::from_string(input, strict=false)
+  let doc = @cmark.Doc(input, strict=false)
   debug_inspect(
     doc,
     content=(

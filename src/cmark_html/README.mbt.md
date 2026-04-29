@@ -29,7 +29,7 @@ To convert a `cmark` syntax tree to HTML, you can use the `@cmark_html.from_doc`
 ```mbt check
 ///|
 test "rendering from @cmark.Doc" {
-  let doc = @cmark.Doc::from_string(
+  let doc = @cmark.Doc(
     strict=false,
     (
       #|# Hello World

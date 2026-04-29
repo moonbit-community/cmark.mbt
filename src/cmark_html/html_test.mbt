@@ -1,7 +1,4 @@
 ///|
-using @cmark {type Doc}
-
-///|
 test "should render task list" (it : @test.Test) {
   let doc =
     #|## List task items
@@ -212,7 +209,7 @@ test "should render tables" (it : @test.Test) {
 test "basic" (it : @test.Test) {
   let rendered = @cmark_html.from_doc(
     safe=false,
-    Doc::from_string(test_basic_md_str),
+    Doc(test_basic_md_str),
   )
   it.write(rendered)
   it.snapshot(filename="basic.html")
@@ -222,7 +219,7 @@ test "basic" (it : @test.Test) {
 test "spec" (it : @test.Test) {
   let rendered = @cmark_html.from_doc(
     safe=false,
-    Doc::from_string(test_spec_md_str),
+    Doc(test_spec_md_str),
   )
   it.write(rendered)
   it.snapshot(filename="spec.html")
@@ -241,7 +238,7 @@ test "raw html in safe mode" (it : @test.Test) {
     #|Inline <span>HTML</span> elements.
 
   // Render with safe=true to test HTML omission
-  let rendered = @cmark_html.from_doc(safe=true, Doc::from_string(doc))
+  let rendered = @cmark_html.from_doc(safe=true, Doc(doc))
   it.write(rendered)
   it.snapshot(filename="raw_html_safe_mode.html")
 }
@@ -259,7 +256,7 @@ test "html with comments" (it : @test.Test) {
     #|<!-- 
     #|  Multi-line comment
     #|-->
-  let rendered = @cmark_html.from_doc(safe=false, Doc::from_string(doc))
+  let rendered = @cmark_html.from_doc(safe=false, Doc(doc))
   it.write(rendered)
   it.snapshot(filename="html_comments.html")
 }
@@ -277,7 +274,7 @@ test "strict mode html" (it : @test.Test) {
     #|</div>
   let rendered = @cmark_html.from_doc(
     safe=false,
-    Doc::from_string(doc, strict=true),
+    Doc(doc, strict=true),
   )
   it.write(rendered)
   it.snapshot(filename="strict_mode_html.html")
@@ -297,7 +294,7 @@ test "xhtml rendering" (it : @test.Test) {
 
   // Test xhtml rendering
   let rendered = @cmark_html.xhtml_renderer(safe=true).doc_to_string(
-    Doc::from_string(doc),
+    Doc(doc),
   )
   it.write(rendered)
   it.snapshot(filename="xhtml_rendering.html")
