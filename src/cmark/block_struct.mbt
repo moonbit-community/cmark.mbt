@@ -249,10 +249,7 @@ fn Parser::thematic_break(
 ) -> BlockStruct {
   let _ = last
   let last = self.curr_line_last_char // Let's keep everything
-  ThematicBreak(
-    indent,
-    self.curr_line_span(first=self.curr_char, last~),
-  )
+  ThematicBreak(indent, self.curr_line_span(first=self.curr_char, last~))
 }
 
 ///|

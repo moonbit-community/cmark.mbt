@@ -76,10 +76,7 @@ pub fn Block::normalize(self : Block) -> Block {
 ///|
 /// Collects the given `Block`'s link definitions (e.g. `LinkRefDefinition`
 /// and `ExtFootnoteDefinition`) and adds them to `init` (defaults to an empty map).
-pub fn Block::defs(
-  self : Block,
-  init? : LabelDefs = Map([]),
-) -> LabelDefs {
+pub fn Block::defs(self : Block, init? : LabelDefs = Map([])) -> LabelDefs {
   match self {
     BlockQuote(bl) => bl.v.block.defs(init~)
     Blocks(bl) => bl.v.fold(init~, fn(init, b) { b.defs(init~) })

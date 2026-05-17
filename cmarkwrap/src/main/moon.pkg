@@ -1,0 +1,15 @@
+import {
+  "moonbitlang/core/bench",
+  "moonbitlang/x/fs",
+  "moonbit-community/cmarkwrap/lib",
+}
+
+options(
+  "is-main": true,
+  targets: {
+    "ident_wasm.mbt": [ "wasm" ],
+    "ident_wasm_gc.mbt": [ "wasm-gc" ],
+    "ident_js.mbt": [ "js" ],
+    "ident_native.mbt": [ "native" ],
+  },
+)

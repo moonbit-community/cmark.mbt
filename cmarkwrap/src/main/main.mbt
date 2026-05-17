@@ -9,9 +9,9 @@ fn main {
   let b = @bench.new()
   for k, input in cases {
     summaries.push(
-      @bench.single_bench(name=k, count=count.reinterpret_as_uint(), () => b.keep(
-        try? @lib.render(input),
-      )),
+      @bench.single_bench(name=k, count=count.reinterpret_as_uint(), () => {
+        b.keep(try? @lib.render(input))
+      }),
     )
   }
   let us_per_s = 1_000_000.0

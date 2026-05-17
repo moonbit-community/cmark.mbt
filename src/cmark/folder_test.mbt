@@ -31,9 +31,7 @@ test "fold_block with heading" {
     @cmark.Node::new({
       inline: Text(@cmark.Node::new("test")),
       level: 1,
-      layout: Atx(
-        @cmark.BlockHeadingAtxLayout::default(),
-      ),
+      layout: Atx(@cmark.BlockHeadingAtxLayout::default()),
       id: None,
     }),
   )
@@ -110,10 +108,7 @@ test "folder block with table" {
           @cmark.Node::new(
             Header(
               @cmark.Seq::from_array([
-                (
-                  Text(@cmark.Node::new("Header")),
-                  TableCellLayout(("", "")),
-                ),
+                (Text(@cmark.Node::new("Header")), TableCellLayout(("", ""))),
               ]),
             ),
           ),
@@ -121,11 +116,7 @@ test "folder block with table" {
         ),
         (
           @cmark.Node::new(
-            Sep(
-              @cmark.Seq::from_array([
-                @cmark.Node::new((Some(Left), 3)),
-              ]),
-            ),
+            Sep(@cmark.Seq::from_array([@cmark.Node::new((Some(Left), 3))])),
           ),
           "",
         ),
@@ -133,10 +124,7 @@ test "folder block with table" {
           @cmark.Node::new(
             Data(
               @cmark.Seq::from_array([
-                (
-                  Text(@cmark.Node::new("Data")),
-                  TableCellLayout(("", "")),
-                ),
+                (Text(@cmark.Node::new("Data")), TableCellLayout(("", ""))),
               ]),
             ),
           ),
