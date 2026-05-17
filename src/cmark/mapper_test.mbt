@@ -303,9 +303,7 @@ test "map_block with default case" {
 test "map_block with blocks" {
   let mapper = @cmark.Mapper::new()
   let block = @cmark.Block::Blocks(
-    @cmark.Node::new(
-      @cmark.Seq::from_array([BlankLine(@cmark.Node::new(""))]),
-    ),
+    @cmark.Node::new(@cmark.Seq::from_array([BlankLine(@cmark.Node::new(""))])),
   )
   let result = mapper.map_block(block)
   debug_inspect(
@@ -816,9 +814,7 @@ test "map_inline with Inlines that becomes empty" {
 test "map_inline with ExtStrikethrough" {
   let mapper = @cmark.Mapper::new()
   let strikethrough = @cmark.Inline::ExtStrikethrough(
-    @cmark.Node::new(
-      Text(@cmark.Node::new("strikethrough text")),
-    ),
+    @cmark.Node::new(Text(@cmark.Node::new("strikethrough text"))),
   )
   let result = mapper.map_inline(strikethrough)
   debug_inspect(
@@ -866,9 +862,7 @@ test "map_inline with ExtStrikethrough" {
 ///|
 test "map_inline with ExtStrikethrough with None inline result" {
   let strikethrough = @cmark.Inline::ExtStrikethrough(
-    @cmark.Node::new(
-      Text(@cmark.Node::new("strikethrough text")),
-    ),
+    @cmark.Node::new(Text(@cmark.Node::new("strikethrough text"))),
   )
 
   // Create a mapper that returns None for any inline

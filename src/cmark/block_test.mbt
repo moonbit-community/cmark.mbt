@@ -199,11 +199,7 @@ test "block normalize with block quote" {
 /// Test Block::normalize for List with Seq.empty()
 test "block normalize with list using Seq.empty" {
   let items = @cmark.Seq::empty()
-  let list = @cmark.BlockList::{
-    ty: Unordered('*'),
-    tight: true,
-    items,
-  }
+  let list = @cmark.BlockList::{ ty: Unordered('*'), tight: true, items }
   let normalized = @cmark.Block::List(@cmark.Node::new(list)).normalize()
   debug_inspect(
     normalized,
