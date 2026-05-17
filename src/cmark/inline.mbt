@@ -242,7 +242,6 @@ pub fn InlineBreak::new(
 }
 
 ///|
-#warnings("-unnecessary_annotation")
 pub(all) enum InlineBreakType {
   Hard
   Soft
@@ -372,7 +371,6 @@ pub(all) enum ReferenceKind {
 
 ///|
 /// The type for reference link layouts.
-#warnings("-unnecessary_annotation")
 pub(all) enum ReferenceLayout {
   /// https://spec.commonmark.org/0.30/#collapsed-reference-link
   Collapsed

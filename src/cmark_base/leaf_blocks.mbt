@@ -10,7 +10,6 @@ pub(all) enum HtmlBlockEndCond {
 } derive(Debug, Eq)
 
 ///|
-#warnings("-unnecessary_annotation")
 pub(all) enum ListType {
   /// With the given marker.
   Unordered(Char)

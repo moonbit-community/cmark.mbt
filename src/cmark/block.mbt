@@ -231,7 +231,6 @@ pub(all) enum BlockHeadingLayout {
 } derive(Debug)
 
 ///|
-#warnings("-unnecessary_annotation")
 pub(all) struct BlockHeadingAtxLayout {
   indent : Indent
   after_opening : Blanks
@@ -253,7 +252,6 @@ pub(all) struct BlockHeadingSetextLayout {
 } derive(Debug)
 
 ///|
-#warnings("-unnecessary_annotation")
 pub(all) enum BlockHeadingId {
   Auto(String)
   Id(String)
@@ -364,7 +362,6 @@ pub fn BlockParagraph::new(
 
 ///|
 /// The type for [thematic breaks](https://spec.commonmark.org/0.30/#thematic-break).
-#warnings("-unnecessary_annotation")
 pub(all) struct BlockThematicBreak {
   indent : Indent
   layout : String
@@ -424,7 +421,6 @@ pub(all) struct Table {
 } derive(Debug)
 
 ///|
-#warnings("-unnecessary_annotation")
 pub(all) enum TableAlign {
   Left
   Center
