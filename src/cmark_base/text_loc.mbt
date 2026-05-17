@@ -1,5 +1,4 @@
 ///|
-#warnings("-unnecessary_annotation")
 pub(all) struct TextLoc {
   file : FilePath
   first_ccode : CharCodePos
@@ -96,7 +95,6 @@ pub type LineNum = Int // 1-based
 pub let line_num_none = -1
 
 ///|
-#warnings("-unnecessary_annotation")
 pub(all) struct LinePos(LineNum, CharCodePos) derive (
   Debug,
   Eq,
