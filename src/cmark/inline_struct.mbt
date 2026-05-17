@@ -86,16 +86,16 @@ priv struct TokenMathSpanMarks {
 ///|
 fn Token::start(self : Token) -> CharCodePos {
   match self {
-    Token::AutolinkOrHtmlStart(t) => t.start
-    Token::Backticks(t) => t.start
-    Token::EmphasisMarks(t) => t.start
-    Token::Inline(t) => t.start
-    Token::LinkStart(t) => t.start
-    Token::Newline(t) => t.start
-    Token::RightBrack(t) => t.start
-    Token::RightParen(t) => t.start
-    Token::StrikethroughMarks(t) => t.start
-    Token::MathSpanMarks(t) => t.start
+    AutolinkOrHtmlStart(t) => t.start
+    Backticks(t) => t.start
+    EmphasisMarks(t) => t.start
+    Inline(t) => t.start
+    LinkStart(t) => t.start
+    Newline(t) => t.start
+    RightBrack(t) => t.start
+    RightParen(t) => t.start
+    StrikethroughMarks(t) => t.start
+    MathSpanMarks(t) => t.start
   }
 }
 
@@ -768,7 +768,7 @@ fn Parser::try_full_reflink_remainder(
   let ref_ = self.label_of_spans(key~, spans[:])
   guard self.find_def_for_ref(image~, ref_) is Some(def) else { Some(None) }
   tokens_drop_stop_after_right_brack(rev_toks.val)
-  Some(Some((line, ReferenceKind::Ref(Full, ref_, def), last)))
+  Some(Some((line, Ref(Full, ref_, def), last)))
 }
 
 ///|
@@ -796,7 +796,7 @@ fn Parser::try_shortcut_reflink(
   let ref_ = self.label_of_spans(key~, spans[:])
   guard self.find_def_for_ref(image~, ref_) is Some(def) else { None }
   tokens_drop_stop_after_right_brack(rev_toks.val)
-  Some((line, ReferenceKind::Ref(Shortcut, ref_, def), last))
+  Some((line, Ref(Shortcut, ref_, def), last))
 }
 
 ///|
@@ -826,7 +826,7 @@ fn Parser::try_collapsed_reflink(
   guard self.find_def_for_ref(image~, ref_) is Some(def) else { None }
   tokens_drop_stop_after_right_brack(rev_toks.val)
   tokens_drop_stop_after_right_brack(rev_toks.val)
-  Some((line, ReferenceKind::Ref(Collapsed, ref_, def), last))
+  Some((line, Ref(Collapsed, ref_, def), last))
 }
 
 ///|

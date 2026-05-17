@@ -135,7 +135,7 @@ test "html blocks" {
   debug_inspect(
     @cmark_base.LineType::html_block_end(
       "</div></br>",
-      end_cond=@cmark_base.HtmlBlockEndCond::EndStr("</div>"),
+      end_cond=EndStr("</div>"),
       start~,
       last=6,
     ),

@@ -106,16 +106,16 @@ test "code block with indented layout and info string" {
   let code = @cmark.Seq::from_array([node])
   let info = @cmark.Node::new("info")
   let codeBlock = @cmark.CodeBlock::new(
-    layout=@cmark.CodeBlockLayout::Indented,
+    layout=Indented,
     info_string=Some(info),
     code,
   )
   match codeBlock.layout {
-    @cmark.CodeBlockLayout::Fenced(layout) => {
+    Fenced(layout) => {
       debug_inspect(layout.indent, content="0")
       debug_inspect(true, content="true")
     }
-    @cmark.CodeBlockLayout::Indented => debug_inspect(false, content="true")
+    Indented => debug_inspect(false, content="true")
   }
 }
 
@@ -200,7 +200,7 @@ test "block normalize with block quote" {
 test "block normalize with list using Seq.empty" {
   let items = @cmark.Seq::empty()
   let list = @cmark.BlockList::{
-    ty: @cmark_base.ListType::Unordered('*'),
+    ty: Unordered('*'),
     tight: true,
     items,
   }

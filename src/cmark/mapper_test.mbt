@@ -38,7 +38,7 @@ test "map_inline with Link returns None when text is None" {
     _mapper : @cmark.Mapper,
     _i : @cmark.Inline,
   ) -> @cmark.MapperResult[@cmark.Inline] {
-    @cmark.Map(None)
+    Map(None)
   }
   let mapper = @cmark.Mapper::new(inline=inline_fn)
   let text = @cmark.Inline::Text(@cmark.Node::new("link text"))
@@ -304,7 +304,7 @@ test "map_block with blocks" {
   let mapper = @cmark.Mapper::new()
   let block = @cmark.Block::Blocks(
     @cmark.Node::new(
-      @cmark.Seq::from_array([@cmark.Block::BlankLine(@cmark.Node::new(""))]),
+      @cmark.Seq::from_array([BlankLine(@cmark.Node::new(""))]),
     ),
   )
   let result = mapper.map_block(block)
@@ -358,7 +358,7 @@ test "map_block with paragraph" {
   let paragraph = @cmark.Block::Paragraph(
     @cmark.Node::new({
       leading_indent: 0,
-      inline: @cmark.Inline::Text(@cmark.Node::new("paragraph")),
+      inline: Text(@cmark.Node::new("paragraph")),
       trailing_blanks: "",
     }),
   )
@@ -707,7 +707,7 @@ test "map_inline with StrongEmphasis with None inline result" {
   let strong = @cmark.Inline::StrongEmphasis(
     @cmark.Node::new({
       delim: '*',
-      inline: @cmark.Inline::Text(@cmark.Node::new("strong text")),
+      inline: Text(@cmark.Node::new("strong text")),
     }),
   )
 
@@ -728,7 +728,7 @@ test "map_inline with Inlines" {
   let mapper = @cmark.Mapper::new()
   let seq = @cmark.Seq::from_array([
     @cmark.Inline::Text(@cmark.Node::new("text 1")),
-    @cmark.Inline::Text(@cmark.Node::new("text 2")),
+    Text(@cmark.Node::new("text 2")),
   ])
   let inlines = @cmark.Inline::Inlines(@cmark.Node::new(seq))
   let result = mapper.map_inline(inlines)
@@ -796,7 +796,7 @@ test "map_inline with Inlines" {
 test "map_inline with Inlines that becomes empty" {
   let seq = @cmark.Seq::from_array([
     @cmark.Inline::Text(@cmark.Node::new("text 1")),
-    @cmark.Inline::Text(@cmark.Node::new("text 2")),
+    Text(@cmark.Node::new("text 2")),
   ])
   let inlines = @cmark.Inline::Inlines(@cmark.Node::new(seq))
 
@@ -805,7 +805,7 @@ test "map_inline with Inlines that becomes empty" {
     _mapper : @cmark.Mapper,
     _i : @cmark.Inline,
   ) -> @cmark.MapperResult[@cmark.Inline] {
-    @cmark.Map(None)
+    Map(None)
   }
   let mapper = @cmark.Mapper::new(inline=inline_fn)
   let result = mapper.map_inline(inlines)
@@ -817,7 +817,7 @@ test "map_inline with ExtStrikethrough" {
   let mapper = @cmark.Mapper::new()
   let strikethrough = @cmark.Inline::ExtStrikethrough(
     @cmark.Node::new(
-      @cmark.Inline::Text(@cmark.Node::new("strikethrough text")),
+      Text(@cmark.Node::new("strikethrough text")),
     ),
   )
   let result = mapper.map_inline(strikethrough)
@@ -867,7 +867,7 @@ test "map_inline with ExtStrikethrough" {
 test "map_inline with ExtStrikethrough with None inline result" {
   let strikethrough = @cmark.Inline::ExtStrikethrough(
     @cmark.Node::new(
-      @cmark.Inline::Text(@cmark.Node::new("strikethrough text")),
+      Text(@cmark.Node::new("strikethrough text")),
     ),
   )
 
@@ -895,7 +895,7 @@ test "map_block with Heading" {
     @cmark.Node::new({
       level: 1,
       layout,
-      inline: @cmark.Inline::Text(@cmark.Node::new("Heading")),
+      inline: Text(@cmark.Node::new("Heading")),
       id: None,
     }),
   )
@@ -951,7 +951,7 @@ test "map_block with BlockQuote" {
   let para = @cmark.Block::Paragraph(
     @cmark.Node::new({
       leading_indent: 0,
-      inline: @cmark.Inline::Text(@cmark.Node::new("quoted text")),
+      inline: Text(@cmark.Node::new("quoted text")),
       trailing_blanks: "",
     }),
   )

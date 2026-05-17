@@ -17,7 +17,7 @@ test "fold_block with paragraph" {
   let block = @cmark.Block::Paragraph(
     @cmark.Node::new({
       leading_indent: 0,
-      inline: @cmark.Inline::Text(@cmark.Node::new("test")),
+      inline: Text(@cmark.Node::new("test")),
       trailing_blanks: "",
     }),
   )
@@ -29,9 +29,9 @@ test "fold_block with heading" {
   let folder = @cmark.Folder::new()
   let heading = @cmark.Block::Heading(
     @cmark.Node::new({
-      inline: @cmark.Inline::Text(@cmark.Node::new("test")),
+      inline: Text(@cmark.Node::new("test")),
       level: 1,
-      layout: @cmark.BlockHeadingLayout::Atx(
+      layout: Atx(
         @cmark.BlockHeadingAtxLayout::default(),
       ),
       id: None,
@@ -46,10 +46,10 @@ test "fold_block with blockquote" {
   let quote = @cmark.Block::BlockQuote(
     @cmark.Node::new({
       indent: 0,
-      block: @cmark.Block::Paragraph(
+      block: Paragraph(
         @cmark.Node::new({
           leading_indent: 0,
-          inline: @cmark.Inline::Text(@cmark.Node::new("test")),
+          inline: Text(@cmark.Node::new("test")),
           trailing_blanks: "",
         }),
       ),
@@ -64,17 +64,17 @@ test "fold_block with blocks" {
   let blocks = @cmark.Block::Blocks(
     @cmark.Node::new(
       @cmark.Seq::from_array([
-        @cmark.Block::Paragraph(
+        Paragraph(
           @cmark.Node::new({
             leading_indent: 0,
-            inline: @cmark.Inline::Text(@cmark.Node::new("test1")),
+            inline: Text(@cmark.Node::new("test1")),
             trailing_blanks: "",
           }),
         ),
-        @cmark.Block::Paragraph(
+        Paragraph(
           @cmark.Node::new({
             leading_indent: 0,
-            inline: @cmark.Inline::Text(@cmark.Node::new("test2")),
+            inline: Text(@cmark.Node::new("test2")),
             trailing_blanks: "",
           }),
         ),
@@ -108,11 +108,11 @@ test "folder block with table" {
       rows: @cmark.Seq::from_array([
         (
           @cmark.Node::new(
-            @cmark.Header(
+            Header(
               @cmark.Seq::from_array([
                 (
-                  @cmark.Inline::Text(@cmark.Node::new("Header")),
-                  @cmark.TableCellLayout(("", "")),
+                  Text(@cmark.Node::new("Header")),
+                  TableCellLayout(("", "")),
                 ),
               ]),
             ),
@@ -121,9 +121,9 @@ test "folder block with table" {
         ),
         (
           @cmark.Node::new(
-            @cmark.Sep(
+            Sep(
               @cmark.Seq::from_array([
-                @cmark.Node::new((Some(@cmark.TableAlign::Left), 3)),
+                @cmark.Node::new((Some(Left), 3)),
               ]),
             ),
           ),
@@ -131,11 +131,11 @@ test "folder block with table" {
         ),
         (
           @cmark.Node::new(
-            @cmark.Data(
+            Data(
               @cmark.Seq::from_array([
                 (
-                  @cmark.Inline::Text(@cmark.Node::new("Data")),
-                  @cmark.TableCellLayout(("", "")),
+                  Text(@cmark.Node::new("Data")),
+                  TableCellLayout(("", "")),
                 ),
               ]),
             ),

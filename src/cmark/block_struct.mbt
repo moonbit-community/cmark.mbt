@@ -228,7 +228,7 @@ priv struct ListBlockStruct {
 
 ///|
 fn BlockStruct::is_blank_line(self : BlockStruct) -> Bool {
-  guard self is BlockStruct::BlankLine(_, _) else { return false }
+  guard self is BlankLine(_, _) else { return false }
   true
 }
 
@@ -238,7 +238,7 @@ fn BlockStruct::is_blank_line(self : BlockStruct) -> Bool {
 fn Parser::blank_line(self : Parser) -> BlockStruct {
   let first = self.curr_char
   let last = self.curr_line_last_char
-  BlockStruct::BlankLine(0, self.curr_line_span(first~, last~))
+  BlankLine(0, self.curr_line_span(first~, last~))
 }
 
 ///|
@@ -249,7 +249,7 @@ fn Parser::thematic_break(
 ) -> BlockStruct {
   let _ = last
   let last = self.curr_line_last_char // Let's keep everything
-  BlockStruct::ThematicBreak(
+  ThematicBreak(
     indent,
     self.curr_line_span(first=self.curr_char, last~),
   )
@@ -965,7 +965,7 @@ fn Parser::try_add_to_paragraph(
   let indent = self.curr_indent()
   match self.match_line_type(no_setext=false, indent~) {
     // These can't interrupt paragraphs
-    HtmlBlockLine(HtmlBlockEndCond::EndBlank7)
+    HtmlBlockLine(EndBlank7)
     | IndentedCodeBlockLine
     | ExtTableRow(_)
     | ExtFootnoteLabel(_)
