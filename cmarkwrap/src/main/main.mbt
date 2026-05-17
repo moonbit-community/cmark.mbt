@@ -2,10 +2,9 @@
 fn main {
   let doc : String = try! @fs.read_file_to_string("./../src/data/test/spec.md")
   let count = 5
-  let cases = Map::new()
-  cases
-  ..set("\{ident}(spec * 100)", doc.repeat(100))
-  ..set("\{ident}(spec * 200)", doc.repeat(200))
+  let cases : Map[String, String] = Map([])
+  cases["\{ident}(spec * 100)"] = doc.repeat(100)
+  cases["\{ident}(spec * 200)"] = doc.repeat(200)
   let summaries = []
   let b = @bench.new()
   for k, input in cases {
@@ -17,13 +16,13 @@ fn main {
   }
   let us_per_s = 1_000_000.0
   for v in summaries {
-    let v = v.to_json().as_object().unwrap()
-    let k = v.get("name").unwrap().as_string().unwrap()
+    let v = unwrap_object(v.to_json())
+    let k = unwrap_string(v.get("name").unwrap())
     // let max = 1.0 / v.get("min").unwrap().as_number().unwrap()
     // let min = 1.0 / v.get("max").unwrap().as_number().unwrap()
-    let avg = us_per_s / v.get("mean").unwrap().as_number().unwrap()
+    let avg = us_per_s / unwrap_number(v.get("mean").unwrap())
     let moe_estm = {
-      let sigma = v.get("std_dev").unwrap().as_number().unwrap()
+      let sigma = unwrap_number(v.get("std_dev").unwrap())
       let sem = sigma / us_per_s / count.to_double().sqrt()
       let df = count - 1
       let critical = {
@@ -36,6 +35,24 @@ fn main {
       "\{k} x \{round_2(avg)} ops/sec ±\{round_2(moe_estm * 100)}% (\{count} runs sampled)",
     )
   }
+}
+
+///|
+fn unwrap_object(json : Json) -> Map[String, Json] {
+  guard json is Object(obj) else { abort("expected JSON object") }
+  obj
+}
+
+///|
+fn unwrap_string(json : Json) -> String {
+  guard json is String(s) else { abort("expected JSON string") }
+  s
+}
+
+///|
+fn unwrap_number(json : Json) -> Double {
+  guard json is Number(n, ..) else { abort("expected JSON number") }
+  n
 }
 
 ///|
