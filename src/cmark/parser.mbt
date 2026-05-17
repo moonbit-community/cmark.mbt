@@ -35,7 +35,7 @@ priv struct Parser {
 
 ///|
 fn Parser::new(
-  defs? : LabelDefs = LabelDefs::new(),
+  defs? : LabelDefs = Map([]),
   resolver? : LabelResolverFn = LabelContext::default_resolver,
   nested_links? : Bool = false,
   heading_auto_ids? : Bool = false,

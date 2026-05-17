@@ -228,7 +228,7 @@ test "at_checked with boundary" {
 ///|
 test "at_checked with invalid utf16 surrogate" {
   let s = "👋"
-  inspect(@char.at_checked(s, 1), content="Err(56395)")
+  debug_inspect(@char.at_checked(s, 1), content="Err(56395)")
 }
 
 ///|
@@ -306,8 +306,8 @@ test "at_checked valid character (2)" {
 ///|
 test "at_checked invalid character" {
   let s = "🌞"
-  inspect(@char.at_checked(s, 0), content="Ok('🌞')")
-  inspect(@char.at_checked(s, 1), content="Err(57118)")
+  debug_inspect(@char.at_checked(s, 0), content="Ok('🌞')")
+  debug_inspect(@char.at_checked(s, 1), content="Err(57118)")
 }
 
 ///|

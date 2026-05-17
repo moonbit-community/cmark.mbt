@@ -131,7 +131,7 @@ fn[A] open_tag(
   }
   let start = tag_name_end + 1
   let span = { ..line, first: tag_start, last: tag_name_end }
-  let spans = Ref::new([{ start: tag_start, span }])
+  let spans = Ref([{ start: tag_start, span }])
   for line = line, start = start {
     guard first_non_blank_over_nl1(
         next_line~,
@@ -188,7 +188,7 @@ fn[A] closing_tag(
     return None
   }
   let span = { ..line, first: start, last: tag_name_end }
-  let spans = Ref::new([{ start: tag_start, span }])
+  let spans = Ref([{ start: tag_start, span }])
   let start = tag_name_end + 1
   guard first_non_blank_over_nl1(next_line~, s, lines, line~, spans.val, start~)
     is Some((line, last_blank)) else {

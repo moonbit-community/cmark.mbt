@@ -9,7 +9,7 @@ pub(all) struct Doc {
 ///|
 pub fn Doc::new(
   nl? : String = "\n",
-  defs? : LabelDefs = LabelDefs::new(),
+  defs? : LabelDefs = Map([]),
   block : Block,
 ) -> Doc {
   { nl, block, defs }
@@ -22,7 +22,7 @@ pub fn Doc::empty() -> Doc {
 
 ///|
 pub fn Doc::from_string(
-  defs? : LabelDefs = LabelDefs::new(),
+  defs? : LabelDefs = Map([]),
   resolver? : LabelResolverFn = LabelContext::default_resolver,
   nested_links? : Bool = false,
   heading_auto_ids? : Bool = false,

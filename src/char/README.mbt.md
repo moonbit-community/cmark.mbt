@@ -43,8 +43,8 @@ test "string char access" {
   let s = "Hello, 🐰"
 
   // Safe checked access
-  inspect(@char.at_checked(s, 0), content="Ok('H')")
-  inspect(@char.at_checked(s, 7), content="Ok('🐰')")
+  debug_inspect(@char.at_checked(s, 0), content="Ok('H')")
+  debug_inspect(@char.at_checked(s, 7), content="Ok('🐰')")
 }
 ```
 

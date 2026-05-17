@@ -366,7 +366,7 @@ fn tokenize(
   lines : Array[LineSpan],
 ) -> (CloserIndex, Tokens, LineSpan) {
   guard lines is [line, .. lines] else { abort("expected at least one line") }
-  let toks : Tokens = @deque.new()
+  let toks : Tokens = Deque([])
   let cidx = for lines = lines, line = line, prev_bslash = false, k = line.first {
     if k > line.last {
       break match lines {
@@ -941,7 +941,7 @@ fn Parser::find_link_text_tokens(
   let _ = start
   let mut line = start_line
   let mut nest = 0
-  let acc : Tokens = @deque.new()
+  let acc : Tokens = Deque([])
   let old_rev_toks = rev_toks.val.0.copy()
   for ;; {
     match (rev_toks.val.pop(), nest) {
@@ -1090,7 +1090,7 @@ fn Parser::try_link(
   image~ : Bool,
   start~ : CharCodePos,
 ) -> (LineSpan, Token, Bool)? {
-  let rev_toks : Ref[RevTokens] = Ref::new(start_rev_toks.val.0.copy())
+  let rev_toks : Ref[RevTokens] = Ref(start_rev_toks.val.0.copy())
   guard self.cidx.has_right_brack(after=start) else { return None }
   guard self.find_link_text_tokens( // text_last with ] delim 
       rev_toks,
@@ -1140,10 +1140,10 @@ fn Parser::first_pass(
   toks : Ref[Tokens],
   line : LineSpan,
 ) -> Bool {
-  let acc : Tokens = @deque.new()
+  let acc : Tokens = Deque([])
   let mut had_link = false
   let mut line = line
-  let rev_toks : Ref[RevTokens] = Ref::new(toks.val.0)
+  let rev_toks : Ref[RevTokens] = Ref(toks.val.0)
   while rev_toks.val.pop() is Some(t) {
     match t {
       Backticks({ start, count, escaped }) =>
@@ -1216,7 +1216,7 @@ fn Parser::find_emphasis_text(
   }
 
   let mut line = line
-  let acc : Tokens = @deque.new()
+  let acc : Tokens = Deque([])
   for ;; {
     match rev_toks.val.pop() {
       None => break
@@ -1273,7 +1273,7 @@ fn Parser::try_emphasis(
   let emph = {
     let last = if start_line == line { text_last } else { start_line.last }
     let text_start = { ..start_line, first: text_first, last }
-    let emph_toks = Ref::new(emph_toks)
+    let emph_toks : Ref[Tokens] = Ref(emph_toks)
     self.second_pass(emph_toks, text_start)
     let text = self.last_pass(emph_toks.val, text_start)
     self.inlines_inline(first~, last=text_last, first_line~, last_line~, text)
@@ -1306,7 +1306,7 @@ fn Parser::find_strikethrough_text(
   rev_toks : Ref[RevTokens],
   start_line : LineSpan,
 ) -> (LineSpan, Tokens, TokenStrikethroughMarks)? {
-  let acc : Tokens = @deque.new()
+  let acc : Tokens = Deque([])
   let mut line = start_line
   for ;; {
     match rev_toks.val.pop() {
@@ -1360,7 +1360,7 @@ fn Parser::try_strikethrough(
       let last = if start_line == line { last } else { start_line.last }
       { ..start_line, first, last }
     }
-    let emph_toks = Ref::new(stricken_toks)
+    let emph_toks : Ref[Tokens] = Ref(stricken_toks)
     self.second_pass(emph_toks, text_start)
     let text = self.last_pass(emph_toks.val, text_start)
     self.inlines_inline(first~, last~, first_line~, last_line~, text)
@@ -1383,8 +1383,8 @@ fn Parser::second_pass(
   toks : Ref[Tokens],
   line : LineSpan,
 ) -> Unit {
-  let rev_toks : Ref[RevTokens] = Ref::new(toks.val.0)
-  let acc : Tokens = @deque.new()
+  let rev_toks : Ref[RevTokens] = Ref(toks.val.0)
+  let acc : Tokens = Deque([])
   toks.val = acc
   let mut line = line
   for ;; {
@@ -1454,7 +1454,7 @@ fn Parser::parse_tokens(
   toks : Tokens,
   first_line : LineSpan,
 ) -> (Array[Inline], Bool) {
-  let toks = Ref::new(toks)
+  let toks : Ref[Tokens] = Ref(toks)
   let had_link = self.first_pass(toks, first_line)
   self.second_pass(toks, first_line)
   let inlines = self.last_pass(toks.val, first_line)
@@ -1665,7 +1665,7 @@ fn Parser::parse_table_row(
 ) -> Array[(Inline, TableCellLayout)] {
   let (cidx, toks, first_line) = tokenize(self.i, [line], exts=self.exts)
   self.cidx = cidx
-  let toks : Ref[Tokens] = Ref::new(toks)
+  let toks : Ref[Tokens] = Ref(toks)
   let _ = self.first_pass(toks, first_line)
   self.second_pass(toks, first_line)
   // We now have modified last pass, inner inlines will have gone through
