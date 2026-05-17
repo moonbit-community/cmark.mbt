@@ -205,7 +205,7 @@ pub fn Mapper::map_doc(self : Mapper, d : Doc) -> Doc {
     FootnoteDef({ v: { ..v, block, }, meta })
   }
   let block = map_block(d.block)
-  let defs = Map::new()
+  let defs = Map::Map([])
   for k, d in d.defs {
     defs[k] = map_def(d)
   }

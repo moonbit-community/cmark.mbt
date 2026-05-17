@@ -9,7 +9,7 @@ pub(all) struct Meta {
 type MetaId = Int
 
 ///|
-let curr_id : Ref[MetaId] = Ref::new(0)
+let curr_id : Ref[MetaId] = Ref(0)
 
 ///|
 pub fn Meta::new(loc? : TextLoc = text_loc_none) -> Meta {

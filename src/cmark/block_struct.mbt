@@ -405,7 +405,7 @@ fn Parser::parse_link_ref_definition(
     res
   }
 
-  let lines = Ref::new(0)
+  let lines : Ref[Int] = Ref(0)
   guard next_line(lines) is Some(line) else { None }
   let start = self.first_non_blank_in_span(line)
   let indent = start - line.first

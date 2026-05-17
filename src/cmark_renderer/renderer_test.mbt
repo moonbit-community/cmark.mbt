@@ -89,7 +89,7 @@ test "renderer_error_handling_inline" {
   let buf = StringBuilder::new(size_hint=0)
   let ctx = @cmark_renderer.Context::new(r, buf)
   let result = try? ctx.inline(@cmark.Inline::empty())
-  inspect(
+  debug_inspect(
     result,
     content=(
       #|Err(RenderError("unknown inline type"))
@@ -105,7 +105,7 @@ test "renderer_error_handling_block" {
   let buf = StringBuilder::new(size_hint=0)
   let ctx = @cmark_renderer.Context::new(r, buf)
   let result = try? ctx.block(@cmark.Block::empty())
-  inspect(
+  debug_inspect(
     result,
     content=(
       #|Err(RenderError("unknown block type"))
@@ -121,7 +121,7 @@ test "renderer_error_handling_doc" {
   let buf = StringBuilder::new(size_hint=0)
   let ctx = @cmark_renderer.Context::new(r, buf)
   let result = try? ctx.doc(@cmark.Doc::empty())
-  inspect(
+  debug_inspect(
     result,
     content=(
       #|Err(RenderError("unhandled doc"))

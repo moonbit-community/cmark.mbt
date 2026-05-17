@@ -295,7 +295,7 @@ pub fn InlineCodeSpan::from_string(
   let max = s.length() - 1
   let need_sp = s is (['`', ..] | [.., '`'])
   let s = if need_sp { " \{s} " } else { s }
-  let bt_counts = @sorted_set.new()
+  let bt_counts = @sorted_set.SortedSet([])
   let acc = []
   let code_layout = for btc = 0, start = 0, k = 0 {
     if k > max {

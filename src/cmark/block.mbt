@@ -78,7 +78,7 @@ pub fn Block::normalize(self : Block) -> Block {
 /// and `ExtFootnoteDefinition`) and adds them to `init` (defaults to an empty map).
 pub fn Block::defs(
   self : Block,
-  init? : LabelDefs = LabelDefs::new(),
+  init? : LabelDefs = Map([]),
 ) -> LabelDefs {
   match self {
     BlockQuote(bl) => bl.v.block.defs(init~)
@@ -179,7 +179,7 @@ pub fn CodeBlock::make_fence(self : CodeBlock) -> (Char, Count) {
   } else {
     '`'
   }
-  let counts = @sorted_set.new()
+  let counts = @sorted_set.SortedSet([])
   for n in self.code {
     let c = n.v
     let mut k = 0

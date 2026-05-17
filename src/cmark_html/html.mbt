@@ -65,9 +65,9 @@ fn init_context(
   let st = {
     safe,
     backend_blocks,
-    ids: StringSet::new(),
+    ids: Set([]),
     footnote_count: 0,
-    footnotes: Map::new(),
+    footnotes: Map([]),
   }
   c.state = Some(EState(st))
 }

@@ -28,7 +28,7 @@ test {
 
 ///|
 fn CloserIndex::new() -> CloserIndex {
-  Map::new()
+  Map([])
 }
 
 ///|
@@ -36,7 +36,7 @@ fn CloserIndex::add(self : CloserIndex, key : Closer, pos : Int) -> Unit {
   (match self.0.get(key) {
     Some(ps) => ps
     None => {
-      let ps = PosSet::new()
+      let ps = Set([])
       self.0[key] = ps
       ps
     }
