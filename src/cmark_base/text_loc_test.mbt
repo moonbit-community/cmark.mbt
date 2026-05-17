@@ -52,8 +52,8 @@ test "TextLoc to_first method test" {
     file: "dummy_file",
     first_ccode: 10,
     last_ccode: 20,
-    first_line: @cmark_base.LinePos(1, 10),
-    last_line: @cmark_base.LinePos(2, 20),
+    first_line: LinePos(1, 10),
+    last_line: LinePos(2, 20),
   }
   let modified_loc = initial_loc.to_first()
   debug_inspect(modified_loc.last_ccode, content="10")

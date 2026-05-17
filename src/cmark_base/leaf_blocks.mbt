@@ -10,6 +10,7 @@ pub(all) enum HtmlBlockEndCond {
 } derive(Debug, Eq)
 
 ///|
+#warnings("-unnecessary_annotation")
 pub(all) enum ListType {
   /// With the given marker.
   Unordered(Char)
@@ -424,9 +425,9 @@ pub fn LineType::html_block_start(
         (tag_last + 2 <= last && s[tag_last + 1:tag_last + 3] == "/>")
       if c != '/' {
         if html_start_cond_1_set.contains(tag) && is_open_end {
-          LineType::HtmlBlockLine(EndCond1) // 1
+          HtmlBlockLine(EndCond1) // 1
         } else if html_start_cond_6_set.contains(tag) && is_open_close_end {
-          LineType::HtmlBlockLine(EndBlank) // 6
+          HtmlBlockLine(EndBlank) // 6
         } else {
           LineType::html_block_start_7_open_tag(s, last~, start~)
         }

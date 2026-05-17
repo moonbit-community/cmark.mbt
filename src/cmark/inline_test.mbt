@@ -588,7 +588,7 @@ test "Inline::to_plain_text with hard line break" {
     @cmark.Node::new(
       {
         layout_before: @cmark.Node::new("", meta~),
-        ty: @cmark.InlineBreakType::Hard,
+        ty: Hard,
         layout_after: @cmark.Node::new("", meta~),
       },
       meta~,
@@ -605,7 +605,7 @@ test "Inline::to_plain_text with soft line break" {
     @cmark.Node::new(
       {
         layout_before: @cmark.Node::new("", meta~),
-        ty: @cmark.InlineBreakType::Soft,
+        ty: Soft,
         layout_after: @cmark.Node::new("", meta~),
       },
       meta~,
