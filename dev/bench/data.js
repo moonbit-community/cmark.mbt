@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1779418341802,
+  "lastUpdate": 1779419704940,
   "repoUrl": "https://github.com/moonbit-community/cmark.mbt",
   "entries": {
     "Benchmark.js Benchmark": [
@@ -10604,6 +10604,61 @@ window.BENCHMARK_DATA = {
             "name": "cmarkNative(spec * 200)",
             "value": 0.53,
             "range": "±1.34%",
+            "unit": "ops/sec",
+            "extra": "5 samples"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "name": "moonbit-community",
+            "username": "moonbit-community"
+          },
+          "committer": {
+            "name": "moonbit-community",
+            "username": "moonbit-community"
+          },
+          "id": "9cb3809858b8cc11348eb475d1c53b237cb64fb9",
+          "message": "update deps",
+          "timestamp": "2026-05-22T02:43:54Z",
+          "url": "https://github.com/moonbit-community/cmark.mbt/pull/126/commits/9cb3809858b8cc11348eb475d1c53b237cb64fb9"
+        },
+        "date": 1779419704494,
+        "tool": "benchmarkjs",
+        "benches": [
+          {
+            "name": "cmarkWASM1(spec * 100)",
+            "value": 0.52,
+            "range": "±1.41%",
+            "unit": "ops/sec",
+            "extra": "5 samples"
+          },
+          {
+            "name": "cmarkWASM1(spec * 200)",
+            "value": 0.26,
+            "range": "±4.54%",
+            "unit": "ops/sec",
+            "extra": "5 samples"
+          },
+          {
+            "name": "cmarkWASM(spec * 100)",
+            "value": 0.84,
+            "range": "±3.76%",
+            "unit": "ops/sec",
+            "extra": "5 samples"
+          },
+          {
+            "name": "cmarkNative(spec * 100)",
+            "value": 1.03,
+            "range": "±0.86%",
+            "unit": "ops/sec",
+            "extra": "5 samples"
+          },
+          {
+            "name": "cmarkNative(spec * 200)",
+            "value": 0.52,
+            "range": "±2.11%",
             "unit": "ops/sec",
             "extra": "5 samples"
           }
