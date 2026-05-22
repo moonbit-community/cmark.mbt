@@ -1,6 +1,6 @@
 import {
-  "myfreess/casefold",
-  "myfreess/charclass/unicode",
+  "moonbit-community/casefold",
+  "moonbit-community/charclass/unicode",
   "moonbit-community/cmark/char",
   "moonbit-community/cmark/cmark_base",
   "moonbitlang/core/cmp",
