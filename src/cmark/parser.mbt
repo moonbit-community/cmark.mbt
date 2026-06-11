@@ -47,7 +47,10 @@ fn Parser::new(
 ) -> Parser {
   {
     file,
-    i,
+    // Replace unpaired surrogates with U+FFFD up front: every scanner
+    // downstream may assume well-formed UTF-16. The replacement is
+    // unit-for-unit, so character positions are preserved.
+    i: @char.utf_16_sanitize(i),
     buf: StringBuilder::new(size_hint=512),
     no_locs: !locs,
     no_layouts: !layout,

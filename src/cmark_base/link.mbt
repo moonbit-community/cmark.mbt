@@ -182,13 +182,17 @@ pub fn[A] link_label(
     if @char.is_ascii_blank(prev) && !b.is_empty() {
       b.write_char(' ')
     }
-    let mut u = s.get_char(k).unwrap()
+    // Indices are UTF-16 code units, so advance by the char's UTF-16
+    // length; unpaired surrogates normalize to U+FFFD.
+    let mut u = match @char.at_checked(s, k) {
+      Ok(c) => c
+      Err(_) => @char.rep
+    }
     if u == '\u{0}' {
       u = @char.rep
     }
-    let k1 = k + @char.length_utf8(u.to_int())
+    let k1 = k + @char.length_utf16(u.to_int())
     b.write_char(@char.to_ascii_lower(u))
-    let prev = s.code_unit_at(k).unsafe_to_char()
-    continue line, prev, start, count + 1, k1
+    continue line, u, start, count + 1, k1
   }
 }

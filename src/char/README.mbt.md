@@ -61,7 +61,7 @@ test "string navigation" {
   inspect(@char.next_char(s, last=0, after=7), content=" ")
 
   // Navigate to previous character
-  inspect(@char.prev_char(s, first=7, before=9), content="世")
+  inspect(@char.prev_char(s, first=7, before=9), content="界")
 }
 ```
 

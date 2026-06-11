@@ -197,15 +197,19 @@ pub fn CodeBlock::make_fence(self : CodeBlock) -> (Char, Count) {
 pub fn CodeBlock::language_of_info_string(s : String) -> (String, String)? {
   guard !s.is_empty() else { None }
   let max = s.length() - 1
+  // ASCII whitespace is a single code unit, so scan code units: indexing
+  // chars with `get_char` aborts on the trailing half of a surrogate pair.
   let white = for i = 0; ; i = i + 1 {
-    if i > max || @char.is_ascii_whitespace(s.get_char(i).unwrap()) {
+    if i > max ||
+      (s.code_unit_at(i).to_char() is Some(c) && @char.is_ascii_whitespace(c)) {
       break i
     }
   }
   let rem_first = @cmark_base.first_non_blank(s, last=max, start=white)
-  let lang = s[0:white].to_owned()
+  let buf = StringBuilder::new()
+  let lang = @char.utf_16_clean_raw(buf, s, first=0, last=white - 1)
   guard !lang.is_empty() else { None }
-  Some((lang, s[rem_first:max + 1].to_owned()))
+  Some((lang, @char.utf_16_clean_raw(buf, s, first=rem_first, last=max)))
 }
 
 ///|
