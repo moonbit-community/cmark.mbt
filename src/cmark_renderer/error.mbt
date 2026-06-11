@@ -4,7 +4,7 @@ pub(all) suberror RenderError {
 } derive(Debug)
 
 ///|
-pub impl Show for RenderError with output(self, logger) {
+pub impl Show for RenderError with fn output(self, logger) {
   match self {
     RenderError(message) => {
       logger.write_string("RenderError(")
