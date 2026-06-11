@@ -158,18 +158,21 @@ fn joined_string(c : Context, join : Joined[String]) -> Unit {
 // }
 
 ///|
-/// Writes `s[start:end)` to `b`. Falls back to per-char writing when a
-/// view boundary would land on an unpaired surrogate, which aborts;
-/// unpaired surrogates are then replaced with U+FFFD.
+/// Writes `s[start:end)` to `b`. A span free of surrogate code units is
+/// well-formed and its boundaries cannot split a pair, so it is bulk
+/// copied. Otherwise it is written one character at a time, emitting
+/// U+FFFD for any unpaired surrogate — this both avoids the abort that a
+/// view boundary on a surrogate half would cause and keeps the output
+/// well-formed even for a programmatically built, unsanitized document.
 fn write_span(b : StringBuilder, s : String, start : Int, end : Int) -> Unit {
   guard start < end && start < s.length() else { return }
-  fn is_trailing_surrogate(k : Int) {
+  let has_surrogate = for k = start {
+    guard k < end else { break false }
     let u = s.code_unit_at(k).to_int()
-    0xDC00 <= u && u <= 0xDFFF
+    guard !(0xD800 <= u && u <= 0xDFFF) else { break true }
+    continue k + 1
   }
-
-  if !is_trailing_surrogate(start) &&
-    (end >= s.length() || !is_trailing_surrogate(end)) {
+  if !has_surrogate {
     b.write_view(s[start:end])
   } else {
     for k = start {

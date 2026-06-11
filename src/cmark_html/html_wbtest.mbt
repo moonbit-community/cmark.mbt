@@ -58,3 +58,44 @@ test "buffer_add_pct_encoded_string with ampersand" {
   buffer_add_pct_encoded_string(b, "test&test") // This will trigger line 211 for "&" handling
   inspect(b.to_string(), content="test&amp;test")
 }
+
+///|
+fn wb_string_of_code_units(units : Array[Int]) -> String {
+  let b = StringBuilder::new()
+  for u in units {
+    b.write_char(u.unsafe_to_char())
+  }
+  b.to_string()
+}
+
+///|
+/// `write_span`'s fast path must not bulk-copy a span that contains a
+/// lone surrogate (which `Parser::new` would normally sanitize away, but
+/// a programmatically built Doc need not): it has to fall back to the
+/// per-code-unit path that emits U+FFFD, keeping the output well-formed.
+test "html escape sanitizes a lone leading surrogate" {
+  let b = StringBuilder::new()
+  buffer_add_html_escaped_string(b, wb_string_of_code_units([0xD800]))
+  inspect(b.to_string(), content="�")
+  b.reset()
+  buffer_add_html_escaped_string(
+    b,
+    wb_string_of_code_units(['a'.to_int(), 0xD800, 'b'.to_int()]),
+  )
+  inspect(b.to_string(), content="a�b")
+  // A valid astral char still round-trips.
+  b.reset()
+  buffer_add_html_escaped_string(b, "a😀b")
+  inspect(b.to_string(), content="a😀b")
+}
+
+///|
+test "pct encode sanitizes a lone leading surrogate" {
+  let b = StringBuilder::new()
+  buffer_add_pct_encoded_string(
+    b,
+    wb_string_of_code_units(['a'.to_int(), 0xD800]),
+  )
+  // U+FFFD percent-encoded as its UTF-8 bytes.
+  inspect(b.to_string(), content="a%EF%BF%BD")
+}
