@@ -595,3 +595,24 @@ test "utf_16_clean_raw with unpaired surrogates" {
     content="a",
   )
 }
+
+///|
+test "utf_16_clean_unref preserves the span boundary on a cut pair" {
+  let buf = StringBuilder::new()
+  // The span [0,0] ends on the leading half of "😀"; the trailing unit
+  // is outside the span and must not leak into the output (it becomes
+  // U+FFFD, matching utf_16_clean_raw).
+  inspect(@char.utf_16_clean_unref(buf, "😀", first=0, last=0), content="�")
+  inspect(
+    @char.utf_16_clean_unesc_unref(buf, "😀", first=0, last=0),
+    content="�",
+  )
+  // The full pair within the span is preserved.
+  inspect(
+    @char.utf_16_clean_unref(buf, "😀", first=0, last=1),
+    content="😀",
+  )
+  // A lone trailing surrogate also becomes U+FFFD.
+  let lone = string_of_code_units(['a'.to_int(), 0xDC00])
+  inspect(@char.utf_16_clean_unref(buf, lone, first=0, last=1), content="a�")
+}

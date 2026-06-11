@@ -411,15 +411,17 @@ fn _utf_16_clean_unesc_unref(
             continue start, next
           }
           match at_checked(s, k) {
-            Ok(d) => {
+            Ok(d) if k + length_utf16(d.to_int()) - 1 <= last => {
               let next = k + length_utf16(d.to_int())
               continue start, next
             }
-            Err(d) => {
-              let next = k + length_utf16(d)
+            // Unpaired surrogate, or a valid pair whose trailing half
+            // lies beyond [last]: emit U+FFFD and keep the span
+            // boundary, matching `utf_16_clean_raw`.
+            _ => {
               flush(last, start, k)
               buf.write_char(rep)
-              continue next, next
+              continue k + 1, k + 1
             }
           }
         }
