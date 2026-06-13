@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1781346625294,
+  "lastUpdate": 1781352540795,
   "repoUrl": "https://github.com/moonbit-community/cmark.mbt",
   "entries": {
     "Benchmark.js Benchmark": [
@@ -11478,6 +11478,86 @@ window.BENCHMARK_DATA = {
             "name": "cmarkNative(spec * 200)",
             "value": 0.54,
             "range": "±1.49%",
+            "unit": "ops/sec",
+            "extra": "5 samples"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "bobzhang1988@gmail.com",
+            "name": "Hongbo Zhang",
+            "username": "bobzhang"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "d9979586000c7309a6441e16086bc4a12ef07ce7",
+          "message": "Add native cmark CLI\n\nAdd a native cmark-style CLI backed by argparse and async IO.\n\nAlso add cram documentation coverage for CLI behavior and run Windows native CI inside the Visual Studio MSVC environment required by moonbitlang/async.",
+          "timestamp": "2026-06-13T20:06:09+08:00",
+          "tree_id": "27a9fae74f7b80663d710223c18c9ea00f198e58",
+          "url": "https://github.com/moonbit-community/cmark.mbt/commit/d9979586000c7309a6441e16086bc4a12ef07ce7"
+        },
+        "date": 1781352540029,
+        "tool": "benchmarkjs",
+        "benches": [
+          {
+            "name": "cmarkJS(spec * 100)",
+            "value": 0.46,
+            "range": "±16.93%",
+            "unit": "ops/sec",
+            "extra": "5 samples"
+          },
+          {
+            "name": "cmarkJS(spec * 200)",
+            "value": 0.22,
+            "range": "±38.58%",
+            "unit": "ops/sec",
+            "extra": "5 samples"
+          },
+          {
+            "name": "cmarkWASM1(spec * 100)",
+            "value": 0.57,
+            "range": "±1.39%",
+            "unit": "ops/sec",
+            "extra": "5 samples"
+          },
+          {
+            "name": "cmarkWASM1(spec * 200)",
+            "value": 0.28,
+            "range": "±0.75%",
+            "unit": "ops/sec",
+            "extra": "5 samples"
+          },
+          {
+            "name": "cmarkWASM(spec * 100)",
+            "value": 0.81,
+            "range": "±5.87%",
+            "unit": "ops/sec",
+            "extra": "5 samples"
+          },
+          {
+            "name": "cmarkWASM(spec * 200)",
+            "value": 0.4,
+            "range": "±5.66%",
+            "unit": "ops/sec",
+            "extra": "5 samples"
+          },
+          {
+            "name": "cmarkNative(spec * 100)",
+            "value": 1.08,
+            "range": "±1.01%",
+            "unit": "ops/sec",
+            "extra": "5 samples"
+          },
+          {
+            "name": "cmarkNative(spec * 200)",
+            "value": 0.54,
+            "range": "±1.12%",
             "unit": "ops/sec",
             "extra": "5 samples"
           }
