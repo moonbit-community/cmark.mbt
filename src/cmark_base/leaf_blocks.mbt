@@ -187,8 +187,8 @@ pub fn LineType::fenced_code_block_start(
   start~ : CharCodePos,
 ) -> LineType {
   fn info(s : String, last, nobt, info_first, k) {
-    let sk = s[k]
     guard k <= last else { Some((info_first, last)) }
+    let sk = s[k]
     guard !(nobt && sk == '`') else { None }
     guard sk is (' ' | '\t') else { info(s, last, nobt, info_first, k + 1) }
     let after_blank = first_non_blank(s, last~, start=k)
@@ -495,7 +495,9 @@ pub fn LineType::ext_footnote_label(
   last~ : CharCodePos,
   start~ : CharCodePos,
 ) -> LineType {
-  guard start <= last && s[start] == '[' && s[start + 1] == '^' else { Nomatch }
+  guard start + 1 <= last && s[start] == '[' && s[start + 1] == '^' else {
+    Nomatch
+  }
   let rbrack = first_non_escaped_char(']', s, last~, start=start + 2)
   let colon = rbrack + 1
   guard colon <= last && s[colon] == ':' && colon - start + 1 >= 5 else {

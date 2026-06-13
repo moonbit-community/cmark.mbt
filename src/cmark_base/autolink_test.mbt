@@ -14,6 +14,11 @@ test "autolink_email invalid start" {
 }
 
 ///|
+test "autolink_email start after last" {
+  debug_inspect(@cmark_base.autolink_email("", start=0), content="None")
+}
+
+///|
 test "autolink_email label sequence ending with invalid char" {
   debug_inspect(@cmark_base.autolink_email("<a@abc$>"), content="None")
 }
