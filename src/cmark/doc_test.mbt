@@ -6034,3 +6034,88 @@ test "basic" {
     ),
   )
 }
+
+///|
+test "list" {
+  let rendered = @cmark.Doc::from_string("-")
+  debug_inspect(
+    rendered,
+    content=(
+      #|{
+      #|  nl: "\n",
+      #|  block: List(
+      #|    {
+      #|      v: {
+      #|        ty: Unordered('-'),
+      #|        tight: true,
+      #|        items: Seq(
+      #|          [
+      #|            {
+      #|              v: {
+      #|                before_marker: 0,
+      #|                marker: {
+      #|                  v: "-",
+      #|                  meta: {
+      #|                    id: 0,
+      #|                    loc: {
+      #|                      file: "-",
+      #|                      first_ccode: -1,
+      #|                      last_ccode: -1,
+      #|                      first_line: LinePos(-1, -1),
+      #|                      last_line: LinePos(-1, -1),
+      #|                    },
+      #|                    extra: None,
+      #|                  },
+      #|                },
+      #|                after_marker: 1,
+      #|                block: BlankLine(
+      #|                  {
+      #|                    v: "",
+      #|                    meta: {
+      #|                      id: 0,
+      #|                      loc: {
+      #|                        file: "-",
+      #|                        first_ccode: -1,
+      #|                        last_ccode: -1,
+      #|                        first_line: LinePos(-1, -1),
+      #|                        last_line: LinePos(-1, -1),
+      #|                      },
+      #|                      extra: None,
+      #|                    },
+      #|                  },
+      #|                ),
+      #|                ext_task_marker: None,
+      #|              },
+      #|              meta: {
+      #|                id: 0,
+      #|                loc: {
+      #|                  file: "-",
+      #|                  first_ccode: -1,
+      #|                  last_ccode: -1,
+      #|                  first_line: LinePos(-1, -1),
+      #|                  last_line: LinePos(-1, -1),
+      #|                },
+      #|                extra: None,
+      #|              },
+      #|            },
+      #|          ],
+      #|        ),
+      #|      },
+      #|      meta: {
+      #|        id: 0,
+      #|        loc: {
+      #|          file: "-",
+      #|          first_ccode: -1,
+      #|          last_ccode: -1,
+      #|          first_line: LinePos(-1, -1),
+      #|          last_line: LinePos(-1, -1),
+      #|        },
+      #|        extra: None,
+      #|      },
+      #|    },
+      #|  ),
+      #|  defs: {},
+      #|}
+    ),
+  )
+}

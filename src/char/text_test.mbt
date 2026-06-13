@@ -517,3 +517,102 @@ test "sub_includes repeated pattern match" {
     content="true",
   )
 }
+
+///|
+fn string_of_code_units(units : Array[Int]) -> String {
+  let b = StringBuilder::new()
+  for u in units {
+    b.write_char(u.unsafe_to_char())
+  }
+  b.to_string()
+}
+
+///|
+test "prev_char returns the immediately preceding char" {
+  // BMP chars are single UTF-16 units: the old implementation scanned
+  // backwards for UTF-8 lead bytes and returned the wrong char.
+  inspect(@char.prev_char("aж*", first=0, before=2), content="ж")
+  inspect(@char.prev_char("a😀*", first=0, before=3), content="😀")
+  inspect(@char.prev_char("ab", first=0, before=1), content="a")
+  inspect(@char.prev_char("ab", first=1, before=1), content=" ")
+}
+
+///|
+test "prev_char and next_char on unpaired surrogates" {
+  let lone_trail = string_of_code_units(['a'.to_int(), 0xDC00, '*'.to_int()])
+  inspect(@char.prev_char(lone_trail, first=0, before=2), content="�")
+  inspect(@char.next_char(lone_trail, last=2, after=0), content="�")
+  let lone_lead = string_of_code_units(['a'.to_int(), 0xD800, '*'.to_int()])
+  inspect(@char.prev_char(lone_lead, first=0, before=2), content="�")
+  inspect(@char.next_char(lone_lead, last=2, after=0), content="�")
+}
+
+///|
+test "prev_char and next_char out-of-range arguments" {
+  inspect(@char.prev_char("ab", first=0, before=99), content=" ")
+  inspect(@char.prev_char("ab", first=-5, before=0), content=" ")
+  inspect(@char.next_char("ab", last=99, after=10), content=" ")
+}
+
+///|
+test "at_checked out of bounds and unpaired surrogates" {
+  debug_inspect(@char.at_checked("a", 5), content="Err(0)")
+  debug_inspect(@char.at_checked("a", -1), content="Err(0)")
+  // A leading surrogate must be followed by a trailing surrogate.
+  let lead_then_ascii = string_of_code_units([0xD800, 'a'.to_int()])
+  debug_inspect(@char.at_checked(lead_then_ascii, 0), content="Err(55296)")
+}
+
+///|
+test "utf_16_sanitize" {
+  // Well-formed strings are returned as-is.
+  inspect(@char.utf_16_sanitize("hello 😀 world"), content="hello 😀 world")
+  inspect(@char.utf_16_sanitize(""), content="")
+  // Unpaired surrogates are replaced unit-for-unit.
+  let dirty = string_of_code_units(['a'.to_int(), 0xDC00, 0xD800, 'b'.to_int()])
+  inspect(@char.utf_16_sanitize(dirty), content="a��b")
+  inspect(@char.utf_16_sanitize(dirty).length(), content="4")
+  // A valid pair straddling unpaired units survives.
+  let mixed = string_of_code_units([0xDC00, 0xD83D, 0xDE00, 0xD800])
+  inspect(@char.utf_16_sanitize(mixed), content="�😀�")
+}
+
+///|
+test "utf_16_clean_raw with unpaired surrogates" {
+  let buf = StringBuilder::new()
+  let lone = string_of_code_units([0xDC00])
+  inspect(@char.utf_16_clean_raw(buf, lone, first=0, last=0), content="�")
+  let mixed = string_of_code_units(['a'.to_int(), 0xDC00, 'b'.to_int()])
+  inspect(@char.utf_16_clean_raw(buf, mixed, first=0, last=2), content="a�b")
+  // A span that cuts a surrogate pair in half.
+  let emoji = "😀"
+  inspect(@char.utf_16_clean_raw(buf, emoji, first=0, last=0), content="�")
+  // A clean span followed by an unpaired trailing surrogate: the span
+  // boundary must not abort.
+  let clean_then_trail = string_of_code_units(['a'.to_int(), 0xDC00])
+  inspect(
+    @char.utf_16_clean_raw(buf, clean_then_trail, first=0, last=0),
+    content="a",
+  )
+}
+
+///|
+test "utf_16_clean_unref preserves the span boundary on a cut pair" {
+  let buf = StringBuilder::new()
+  // The span [0,0] ends on the leading half of "😀"; the trailing unit
+  // is outside the span and must not leak into the output (it becomes
+  // U+FFFD, matching utf_16_clean_raw).
+  inspect(@char.utf_16_clean_unref(buf, "😀", first=0, last=0), content="�")
+  inspect(
+    @char.utf_16_clean_unesc_unref(buf, "😀", first=0, last=0),
+    content="�",
+  )
+  // The full pair within the span is preserved.
+  inspect(
+    @char.utf_16_clean_unref(buf, "😀", first=0, last=1),
+    content="😀",
+  )
+  // A lone trailing surrogate also becomes U+FFFD.
+  let lone = string_of_code_units(['a'.to_int(), 0xDC00])
+  inspect(@char.utf_16_clean_unref(buf, lone, first=0, last=1), content="a�")
+}

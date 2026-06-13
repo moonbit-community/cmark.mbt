@@ -193,8 +193,8 @@ pub fn LineType::fenced_code_block_start(
   start~ : CharCodePos,
 ) -> LineType {
   fn info(s : String, last, nobt, info_first, k) {
-    let sk = s.code_unit_at(k)
     guard k <= last else { Some((info_first, last)) }
+    let sk = s.code_unit_at(k)
     guard !(nobt && sk == '`') else { None }
     guard sk is (' ' | '\t') else { info(s, last, nobt, info_first, k + 1) }
     let after_blank = first_non_blank(s, last~, start=k)
@@ -410,7 +410,16 @@ pub fn LineType::html_block_start(
         }
         continue i + 1
       }
-      let tag = s[tag_first:tag_last + 1].to_owned().to_lower()
+      // The tag name is ASCII alphabetic: build it from code units, a
+      // view boundary at tag_last + 1 could land on an unpaired
+      // surrogate and abort.
+      let tag = {
+        let b = StringBuilder::new(size_hint=tag_last - tag_first + 1)
+        for i in tag_first..<=tag_last {
+          b.write_char(@char.to_ascii_lower(s.code_unit_at(i).unsafe_to_char()))
+        }
+        b.to_string()
+      }
       let is_open_end = {
         let n = tag_last + 1
         n > last ||
@@ -421,7 +430,11 @@ pub fn LineType::html_block_start(
         | 62)
       }
       let is_open_close_end = is_open_end ||
-        (tag_last + 2 <= last && s[tag_last + 1:tag_last + 3] == "/>")
+        (
+          tag_last + 2 <= last &&
+          s.code_unit_at(tag_last + 1) == '/' &&
+          s.code_unit_at(tag_last + 2) == '>'
+        )
       if c != '/' {
         if html_start_cond_1_set.contains(tag) && is_open_end {
           HtmlBlockLine(EndCond1) // 1
@@ -453,19 +466,18 @@ fn LineType::html_block_end_cond_1(
       continue k + 1
     }
     let next = k + 2
-    let is_end_tag = {
-      let lower_s_sub = lower_s[next:]
-      match s.code_unit_at(next) {
-        'p' => lower_s_sub.has_prefix("pre>")
-        's' =>
-          if s.code_unit_at(k + 3) == 't' {
-            lower_s_sub.has_prefix("style>")
-          } else {
-            lower_s_sub.has_prefix("script>")
-          }
-        't' => lower_s_sub.has_prefix("textarea>")
-        _ => false
-      }
+    // Only create the view once the unit at `next` is a known ASCII
+    // char: a view boundary on an unpaired surrogate aborts.
+    let is_end_tag = match s.code_unit_at(next) {
+      'p' => lower_s[next:].has_prefix("pre>")
+      's' =>
+        if s.code_unit_at(k + 3) == 't' {
+          lower_s[next:].has_prefix("style>")
+        } else {
+          lower_s[next:].has_prefix("script>")
+        }
+      't' => lower_s[next:].has_prefix("textarea>")
+      _ => false
     }
     guard !is_end_tag else { break true }
     continue k + 1
@@ -509,7 +521,7 @@ pub fn LineType::ext_footnote_label(
   last~ : CharCodePos,
   start~ : CharCodePos,
 ) -> LineType {
-  guard start <= last &&
+  guard start + 1 <= last &&
     s.code_unit_at(start) == '[' &&
     s.code_unit_at(start + 1) == '^' else {
     Nomatch

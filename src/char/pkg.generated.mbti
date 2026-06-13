@@ -46,6 +46,8 @@ pub fn utf_16_clean_unesc_unref(StringBuilder, String, first~ : Int, last~ : Int
 
 pub fn utf_16_clean_unref(StringBuilder, String, first~ : Int, last~ : Int) -> String
 
+pub fn utf_16_sanitize(String) -> String
+
 // Errors
 
 // Types and methods

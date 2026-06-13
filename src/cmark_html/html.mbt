@@ -158,12 +158,46 @@ fn joined_string(c : Context, join : Joined[String]) -> Unit {
 // }
 
 ///|
+/// Writes `s[start:end)` to `b`. A span free of surrogate code units is
+/// well-formed and its boundaries cannot split a pair, so it is bulk
+/// copied. Otherwise it is written one character at a time, emitting
+/// U+FFFD for any unpaired surrogate — this both avoids the abort that a
+/// view boundary on a surrogate half would cause and keeps the output
+/// well-formed even for a programmatically built, unsanitized document.
+fn write_span(b : StringBuilder, s : String, start : Int, end : Int) -> Unit {
+  guard start < end && start < s.length() else { return }
+  let has_surrogate = for k = start {
+    guard k < end else { break false }
+    let u = s.code_unit_at(k).to_int()
+    guard !(0xD800 <= u && u <= 0xDFFF) else { break true }
+    continue k + 1
+  }
+  if !has_surrogate {
+    b.write_view(s[start:end])
+  } else {
+    for k = start {
+      guard k < end else { break }
+      match @char.at_checked(s, k) {
+        Ok(c) => {
+          b.write_char(c)
+          continue k + @char.length_utf16(c.to_int())
+        }
+        Err(_) => {
+          b.write_char(@char.rep)
+          continue k + 1
+        }
+      }
+    }
+  }
+}
+
+///|
 fn buffer_add_html_escaped_string(b : StringBuilder, s : String) -> Unit {
   let len = s.length()
   let max_idx = len - 1
   fn flush(b : StringBuilder, start : Int, i : Int) {
     if start < len {
-      b.write_view(s[start:i])
+      write_span(b, s, start, i)
     }
   }
 
@@ -244,15 +278,35 @@ fn buffer_add_pct_encoded_string(b : StringBuilder, s : String) -> Unit { // Per
     | '@')
   }
 
-  let flush = fn(b : StringBuilder, max : Int, start : Int, i : Int) -> Unit {
-    if start <= max {
-      b.write_view(s[start:i])
+  fn pct_byte(b : StringBuilder, byte : Int) {
+    b.write_char('%')
+    b.write_char(unsafe_hexdigit((byte >> 4) & 0xF))
+    b.write_char(unsafe_hexdigit(byte & 0xF))
+  }
+
+  // Percent-encodes the UTF-8 bytes of code point [cp].
+  fn pct_utf8(b : StringBuilder, cp : Int) {
+    if cp < 0x80 {
+      pct_byte(b, cp)
+    } else if cp < 0x800 {
+      pct_byte(b, 0xC0 | (cp >> 6))
+      pct_byte(b, 0x80 | (cp & 0x3F))
+    } else if cp < 0x10000 {
+      pct_byte(b, 0xE0 | (cp >> 12))
+      pct_byte(b, 0x80 | ((cp >> 6) & 0x3F))
+      pct_byte(b, 0x80 | (cp & 0x3F))
+    } else {
+      pct_byte(b, 0xF0 | (cp >> 18))
+      pct_byte(b, 0x80 | ((cp >> 12) & 0x3F))
+      pct_byte(b, 0x80 | ((cp >> 6) & 0x3F))
+      pct_byte(b, 0x80 | (cp & 0x3F))
     }
   }
+
   let max = s.length() - 1
   for start = 0, i = 0 {
     if i > max {
-      flush(b, max, start, i)
+      write_span(b, s, start, i)
       break
     }
     let next = i + 1
@@ -260,24 +314,29 @@ fn buffer_add_pct_encoded_string(b : StringBuilder, s : String) -> Unit { // Per
       c if c.to_char() is Some(c) && (@char.is_ascii_alphanum(c) || is_delim(c)) =>
         continue start, next
       '&' => {
-        flush(b, max, start, i)
+        write_span(b, s, start, i)
         b.write_string("&amp;")
         continue next, next
       }
       '\'' => {
-        flush(b, max, start, i)
+        write_span(b, s, start, i)
         b.write_string("&apos;")
         continue next, next
       }
-      c => {
-        flush(b, max, start, i)
-        let c_int = c.to_int()
-        let hi = (c_int >> 4) & 0xF
-        let lo = c_int & 0xF
-        b.write_char('%')
-        b.write_char(unsafe_hexdigit(hi))
-        b.write_char(unsafe_hexdigit(lo))
-        continue next, next
+      _ => {
+        write_span(b, s, start, i)
+        match @char.at_checked(s, i) {
+          Ok(d) => {
+            pct_utf8(b, d.to_int())
+            let next = i + @char.length_utf16(d.to_int())
+            continue next, next
+          }
+          // Unpaired surrogate: encode U+FFFD.
+          Err(_) => {
+            pct_utf8(b, @char.rep.to_int())
+            continue next, next
+          }
+        }
       }
     }
   }
