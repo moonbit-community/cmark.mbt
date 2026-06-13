@@ -88,13 +88,17 @@ test "renderer_error_handling_inline" {
   )
   let buf = StringBuilder::new(size_hint=0)
   let ctx = @cmark_renderer.Context::new(r, buf)
-  let result = try? ctx.inline(@cmark.Inline::empty())
-  debug_inspect(
-    result,
-    content=(
-      #|Err(RenderError("unknown inline type"))
-    ),
-  )
+  try ctx.inline(@cmark.Inline::empty()) catch {
+    e =>
+      debug_inspect(
+        e,
+        content=(
+          #|RenderError("unknown inline type")
+        ),
+      )
+  } noraise {
+    _ => fail("expected inline renderer to raise")
+  }
 }
 
 ///|
@@ -104,13 +108,17 @@ test "renderer_error_handling_block" {
   )
   let buf = StringBuilder::new(size_hint=0)
   let ctx = @cmark_renderer.Context::new(r, buf)
-  let result = try? ctx.block(@cmark.Block::empty())
-  debug_inspect(
-    result,
-    content=(
-      #|Err(RenderError("unknown block type"))
-    ),
-  )
+  try ctx.block(@cmark.Block::empty()) catch {
+    e =>
+      debug_inspect(
+        e,
+        content=(
+          #|RenderError("unknown block type")
+        ),
+      )
+  } noraise {
+    _ => fail("expected block renderer to raise")
+  }
 }
 
 ///|
@@ -120,13 +128,17 @@ test "renderer_error_handling_doc" {
   )
   let buf = StringBuilder::new(size_hint=0)
   let ctx = @cmark_renderer.Context::new(r, buf)
-  let result = try? ctx.doc(@cmark.Doc::empty())
-  debug_inspect(
-    result,
-    content=(
-      #|Err(RenderError("unhandled doc"))
-    ),
-  )
+  try ctx.doc(@cmark.Doc::empty()) catch {
+    e =>
+      debug_inspect(
+        e,
+        content=(
+          #|RenderError("unhandled doc")
+        ),
+      )
+  } noraise {
+    _ => fail("expected doc renderer to raise")
+  }
 }
 
 ///|
