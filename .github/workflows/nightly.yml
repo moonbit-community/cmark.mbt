@@ -62,6 +62,7 @@ jobs:
           moon test --target js --release
           moon test --target native
           moon test --target native --release
+          moon cram test cram
 
       - name: moon test on windows
         if: ${{ matrix.os.name == 'windows-latest' }}
@@ -84,3 +85,4 @@ jobs:
           Enter-VsDevShell -VsInstallPath $vsPath -SkipAutomaticLocation -DevCmdArguments "-arch=x64"
           moon test --target native
           moon test --target native --release
+          moon cram test cram
