@@ -7,7 +7,7 @@ pub fn run_of(
   last~ : CharCodePos,
   start~ : CharCodePos,
 ) -> Last {
-  if start > last || s.code_unit_at(start) != char.to_int().to_uint16() {
+  if start > last || s[start] != char.to_int().to_uint16() {
     return start - 1
   }
   run_of(char~, s, last~, start=start + 1)
@@ -22,9 +22,7 @@ pub fn first_non_blank(
   start~ : CharCodePos,
 ) -> CharCodePos {
   for k in start..<=last {
-    guard s.code_unit_at(k).to_char() is Some(c) && @char.is_ascii_blank(c) else {
-      return k
-    }
+    guard s[k].to_char() is Some(c) && @char.is_ascii_blank(c) else { return k }
   }
   last + 1
 }
@@ -46,7 +44,7 @@ pub fn last_non_blank(
   if start < first {
     return first - 1
   }
-  match s.code_unit_at(start) {
+  match s[start] {
     ' ' | '\t' => last_non_blank(s, first~, start=start - 1)
     _ => start
   }
@@ -63,7 +61,7 @@ pub fn rev_drop_spaces(
   if start < first {
     return first - 1
   }
-  match s.code_unit_at(start) {
+  match s[start] {
     ' ' => rev_drop_spaces(s, first~, start=start - 1)
     _ => start
   }
@@ -109,7 +107,7 @@ fn[A] accept_to(
       let start = first_non_blank_in_span(s, new_line)
       continue new_line, start, start
     }
-    if s.code_unit_at(k) == char.to_int().to_uint16() {
+    if s[k] == char.to_int().to_uint16() {
       push_span(line~, start, k, spans)
       break Some((line, k))
     }
@@ -140,11 +138,11 @@ fn[A] accept_upto(
       let prev_bslash = false
       continue newline, prev_bslash, start, start
     } else {
-      if s.code_unit_at(k) == char.to_int().to_uint16() && !prev_bslash {
+      if s[k] == char.to_int().to_uint16() && !prev_bslash {
         push_span(line~, start, k - 1, spans)
         break Some((line, k))
       }
-      let prev_bslash = s.code_unit_at(k) == '\\' && !prev_bslash
+      let prev_bslash = s[k] == '\\' && !prev_bslash
       continue line, prev_bslash, start, k + 1
     }
   }
@@ -209,10 +207,7 @@ pub fn first_non_escaped_char(
 ) -> CharCodePos {
   for k = start; ; k = k + 1 {
     if k > last ||
-      (
-        s.code_unit_at(k) == c.to_int().to_uint16() &&
-        (k == start || s.code_unit_at(k - 1) != '\\')
-      ) {
+      (s[k] == c.to_int().to_uint16() && (k == start || s[k - 1] != '\\')) {
       break k
     }
   }

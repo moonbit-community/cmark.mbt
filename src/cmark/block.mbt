@@ -180,7 +180,7 @@ pub fn CodeBlock::make_fence(self : CodeBlock) -> (Char, Count) {
   for n in self.code {
     let c = n.v
     let mut k = 0
-    while k < c.length() && c.code_unit_at(k) == ch.to_int().to_uint16() {
+    while k < c.length() && c[k] == ch.to_int().to_uint16() {
       // TODO(upstream): provide UInt16 ~ Char comparison
       k += 1
     }
@@ -467,12 +467,12 @@ fn Table::parse_sep_row(
       [(Text({ v, meta }), TableCellLayout(("", ""))), .. cs] => {
         guard !v.is_empty() else { break None }
         let max = v.length() - 1
-        let first_colon = v.code_unit_at(0) == ':'
-        let last_colon = v.code_unit_at(max) == ':'
+        let first_colon = v[0] == ':'
+        let last_colon = v[max] == ':'
         let first = if first_colon { 1 } else { 0 }
         let last = if last_colon { max - 1 } else { max }
         let all_dashes = for i in first..<=last {
-          guard v.code_unit_at(i) == '-' else { break false }
+          guard v[i] == '-' else { break false }
         } nobreak {
           true
         }

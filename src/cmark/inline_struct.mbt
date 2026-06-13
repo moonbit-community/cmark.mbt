@@ -243,8 +243,7 @@ fn Token::newline(
   // https://spec.commonmark.org/current/#hard-line-breaks
   let { first, last, .. } = prev_line
   let non_space = @cmark_base.rev_drop_spaces(s, first~, start=last)
-  let (start, break_ty) = if non_space == last &&
-    s.code_unit_at(non_space) == '\\' {
+  let (start, break_ty) = if non_space == last && s[non_space] == '\\' {
     (non_space, Hard)
   } else {
     let start = non_space + 1
@@ -275,7 +274,7 @@ fn tokens_try_add_image_link_start(
   start~ : Int,
 ) -> Int {
   let next = start + 1
-  guard next <= line.last && s.code_unit_at(next) == '[' else { next }
+  guard next <= line.last && s[next] == '[' else { next }
   toks.push(LinkStart({ start, image: true }))
   next + 1
 }
@@ -288,7 +287,7 @@ fn tokens_try_add_emphasis(
   start~ : Int,
 ) -> Int {
   let { first, last, .. } = line
-  let char = s.code_unit_at(start).unsafe_to_char()
+  let char = s[start].unsafe_to_char()
   let run_last = @cmark_base.run_of(char~, last~, s, start=start + 1)
   let count = run_last - start + 1
   let prev_char = @char.prev_char(s, first~, before=start)
@@ -320,7 +319,7 @@ fn tokens_try_add_strikethrough_marks(
   start~ : Int,
 ) -> Int {
   let { first, last, .. } = line
-  let char = s.code_unit_at(start).unsafe_to_char()
+  let char = s[start].unsafe_to_char()
   let run_last = @cmark_base.run_of(char~, s, last~, start=start + 1)
   let count = run_last - start + 1
   let next = run_last + 1
@@ -341,7 +340,7 @@ fn tokens_try_add_math_span_marks(
   start~ : Int,
 ) -> Int {
   let { first, last, .. } = line
-  let char = s.code_unit_at(start).unsafe_to_char()
+  let char = s[start].unsafe_to_char()
   let run_last = @cmark_base.run_of(char~, s, last~, start=start + 1)
   let count = run_last - start + 1
   let next = run_last + 1
@@ -378,7 +377,7 @@ fn tokenize(
         }
       }
     }
-    let next = match s.code_unit_at(k) {
+    let next = match s[k] {
       '\\' => continue lines, line, !prev_bslash, k + 1
       '`' => tokens_add_backtick(toks, s, line, prev_bslash~, start=k)
       _ if prev_bslash => k + 1
@@ -550,7 +549,7 @@ fn Parser::emphasis_token(
   emph : Inline,
 ) -> Token {
   let text_loc = self.text_loc_of_lines(first~, last~, first_line~, last_line~)
-  let delim = self.i.code_unit_at(first).unsafe_to_char()
+  let delim = self.i[first].unsafe_to_char()
   let emph = { v: { delim, inline: emph }, meta: self.meta(text_loc) }
   let inline = if strong { StrongEmphasis(emph) } else { Emphasis(emph) }
   Inline({ start: first, inline, endline: last_line, next: last + 1 })
@@ -887,7 +886,7 @@ fn Parser::try_inline_link_remainder(
             (
               line,
               after_dest,
-              self.i.code_unit_at(start).unsafe_to_char(),
+              self.i[start].unsafe_to_char(),
               Some(title),
               last + 1,
             )
@@ -903,7 +902,7 @@ fn Parser::try_inline_link_remainder(
       start~,
     )
     .unwrap_or((line, [], start))
-  if last > line.last || self.i.code_unit_at(last) != ')' {
+  if last > line.last || self.i[last] != ')' {
     return None
   }
   let layout : LinkDefinitionLayout = {
@@ -1010,7 +1009,7 @@ fn Parser::try_link_def(
   let link = if next > line.last {
     self.try_shortcut_reflink(start_rev_toks, start_line, image~, start~)
   } else {
-    match self.i.code_unit_at(next) {
+    match self.i[next] {
       '(' =>
         match
           self.try_inline_link_remainder(rev_toks, line, image~, start=next) {
@@ -1025,7 +1024,7 @@ fn Parser::try_link_def(
         }
       '[' => {
         let next1 = next + 1
-        if next1 <= line.last && self.i.code_unit_at(next1) == ']' {
+        if next1 <= line.last && self.i[next1] == ']' {
           self.try_collapsed_reflink(start_rev_toks, start_line, image~, start~)
         } else {
           let r = self.try_full_reflink_remainder(

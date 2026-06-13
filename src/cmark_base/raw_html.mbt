@@ -29,12 +29,11 @@ fn attribute_name(s : String, last? : Int = -1, start? : Int = 0) -> Next? {
     }
   }
 
-  if start > last ||
-    !(s.code_unit_at(start).to_char() is Some(c) && char_is_start(c)) {
+  if start > last || !(s[start].to_char() is Some(c) && char_is_start(c)) {
     return None
   }
   for k = start + 1 {
-    if k > last || !(s.code_unit_at(k).to_char() is Some(c) && char_is_cont(c)) {
+    if k > last || !(s[k].to_char() is Some(c) && char_is_cont(c)) {
       break Some(k - 1)
     }
     continue k + 1
@@ -54,7 +53,7 @@ fn[A] attribute_value(
   if start > line.last {
     return None
   }
-  let c = s.code_unit_at(start).unsafe_to_char()
+  let c = s[start].unsafe_to_char()
   // https://spec.commonmark.org/current/#double-quoted-attribute-value
   // https://spec.commonmark.org/current/#unquoted-attribute-value
   if c is ('"' | '\'') {
@@ -66,7 +65,7 @@ fn[A] attribute_value(
   }
 
   for k = start + 1 {
-    if k <= line.last && s.code_unit_at(k).to_char() is Some(c) && is_cont(c) {
+    if k <= line.last && s[k].to_char() is Some(c) && is_cont(c) {
       continue k + 1
     }
     let last = k - 1
@@ -96,7 +95,7 @@ fn[A] attribute(
     None
   }
   let nb = last_blank + 1
-  if s.code_unit_at(nb) != '=' {
+  if s[nb] != '=' {
     return Some((line, end_name)) // No value
   }
   push_span(line=line1, nb, nb, spans.val)
@@ -145,14 +144,14 @@ fn[A] open_tag(
       break None
     }
     let next = last_blank + 1
-    break match s.code_unit_at(next) {
+    break match s[next] {
       '>' => {
         push_span(line~, next, next, spans.val)
         Some((line, spans.val, next))
       }
       '/' => {
         let last = next + 1
-        if last > line.last || s.code_unit_at(last) != '>' {
+        if last > line.last || s[last] != '>' {
           None
         } else {
           push_span(line~, next, last, spans.val)
@@ -195,7 +194,7 @@ fn[A] closing_tag(
     None
   }
   let last = last_blank + 1
-  if s.code_unit_at(last) != '>' {
+  if s[last] != '>' {
     return None
   }
   push_span(line~, last, last, spans.val)
@@ -235,11 +234,11 @@ fn[A] processing_instruction(
       let start = first_non_blank_in_span(s, new_line)
       continue new_line, start, start
     }
-    if s.code_unit_at(k) != 63 { // '?' has character code 63
+    if s[k] != 63 { // '?' has character code 63
       continue line, start, k + 1
     }
     let last = k + 1
-    if last <= line.last && s.code_unit_at(last) == 62 { // '>' has character code 62
+    if last <= line.last && s[last] == 62 { // '>' has character code 62
       push_span(line~, start, last, acc)
       break Some((line, acc, last))
     }
@@ -258,15 +257,13 @@ fn[A] html_comment(
   start~ : CharCodePos,
 ) -> (LineSpan, Array[Span], CharCodePos)? {
   // Check we have at least <!-- and not <!--> or <!--->.
-  if start + 3 > line.last || s.code_unit_at(start + 3) != '-' {
+  if start + 3 > line.last || s[start + 3] != '-' {
     return None
   }
-  if start + 4 <= line.last && s.code_unit_at(start + 4) == '>' {
+  if start + 4 <= line.last && s[start + 4] == '>' {
     return None
   }
-  if start + 5 <= line.last &&
-    s.code_unit_at(start + 4) == '-' &&
-    s.code_unit_at(start + 5) == '>' {
+  if start + 5 <= line.last && s[start + 4] == '-' && s[start + 5] == '>' {
     return None
   }
   let acc = []
@@ -277,10 +274,10 @@ fn[A] html_comment(
       let start = first_non_blank_in_span(s, new_line)
       continue new_line, start, start
     }
-    if s.code_unit_at(k) == '-' && s.code_unit_at(k - 1) != '-' {
+    if s[k] == '-' && s[k - 1] != '-' {
       let last = k + 2
-      if last <= line.last && s.code_unit_at(k + 1) == '-' {
-        break if s.code_unit_at(last) == '>' { // And we do not end with -
+      if last <= line.last && s[k + 1] == '-' {
+        break if s[last] == '>' { // And we do not end with -
           push_span(line~, start, last, acc)
           Some((line, acc, last))
         } else {
@@ -316,13 +313,11 @@ fn[A] cdata_section(
       let start = first_non_blank_in_span(s, new_line)
       continue new_line, start, start
     }
-    if s.code_unit_at(k) != ']' {
+    if s[k] != ']' {
       continue line, start, k + 1
     }
     let last = k + 2
-    if last <= line.last &&
-      s.code_unit_at(k + 1) == ']' &&
-      s.code_unit_at(last) == '>' { // ]>
+    if last <= line.last && s[k + 1] == ']' && s[last] == '>' { // ]>
       push_span(line~, start, last, acc)
       break Some((line, acc, last))
     }
@@ -341,14 +336,14 @@ pub fn[A] raw_html(
 ) -> (LineSpan, Array[Span], CharCodePos)? {
   let next = start + 1
   let { last, .. } = line
-  guard next <= last && s.code_unit_at(start) == '<' else { None }
-  match s.code_unit_at(next) {
+  guard next <= last && s[start] == '<' else { None }
+  match s[next] {
     '/' => closing_tag(next_line~, s, lines, line~, start~)
     '?' => processing_instruction(next_line, s, lines, line~, start~)
     '!' => {
       let next = next + 1
       guard next <= last else { None }
-      match s.code_unit_at(next).unsafe_to_char() {
+      match s[next].unsafe_to_char() {
         '-' => html_comment(next_line~, s, lines, line~, start~)
         '[' => cdata_section(next_line~, s, lines, line~, start~)
         c => {
