@@ -50,6 +50,7 @@ jobs:
           git diff --exit-code
 
       - name: moon test
+        if: ${{ matrix.os.name != 'windows-latest' }}
         env:
           OCAMLRUNPARAM: b
         run: |
@@ -59,5 +60,27 @@ jobs:
           moon test --target wasm-gc --release
           moon test --target js
           moon test --target js --release
+          moon test --target native
+          moon test --target native --release
+
+      - name: moon test on windows
+        if: ${{ matrix.os.name == 'windows-latest' }}
+        env:
+          OCAMLRUNPARAM: b
+        run: |
+          moon test --target wasm
+          moon test --target wasm --release
+          moon test --target wasm-gc
+          moon test --target wasm-gc --release
+          moon test --target js
+          moon test --target js --release
+
+          $vswhere = "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe"
+          $vsPath = & $vswhere -latest -products * -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath
+          if (-not $vsPath) {
+            throw "Visual Studio with MSVC toolchain not found"
+          }
+          Import-Module "$vsPath\Common7\Tools\Microsoft.VisualStudio.DevShell.dll"
+          Enter-VsDevShell -VsInstallPath $vsPath -SkipAutomaticLocation -DevCmdArguments "-arch=x64"
           moon test --target native
           moon test --target native --release
