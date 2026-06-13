@@ -33,6 +33,27 @@ Once you have the toolchain installed, you can build this project by running the
 moon build
 ```
 
+## CLI
+
+The repository includes a native command-line renderer that follows the basic
+`cmark` input model: read Markdown from stdin, `-`, or one or more file paths and
+write rendered HTML to stdout.
+
+```sh
+printf '# Hello\n' | moon run src/cmark_cli -- -
+moon run src/cmark_cli -- README.md
+moon run src/cmark_cli -- --safe --to xhtml README.md
+```
+
+For reference comparisons, install the upstream CommonMark CLI and compare
+against the MoonBit executable:
+
+```sh
+brew install cmark
+printf '# Hello\n' | cmark --unsafe
+printf '# Hello\n' | moon run src/cmark_cli -- -
+```
+
 ## Testing
 
 With the MoonBit toolchain installed, you can run the tests by executing the following command:
