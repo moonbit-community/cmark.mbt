@@ -53,14 +53,19 @@ pub fn autolink_uri(s : String, last? : Int = -1, start? : Int = 0) -> Last? {
   let char_is_scheme = fn(c) {
     @char.is_ascii_alphanum(c) || c is ('+' | '-' | '.')
   }
-  let char_is_uri = fn(c : Char) {
-    !(c is ('\u{0}'..='\u{1f}' | '\u{7f}' | '<' | '>' | ' '))
+  // Code units outside the excluded ASCII set are URI chars; surrogate
+  // halves belong to non-ASCII chars, which are allowed.
+  let unit_is_uri = fn(u : UInt16) {
+    match u.to_char() {
+      Some(c) => !(c is ('\u{0}'..='\u{1f}' | '\u{7f}' | '<' | '>' | ' '))
+      None => true
+    }
   }
   let rest = fn(s : String, last, k) {
     for k in k..<=last {
-      let sk = s.get_char(k).unwrap()
-      guard !char_is_uri(sk) else { continue }
-      break if sk == '>' { Some(k) } else { None }
+      let u = s[k]
+      guard !unit_is_uri(u) else { continue }
+      break if u == '>' { Some(k) } else { None }
     } nobreak {
       None
     }
@@ -68,12 +73,13 @@ pub fn autolink_uri(s : String, last? : Int = -1, start? : Int = 0) -> Last? {
   let next = start + 1
   guard next <= last &&
     s[start] == '<' &&
-    s.get_char(next).unwrap().is_ascii_alphabetic() else {
+    s[next].to_char() is Some(first_scheme_char) &&
+    first_scheme_char.is_ascii_alphabetic() else {
     return None
   }
   for c = 1, k = next + 1 {
     guard k <= last else { break None }
-    let sk = s.get_char(k).unwrap()
+    guard s[k].to_char() is Some(sk) else { break None }
     if char_is_scheme(sk) && c <= 32 {
       continue c + 1, k + 1
     }
