@@ -1,27 +1,18 @@
 ///|
+fn code_point_of_surrogate_pair(leading : UInt16, trailing : UInt16) -> Char {
+  ((leading.to_int() - 0xD800) * 0x400 + trailing.to_int() - 0xDC00 + 0x10000).unsafe_to_char()
+}
+
+///|
 pub fn at_checked(s : StringView, idx : Int) -> Result[Char, Int] {
-  let min_leading_surrogate : UInt16 = 0xD800
-  let max_leading_surrogate : UInt16 = 0xDBFF
-  let min_trailing_surrogate : UInt16 = 0xDC00
-  let max_trailing_surrogate : UInt16 = 0xDFFF
-  fn is_leading_surrogate(c : UInt16) -> Bool {
-    min_leading_surrogate <= c && c <= max_leading_surrogate
-  }
-
-  fn is_trailing_surrogate(c : UInt16) -> Bool {
-    min_trailing_surrogate <= c && c <= max_trailing_surrogate
-  }
-
-  fn code_point_of_surrogate_pair(leading : UInt16, trailing : UInt16) -> Char {
-    ((leading.to_int() - 0xD800) * 0x400 + trailing.to_int() - 0xDC00 + 0x10000).unsafe_to_char()
-  }
-
+  guard 0 <= idx && idx < s.length() else { Err(0) }
   let c1 = s[idx]
-  if is_leading_surrogate(c1) {
-    guard idx + 1 < s.length() else { Err(c1.to_int()) }
-    let c2 = s[idx + 1]
-    Ok(code_point_of_surrogate_pair(c1, c2))
-  } else if is_trailing_surrogate(c1) {
+  if c1.is_leading_surrogate() {
+    guard idx + 1 < s.length() && s[idx + 1].is_trailing_surrogate() else {
+      Err(c1.to_int())
+    }
+    Ok(code_point_of_surrogate_pair(c1, s[idx + 1]))
+  } else if c1.is_trailing_surrogate() {
     Err(c1.to_int())
   } else {
     Ok(c1.unsafe_to_char())
@@ -52,24 +43,31 @@ pub fn sub_includes(
 
 ///|
 pub fn prev_char(s : StringView, first~ : Int, before~ : Int) -> Char {
-  guard first < before else { ' ' }
-  let k = for start = before - 1; ; start = start - 1 {
-    guard first <= start else { break first }
-    if s[start]
-      is ('\u{0}'..='\u{7f}'
-      | '\u{c2}'..='\u{df}'
-      | '\u{e0}'..='\u{ef}'
-      | '\u{f0}'..='\u{f4}') {
-      break start
+  guard 0 <= first && first < before && before <= s.length() else { ' ' }
+  let k = before - 1
+  let u = s[k]
+  if u.is_trailing_surrogate() {
+    if k > first && s[k - 1].is_leading_surrogate() {
+      code_point_of_surrogate_pair(s[k - 1], u)
+    } else {
+      rep
+    }
+  } else {
+    match u.to_char() {
+      Some(c) => c
+      // Lone leading surrogate.
+      None => rep
     }
   }
-  s.get_char(k).unwrap()
 }
 
 ///|
 pub fn next_char(s : StringView, last~ : Int, after~ : Int) -> Char {
-  guard after < last else { ' ' }
-  s.get_char(after + 1).unwrap()
+  guard after < last && after + 1 < s.length() else { ' ' }
+  match at_checked(s, after + 1) {
+    Ok(c) => c
+    Err(_) => rep
+  }
 }
 
 ///|
@@ -86,62 +84,57 @@ pub fn utf_16_clean_raw(
     }
   }
 
-  fn clean(last, first, dirty) {
-    let flush = fn(last, start, k) {
-      if start <= last {
-        buf.write_view(s[start:k])
-      }
-    }
-    flush(last, first, dirty)
-    for start = dirty, k = dirty {
-      if k > last {
-        flush(last, start, k)
-        break buf.to_string()
-      }
-      if s[k] == '\u{0}' {
-        let next = k + 1
-        flush(last, start, k)
+  // Writes [first;last] to [buf], replacing U+0000, unpaired surrogates
+  // and characters whose surrogate pair is cut by the span with U+FFFD.
+  // Never creates string views: a view boundary that lands on an
+  // unpaired surrogate aborts.
+  fn clean(last, first) {
+    for k = first {
+      guard k <= last else { break buf.to_string() }
+      let u = s[k]
+      if u == '\u{0}' {
         buf.write_char(rep)
-        continue next, next
+        continue k + 1
       }
-      if s[k].to_char() is Some(c) && c.is_ascii() {
-        continue start, k + 1
-      }
-      match at_checked(s, k) {
-        Ok(d) => {
-          let next = k + length_utf16(d.to_int())
-          continue start, next
+      match u.to_char() {
+        Some(c) => {
+          buf.write_char(c)
+          continue k + 1
         }
-        Err(d) => {
-          let next = k + length_utf16(d)
-          flush(last, start, k)
-          buf.write_char(rep)
-          continue next, next
-        }
+        None =>
+          match at_checked(s, k) {
+            Ok(d) if k + 1 <= last => {
+              buf.write_char(d)
+              continue k + length_utf16(d.to_int())
+            }
+            // Unpaired surrogate, or a pair whose trailing half
+            // lies beyond [last].
+            _ => {
+              buf.write_char(rep)
+              continue k + 1
+            }
+          }
       }
     }
   }
 
-  fn check(last, first, k) {
-    for k = k {
-      break if k > last {
-        s[first:last + 1].to_owned()
-      } else if s[k] == '\u{0}' {
-        buf.reset()
-        clean(last, first, k)
-      } else if s[k].to_char() is Some(c) && c.is_ascii() {
-        continue k + 1
-      } else {
-        match at_checked(s, k) {
-          Ok(d) => {
-            let next = k + length_utf16(d.to_int())
-            continue next
+  // Whether [first;last] can be returned as a plain substring copy.
+  fn is_clean(last, first) {
+    for k = first {
+      guard k <= last else {
+        // The view boundary at last + 1 must not land on the trailing
+        // half of a surrogate pair.
+        break last + 1 >= s.length() || !s[last + 1].is_trailing_surrogate()
+      }
+      let u = s[k]
+      guard u != '\u{0}' else { break false }
+      match u.to_char() {
+        Some(_) => continue k + 1
+        None =>
+          match at_checked(s, k) {
+            Ok(d) if k + 1 <= last => continue k + length_utf16(d.to_int())
+            _ => break false
           }
-          Err(_d) => {
-            buf.reset()
-            clean(last, first, k)
-          }
-        }
       }
     }
   }
@@ -157,12 +150,12 @@ pub fn utf_16_clean_raw(
   let max = s.length() - 1
   let last = @cmp.minimum(last, max)
   let first = @cmp.maximum(first, 0)
-  if pad == 0 {
-    return check(last, first, first)
+  if pad == 0 && is_clean(last, first) {
+    return s[first:last + 1].to_owned()
   }
   buf.reset()
   pad_it()
-  clean(last, first, first)
+  clean(last, first)
 }
 
 ///|
@@ -194,7 +187,19 @@ fn flush(
   k : Int,
 ) -> Unit {
   if start <= last {
-    buf.write_view(s[start:k])
+    for j = start {
+      guard j < k else { break }
+      match at_checked(s, j) {
+        Ok(c) => {
+          buf.write_char(c)
+          continue j + length_utf16(c.to_int())
+        }
+        Err(_) => {
+          buf.write_char(rep)
+          continue j + 1
+        }
+      }
+    }
   }
 }
 
@@ -351,15 +356,17 @@ fn _utf_16_clean_unesc_unref(
             continue start, next
           }
           match at_checked(s, k) {
-            Ok(d) => {
+            Ok(d) if k + length_utf16(d.to_int()) - 1 <= last => {
               let next = k + length_utf16(d.to_int())
               continue start, next
             }
-            Err(d) => {
-              let next = k + length_utf16(d)
+            // Unpaired surrogate, or a valid pair whose trailing half
+            // lies beyond [last]: emit U+FFFD and keep the span
+            // boundary, matching `utf_16_clean_raw`.
+            _ => {
               flush(last, start, k)
               buf.write_char(rep)
-              continue next, next
+              continue k + 1, k + 1
             }
           }
         }
@@ -372,7 +379,15 @@ fn _utf_16_clean_unesc_unref(
   let last = @cmp.minimum(last, max)
   let first = @cmp.maximum(first, 0)
   for k = first {
-    guard k <= last else { break s[first:last + 1].to_owned() }
+    guard k <= last else {
+      // The view boundary at last + 1 must not land on the trailing
+      // half of a surrogate pair.
+      if last + 1 < s.length() && s[last + 1].is_trailing_surrogate() {
+        buf.reset()
+        break resolve(last, first, last + 1)
+      }
+      break s[first:last + 1].to_owned()
+    }
     match (s[k], do_unesc) {
       ('\\', true) | ('&', _) | ('\u{0}', _) => {
         buf.reset()
@@ -383,11 +398,12 @@ fn _utf_16_clean_unesc_unref(
           continue k + 1
         }
         match at_checked(s, k) {
-          Ok(d) => {
+          Ok(d) if k + length_utf16(d.to_int()) - 1 <= last => {
             let next = k + length_utf16(d.to_int())
             continue next
           }
-          Err(_d) => {
+          // Unpaired surrogate, or a pair cut by the end of the span.
+          _ => {
             buf.reset()
             break resolve(last, first, k)
           }
