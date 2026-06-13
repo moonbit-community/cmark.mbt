@@ -6,7 +6,7 @@ fn main {
   cases["\{ident}(spec * 100)"] = doc.repeat(100)
   cases["\{ident}(spec * 200)"] = doc.repeat(200)
   let summaries = []
-  let b = @bench.Bench()
+  let b = @bench.new()
   for k, input in cases {
     summaries.push(
       @bench.single_bench(name=k, count=count.reinterpret_as_uint(), () => {
@@ -59,7 +59,9 @@ fn unwrap_number(json : Json) -> Double {
 fn round_2(d : Double) -> String {
   let raw = (d * 100.0).round().to_int()
   let mut raw = raw.to_string()
-  raw = "0".repeat(3 - raw.length()) + raw
+  if raw.length() < 3 {
+    raw = "0".repeat(3 - raw.length()) + raw
+  }
   let raw_len = raw.length()
   "\{raw.view(end_offset=raw_len - 2)}.\{raw.view(start_offset=raw_len - 2)}"
 }
