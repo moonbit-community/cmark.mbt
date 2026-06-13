@@ -702,7 +702,7 @@ test "should tokenize inline image across multiple lines" {
     tokenize_only(doc),
     content=(
       #|(
-      #|  CloserIndex({ RightBrack: <Set: [25]>, RightParen: <Set: [64, 65]> }),
+      #|  CloserIndex({ RightBrack: [25], RightParen: [64, 65] }),
       #|  Tokens(
       #|    <Deque:
       #|      [

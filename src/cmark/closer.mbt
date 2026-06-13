@@ -15,10 +15,10 @@ priv enum Closer {
 } derive(Eq, Hash, Debug)
 
 ///|
-type PosSet = Set[Int]
+type Positions = Array[Int]
 
 ///|
-priv struct CloserIndex(Map[Closer, PosSet]) derive(Debug)
+priv struct CloserIndex(Map[Closer, Positions]) derive(Debug)
 
 ///|
 test {
@@ -36,16 +36,32 @@ fn CloserIndex::add(self : CloserIndex, key : Closer, pos : Int) -> Unit {
   (match self.0.get(key) {
     Some(ps) => ps
     None => {
-      let ps = Set([])
+      let ps = []
       self.0[key] = ps
       ps
     }
-  }).add(pos)
+  }).push(pos)
 }
 
 ///|
 fn CloserIndex::pos(self : CloserIndex, key : Closer, after~ : Int) -> Int? {
-  self.0.get(key).bind(fn(s) { s.iter().find_first(fn(pos) { pos > after }) })
+  guard self.0.get(key) is Some(positions) else { return None }
+  let len = positions.length()
+  let first = for lo = 0, hi = len {
+    if lo >= hi {
+      break lo
+    }
+    let mid = (lo + hi) / 2
+    if positions[mid] <= after {
+      continue mid + 1, hi
+    }
+    continue lo, mid
+  }
+  if first < len {
+    Some(positions[first])
+  } else {
+    None
+  }
 }
 
 ///|
