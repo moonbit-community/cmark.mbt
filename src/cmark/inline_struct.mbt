@@ -20,7 +20,6 @@ priv enum Token {
   LinkStart(TokenLinkStart)
   Newline(TokenNewline)
   RightBrack(TokenStart)
-  RightParen(TokenStart)
   StrikethroughMarks(TokenStrikethroughMarks)
   MathSpanMarks(TokenMathSpanMarks)
 } derive(Debug)
@@ -93,7 +92,6 @@ fn Token::start(self : Token) -> CharCodePos {
     LinkStart(t) => t.start
     Newline(t) => t.start
     RightBrack(t) => t.start
-    RightParen(t) => t.start
     StrikethroughMarks(t) => t.start
     MathSpanMarks(t) => t.start
   }
@@ -151,29 +149,6 @@ fn CloserIndex::has_math_span(
 }
 
 ///|
-fn make_closer_index(toks : Tokens) -> CloserIndex {
-  let cidx = CloserIndex::new()
-  guard !toks.0.is_empty() else { cidx }
-  toks.0.retain(fn(curr) {
-    match curr {
-      Backticks({ count, start, .. }) => cidx.add(Backticks(count), start)
-      RightBrack({ start }) => cidx.add(RightBrack, start)
-      RightParen({ start }) => {
-        cidx.add(RightParen, start)
-        return false // Discard the token since it's not used for parsing
-      }
-      EmphasisMarks({ char, start, may_close: true, .. }) =>
-        cidx.add(EmphasisMarks(char), start)
-      StrikethroughMarks({ start, may_close: true, .. }) =>
-        cidx.add(StrikethroughMarks, start)
-      MathSpanMarks({ count, start, may_close: true, .. }) =>
-        cidx.add(MathSpanMarks(count), start)
-      _ => ()
-    }
-    true
-  })
-  cidx
-}
 
 ///|
 /// Used to make the text delimitation precise for nested inlines.
@@ -256,6 +231,7 @@ fn Token::newline(
 ///|
 fn tokens_add_backtick(
   toks : Tokens,
+  cidx : CloserIndex,
   s : String,
   line : LineSpan,
   prev_bslash~ : Bool,
@@ -264,6 +240,7 @@ fn tokens_add_backtick(
   let last = @cmark_base.run_of(char='`', s, last=line.last, start=start + 1)
   let count = last - start + 1
   toks.push(Backticks({ start, count, escaped: prev_bslash }))
+  cidx.add(Backticks(count), start)
   last + 1
 }
 
@@ -283,6 +260,7 @@ fn tokens_try_add_image_link_start(
 ///|
 fn tokens_try_add_emphasis(
   toks : Tokens,
+  cidx : CloserIndex,
   s : String,
   line : LineSpan,
   start~ : Int,
@@ -309,12 +287,16 @@ fn tokens_try_add_emphasis(
     (char == '_' && is_right_flanking && (!is_left_flanking || is_next_punct))
   guard may_open || may_close else { next }
   toks.push(EmphasisMarks({ start, char, count, may_open, may_close }))
+  if may_close {
+    cidx.add(EmphasisMarks(char), start)
+  }
   next
 }
 
 ///|
 fn tokens_try_add_strikethrough_marks(
   toks : Tokens,
+  cidx : CloserIndex,
   s : String,
   line : LineSpan,
   start~ : Int,
@@ -330,12 +312,16 @@ fn tokens_try_add_strikethrough_marks(
   let may_open = !@char.is_ascii_whitespace(next_char)
   let may_close = !@char.is_ascii_whitespace(prev_char)
   toks.push(StrikethroughMarks({ start, may_open, may_close }))
+  if may_close {
+    cidx.add(StrikethroughMarks, start)
+  }
   next
 }
 
 ///|
 fn tokens_try_add_math_span_marks(
   toks : Tokens,
+  cidx : CloserIndex,
   s : String,
   line : LineSpan,
   start~ : Int,
@@ -356,6 +342,9 @@ fn tokens_try_add_math_span_marks(
   }
   guard may_open || may_close else { next }
   toks.push(MathSpanMarks({ start, count, may_open, may_close }))
+  if may_close {
+    cidx.add(MathSpanMarks(count), start)
+  }
   next
 }
 
@@ -364,49 +353,73 @@ fn tokenize(
   exts~ : Bool,
   s : String,
   lines : Array[LineSpan],
-) -> (CloserIndex, Tokens, LineSpan) {
+) -> (CloserIndex, Tokens, LineSpan, Bool) {
   guard lines is [line, .. lines] else { abort("expected at least one line") }
   let toks : Tokens = Deque([])
-  let cidx = for lines = lines, line = line, prev_bslash = false, k = line.first {
+  let cidx = CloserIndex::new()
+  let only_newlines = for lines = lines, line = line, prev_bslash = false, k = line.first, only_newlines = true {
     if k > line.last {
-      break match lines {
-        [] => make_closer_index(toks)
+      match lines {
+        [] => break only_newlines
         [newline, .. lines] => {
           let t = Token::newline(s, line, newline)
           toks.push(t)
-          continue lines, newline, false, newline.first
+          continue lines, newline, false, newline.first, only_newlines
         }
       }
     }
-    let next = match s.code_unit_at(k) {
-      '\\' => continue lines, line, !prev_bslash, k + 1
-      '`' => tokens_add_backtick(toks, s, line, prev_bslash~, start=k)
-      _ if prev_bslash => k + 1
-      '*' | '_' => tokens_try_add_emphasis(toks, s, line, start=k)
+    let (next, only_newlines) = match s.code_unit_at(k) {
+      '\\' => continue lines, line, !prev_bslash, k + 1, only_newlines
+      '`' =>
+        (tokens_add_backtick(toks, cidx, s, line, prev_bslash~, start=k), false)
+      _ if prev_bslash => (k + 1, only_newlines)
+      '*' | '_' => {
+        let before = toks.0.length()
+        let next = tokens_try_add_emphasis(toks, cidx, s, line, start=k)
+        (next, only_newlines && toks.0.length() == before)
+      }
       ']' => {
         toks.push(RightBrack({ start: k }))
-        k + 1
+        cidx.add(RightBrack, k)
+        (k + 1, false)
       }
       '[' => {
         toks.push(LinkStart({ start: k, image: false }))
-        k + 1
+        (k + 1, false)
       }
-      '!' => tokens_try_add_image_link_start(toks, s, line, start=k)
+      '!' => {
+        let next = tokens_try_add_image_link_start(toks, s, line, start=k)
+        (next, only_newlines && next == k + 1)
+      }
       '<' => {
         toks.push(AutolinkOrHtmlStart({ start: k }))
-        k + 1
+        (k + 1, false)
       }
       ')' => {
-        toks.push(RightParen({ start: k }))
-        k + 1
+        cidx.add(RightParen, k)
+        (k + 1, only_newlines)
       }
-      '~' if exts => tokens_try_add_strikethrough_marks(toks, s, line, start=k)
-      '$' if exts => tokens_try_add_math_span_marks(toks, s, line, start=k)
-      _ => k + 1
+      '~' if exts => {
+        let before = toks.0.length()
+        let next = tokens_try_add_strikethrough_marks(
+          toks,
+          cidx,
+          s,
+          line,
+          start=k,
+        )
+        (next, only_newlines && toks.0.length() == before)
+      }
+      '$' if exts => {
+        let before = toks.0.length()
+        let next = tokens_try_add_math_span_marks(toks, cidx, s, line, start=k)
+        (next, only_newlines && toks.0.length() == before)
+      }
+      _ => (k + 1, only_newlines)
     }
-    continue lines, line, false, next
+    continue lines, line, false, next, only_newlines
   }
-  (cidx, toks, line)
+  (cidx, toks, line, only_newlines)
 }
 
 // Making inlines and inline tokens
@@ -942,7 +955,6 @@ fn Parser::find_link_text_tokens(
   let mut line = start_line
   let mut nest = 0
   let acc : Tokens = Deque([])
-  let old_rev_toks = rev_toks.val.0.copy()
   for ;; {
     match (rev_toks.val.pop(), nest) {
       (Some(RightBrack({ start: last })), 0) => {
@@ -987,7 +999,6 @@ fn Parser::find_link_text_tokens(
       (None, _) => break
     }
   }
-  rev_toks.val = old_rev_toks
   None
 }
 
@@ -1090,8 +1101,8 @@ fn Parser::try_link(
   image~ : Bool,
   start~ : CharCodePos,
 ) -> (LineSpan, Token, Bool)? {
-  let rev_toks : Ref[RevTokens] = Ref(start_rev_toks.val.0.copy())
   guard self.cidx.has_right_brack(after=start) else { return None }
+  let rev_toks : Ref[RevTokens] = Ref(start_rev_toks.val.0.copy())
   guard self.find_link_text_tokens( // text_last with ] delim 
       rev_toks,
       start_line,
@@ -1495,9 +1506,18 @@ fn Parser::parse_inline(
   lines : Array[LineSpan],
 ) -> ((Col, String), Inline) {
   let (layout, meta, lines) = self.strip_paragraph(lines)
-  let (cidx, toks, first_line) = tokenize(self.i, lines, exts=self.exts)
-  self.cidx = cidx
-  let (is_, _) = self.parse_tokens(toks, first_line)
+  let (cidx, toks, first_line, only_newlines) = tokenize(
+    self.i,
+    lines,
+    exts=self.exts,
+  )
+  let is_ = if only_newlines {
+    self.last_pass(toks, first_line)
+  } else {
+    self.cidx = cidx
+    let (is_, _) = self.parse_tokens(toks, first_line)
+    is_
+  }
   let inline = match is_ {
     [i] => i
     _ => Inlines({ v: is_, meta })
@@ -1663,7 +1683,7 @@ fn Parser::parse_table_row(
   self : Parser,
   line : LineSpan,
 ) -> Array[(Inline, TableCellLayout)] {
-  let (cidx, toks, first_line) = tokenize(self.i, [line], exts=self.exts)
+  let (cidx, toks, first_line, _) = tokenize(self.i, [line], exts=self.exts)
   self.cidx = cidx
   let toks : Ref[Tokens] = Ref(toks)
   let _ = self.first_pass(toks, first_line)
