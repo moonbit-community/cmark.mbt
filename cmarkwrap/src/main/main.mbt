@@ -6,11 +6,11 @@ fn main {
   cases["\{ident}(spec * 100)"] = doc.repeat(100)
   cases["\{ident}(spec * 200)"] = doc.repeat(200)
   let summaries = []
-  let b = @bench.new()
+  let b = @bench.Bench()
   for k, input in cases {
     summaries.push(
       @bench.single_bench(name=k, count=count.reinterpret_as_uint(), () => {
-        b.keep(try? @lib.render(input))
+        b.keep(try! @lib.render(input))
       }),
     )
   }

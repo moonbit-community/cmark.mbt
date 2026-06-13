@@ -1,5 +1,8 @@
 ///|
 test "render markdown heading" {
-  let result = try? @lib.render("# Hello\n")
-  debug_inspect(@lib.result_is_ok(result), content="true")
+  let result = @lib.render("# Hello\n")
+  inspect(result, content=(
+    #|<h1>Hello</h1>
+    #|
+  ))
 }
