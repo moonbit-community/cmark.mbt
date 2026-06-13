@@ -16,10 +16,10 @@ pub fn at_checked(s : StringView, idx : Int) -> Result[Char, Int] {
     ((leading.to_int() - 0xD800) * 0x400 + trailing.to_int() - 0xDC00 + 0x10000).unsafe_to_char()
   }
 
-  let c1 = s.code_unit_at(idx)
+  let c1 = s[idx]
   if is_leading_surrogate(c1) {
     guard idx + 1 < s.length() else { Err(c1.to_int()) }
-    let c2 = s.code_unit_at(idx + 1)
+    let c2 = s[idx + 1]
     Ok(code_point_of_surrogate_pair(c1, c2))
   } else if is_trailing_surrogate(c1) {
     Err(c1.to_int())
@@ -43,7 +43,7 @@ pub fn sub_includes(
   for i = first, k = 0 {
     guard i <= max_idx_s else { return false }
     guard k <= max_idx_a else { return true }
-    if s.code_unit_at(i + k) == affix.code_unit_at(k) {
+    if s[i + k] == affix[k] {
       continue i, k + 1
     }
     continue i + 1, 0
@@ -55,7 +55,7 @@ pub fn prev_char(s : StringView, first~ : Int, before~ : Int) -> Char {
   guard first < before else { ' ' }
   let k = for start = before - 1; ; start = start - 1 {
     guard first <= start else { break first }
-    if s.code_unit_at(start)
+    if s[start]
       is ('\u{0}'..='\u{7f}'
       | '\u{c2}'..='\u{df}'
       | '\u{e0}'..='\u{ef}'
@@ -98,13 +98,13 @@ pub fn utf_16_clean_raw(
         flush(last, start, k)
         break buf.to_string()
       }
-      if s.code_unit_at(k) == '\u{0}' {
+      if s[k] == '\u{0}' {
         let next = k + 1
         flush(last, start, k)
         buf.write_char(rep)
         continue next, next
       }
-      if s.code_unit_at(k).to_char() is Some(c) && c.is_ascii() {
+      if s[k].to_char() is Some(c) && c.is_ascii() {
         continue start, k + 1
       }
       match at_checked(s, k) {
@@ -126,10 +126,10 @@ pub fn utf_16_clean_raw(
     for k = k {
       break if k > last {
         s[first:last + 1].to_owned()
-      } else if s.code_unit_at(k) == '\u{0}' {
+      } else if s[k] == '\u{0}' {
         buf.reset()
         clean(last, first, k)
-      } else if s.code_unit_at(k).to_char() is Some(c) && c.is_ascii() {
+      } else if s[k].to_char() is Some(c) && c.is_ascii() {
         continue k + 1
       } else {
         match at_checked(s, k) {
@@ -214,7 +214,7 @@ fn _utf_16_clean_unesc_unref(
       if k > last || k > num_start + 6 {
         return resolve(last, start, k)
       }
-      match s.code_unit_at(k) {
+      match s[k] {
         ';' => {
           let next = k + 1
           if k == num_start {
@@ -242,7 +242,7 @@ fn _utf_16_clean_unesc_unref(
       if k > last || k > num_start + 7 {
         return resolve(last, start, k)
       }
-      match s.code_unit_at(k) {
+      match s[k] {
         ';' => {
           let next = k + 1
           if k == num_start {
@@ -271,7 +271,7 @@ fn _utf_16_clean_unesc_unref(
       if k > last {
         return resolve(last, start, k)
       }
-      match s.code_unit_at(k) {
+      match s[k] {
         ';' => {
           let name = s[name_start:k].to_owned()
           match html_named_entity(name) {
@@ -299,7 +299,7 @@ fn _utf_16_clean_unesc_unref(
         return buf.to_string()
       }
       let next = k + 1
-      match (s.code_unit_at(k), do_unesc) {
+      match (s[k], do_unesc) {
         ('\u{0}', _) => {
           flush(last, start, k)
           buf.write_char(rep)
@@ -309,7 +309,7 @@ fn _utf_16_clean_unesc_unref(
           if next > last {
             continue start, next
           }
-          let nc = s.code_unit_at(next).unsafe_to_char()
+          let nc = s[next].unsafe_to_char()
           if !is_ascii_punctuation(nc) {
             continue start, next
           }
@@ -322,10 +322,10 @@ fn _utf_16_clean_unesc_unref(
           if k + 2 > last {
             continue start, next
           }
-          match s.code_unit_at(next) {
+          match s[next] {
             '#' => {
               let next = next + 1
-              match s.code_unit_at(next) {
+              match s[next] {
                 'x' | 'X' => {
                   let next = next + 1
                   return try_entity_hex(last, start, next, next, 0)
@@ -373,7 +373,7 @@ fn _utf_16_clean_unesc_unref(
   let first = @cmp.maximum(first, 0)
   for k = first {
     guard k <= last else { break s[first:last + 1].to_owned() }
-    match (s.code_unit_at(k), do_unesc) {
+    match (s[k], do_unesc) {
       ('\\', true) | ('&', _) | ('\u{0}', _) => {
         buf.reset()
         break resolve(last, first, k)

@@ -173,7 +173,7 @@ fn buffer_add_html_escaped_string(b : StringBuilder, s : String) -> Unit {
       break
     }
     let next = i + 1
-    match s.code_unit_at(i) {
+    match s[i] {
       '\u{0}' => {
         flush(b, start, i)
         b.write_char(@char.rep)
@@ -256,7 +256,7 @@ fn buffer_add_pct_encoded_string(b : StringBuilder, s : String) -> Unit { // Per
       break
     }
     let next = i + 1
-    match s.code_unit_at(i) {
+    match s[i] {
       c if c.to_char() is Some(c) && (@char.is_ascii_alphanum(c) || is_delim(c)) =>
         continue start, next
       '&' => {
@@ -551,7 +551,7 @@ fn code_block(c : Context, cb : @cmark.CodeBlock) -> Unit {
     c.b.write_char('\n')
   }
   if lang is Some((lang, _env)) {
-    if backend_blocks(c) && lang.code_unit_at(0) == '=' {
+    if backend_blocks(c) && lang[0] == '=' {
       if lang == "=html" && !safe(c) {
         block_lines(c, cb.code.to_array())
       }
