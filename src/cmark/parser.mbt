@@ -34,6 +34,24 @@ priv struct Parser {
 }
 
 ///|
+fn assert_well_formed_utf16_input(i : String) -> Unit {
+  for k = 0 {
+    guard k < i.length() else { break }
+    let u = i[k]
+    if u.is_leading_surrogate() {
+      guard k + 1 < i.length() && i[k + 1].is_trailing_surrogate() else {
+        abort("cmark parser input must be well-formed UTF-16")
+      }
+      continue k + 2
+    }
+    guard !u.is_trailing_surrogate() else {
+      abort("cmark parser input must be well-formed UTF-16")
+    }
+    continue k + 1
+  }
+}
+
+///|
 fn Parser::new(
   defs? : LabelDefs = Map([]),
   resolver? : LabelResolverFn = LabelContext::default_resolver,
@@ -45,6 +63,7 @@ fn Parser::new(
   strict? : Bool = true,
   i : String,
 ) -> Parser {
+  assert_well_formed_utf16_input(i)
   {
     file,
     i,
