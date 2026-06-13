@@ -2,8 +2,7 @@
 using @cmark {type Doc}
 
 ///|
-test "should render task list" {
-  let it = @test.Test("should render task list")
+test "should render task list" (it : @test.Test) {
   let doc =
     #|## List task items
     #|
@@ -40,8 +39,7 @@ test "should render task list" {
 }
 
 ///|
-test "should render strikethroughs" {
-  let it = @test.Test("should render strikethroughs")
+test "should render strikethroughs" (it : @test.Test) {
   let doc =
     #|## Strikethrough
     #|
@@ -60,8 +58,7 @@ test "should render strikethroughs" {
 }
 
 ///|
-test "should render footnotes" {
-  let it = @test.Test("should render footnotes")
+test "should render footnotes" (it : @test.Test) {
   let doc =
     #|## Footnotes
     #|
@@ -106,8 +103,7 @@ test "should render footnotes" {
 }
 
 ///|
-test "should render math" {
-  let it = @test.Test("should render math")
+test "should render math" (it : @test.Test) {
   let doc =
     #|## Math
     #|
@@ -137,8 +133,7 @@ test "should render math" {
 }
 
 ///|
-test "should render tables" {
-  let it = @test.Test("should render tables")
+test "should render tables" (it : @test.Test) {
   let doc =
     #|## Tables
     #|
@@ -214,8 +209,7 @@ test "should render tables" {
 }
 
 ///|
-test "basic" {
-  let it = @test.Test("basic")
+test "basic" (it : @test.Test) {
   let rendered = @cmark_html.from_doc(
     safe=false,
     Doc::from_string(test_basic_md_str),
@@ -225,8 +219,7 @@ test "basic" {
 }
 
 ///|
-test "spec" {
-  let it = @test.Test("spec")
+test "spec" (it : @test.Test) {
   let rendered = @cmark_html.from_doc(
     safe=false,
     Doc::from_string(test_spec_md_str),
@@ -237,8 +230,7 @@ test "spec" {
 
 ///|
 /// Test for raw HTML handling in safe mode
-test "raw html in safe mode" {
-  let it = @test.Test("raw html in safe mode")
+test "raw html in safe mode" (it : @test.Test) {
   let doc =
     #|## Raw HTML in safe mode
     #|
@@ -256,8 +248,7 @@ test "raw html in safe mode" {
 
 ///|
 /// Test for comments
-test "html with comments" {
-  let it = @test.Test("html with comments")
+test "html with comments" (it : @test.Test) {
   let doc =
     #|## HTML with comments
     #|
@@ -275,8 +266,7 @@ test "html with comments" {
 
 ///|
 /// Test for strict mode HTML
-test "strict mode html" {
-  let it = @test.Test("strict mode html")
+test "strict mode html" (it : @test.Test) {
   let doc =
     #|<p>This paragraph is valid HTML.</p>
     #|
@@ -295,8 +285,7 @@ test "strict mode html" {
 
 ///|
 /// Test XHTML rendering
-test "xhtml rendering" {
-  let it = @test.Test("xhtml rendering")
+test "xhtml rendering" (it : @test.Test) {
   let doc =
     #|## Thematic breaks
     #|

@@ -21,7 +21,7 @@ pub(all) enum FolderResult[A] {
 } derive(Eq, Debug)
 
 ///|
-pub impl[A] Default for FolderResult[A] with default() {
+pub impl[A] Default for FolderResult[A] with fn default() {
   Default
 }
 
