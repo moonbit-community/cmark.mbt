@@ -9,6 +9,8 @@ import {
   "moonbitlang/core/test",
 } for "test"
 
+warnings = "-deprecated"
+
 options(
   "pre-build": [
     {

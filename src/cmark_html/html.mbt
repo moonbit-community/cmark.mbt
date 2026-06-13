@@ -19,12 +19,12 @@ priv struct HtmlRenderFootnote {
 }
 
 ///|
-impl Eq for HtmlRenderFootnote with equal(self, other) {
+impl Eq for HtmlRenderFootnote with fn equal(self, other) {
   self.id == other.id
 }
 
 ///|
-impl Compare for HtmlRenderFootnote with compare(self, other) {
+impl Compare for HtmlRenderFootnote with fn compare(self, other) {
   self.id.compare(other.id)
 }
 

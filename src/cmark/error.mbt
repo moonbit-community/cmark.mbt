@@ -4,7 +4,7 @@ pub(all) suberror FolderError {
 } derive(Debug)
 
 ///|
-pub impl Show for FolderError with output(self, logger) {
+pub impl Show for FolderError with fn output(self, logger) {
   match self {
     FolderError(message) => {
       logger.write_string("FolderError(")
@@ -20,7 +20,7 @@ pub(all) suberror MapperError {
 } derive(Debug)
 
 ///|
-pub impl Show for MapperError with output(self, logger) {
+pub impl Show for MapperError with fn output(self, logger) {
   match self {
     MapperError(message) => {
       logger.write_string("MapperError(")

@@ -33,7 +33,7 @@ pub(all) enum MapperResult[A] {
 } derive(Eq, Debug)
 
 ///|
-pub impl[A] Default for MapperResult[A] with default() {
+pub impl[A] Default for MapperResult[A] with fn default() {
   Default
 }
 
