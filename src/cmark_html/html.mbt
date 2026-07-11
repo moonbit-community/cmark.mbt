@@ -1022,7 +1022,7 @@ pub fn from_doc(
 /// For more parsing options, call `@cmark.Doc::from_string()` and `from_doc()` manually.
 pub fn render(
   backend_blocks? : Bool = false,
-  safe? : Bool = false,
+  safe? : Bool = true,
   strict? : Bool = true,
   s : String,
 ) -> String raise {
