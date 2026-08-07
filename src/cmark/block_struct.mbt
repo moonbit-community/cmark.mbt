@@ -533,7 +533,7 @@ fn Parser::close_indented_code_block(
   for ;; {
     match lines.last() {
       Some({ is_blank: true, .. }) => {
-        guard lines.pop() is Some({ pad, code, .. })
+        guard! lines.pop() is Some({ pad, code, .. })
         blanks.push(BlockStruct::BlankLine(pad, code))
       }
       None => break // Likely `abort()`
@@ -579,14 +579,14 @@ fn Parser::close_list(
   l : ListBlockStruct,
   bs : Array[BlockStruct],
 ) -> Unit {
-  guard l.items.last() is Some(i)
+  guard! l.items.last() is Some(i)
   let blocks = i.blocks
   self.close_last_block(blocks)
   // The final blank line extraction of the list item entails less blank
   // line churn for CommonMark rendering but we don't do it on empty list items.
   match blocks {
     [.., _, BlankLine(_, _)] => {
-      guard blocks.pop() is Some(bl)
+      guard! blocks.pop() is Some(bl)
       let items = l.items
       items[items.length() - 1] = { ..i, blocks, }
       bs..push(List({ ..l, items, })).push(bl)
@@ -613,7 +613,7 @@ fn Parser::close_footnote(
   for ;; {
     match blocks {
       [.., _, BlankLine(_, _)] => {
-        guard blocks.pop() is Some(bl)
+        guard! blocks.pop() is Some(bl)
         blanks.push(bl)
       }
       _ => break
@@ -625,7 +625,7 @@ fn Parser::close_footnote(
 
 ///|
 fn Parser::close_last_list_item(self : Parser, l : ListBlockStruct) -> Unit {
-  guard l.items.last() is Some(item)
+  guard! l.items.last() is Some(item)
   self.close_last_block(item.blocks)
 }
 
@@ -1133,7 +1133,7 @@ fn Parser::try_lazy_continuation(
     }
     Some(BlockQuote(_, bq)) => self.try_lazy_continuation(indent_start~, bq)
     Some(List(l)) => {
-      guard l.items.last() is Some(i)
+      guard! l.items.last() is Some(i)
       let res = self.try_lazy_continuation(indent_start~, i.blocks)
       if res {
         l.last_blank = false
@@ -1247,7 +1247,7 @@ fn Parser::try_add_to_list_item(
   let indent = self.curr_indent()
   if indent >= list.item_min_indent {
     let last_blank = self.only_blanks()
-    guard list.items.last() is Some(item)
+    guard! list.items.last() is Some(item)
     return if list.last_blank &&
       !last_blank &&
       item.blocks.iter().all(BlockStruct::is_blank_line) {
@@ -1264,13 +1264,13 @@ fn Parser::try_add_to_list_item(
   match self.match_line_type(no_setext=true, indent~) {
     BlankLine => {
       let items = list.items
-      guard items.last() is Some(item)
+      guard! items.last() is Some(item)
       self.add_line(item.blocks)
       bs.push(List({ ..list, items, last_blank: true }))
     }
     IndentedCodeBlockLine | ParagraphLine as ltype => {
       let items = list.items
-      guard items.last() is Some(item)
+      guard! items.last() is Some(item)
       if self.try_lazy_continuation(indent_start~, item.blocks) {
         bs.push(List({ ..list, items, last_blank: false }))
       } else {
@@ -1535,7 +1535,7 @@ fn Parser::block_struct_to_html_block(
   self : Parser,
   b : HtmlBlockStruct,
 ) -> Block {
-  guard b.html.last() is Some({ last: last_ccode, pos: last_line, .. })
+  guard! b.html.last() is Some({ last: last_ccode, pos: last_line, .. })
   let lines = b.html.map(fn(i) { self.clean_raw_span(i) })
   let start_loc = lines.last().unwrap().meta.loc
   let meta = self.meta({ ..start_loc, last_ccode, last_line })
@@ -1566,7 +1566,7 @@ fn Parser::block_struct_to_table(
   indent : Indent,
   rows : Array[(LineSpan, LineSpan)],
 ) -> Block {
-  guard rows.last() is Some((last, _))
+  guard! rows.last() is Some((last, _))
   let acc : Array[_] = []
   let (first, col_count, rows) = for col_count = 0, last_was_sep = false, rs = rows[:] {
     match rs {

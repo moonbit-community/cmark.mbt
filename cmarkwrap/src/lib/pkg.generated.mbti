@@ -15,4 +15,3 @@ pub fn result_unwrap(Result[String, Error]) -> String
 // Type aliases
 
 // Traits
-

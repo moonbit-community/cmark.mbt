@@ -18,6 +18,4 @@ keywords = [ "commonmark", "markdown" ]
 
 description = "A CommonMark toolkit for MoonBit"
 
-options(
-  source: "src",
-)
+source = "src"

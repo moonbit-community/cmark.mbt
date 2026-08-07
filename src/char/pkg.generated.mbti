@@ -53,4 +53,3 @@ pub fn utf_16_clean_unref(StringBuilder, String, first~ : Int, last~ : Int) -> S
 // Type aliases
 
 // Traits
-

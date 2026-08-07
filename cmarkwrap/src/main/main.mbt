@@ -6,7 +6,7 @@ fn main {
   cases["\{ident}(spec * 100)"] = doc.repeat(100)
   cases["\{ident}(spec * 200)"] = doc.repeat(200)
   let summaries = []
-  let b = @bench.new()
+  let b = @bench.Bench()
   for k, input in cases {
     summaries.push(
       @bench.single_bench(name=k, count=count.reinterpret_as_uint(), () => {
@@ -16,7 +16,7 @@ fn main {
   }
   let us_per_s = 1_000_000.0
   for v in summaries {
-    let v = unwrap_object(v.to_json())
+    let v = unwrap_object(@json.to_json(v))
     let k = unwrap_string(v.get("name").unwrap())
     // let max = 1.0 / v.get("min").unwrap().as_number().unwrap()
     // let min = 1.0 / v.get("max").unwrap().as_number().unwrap()
