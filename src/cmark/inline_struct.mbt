@@ -1466,7 +1466,7 @@ fn Parser::strip_paragraph(
   lines : Array[LineSpan],
 ) -> ((Col, String), Meta, Array[LineSpan]) {
   let (last, trailing_blanks) = {
-    guard lines.pop() is Some(line)
+    guard! lines.pop() is Some(line)
     let { first, last: start, .. } = line
     let non_blank = @cmark_base.last_non_blank(self.i, first~, start~)
     let last = { ..line, last: non_blank }
@@ -1599,12 +1599,12 @@ fn Parser::finish_col(
 ) -> ((Inline, TableCellLayout), CharCodePos) {
   for k = k {
     if toks.0.is_empty() {
-      guard self.find_pipe(line, before=line.last + 1, k)
+      guard! self.find_pipe(line, before=line.last + 1, k)
         is Ok((text, after, k))
       is_.push_iter(text.iter())
       break ((self.make_col(is_), (blanks_before, after)), k)
     }
-    guard toks.0.front() is Some(Inline({ start, inline, next, .. }))
+    guard! toks.0.front() is Some(Inline({ start, inline, next, .. }))
     if k >= start {
       toks.0.unsafe_pop_front()
       is_.push(inline)
@@ -1636,11 +1636,11 @@ fn Parser::parse_cols(
   for k = k {
     if toks.0.is_empty() {
       guard k <= line.last else { break }
-      guard self.start_col(line, before=line.last + 1, k) is Col(col, k)
+      guard! self.start_col(line, before=line.last + 1, k) is Col(col, k)
       acc.push(col)
       continue k
     }
-    guard toks.0.front() is Some(Inline({ start, inline, next, .. }))
+    guard! toks.0.front() is Some(Inline({ start, inline, next, .. }))
     match self.start_col(line, before=start, k) {
       Col(col, k) => {
         acc.push(col)

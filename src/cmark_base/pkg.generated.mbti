@@ -160,4 +160,3 @@ pub type LineNum = Int
 pub type Next = Int
 
 // Traits
-

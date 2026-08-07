@@ -42,13 +42,13 @@ pub fn is_ascii_alphanum(c : Char) -> Bool {
 
 ///|
 pub fn ascii_digit_to_int(c : Char) -> Int {
-  guard c.is_ascii_digit()
+  guard! c.is_ascii_digit()
   c.to_int() - '0'.to_int()
 }
 
 ///|
 pub fn ascii_octdigit_to_int(c : Char) -> Int {
-  guard c.is_ascii_octdigit()
+  guard! c.is_ascii_octdigit()
   c.to_int() - '0'.to_int()
 }
 

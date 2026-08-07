@@ -1,11 +1,13 @@
 import {
   "moonbitlang/core/bench",
+  "moonbitlang/core/json",
   "moonbitlang/x/fs",
   "moonbit-community/cmarkwrap/lib",
 }
 
+pkgtype(kind: "executable")
+
 options(
-  "is-main": true,
   targets: {
     "ident_wasm.mbt": [ "wasm" ],
     "ident_wasm_gc.mbt": [ "wasm-gc" ],

@@ -24,4 +24,3 @@ pub fn xhtml_renderer(backend_blocks? : Bool, safe~ : Bool) -> @cmark_renderer.R
 // Type aliases
 
 // Traits
-

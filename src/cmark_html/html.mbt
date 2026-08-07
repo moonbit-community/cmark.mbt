@@ -45,13 +45,13 @@ priv struct Joined[T] {
 
 ///|
 pub fn safe(c : Context) -> Bool {
-  guard c.state is Some(EState({ safe, .. }))
+  guard! c.state is Some(EState({ safe, .. }))
   safe
 }
 
 ///|
 fn backend_blocks(c : Context) -> Bool {
-  guard c.state is Some(EState({ backend_blocks, .. }))
+  guard! c.state is Some(EState({ backend_blocks, .. }))
   backend_blocks
 }
 
@@ -74,7 +74,7 @@ fn init_context(
 
 ///|
 fn uid(c : Context, id : String) -> String {
-  guard c.state is Some(EState({ ids, .. }))
+  guard! c.state is Some(EState({ ids, .. }))
   for counter = 0 {
     let id1 = if counter == 0 { id } else { "\{id}-\{counter}" }
     if ids.contains(id1) {
@@ -112,7 +112,7 @@ fn make_footnote_ref_ids(
   label : String,
   f : @cmark.Footnote,
 ) -> (String, String, String) {
-  guard c.state is Some(EState({ footnotes, footnote_count, .. } as st))
+  guard! c.state is Some(EState({ footnotes, footnote_count, .. } as st))
   guard footnotes.get(label) is Some({ text, id, .. } as rf) else {
     let footnote_count = footnote_count + 1
     st.footnote_count = footnote_count
@@ -903,7 +903,7 @@ fn footnotes(c : Context, fs : Map[LabelKey, HtmlRenderFootnote]) -> Unit raise 
 fn doc(c : Context, d : Doc) -> Bool raise {
   let _ = c.block(d.block)
   if c.state is Some(fs) {
-    guard fs is EState({ footnotes: fs, .. })
+    guard! fs is EState({ footnotes: fs, .. })
     if !fs.is_empty() {
       footnotes(c, fs)
     }
