@@ -673,6 +673,13 @@ test "Inline::to_plain_text with inlines and link" {
   )
   let link_result = link.to_plain_text(break_on_soft=false)
   debug_inspect(link_result.length(), content="1")
+
+  // Image alt text follows the same plain-text traversal as link text.
+  let image = @cmark.Inline::Image(
+    @cmark.Node::new({ text: text2, reference }, meta~),
+  )
+  let image_result = image.to_plain_text(break_on_soft=false)
+  debug_inspect(image_result.length(), content="1")
 }
 
 ///|

@@ -145,6 +145,7 @@ pub fn Inline::to_plain_text(
         for i in is1.0.rev() {
           st.push(i)
         }
+      Image(l) => st.push(l.v.text)
       Link(l) => st.push(l.v.text)
       RawHtml(_) => ()
       Text(t) => push(t.v)
