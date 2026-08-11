@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1786086006034,
+  "lastUpdate": 1786416792495,
   "repoUrl": "https://github.com/moonbit-community/cmark.mbt",
   "entries": {
     "Benchmark.js Benchmark": [
@@ -12550,6 +12550,86 @@ window.BENCHMARK_DATA = {
             "name": "cmarkNative(spec * 200)",
             "value": 0.59,
             "range": "±1.49%",
+            "unit": "ops/sec",
+            "extra": "5 samples"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "71200607+bzy-debug@users.noreply.github.com",
+            "name": "Bao Zhiyuan",
+            "username": "bzy-debug"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "1b27a80fefec21869b515d67ab8833851e24d8c4",
+          "message": "fix: use UTF-16 semantics in prev_char instead of UTF-8 byte patterns (#141)\n\nThe prev_char function in src/char/text.mbt scanned backward for\nUTF-8 leading-byte patterns (0x00-0x7F, 0xC2-0xDF, 0xE0-0xEF, 0xF0-0xF4)\nto locate the previous character boundary. MoonBit strings are UTF-16\nencoded, so CJK characters (e.g. 式 = 0x5F0F, 模 = 0x6A21) never\nmatched any of these patterns. The function would skip over them and\nstop at the nearest ASCII byte upstream.\n\nThis broke CommonMark emphasis/strong parsing when CJK text preceded\na closing delimiter. For example, in **Fleet 模式** the closing **\nsaw a space as the preceding character (because 式 and 模 were\nskipped), causing is_prev_white=true, which forced is_right_flanking\nand may_close to false -- the emphasis never closed.\n\nFix: rewrite prev_char with proper UTF-16 semantics. Check whether the\ncode unit at (before-1) is a trailing surrogate (0xDC00-0xDFFF); if so\nthe character is a surrogate pair starting at (before-2), otherwise\nthe character starts at (before-1).\n\nAlso fix the test in README.mbt.md whose expected value was written\naround the buggy behaviour (first=7 artificially limited the scan\nto make it work).\n\nCo-authored-by: Bao Zhiyuan <baozhiyuan@idea.edu.cn>\nCo-authored-by: SeekMoon <noreply@moonbitlang.cn>",
+          "timestamp": "2026-08-11T10:49:56+08:00",
+          "tree_id": "9e5a968463a82a0d9cd76684ffc103bdf24b46fd",
+          "url": "https://github.com/moonbit-community/cmark.mbt/commit/1b27a80fefec21869b515d67ab8833851e24d8c4"
+        },
+        "date": 1786416791247,
+        "tool": "benchmarkjs",
+        "benches": [
+          {
+            "name": "cmarkJS(spec * 100)",
+            "value": 0.46,
+            "range": "±31.56%",
+            "unit": "ops/sec",
+            "extra": "5 samples"
+          },
+          {
+            "name": "cmarkJS(spec * 200)",
+            "value": 0.22,
+            "range": "±36.04%",
+            "unit": "ops/sec",
+            "extra": "5 samples"
+          },
+          {
+            "name": "cmarkWASM1(spec * 100)",
+            "value": 0.61,
+            "range": "±2.23%",
+            "unit": "ops/sec",
+            "extra": "5 samples"
+          },
+          {
+            "name": "cmarkWASM1(spec * 200)",
+            "value": 0.31,
+            "range": "±1.66%",
+            "unit": "ops/sec",
+            "extra": "5 samples"
+          },
+          {
+            "name": "cmarkWASM(spec * 100)",
+            "value": 0.79,
+            "range": "±6.76%",
+            "unit": "ops/sec",
+            "extra": "5 samples"
+          },
+          {
+            "name": "cmarkWASM(spec * 200)",
+            "value": 0.39,
+            "range": "±20.09%",
+            "unit": "ops/sec",
+            "extra": "5 samples"
+          },
+          {
+            "name": "cmarkNative(spec * 100)",
+            "value": 1.05,
+            "range": "±0.46%",
+            "unit": "ops/sec",
+            "extra": "5 samples"
+          },
+          {
+            "name": "cmarkNative(spec * 200)",
+            "value": 0.53,
+            "range": "±1.63%",
             "unit": "ops/sec",
             "extra": "5 samples"
           }
