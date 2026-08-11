@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1786416792495,
+  "lastUpdate": 1786420880806,
   "repoUrl": "https://github.com/moonbit-community/cmark.mbt",
   "entries": {
     "Benchmark.js Benchmark": [
@@ -12630,6 +12630,86 @@ window.BENCHMARK_DATA = {
             "name": "cmarkNative(spec * 200)",
             "value": 0.53,
             "range": "±1.63%",
+            "unit": "ops/sec",
+            "extra": "5 samples"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "71200607+bzy-debug@users.noreply.github.com",
+            "name": "Bao Zhiyuan",
+            "username": "bzy-debug"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "8ca7327c9ff2c41ca47c49bddebcf4d55a3e717f",
+          "message": "chore: bump version to 0.4.5 (#142)\n\n* chore: bump version to 0.4.5\n\nCo-Authored-By: SeekMoon <noreply@moonbitlang.cn>\n\n* chore: update CLI version string to 0.4.5\n\nKeep the bundled cmark executable's --version output in sync with the module version bump.\n\nCo-Authored-By: SeekMoon <noreply@moonbitlang.cn>\n\n---------\n\nCo-authored-by: Bao Zhiyuan <baozhiyuan@idea.edu.cn>\nCo-authored-by: SeekMoon <noreply@moonbitlang.cn>",
+          "timestamp": "2026-08-11T11:58:06+08:00",
+          "tree_id": "78ad4ae34c49bf734733ce7e95fa2dcd723c5655",
+          "url": "https://github.com/moonbit-community/cmark.mbt/commit/8ca7327c9ff2c41ca47c49bddebcf4d55a3e717f"
+        },
+        "date": 1786420879646,
+        "tool": "benchmarkjs",
+        "benches": [
+          {
+            "name": "cmarkJS(spec * 100)",
+            "value": 0.48,
+            "range": "±37.92%",
+            "unit": "ops/sec",
+            "extra": "5 samples"
+          },
+          {
+            "name": "cmarkJS(spec * 200)",
+            "value": 0.23,
+            "range": "±54.76%",
+            "unit": "ops/sec",
+            "extra": "5 samples"
+          },
+          {
+            "name": "cmarkWASM1(spec * 100)",
+            "value": 0.59,
+            "range": "±1.01%",
+            "unit": "ops/sec",
+            "extra": "5 samples"
+          },
+          {
+            "name": "cmarkWASM1(spec * 200)",
+            "value": 0.29,
+            "range": "±1.45%",
+            "unit": "ops/sec",
+            "extra": "5 samples"
+          },
+          {
+            "name": "cmarkWASM(spec * 100)",
+            "value": 0.82,
+            "range": "±6.24%",
+            "unit": "ops/sec",
+            "extra": "5 samples"
+          },
+          {
+            "name": "cmarkWASM(spec * 200)",
+            "value": 0.38,
+            "range": "±17.29%",
+            "unit": "ops/sec",
+            "extra": "5 samples"
+          },
+          {
+            "name": "cmarkNative(spec * 100)",
+            "value": 1.03,
+            "range": "±1.52%",
+            "unit": "ops/sec",
+            "extra": "5 samples"
+          },
+          {
+            "name": "cmarkNative(spec * 200)",
+            "value": 0.51,
+            "range": "±0.71%",
             "unit": "ops/sec",
             "extra": "5 samples"
           }
