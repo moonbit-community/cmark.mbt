@@ -11,7 +11,7 @@ fn command() -> @argparse.Command {
   @argparse.Command(
     "cmark",
     about="Render CommonMark input as HTML.",
-    version="0.4.4",
+    version="0.4.5",
     flags=[
       FlagArg("safe", about="replace unsafe raw HTML and links with comments", conflicts_with=[
         "unsafe",
