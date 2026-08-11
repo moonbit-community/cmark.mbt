@@ -51,19 +51,19 @@ pub fn sub_includes(
 }
 
 ///|
+/// Returns the character immediately before `before` in the UTF-16 string `s`.
+/// Uses UTF-16 semantics: if the code unit at `before - 1` is a trailing
+/// surrogate (0xDC00–0xDFFF), the character is a surrogate pair starting at
+/// `before - 2`; otherwise the character starts at `before - 1`.
 pub fn prev_char(s : StringView, first~ : Int, before~ : Int) -> Char {
   guard first < before else { ' ' }
-  let k = for start = before - 1; ; start = start - 1 {
-    guard first <= start else { break first }
-    if s[start]
-      is ('\u{0}'..='\u{7f}'
-      | '\u{c2}'..='\u{df}'
-      | '\u{e0}'..='\u{ef}'
-      | '\u{f0}'..='\u{f4}') {
-      break start
-    }
+  let idx = before - 1
+  // UTF-16 trailing surrogate range: 0xDC00 .. 0xDFFF
+  if s[idx] >= 0xDC00 && s[idx] <= 0xDFFF && idx > first {
+    s.get_char(idx - 1).unwrap()
+  } else {
+    s.get_char(idx).unwrap()
   }
-  s.get_char(k).unwrap()
 }
 
 ///|
