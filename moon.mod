@@ -1,6 +1,6 @@
 name = "moonbit-community/cmark"
 
-version = "0.4.4"
+version = "0.4.5"
 
 import {
   "moonbit-community/casefold@0.1.5",
