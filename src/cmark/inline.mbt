@@ -145,12 +145,11 @@ pub fn Inline::to_plain_text(
         for i in is1.0.rev() {
           st.push(i)
         }
-      Link(l) => st.push(l.v.text)
+      Link(l) | Image(l) => st.push(l.v.text)
       RawHtml(_) => ()
       Text(t) => push(t.v)
       ExtStrikethrough(i) => st.push(i.v.0)
       ExtMathSpan(m) => push(m.v.tex())
-      i => st.push(i)
     }
   }
   acc
