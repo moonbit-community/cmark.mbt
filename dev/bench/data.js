@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1786420880806,
+  "lastUpdate": 1786701556699,
   "repoUrl": "https://github.com/moonbit-community/cmark.mbt",
   "entries": {
     "Benchmark.js Benchmark": [
@@ -12710,6 +12710,86 @@ window.BENCHMARK_DATA = {
             "name": "cmarkNative(spec * 200)",
             "value": 0.51,
             "range": "±0.71%",
+            "unit": "ops/sec",
+            "extra": "5 samples"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "kokicplus@gmail.com",
+            "name": "kokic",
+            "username": "kokic"
+          },
+          "committer": {
+            "email": "kokicplus@gmail.com",
+            "name": "kokic",
+            "username": "kokic"
+          },
+          "distinct": true,
+          "id": "6a94a13f1f1c3f9e5d541299d8a860d7f8502615",
+          "message": "fix: handle Image in Inline::to_plain_text to avoid infinite loop (#138)\n\nHandle Image like Link by traversing its alt text, matching the\nupstream cmarkit behavior. The previous catch-all re-pushed the\nnode back onto the stack, looping forever when a heading\ncontaining an image was processed with heading_auto_ids.\n\nAlso drop the catch-all so new Inline variants are caught at\ncompile time instead of hanging.",
+          "timestamp": "2026-08-14T17:55:49+08:00",
+          "tree_id": "400e26890d681415d321f86faf51038e7aea0985",
+          "url": "https://github.com/moonbit-community/cmark.mbt/commit/6a94a13f1f1c3f9e5d541299d8a860d7f8502615"
+        },
+        "date": 1786701555806,
+        "tool": "benchmarkjs",
+        "benches": [
+          {
+            "name": "cmarkJS(spec * 100)",
+            "value": 0.47,
+            "range": "±31.76%",
+            "unit": "ops/sec",
+            "extra": "5 samples"
+          },
+          {
+            "name": "cmarkJS(spec * 200)",
+            "value": 0.23,
+            "range": "±49.09%",
+            "unit": "ops/sec",
+            "extra": "5 samples"
+          },
+          {
+            "name": "cmarkWASM1(spec * 100)",
+            "value": 0.59,
+            "range": "±2.29%",
+            "unit": "ops/sec",
+            "extra": "5 samples"
+          },
+          {
+            "name": "cmarkWASM1(spec * 200)",
+            "value": 0.3,
+            "range": "±1.03%",
+            "unit": "ops/sec",
+            "extra": "5 samples"
+          },
+          {
+            "name": "cmarkWASM(spec * 100)",
+            "value": 0.8,
+            "range": "±8.88%",
+            "unit": "ops/sec",
+            "extra": "5 samples"
+          },
+          {
+            "name": "cmarkWASM(spec * 200)",
+            "value": 0.37,
+            "range": "±16.04%",
+            "unit": "ops/sec",
+            "extra": "5 samples"
+          },
+          {
+            "name": "cmarkNative(spec * 100)",
+            "value": 1.04,
+            "range": "±1.95%",
+            "unit": "ops/sec",
+            "extra": "5 samples"
+          },
+          {
+            "name": "cmarkNative(spec * 200)",
+            "value": 0.52,
+            "range": "±3.74%",
             "unit": "ops/sec",
             "extra": "5 samples"
           }
