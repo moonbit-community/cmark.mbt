@@ -709,6 +709,41 @@ test "Inline::to_plain_text with math span" {
 }
 
 ///|
+test "Inline::to_plain_text with image" {
+  let meta = @cmark_base.Meta::none()
+
+  // Test with Image: plain text should be its alt text
+  let badge = @cmark.Inline::Text(@cmark.Node::new("badge", meta~))
+  let link_def = @cmark.Node::new(@cmark.LinkDefinition::new(), meta~)
+  let reference = @cmark.ReferenceKind::Inline(link_def)
+  let image = @cmark.Inline::Image(
+    @cmark.Node::new({ text: badge, reference }, meta~),
+  )
+  let image_result = image.to_plain_text(break_on_soft=false)
+  debug_inspect(image_result[0][0], content="\"badge\"")
+
+  // Test with image nested in a link: `[![badge](badge.svg)](target)`
+  let link = @cmark.Inline::Link(
+    @cmark.Node::new({ text: image, reference }, meta~),
+  )
+  let link_result = link.to_plain_text(break_on_soft=false)
+  debug_inspect(link_result[0][0], content="\"badge\"")
+}
+
+///|
+test "Inline::to_plain_text with image in heading auto id (issue #138)" {
+  let doc = @cmark.Doc::from_string(
+    "# Title [![badge](badge.svg)](target)",
+    heading_auto_ids=true,
+  )
+  guard doc.block is Heading({ v, .. }) else { abort("expected heading") }
+  guard v.id is Some(@cmark.BlockHeadingId::Auto(id)) else {
+    abort("expected auto id")
+  }
+  debug_inspect(id, content="\"title-badge\"")
+}
+
+///|
 test "Inline::normalize with singleton list" {
   let meta = @cmark_base.Meta::none()
 
