@@ -63,13 +63,15 @@ pub fn[A] Seq::get(self : Seq[A], idx : Int) -> A? {
 
 ///|
 /// @coverage.skip
-pub fn[A] Seq::op_get(self : Seq[A], idx : Int) -> A {
+#alias("_[_]")
+pub fn[A] Seq::unsafe_get(self : Seq[A], idx : Int) -> A {
   self.0[idx]
 }
 
 ///|
 /// @coverage.skip
-pub fn[A] Seq::op_set(self : Seq[A], idx : Int, val : A) -> Unit {
+#alias("_[_]=_")
+pub fn[A] Seq::set(self : Seq[A], idx : Int, val : A) -> Unit {
   self.0[idx] = val
 }
 

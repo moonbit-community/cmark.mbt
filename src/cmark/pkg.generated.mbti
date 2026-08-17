@@ -376,10 +376,12 @@ pub fn[A] Seq::is_empty(Self[A]) -> Bool
 pub fn[A] Seq::iter(Self[A]) -> Iter[A]
 pub fn[A] Seq::length(Self[A]) -> Int
 pub fn[A, B] Seq::map(Self[A], (A) -> B) -> Self[B]
-pub fn[A] Seq::op_get(Self[A], Int) -> A
-pub fn[A] Seq::op_set(Self[A], Int, A) -> Unit
 pub fn[A, B] Seq::rev_fold(Self[A], init~ : B, (B, A) -> B) -> B
+#alias("_[_]=_")
+pub fn[A] Seq::set(Self[A], Int, A) -> Unit
 pub fn[A] Seq::to_array(Self[A]) -> Array[A]
+#alias("_[_]")
+pub fn[A] Seq::unsafe_get(Self[A], Int) -> A
 
 pub(all) struct Table {
   indent : Int
