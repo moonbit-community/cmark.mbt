@@ -7,14 +7,14 @@ test "TextLoc::is_none with none value" {
 ///|
 test "TextLoc::is_empty for non-empty location" {
   let loc = @cmark_base.TextLoc::none()
-  let loc = { ..loc, first_ccode: 10, last_ccode: 5 }
+  let loc = { ..loc, first_ccode: 10, last_ccode: 5, }
   debug_inspect(loc.is_empty(), content="true")
 }
 
 ///|
 test "TextLoc::is_empty for empty location" {
   let loc = @cmark_base.TextLoc::none()
-  let loc = { ..loc, first_ccode: 5, last_ccode: 10 }
+  let loc = { ..loc, first_ccode: 5, last_ccode: 10, }
   debug_inspect(loc.is_empty(), content="false")
 }
 

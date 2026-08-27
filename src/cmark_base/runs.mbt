@@ -77,16 +77,19 @@ fn push_span(
   let first1 = first
   let last1 = last
   // Merge if on the same line
-  if spans is [.., { start, span: { pos, first, .. } }] {
+  if spans is [.., { start, span: { pos, first, .. }, }] {
     if line.pos.0 == pos.0 {
       spans[spans.length() - 1] = {
         start,
-        span: { ..line, first, last: last1 },
+        span: { ..line, first, last: last1, },
       }
       return
     }
   }
-  spans.push({ start: line.first, span: { ..line, first: first1, last: last1 } })
+  spans.push({
+    start: line.first,
+    span: { ..line, first: first1, last: last1, },
+  })
 }
 
 ///|
@@ -184,12 +187,12 @@ fn[A] first_non_blank_over_nl1(
   match first_non_blank_over_nl(next_line~, s, lines, line~, start~) {
     None => None
     Some(ThisLine(nb)) => {
-      let line = { ..line, first: start } // No layout
+      let line = { ..line, first: start, } // No layout
       push_span(line~, start, nb - 1, spans)
       Some((line, nb - 1))
     }
     Some(NextLine(new_line, nb)) => {
-      let line = { ..line, first: start } // No layout
+      let line = { ..line, first: start, } // No layout
       push_span(line~, start, line.last, spans)
       Some((new_line, nb - 1))
     }

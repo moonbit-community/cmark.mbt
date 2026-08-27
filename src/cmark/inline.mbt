@@ -19,7 +19,7 @@ pub(all) enum Inline {
 
 ///|
 pub fn Inline::empty() -> Inline {
-  Inlines({ v: [], meta: Meta::none() })
+  Inlines({ v: [], meta: Meta::none(), })
 }
 
 ///|
@@ -73,18 +73,18 @@ pub fn Inline::normalize(self : Inline) -> Inline {
     | Text(_)
     | Inlines({ v: Seq([]), .. })
     | ExtMathSpan(_) as i => i
-    Image({ v: raw, meta }) =>
-      Image({ v: { ..raw, text: raw.text.normalize() }, meta })
-    Link({ v: raw, meta }) =>
-      Link({ v: { ..raw, text: raw.text.normalize() }, meta })
-    Emphasis({ v: raw, meta }) =>
-      Emphasis({ v: { ..raw, inline: raw.inline.normalize() }, meta })
-    StrongEmphasis({ v: raw, meta }) =>
-      StrongEmphasis({ v: { ..raw, inline: raw.inline.normalize() }, meta })
-    ExtStrikethrough({ v: raw, meta }) =>
-      ExtStrikethrough({ v: raw.0.normalize(), meta })
+    Image({ v: raw, meta, }) =>
+      Image({ v: { ..raw, text: raw.text.normalize(), }, meta, })
+    Link({ v: raw, meta, }) =>
+      Link({ v: { ..raw, text: raw.text.normalize(), }, meta, })
+    Emphasis({ v: raw, meta, }) =>
+      Emphasis({ v: { ..raw, inline: raw.inline.normalize(), }, meta, })
+    StrongEmphasis({ v: raw, meta, }) =>
+      StrongEmphasis({ v: { ..raw, inline: raw.inline.normalize(), }, meta, })
+    ExtStrikethrough({ v: raw, meta, }) =>
+      ExtStrikethrough({ v: raw.0.normalize(), meta, })
     Inlines({ v: Seq([i]), .. }) => i
-    Inlines({ v: Seq([i, .. is_]), meta }) => {
+    Inlines({ v: Seq([i, .. is_]), meta, }) => {
       let acc = [i.normalize()]
       let is_ = Array::from_iter(is_.iter())
       for ;; {
@@ -94,12 +94,12 @@ pub fn Inline::normalize(self : Inline) -> Inline {
             for i1 in is1.0.rev() {
               is_.push(i1)
             }
-          Text({ v: t1, meta: meta1 }) as i1 =>
+          Text({ v: t1, meta: meta1, }) as i1 =>
             match acc {
-              [.., Text({ v: t, meta })] =>
+              [.., Text({ v: t, meta, })] =>
                 acc[acc.length() - 1] = Text({
                   v: t + t1,
-                  meta: { ..meta, loc: meta.loc.span(meta1.loc) },
+                  meta: { ..meta, loc: meta.loc.span(meta1.loc), },
                 })
               _ => acc.push(i1.normalize())
             }
@@ -108,7 +108,7 @@ pub fn Inline::normalize(self : Inline) -> Inline {
       }
       match acc {
         [i] => i
-        is_ => Inlines({ v: is_, meta })
+        is_ => Inlines({ v: is_, meta, })
       }
     }
   }
@@ -221,7 +221,7 @@ pub(all) struct InlineAutolink {
 ///|
 pub fn InlineAutolink::new(link : StringNode) -> InlineAutolink {
   let raw_link = "<{$link.raw}>"
-  { is_email: !(@cmark_base.autolink_email(raw_link) is None), link }
+  { is_email: !(@cmark_base.autolink_email(raw_link) is None), link, }
 }
 
 ///|
@@ -237,7 +237,7 @@ pub fn InlineBreak::new(
   layout_after? : BlanksNode = layout_empty,
   ty : InlineBreakType,
 ) -> InlineBreak {
-  { layout_before, ty, layout_after }
+  { layout_before, ty, layout_after, }
 }
 
 ///|
@@ -258,7 +258,7 @@ pub fn InlineCodeSpan::new(
   backticks~ : Count,
   code_layout : Seq[Tight],
 ) -> InlineCodeSpan {
-  { backticks, code_layout }
+  { backticks, code_layout, }
 }
 
 ///|
@@ -287,7 +287,7 @@ pub fn InlineCodeSpan::from_string(
   s : String,
 ) -> InlineCodeSpan {
   if s.is_empty() {
-    return { backticks: 1, code_layout: [Tight::empty(meta~)] }
+    return { backticks: 1, code_layout: [Tight::empty(meta~)], }
   }
   // This finds out the needed backtick count, whether spaces are needed,
   // and treats blanks after newline as layout 
@@ -300,7 +300,7 @@ pub fn InlineCodeSpan::from_string(
     if k > max {
       // assert (btc = 0) because of [need_sp]
       let layout = if acc.is_empty() {
-        [{ blanks: "", node: { v: s, meta } }]
+        [{ blanks: "", node: { v: s, meta, }, }]
       } else {
         BlockLine::flush_tight(meta~, s, start, max, acc)
         acc
@@ -323,7 +323,7 @@ pub fn InlineCodeSpan::from_string(
     }
     continue 0, start, start
   }
-  { code_layout, backticks: InlineCodeSpan::min_backticks(min=1, bt_counts) }
+  { code_layout, backticks: InlineCodeSpan::min_backticks(min=1, bt_counts), }
 }
 
 ///|
@@ -350,7 +350,7 @@ pub fn InlineEmphasis::new(
   delim? : Char = '*',
   inline : Inline,
 ) -> InlineEmphasis {
-  { delim, inline }
+  { delim, inline, }
 }
 
 ///|
@@ -381,7 +381,7 @@ pub(all) enum ReferenceLayout {
 
 ///|
 pub fn InlineLink::new(text : Inline, reference : ReferenceKind) -> InlineLink {
-  { text, reference }
+  { text, reference, }
 }
 
 ///|

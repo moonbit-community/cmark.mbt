@@ -111,7 +111,7 @@ fn Parser::curr_line_span(
   first~ : CharCodePos,
   last~ : CharCodePos,
 ) -> LineSpan {
-  { first, last, pos: self.curr_line_pos }
+  { first, last, pos: self.curr_line_pos, }
 }
 
 // Making metas and text locations. This is centralized here to be able
@@ -293,8 +293,8 @@ fn Parser::_tight_block_lines(
   for i, span in spans {
     match (span, i) {
       ({ span: fst_ln, .. }, 0) =>
-        acc.push({ blanks: "", node: f(self, fst_ln) })
-      ({ start: line_start, span }, _) => {
+        acc.push({ blanks: "", node: f(self, fst_ln), })
+      ({ start: line_start, span, }, _) => {
         let layout = if self.no_layouts || span.first <= line_start {
           ""
         } else {
@@ -305,7 +305,7 @@ fn Parser::_tight_block_lines(
             last=span.first - 1,
           )
         }
-        acc.push({ blanks: layout, node: f(self, span) })
+        acc.push({ blanks: layout, node: f(self, span), })
       }
     }
   }
@@ -341,13 +341,13 @@ fn[A] Parser::first_non_blank_over_nl(
       let layout = if nb == start {
         []
       } else {
-        [self.clean_raw_span({ ..line, first: start, last: nb - 1 })]
+        [self.clean_raw_span({ ..line, first: start, last: nb - 1, })]
       }
       Some((line, layout, nb))
     }
     Some(NextLine(newline, nb)) => {
-      let first_layout = self.clean_raw_span({ ..line, first: start })
-      let next_layout = self.clean_raw_span({ ..newline, last: nb - 1 })
+      let first_layout = self.clean_raw_span({ ..line, first: start, })
+      let next_layout = self.clean_raw_span({ ..newline, last: nb - 1, })
       let layout = [first_layout, next_layout]
       Some((newline, layout, nb))
     }

@@ -13,7 +13,7 @@ let curr_id : Ref[MetaId] = Ref(0)
 
 ///|
 pub fn Meta::new(loc? : TextLoc = text_loc_none) -> Meta {
-  let res = { loc, id: curr_id.val, extra: None }
+  let res = { loc, id: curr_id.val, extra: None, }
   curr_id.val += 1
   res
 }

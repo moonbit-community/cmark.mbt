@@ -16,7 +16,7 @@ pub fn Renderer::new(
   block? : BlockFn = fn(_c, _b) { false },
   doc? : DocFn = fn(_c, _d) { false },
 ) -> Renderer {
-  { init_context, inline, block, doc }
+  { init_context, inline, block, doc, }
 }
 
 ///|
@@ -28,7 +28,7 @@ pub fn Renderer::compose(self : Renderer, other : Renderer) -> Renderer {
   let block = fn(c, b) raise { (other.block)(c, b) || (self.block)(c, b) }
   let inline = fn(c, i) raise { (other.inline)(c, i) || (self.inline)(c, i) }
   let doc = fn(c, d) raise { (other.doc)(c, d) || (self.doc)(c, d) }
-  { init_context, inline, block, doc }
+  { init_context, inline, block, doc, }
 }
 
 ///|
@@ -45,7 +45,7 @@ pub(all) struct Context {
 
 ///|
 pub fn Context::new(renderer : Renderer, b : StringBuilder) -> Context {
-  { renderer, state: None, b, doc: Doc::empty() }
+  { renderer, state: None, b, doc: Doc::empty(), }
 }
 
 ///|
