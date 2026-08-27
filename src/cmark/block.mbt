@@ -18,7 +18,7 @@ pub(all) enum Block {
 
 ///|
 pub fn Block::empty() -> Block {
-  Blocks({ v: [], meta: Meta::none() })
+  Blocks({ v: [], meta: Meta::none(), })
 }
 
 ///|
@@ -52,7 +52,7 @@ pub fn Block::normalize(self : Block) -> Block {
   match self {
     BlockQuote(bl) => BlockQuote(bl.map(BlockQuote::normalize_block))
     List(bl) => List(bl.map(BlockList::normalize_items))
-    Blocks({ v: Seq([.., _] as bs), meta }) => {
+    Blocks({ v: Seq([.., _] as bs), meta, }) => {
       let mut bs = bs
       let acc = [bs.pop().unwrap().normalize()]
       for ;; {
@@ -64,7 +64,7 @@ pub fn Block::normalize(self : Block) -> Block {
       }
       match acc {
         [b] => b
-        _ => Blocks({ v: bs, meta })
+        _ => Blocks({ v: bs, meta, })
       }
     }
     ExtFootnoteDefinition(bl) =>
@@ -111,7 +111,7 @@ pub(all) struct BlockQuote {
 
 ///|
 pub fn BlockQuote::new(indent? : Int = 0, block : Block) -> BlockQuote {
-  { indent, block }
+  { indent, block, }
 }
 
 ///|
@@ -119,7 +119,7 @@ pub fn BlockQuote::map_block(
   self : BlockQuote,
   f : (Block) -> Block,
 ) -> BlockQuote {
-  { ..self, block: f(self.block) }
+  { ..self, block: f(self.block), }
 }
 
 ///|
@@ -151,7 +151,7 @@ pub(all) struct CodeBlockFencedLayout {
 
 ///|
 pub fn CodeBlockFencedLayout::default() -> CodeBlockFencedLayout {
-  { indent: 0, opening_fence: layout_empty, closing_fence: Some(layout_empty) }
+  { indent: 0, opening_fence: layout_empty, closing_fence: Some(layout_empty), }
 }
 
 ///|
@@ -165,7 +165,7 @@ pub fn CodeBlock::new(
       CodeBlockLayout::Fenced(CodeBlockFencedLayout::default())
     (_, layout) => layout
   }
-  { layout, info_string, code }
+  { layout, info_string, code, }
 }
 
 ///|
@@ -239,7 +239,7 @@ pub(all) struct BlockHeadingAtxLayout {
 
 ///|
 pub fn BlockHeadingAtxLayout::default() -> BlockHeadingAtxLayout {
-  { indent: 0, after_opening: "", closing: "" }
+  { indent: 0, after_opening: "", closing: "", }
 }
 
 ///|
@@ -264,7 +264,7 @@ pub fn BlockHeading::new(
   level~ : Int,
   inline : Inline,
 ) -> BlockHeading {
-  { layout, level, inline, id }
+  { layout, level, inline, id, }
 }
 
 ///|
@@ -291,12 +291,12 @@ pub fn ListItem::new(
   ext_task_marker~ : Node[Char]?,
   block : Block,
 ) -> ListItem {
-  { before_marker, marker, after_marker, block, ext_task_marker }
+  { before_marker, marker, after_marker, block, ext_task_marker, }
 }
 
 ///|
 pub fn ListItem::map_block(self : ListItem, f : (Block) -> Block) -> ListItem {
-  { ..self, block: f(self.block) }
+  { ..self, block: f(self.block), }
 }
 
 ///|
@@ -335,7 +335,7 @@ pub fn BlockList::map_items(
   self : BlockList,
   f : (ListItem) -> ListItem,
 ) -> BlockList {
-  { ..self, items: self.items.map(fn(it) { it.map(f) }) }
+  { ..self, items: self.items.map(fn(it) { it.map(f) }), }
 }
 
 ///|
@@ -357,7 +357,7 @@ pub fn BlockParagraph::new(
   trailing_blanks? : Blanks = "",
   inline : Inline,
 ) -> BlockParagraph {
-  { leading_indent, inline, trailing_blanks }
+  { leading_indent, inline, trailing_blanks, }
 }
 
 ///|
@@ -372,7 +372,7 @@ pub fn BlockThematicBreak::new(
   indent? : Indent = 0,
   layout? : String = "---",
 ) -> BlockThematicBreak {
-  { indent, layout }
+  { indent, layout, }
 }
 
 // Extensions
@@ -393,12 +393,12 @@ pub fn Footnote::new(
   block : Block,
 ) -> Footnote {
   let defined_label = defined_label.unwrap_or(Some(label))
-  { indent, label, defined_label, block }
+  { indent, label, defined_label, block, }
 }
 
 ///|
 pub fn Footnote::map_block(self : Footnote, f : (Block) -> Block) -> Footnote {
-  { ..self, block: f(self.block) }
+  { ..self, block: f(self.block), }
 }
 
 ///|
@@ -409,7 +409,7 @@ pub fn Footnote::normalize_block(self : Footnote) -> Footnote {
 ///|
 fn Label::stub(label : Label, defined_label : Label?) -> LabelDef {
   FootnoteDef(
-    Node::new({ indent: 0, label, defined_label, block: Block::empty() }),
+    Node::new({ indent: 0, label, defined_label, block: Block::empty(), }),
   )
 }
 
@@ -453,7 +453,7 @@ pub fn Table::new(
       Sep(cols) => col_count = @cmp.maximum(col_count, cols.length())
     }
   }
-  { indent, rows, col_count }
+  { indent, rows, col_count, }
 }
 
 ///|
@@ -464,7 +464,7 @@ fn Table::parse_sep_row(
   for cs = cs {
     match cs {
       [] => break Some(acc)
-      [(Text({ v, meta }), TableCellLayout(("", ""))), .. cs] => {
+      [(Text({ v, meta, }), TableCellLayout(("", ""))), .. cs] => {
         guard !v.is_empty() else { break None }
         let max = v.length() - 1
         let first_colon = v[0] == ':'
@@ -484,7 +484,7 @@ fn Table::parse_sep_row(
           (true, false) => Some(Left)
           (false, true) => Some(Right)
         }
-        acc.push({ v: (sep, count), meta })
+        acc.push({ v: (sep, count), meta, })
         continue cs
       }
       _ => break None

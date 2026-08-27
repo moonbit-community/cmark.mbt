@@ -75,7 +75,7 @@ pub fn Mapper::new(
   inline? : MapperFn[Inline] = Mapper::none,
   block? : MapperFn[Block] = Mapper::none,
 ) -> Mapper {
-  { inline_ext_default, block_ext_default, inline, block }
+  { inline_ext_default, block_ext_default, inline, block, }
 }
 
 ///|
@@ -90,30 +90,30 @@ pub fn Mapper::map_inline(self : Mapper, i : Inline) -> Inline? {
     | RawHtml(_)
     | Text(_)
     | ExtMathSpan(_) => Some(i)
-    Image({ v, meta }) => {
+    Image({ v, meta, }) => {
       let text = self.map_inline(v.text).unwrap_or(Inline::empty())
-      Some(Image({ v: { ..v, text, }, meta }))
+      Some(Image({ v: { ..v, text, }, meta, }))
     }
-    Link({ v, meta }) => {
+    Link({ v, meta, }) => {
       guard self.map_inline(v.text) is Some(text) else { None }
-      Some(Link({ v: { ..v, text, }, meta }))
+      Some(Link({ v: { ..v, text, }, meta, }))
     }
-    Emphasis({ v, meta }) => {
+    Emphasis({ v, meta, }) => {
       guard self.map_inline(v.inline) is Some(inline) else { None }
-      Some(Emphasis({ v: { ..v, inline, }, meta }))
+      Some(Emphasis({ v: { ..v, inline, }, meta, }))
     }
-    StrongEmphasis({ v, meta }) => {
+    StrongEmphasis({ v, meta, }) => {
       guard self.map_inline(v.inline) is Some(inline) else { None }
-      Some(StrongEmphasis({ v: { ..v, inline, }, meta }))
+      Some(StrongEmphasis({ v: { ..v, inline, }, meta, }))
     }
-    Inlines({ v, meta }) => {
+    Inlines({ v, meta, }) => {
       let v = v.0.filter_map(fn(x) { self.map_inline(x) })
       guard !v.is_empty() else { None }
-      Some(Inlines({ v, meta }))
+      Some(Inlines({ v, meta, }))
     }
-    ExtStrikethrough({ v, meta }) => {
+    ExtStrikethrough({ v, meta, }) => {
       guard self.map_inline(v.0) is Some(v) else { None }
-      Some(ExtStrikethrough({ v, meta }))
+      Some(ExtStrikethrough({ v, meta, }))
     }
     // ext => (self.inline_ext_default)(self, ext)
   }
@@ -131,66 +131,66 @@ pub fn Mapper::map_block(self : Mapper, b : Block) -> Block? {
     | LinkRefDefinition(_)
     | ThematicBreak(_)
     | ExtMathBlock(_) as b => Some(b)
-    Heading({ v, meta }) => {
+    Heading({ v, meta, }) => {
       let inline = self
         .map_inline(v.inline)
-        .unwrap_or(Inlines({ v: [], meta: Meta::none() }))
-      Some(Heading({ v: { ..v, inline, }, meta }))
+        .unwrap_or(Inlines({ v: [], meta: Meta::none(), }))
+      Some(Heading({ v: { ..v, inline, }, meta, }))
     }
-    BlockQuote({ v, meta }) => {
+    BlockQuote({ v, meta, }) => {
       let block = self
         .map_block(v.block)
-        .unwrap_or(Blocks({ v: [], meta: Meta::none() }))
-      Some(BlockQuote({ v: { ..v, block, }, meta }))
+        .unwrap_or(Blocks({ v: [], meta: Meta::none(), }))
+      Some(BlockQuote({ v: { ..v, block, }, meta, }))
     }
-    Blocks({ v, meta }) =>
+    Blocks({ v, meta, }) =>
       match v.0.filter_map(fn(x) { self.map_block(x) }) {
         [] => None
-        v => Some(Blocks({ v, meta }))
+        v => Some(Blocks({ v, meta, }))
       }
-    List({ v, meta }) => {
+    List({ v, meta, }) => {
       fn map_list_item(i : Node[ListItem]) {
-        let { v, meta } = i
+        let { v, meta, } = i
         guard self.map_block(i.v.block) is Some(block) else { None }
-        Some({ v: { ..v, block, }, meta })
+        Some({ v: { ..v, block, }, meta, })
       }
 
       match v.items.0.filter_map(map_list_item) {
         [] => None
-        items => Some(List({ v: { ..v, items, }, meta }))
+        items => Some(List({ v: { ..v, items, }, meta, }))
       }
     }
-    Paragraph({ v, meta }) => {
+    Paragraph({ v, meta, }) => {
       guard self.map_inline(v.inline) is Some(inline) else { None }
-      Some(Paragraph({ v: { ..v, inline, }, meta }))
+      Some(Paragraph({ v: { ..v, inline, }, meta, }))
     }
-    ExtFootnoteDefinition({ v, meta }) => {
+    ExtFootnoteDefinition({ v, meta, }) => {
       let block = self
         .map_block(v.block)
         .unwrap_or_else(fn() { Blocks(Node::new([])) }) // Can be empty
-      Some(ExtFootnoteDefinition({ v: { ..v, block, }, meta }))
+      Some(ExtFootnoteDefinition({ v: { ..v, block, }, meta, }))
     }
-    ExtTable({ v, meta }) => {
+    ExtTable({ v, meta, }) => {
       fn map_col(i, layout) {
         self.map_inline(i).map(fn(i) { (i, layout) })
       }
 
       fn map_row(row) {
-        let ({ v, meta }, blanks) = row
+        let ({ v, meta, }, blanks) = row
         match v {
           Header(is_) => {
             let is_ = is_.0.filter_map(fn(i) { map_col(i.0, i.1) })
-            ({ v: Header(is_), meta }, blanks)
+            ({ v: Header(is_), meta, }, blanks)
           }
           Sep(_) => row
           Data(is_) => {
             let is_ = is_.0.filter_map(fn(i) { map_col(i.0, i.1) })
-            ({ v: Data(is_), meta }, blanks)
+            ({ v: Data(is_), meta, }, blanks)
           }
         }
       }
 
-      Some(ExtTable({ v: { ..v, rows: v.rows.map(map_row) }, meta }))
+      Some(ExtTable({ v: { ..v, rows: v.rows.map(map_row), }, meta, }))
     }
     // ext => (self.block_ext_default)(self, ext)
   }
@@ -200,14 +200,14 @@ pub fn Mapper::map_block(self : Mapper, b : Block) -> Block? {
 pub fn Mapper::map_doc(self : Mapper, d : Doc) -> Doc {
   let map_block = fn(b) { self.map_block(b).unwrap_or(Block::empty()) }
   let map_def = fn(b : LabelDef) {
-    guard b is FootnoteDef({ v, meta }) else { b }
+    guard b is FootnoteDef({ v, meta, }) else { b }
     let block = map_block(v.block)
-    FootnoteDef({ v: { ..v, block, }, meta })
+    FootnoteDef({ v: { ..v, block, }, meta, })
   }
   let block = map_block(d.block)
   let defs = Map::Map([])
   for k, d in d.defs {
     defs[k] = map_def(d)
   }
-  { ..d, block, defs }
+  { ..d, block, defs, }
 }

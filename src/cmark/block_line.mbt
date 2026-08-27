@@ -34,7 +34,7 @@ pub(all) struct Tight {
 
 ///|
 pub fn Tight::empty(meta? : Meta = Meta::none()) -> Tight {
-  { blanks: "", node: StringNode::empty(meta~) }
+  { blanks: "", node: StringNode::empty(meta~), }
 }
 
 ///|
@@ -76,12 +76,12 @@ fn BlockLine::flush_tight(
   }
   // On the first line the blanks are legit 
   if acc.is_empty() {
-    acc.push({ blanks: "", node: { meta, v: s[start:last + 1].to_owned() } })
+    acc.push({ blanks: "", node: { meta, v: s[start:last + 1].to_owned(), }, })
     return
   }
   let nb = @cmark_base.first_non_blank(s, last~, start~)
   acc.push({
     blanks: s[start:nb].to_owned(),
-    node: { meta, v: s[nb:last + 1].to_owned() },
+    node: { meta, v: s[nb:last + 1].to_owned(), },
   })
 }

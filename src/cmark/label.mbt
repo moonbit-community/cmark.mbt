@@ -24,7 +24,7 @@ pub fn Label::new(
   key~ : String,
   text : Seq[Tight],
 ) -> Label {
-  { meta, key, text }
+  { meta, key, text, }
 }
 
 ///|

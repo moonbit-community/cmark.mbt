@@ -12,7 +12,7 @@ test "Tight::to_string outputs the node content" {
 ///|
 test "BlockLine::to_string extracts the string value" {
   let meta = @cmark_base.Meta::none()
-  let block_line : @cmark.BlockLine = { v: "Test string", meta }
+  let block_line : @cmark.BlockLine = { v: "Test string", meta, }
   let result = block_line.to_string()
   debug_inspect(
     result,
@@ -49,7 +49,7 @@ test "BlockLine::list_text_loc handles single element sequence" {
     last_line: LinePos(1, 5),
   }
   let meta = @cmark_base.Meta::new(loc~)
-  let single_node : @cmark.BlockLine = { v: "hello", meta }
+  let single_node : @cmark.BlockLine = { v: "hello", meta, }
   let single_seq = @cmark.Seq::from_array([single_node])
   let result = @cmark.BlockLine::list_text_loc(single_seq)
   debug_inspect(
@@ -77,7 +77,7 @@ test "BlockLine::list_text_loc handles multiple element sequence" {
     last_line: LinePos(1, 5),
   }
   let meta1 = @cmark_base.Meta::new(loc=loc1)
-  let node1 : @cmark.BlockLine = { v: "hello", meta: meta1 }
+  let node1 : @cmark.BlockLine = { v: "hello", meta: meta1, }
 
   // Second node with location at line 2
   let loc2 = @cmark_base.TextLoc::{
@@ -88,7 +88,7 @@ test "BlockLine::list_text_loc handles multiple element sequence" {
     last_line: LinePos(2, 5),
   }
   let meta2 = @cmark_base.Meta::new(loc=loc2)
-  let node2 : @cmark.BlockLine = { v: "world", meta: meta2 }
+  let node2 : @cmark.BlockLine = { v: "world", meta: meta2, }
   let multi_seq = @cmark.Seq::from_array([node1, node2])
   let result = @cmark.BlockLine::list_text_loc(multi_seq)
 
@@ -134,8 +134,8 @@ test "Tight::list_text_loc handles single element sequence" {
     last_line: LinePos(1, 5),
   }
   let meta = @cmark_base.Meta::new(loc~)
-  let node : @cmark.StringNode = { v: "hello", meta }
-  let t : @cmark.Tight = { blanks: "", node }
+  let node : @cmark.StringNode = { v: "hello", meta, }
+  let t : @cmark.Tight = { blanks: "", node, }
   let seq = @cmark.Seq::from_array([t])
   debug_inspect(
     @cmark.Tight::list_text_loc(seq),
@@ -162,8 +162,8 @@ test "Tight::list_text_loc handles multiple element sequence" {
     last_line: LinePos(1, 5),
   }
   let meta1 = @cmark_base.Meta::new(loc=loc1)
-  let node1 : @cmark.StringNode = { v: "hello", meta: meta1 }
-  let t1 : @cmark.Tight = { blanks: "", node: node1 }
+  let node1 : @cmark.StringNode = { v: "hello", meta: meta1, }
+  let t1 : @cmark.Tight = { blanks: "", node: node1, }
 
   // Second tight element
   let loc2 = @cmark_base.TextLoc::{
@@ -174,8 +174,8 @@ test "Tight::list_text_loc handles multiple element sequence" {
     last_line: LinePos(2, 5),
   }
   let meta2 = @cmark_base.Meta::new(loc=loc2)
-  let node2 : @cmark.StringNode = { v: "world", meta: meta2 }
-  let t2 : @cmark.Tight = { blanks: "  ", node: node2 }
+  let node2 : @cmark.StringNode = { v: "world", meta: meta2, }
+  let t2 : @cmark.Tight = { blanks: "  ", node: node2, }
   let seq = @cmark.Seq::from_array([t1, t2])
   debug_inspect(
     @cmark.Tight::list_text_loc(seq),

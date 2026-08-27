@@ -56,7 +56,7 @@ test "map_inline with StrongEmphasis" {
   let mapper = @cmark.Mapper::new()
   let text = @cmark.Inline::Text(@cmark.Node::new("strongly emphasized text"))
   let strong = @cmark.Inline::StrongEmphasis(
-    @cmark.Node::new({ delim: '*', inline: text }),
+    @cmark.Node::new({ delim: '*', inline: text, }),
   )
   let result = mapper.map_inline(strong)
   debug_inspect(
@@ -114,7 +114,7 @@ test "map_inline with StrongEmphasis returns None when inner inline is None" {
   let mapper = @cmark.Mapper::new(inline=inline_fn)
   let text = @cmark.Inline::Text(@cmark.Node::new("strongly emphasized text"))
   let strong = @cmark.Inline::StrongEmphasis(
-    @cmark.Node::new({ delim: '*', inline: text }),
+    @cmark.Node::new({ delim: '*', inline: text, }),
   )
   let result = mapper.map_inline(strong)
   debug_inspect(result, content="None")
@@ -126,7 +126,7 @@ test "map_inline with Emphasis" {
   let text = @cmark.Inline::Text(@cmark.Node::new("emphasized text"))
   // Create Emphasis with the correct structure
   let emphasis = @cmark.Inline::Emphasis(
-    @cmark.Node::new({ delim: '*', inline: text }),
+    @cmark.Node::new({ delim: '*', inline: text, }),
   )
   let result = mapper.map_inline(emphasis)
   debug_inspect(
@@ -184,7 +184,7 @@ test "map_inline with Emphasis returns None when inner text is None" {
   let mapper = @cmark.Mapper::new(inline=inline_fn)
   let text = @cmark.Inline::Text(@cmark.Node::new("emphasized text"))
   let emphasis = @cmark.Inline::Emphasis(
-    @cmark.Node::new({ delim: '*', inline: text }),
+    @cmark.Node::new({ delim: '*', inline: text, }),
   )
   let result = mapper.map_inline(emphasis)
   debug_inspect(result, content="None")
@@ -654,7 +654,7 @@ test "map_inline with Emphasis (2)" {
   let text = @cmark.Inline::Text(@cmark.Node::new("emphasized text"))
   // Create Emphasis with the correct structure
   let emphasis = @cmark.Inline::Emphasis(
-    @cmark.Node::new({ delim: '*', inline: text }),
+    @cmark.Node::new({ delim: '*', inline: text, }),
   )
   let result = mapper.map_inline(emphasis)
   debug_inspect(
@@ -950,7 +950,7 @@ test "map_block with BlockQuote" {
     }),
   )
   let blockquote = @cmark.Block::BlockQuote(
-    @cmark.Node::new({ indent: 0, block: para }),
+    @cmark.Node::new({ indent: 0, block: para, }),
   )
   let result = mapper.map_block(blockquote)
   debug_inspect(

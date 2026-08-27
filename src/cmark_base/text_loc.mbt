@@ -33,12 +33,12 @@ pub fn TextLoc::is_empty(self : TextLoc) -> Bool {
 
 ///|
 pub fn TextLoc::to_first(self : TextLoc) -> TextLoc {
-  { ..self, last_ccode: self.first_ccode, last_line: self.first_line }
+  { ..self, last_ccode: self.first_ccode, last_line: self.first_line, }
 }
 
 ///|
 pub fn TextLoc::to_last(self : TextLoc) -> TextLoc {
-  { ..self, first_ccode: self.last_ccode, first_line: self.last_line }
+  { ..self, first_ccode: self.last_ccode, first_line: self.last_line, }
 }
 
 ///|
@@ -64,14 +64,14 @@ pub fn TextLoc::span(self : TextLoc, other : TextLoc) -> TextLoc {
   ) {
     it.last_ccode
   })
-  { file, first_ccode, last_ccode, first_line, last_line }
+  { file, first_ccode, last_ccode, first_line, last_line, }
 }
 
 ///|
 pub fn TextLoc::reloc(self : TextLoc, other : TextLoc) -> TextLoc {
   let { first_ccode, first_line, .. } = self
   let { file, last_ccode, last_line, .. } = other
-  { file, first_ccode, last_ccode, first_line, last_line }
+  { file, first_ccode, last_ccode, first_line, last_line, }
 }
 
 // TODO: Formatters unimplemented

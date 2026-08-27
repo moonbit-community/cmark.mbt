@@ -328,7 +328,7 @@ fn LineType::html_block_start_7_open_tag(
   start~ : CharCodePos,
 ) -> LineType {
   // Has to be on the same line we fake one and use the inline parser
-  let line = { pos: line_pos_none, first: start, last }
+  let line = { pos: line_pos_none, first: start, last, }
   guard open_tag(next_line=fn(_x) { None }, s, (), line~, start~)
     is Some((_, _, tag_end)) else {
     Nomatch
@@ -347,7 +347,7 @@ fn LineType::html_block_start_7_close_tag(
   last~ : CharCodePos,
   start~ : CharCodePos,
 ) -> LineType {
-  let line = { pos: line_pos_none, first: start, last }
+  let line = { pos: line_pos_none, first: start, last, }
   guard closing_tag(next_line=fn(_x) { None }, s, (), line~, start~)
     is Some((_, _, tag_end)) else {
     Nomatch
@@ -502,7 +502,7 @@ pub fn LineType::ext_footnote_label(
     Nomatch
   }
   // Get the normalized label
-  let line = { pos: line_pos, first: start, last }
+  let line = { pos: line_pos, first: start, last, }
   guard link_label(buf, next_line=fn(_x) { None }, s, (), line~, start~)
     is Some((_, spans, _, key)) else {
     Nomatch

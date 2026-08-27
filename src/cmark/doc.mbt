@@ -12,7 +12,7 @@ pub fn Doc::new(
   defs? : LabelDefs = Map([]),
   block : Block,
 ) -> Doc {
-  { nl, block, defs }
+  { nl, block, defs, }
 }
 
 ///|

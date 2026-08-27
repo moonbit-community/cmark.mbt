@@ -63,7 +63,7 @@ pub fn[A] Folder::new(
   inline? : FolderFn[Inline, A] = Folder::none,
   block? : FolderFn[Block, A] = Folder::none,
 ) -> Folder[A] {
-  { inline_ext_default, block_ext_default, inline, block }
+  { inline_ext_default, block_ext_default, inline, block, }
 }
 
 ///|

@@ -118,7 +118,7 @@ fn make_footnote_ref_ids(
     st.footnote_count = footnote_count
     let text = "[\{footnote_count}]"
     let id = footnote_id(label)
-    footnotes[label] = { text, id, count: 1, footnote: f }
+    footnotes[label] = { text, id, count: 1, footnote: f, }
     (text, id, footnote_ref_id(id, 1))
   }
   rf.count += 1
@@ -382,7 +382,7 @@ fn link_dest_and_title(
       }
   }
   let title = ld.title.map(fn(title) {
-    { iter: title.iter().map(fn(t) { t.node.v }), sep: "\n" }
+    { iter: title.iter().map(fn(t) { t.node.v }), sep: "\n", }
   })
   (dest, title)
 }
@@ -397,7 +397,7 @@ fn image(c : Context, i : @cmark.InlineLink, close? : String = " >") -> Unit {
       c.b.write_string("\" alt=\"")
       let lines = i.text.to_plain_text(break_on_soft=false)
       for line in lines {
-        let joined = { iter: line.iter(), sep: "\n" }
+        let joined = { iter: line.iter(), sep: "\n", }
         joined_string(c, joined)
       }
       c.b.write_char('"')
