@@ -49,7 +49,9 @@ fn Parser::update_next_non_blank(self : Parser) -> Unit {
 ///|
 fn Parser::accept_cols(self : Parser, count~ : Int) -> Unit {
   for count = count, k = self.curr_char, col = self.curr_char_col {
-    break if count == 0 {
+    // Stop at the end of the line: a list marker or other prefix can
+    // be the very last thing in the input, with nothing left to accept.
+    break if count == 0 || k > self.curr_line_last_char {
       self.curr_char = k
       self.curr_char_col = col
     } else if self.i[k] != '\t' {

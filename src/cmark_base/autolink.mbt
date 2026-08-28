@@ -30,7 +30,7 @@ pub fn autolink_email(s : String, last? : Int = -1, start? : Int = 0) -> Last? {
     }
   }
 
-  guard start <= last || s[start] == '<' else { None }
+  guard start <= last && s[start] == '<' else { None }
   for k in (start + 1)..<=last {
     let sk = s[k].unsafe_to_char()
     if char_is_atext_plus_dot(sk) {
