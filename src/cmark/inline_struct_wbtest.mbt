@@ -41,7 +41,8 @@ fn tokenize_only(
     char_code_pos += ln.length() + 1 // considering the trailing '\n'
   }
   let (_, _, lines) = p.strip_paragraph(lines1)
-  tokenize(p.i, lines, exts=p.exts)
+  let (cidx, toks, line, _) = tokenize(p.i, lines, exts=p.exts)
+  (cidx, toks, line)
 }
 
 ///|
@@ -550,7 +551,7 @@ test "should tokenize codespans" {
     ),
     content=(
       #|(
-      #|  CloserIndex({ Backticks(1): <Set: [25, 71]>, Backticks(2): <Set: [41]> }),
+      #|  CloserIndex({ Backticks(1): [25, 71], Backticks(2): [41] }),
       #|  Tokens(
       #|    <Deque:
       #|      [
@@ -2160,7 +2161,7 @@ test "should tokenize broken links across lines" {
     ),
     content=(
       #|(
-      #|  CloserIndex({ RightBrack: <Set: [22]> }),
+      #|  CloserIndex({ RightBrack: [22] }),
       #|  Tokens(
       #|    <Deque:
       #|      [
@@ -2856,12 +2857,7 @@ test "should tokenize nested strikethroughs and emphases" {
     tokenize_only(doc, strict=false),
     content=(
       #|(
-      #|  CloserIndex(
-      #|    {
-      #|      EmphasisMarks('*'): <Set: [19, 25, 69]>,
-      #|      StrikethroughMarks: <Set: [35, 67, 72]>,
-      #|    },
-      #|  ),
+      #|  CloserIndex({ EmphasisMarks('*'): [19, 25, 69], StrikethroughMarks: [35, 67, 72] }),
       #|  Tokens(
       #|    <Deque:
       #|      [
@@ -3063,7 +3059,7 @@ test "should tokenize inline math" {
     ),
     content=(
       #|(
-      #|  CloserIndex({ MathSpanMarks(1): <Set: [16]> }),
+      #|  CloserIndex({ MathSpanMarks(1): [16] }),
       #|  Tokens(
       #|    <Deque:
       #|      [
