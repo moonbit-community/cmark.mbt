@@ -398,7 +398,16 @@ pub fn LineType::html_block_start(
         }
         continue i + 1
       }
-      let tag = s[tag_first:tag_last + 1].to_owned().to_lower()
+      // The tag name is ASCII alphabetic: build it from code units. A
+      // view boundary at tag_last + 1 could land on an unpaired
+      // surrogate and abort.
+      let tag = {
+        let b = StringBuilder::new(size_hint=tag_last - tag_first + 1)
+        for i in tag_first..<=tag_last {
+          b.write_char(@char.to_ascii_lower(s[i].unsafe_to_char()))
+        }
+        b.to_string()
+      }
       let is_open_end = {
         let n = tag_last + 1
         n > last ||
@@ -409,7 +418,11 @@ pub fn LineType::html_block_start(
         | 62)
       }
       let is_open_close_end = is_open_end ||
-        (tag_last + 2 <= last && s[tag_last + 1:tag_last + 3] == "/>")
+        (
+          tag_last + 2 <= last &&
+          s[tag_last + 1] == '/' &&
+          s[tag_last + 2] == '>'
+        )
       if c != '/' {
         if html_start_cond_1_set.contains(tag) && is_open_end {
           HtmlBlockLine(EndCond1) // 1
@@ -439,19 +452,18 @@ fn LineType::html_block_end_cond_1(
     guard k + 3 <= last else { break false }
     guard s[k] == '<' && s[k + 1] == '/' else { continue k + 1 }
     let next = k + 2
-    let is_end_tag = {
-      let lower_s_sub = lower_s[next:]
-      match s[next] {
-        'p' => lower_s_sub.has_prefix("pre>")
-        's' =>
-          if s[k + 3] == 't' {
-            lower_s_sub.has_prefix("style>")
-          } else {
-            lower_s_sub.has_prefix("script>")
-          }
-        't' => lower_s_sub.has_prefix("textarea>")
-        _ => false
-      }
+    // Only create the view once the unit at `next` is a known ASCII
+    // char: a view boundary on an unpaired surrogate aborts.
+    let is_end_tag = match s[next] {
+      'p' => lower_s[next:].has_prefix("pre>")
+      's' =>
+        if s[k + 3] == 't' {
+          lower_s[next:].has_prefix("style>")
+        } else {
+          lower_s[next:].has_prefix("script>")
+        }
+      't' => lower_s[next:].has_prefix("textarea>")
+      _ => false
     }
     guard !is_end_tag else { break true }
     continue k + 1
