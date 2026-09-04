@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1788518253980,
+  "lastUpdate": 1788521088338,
   "repoUrl": "https://github.com/moonbit-community/cmark.mbt",
   "entries": {
     "Benchmark.js Benchmark": [
@@ -13510,6 +13510,86 @@ window.BENCHMARK_DATA = {
             "name": "cmarkNative(spec * 200)",
             "value": 0.52,
             "range": "±2.51%",
+            "unit": "ops/sec",
+            "extra": "5 samples"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "45710049+I3eg1nner@users.noreply.github.com",
+            "name": "I3eg1nner",
+            "username": "I3eg1nner"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "a0e5fe1e43dad69476a1895ab678c90b16c7a96f",
+          "message": "fix: change render() safe default to true (CWE-79) (#137)\n\n* fix: change render() safe default to true (CWE-79)\n\nThe `render()` function defaulted `safe=false`, allowing raw HTML\n(script tags, javascript: URLs) to pass through to rendered output.\nIn user-facing contexts (forums, wikis, CMS), this enables stored XSS.\n\nChange the default to `safe=true` so callers get secure-by-default\nbehavior. Callers who need raw HTML passthrough can opt in explicitly.\n\nCo-Authored-By: Claude Opus 4.6 <noreply@anthropic.com>\n\n* test: cover safe rendering defaults and document compatibility\n\n---------\n\nCo-authored-by: Claude Opus 4.6 <noreply@anthropic.com>\nCo-authored-by: Milky2018 <842376130@qq.com>",
+          "timestamp": "2026-09-04T19:21:56+08:00",
+          "tree_id": "921d53a51d9a377e1fae33dcba7e1d9f3d5b8eca",
+          "url": "https://github.com/moonbit-community/cmark.mbt/commit/a0e5fe1e43dad69476a1895ab678c90b16c7a96f"
+        },
+        "date": 1788521087207,
+        "tool": "benchmarkjs",
+        "benches": [
+          {
+            "name": "cmarkJS(spec * 100)",
+            "value": 0.48,
+            "range": "±24.58%",
+            "unit": "ops/sec",
+            "extra": "5 samples"
+          },
+          {
+            "name": "cmarkJS(spec * 200)",
+            "value": 0.23,
+            "range": "±45.81%",
+            "unit": "ops/sec",
+            "extra": "5 samples"
+          },
+          {
+            "name": "cmarkWASM1(spec * 100)",
+            "value": 0.62,
+            "range": "±2.54%",
+            "unit": "ops/sec",
+            "extra": "5 samples"
+          },
+          {
+            "name": "cmarkWASM1(spec * 200)",
+            "value": 0.31,
+            "range": "±0.76%",
+            "unit": "ops/sec",
+            "extra": "5 samples"
+          },
+          {
+            "name": "cmarkWASM(spec * 100)",
+            "value": 0.84,
+            "range": "±5.87%",
+            "unit": "ops/sec",
+            "extra": "5 samples"
+          },
+          {
+            "name": "cmarkWASM(spec * 200)",
+            "value": 0.41,
+            "range": "±6.81%",
+            "unit": "ops/sec",
+            "extra": "5 samples"
+          },
+          {
+            "name": "cmarkNative(spec * 100)",
+            "value": 1.11,
+            "range": "±1.02%",
+            "unit": "ops/sec",
+            "extra": "5 samples"
+          },
+          {
+            "name": "cmarkNative(spec * 200)",
+            "value": 0.55,
+            "range": "±1.06%",
             "unit": "ops/sec",
             "extra": "5 samples"
           }
