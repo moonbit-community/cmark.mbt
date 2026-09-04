@@ -977,7 +977,8 @@ fn doc(c : Context, d : Doc) -> Bool raise {
 ///
 /// Parameters:
 ///
-/// - `safe` — when `true`, unsafe raw HTML and links are replaced by comments.
+/// - `safe` — when `true`, raw HTML is replaced by comments and unsafe
+///   link and image destinations are cleared.
 /// - `backend_blocks` — when `true`, fenced code blocks whose info string
 ///   starts with `=` are treated as backend-specific blocks (e.g. `=html`).
 pub fn renderer(
@@ -1018,6 +1019,14 @@ pub fn from_doc(
 
 ///|
 /// Render CommonMark String to HTML with the default parsing preferences.
+///
+/// Safe mode is enabled by default: raw HTML is replaced by comments and
+/// unsafe link and image destinations are cleared. Pass `safe=false` only
+/// for trusted input when raw HTML passthrough is required.
+///
+/// Compatibility: the default for `safe` was previously `false`. This changes
+/// rendered output for callers that omit the argument; explicit `safe` values
+/// retain their behavior. The lower-level rendering APIs still require `safe`.
 ///
 /// For more parsing options, call `@cmark.Doc::from_string()` and `from_doc()` manually.
 pub fn render(
