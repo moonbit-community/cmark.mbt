@@ -6,6 +6,10 @@ on:
   workflow_dispatch:
   pull_request:
 
+env:
+  MOON_COVE_REPORT_ENABLED: "1"
+  MOON_WASM_NEW_ALLOCATOR: "1"
+
 jobs:
   build:
     strategy:
