@@ -5,4 +5,7 @@
 /// (e.g. `extenum ContextState += { MyState(...) }`) so the generic
 /// `@cmark_renderer.Context` can carry renderer-specific state without
 /// relying on `Error?` as an untyped container.
-pub extenum ContextState {}
+pub extenum ContextState
+
+///|
+pub extenum ContextState += {}
