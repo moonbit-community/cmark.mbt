@@ -5,7 +5,7 @@ version = "0.4.8"
 import {
   "moonbit-community/casefold@0.1.5",
   "moonbit-community/charclass@0.1.4",
-  "moonbitlang/async@0.19.4",
+  "moonbitlang/async@0.22.4",
 }
 
 readme = "README.md"
