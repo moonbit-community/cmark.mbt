@@ -6,6 +6,7 @@ import {
   "moonbitlang/core/cmp",
   "moonbitlang/core/debug",
   "moonbitlang/core/deque",
+  "moonbitlang/core/int",
   "moonbitlang/core/sorted_set",
   "moonbitlang/core/json",
 }
