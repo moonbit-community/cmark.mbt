@@ -1547,7 +1547,7 @@ fn Parser::block_struct_to_html_block(
 ) -> Block {
   guard! b.html.last() is Some({ last: last_ccode, pos: last_line, .. })
   let lines = b.html.map(fn(i) { self.clean_raw_span(i) })
-  let start_loc = lines.last().unwrap().meta.loc
+  let start_loc = lines[0].meta.loc
   let meta = self.meta({ ..start_loc, last_ccode, last_line, })
   HtmlBlock({ v: Seq::from_array(lines), meta, })
 }
