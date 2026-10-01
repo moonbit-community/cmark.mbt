@@ -653,7 +653,9 @@ fn Parser::end_doc_close_fenced_code_block(
 ) -> Unit {
   let _ = self
   let { code, .. } = fenced
-  if code is [.., (_, l)] && is_end_of_input_line(l) {
+  if fenced.fence.closing_fence is None &&
+    code is [.., (_, l)] &&
+    is_end_of_input_line(l) {
     let _ = code.pop()
     bs..push(CodeBlock(Fenced({ ..fenced, code, }))).push(BlankLine(0, l))
     return
@@ -669,7 +671,7 @@ fn Parser::end_doc_close_html(
 ) -> Unit {
   let _ = self
   let { html, .. } = h
-  if html is [.., l] && is_end_of_input_line(l) {
+  if h.end_cond is Some(_) && html is [.., l] && is_end_of_input_line(l) {
     let _ = html.pop()
     bs..push(HtmlBlock({ end_cond: None, html, })).push(BlankLine(0, l))
     return

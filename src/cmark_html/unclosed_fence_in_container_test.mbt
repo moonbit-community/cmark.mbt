@@ -95,3 +95,37 @@ test "blank last line without a final newline is code block content" {
     ),
   )
 }
+
+///|
+test "closed fenced code block at the end of input keeps its lines" {
+  // Without a final newline, the empty line before the closing fence is
+  // content.
+  inspect(
+    @cmark_html.render(safe=false, "- ```\n  a\n\n  ```"),
+    content=(
+      #|<ul>
+      #|<li>
+      #|<pre><code>a
+      #|
+      #|</code></pre>
+      #|</li>
+      #|</ul>
+      #|
+    ),
+  )
+  inspect(
+    @cmark_html.render(safe=false, "```\na\n\n```"),
+    content=(
+      #|<pre><code>a
+      #|
+      #|</code></pre>
+      #|
+    ),
+  )
+  let footnote = @cmark_html.render(
+    safe=false,
+    strict=false,
+    "x[^1]\n\n[^1]:\n  ```\n  a\n\n  ```",
+  )
+  inspect(footnote.contains("<pre><code>a\n\n</code></pre>"), content="true")
+}
