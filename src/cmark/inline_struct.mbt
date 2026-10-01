@@ -447,12 +447,13 @@ fn Parser::try_add_text_inline(
   first~ : Int,
   last~ : Int,
   acc : Array[Inline],
+  strip? : Bool = true,
 ) -> Unit {
   if first > last {
     return
   }
   let mut first = first
-  if first == line.first {
+  if strip && first == line.first {
     first = self.first_non_blank_in_span(line) // Strip leading blanks
   }
   acc.push(Text(self.clean_unesc_unref_span({ ..line, first, last, })))
@@ -1119,6 +1120,7 @@ fn Parser::try_link(
       }
       { ..start_line, first, last, }
     },
+    strip_first=false, // Blanks after `[` are part of the text
   )
   if had_link && !image {
     return None
@@ -1423,25 +1425,31 @@ fn Parser::second_pass(
 /// Only `Inline` and `Newline` tokens remain. We fold over them to
 /// convert them to `inline` values and `Break`s. `Text` inlines
 /// are created for data between them.
+///
+/// If `strip_first` is `false`, the initial blanks of `line` are kept:
+/// `line` does not start a line of the paragraph (e.g. link text).
 fn Parser::last_pass(
   self : Parser,
   toks : Tokens,
   line : LineSpan,
+  strip_first? : Bool = true,
 ) -> Array[Inline] {
   let acc = []
+  let first_line = line
   let mut line = line
   let mut k = line.first
   for tok in toks.0 {
+    let strip = strip_first || line != first_line
     match tok {
       Newline({ start, break_ty, newline, }) => {
-        self.try_add_text_inline(line, first=k, last=start - 1, acc)
+        self.try_add_text_inline(line, first=k, last=start - 1, acc, strip~)
         let break_ = self.break_inline(line, start~, break_ty~, newline~)
         line = newline
         acc.push(break_)
         k = newline.first
       }
       Inline({ start, inline, endline, next, }) => {
-        self.try_add_text_inline(line, first=k, last=start - 1, acc)
+        self.try_add_text_inline(line, first=k, last=start - 1, acc, strip~)
         match inline {
           Inlines({ v: is_, .. }) => acc.push_iter(is_.iter())
           i => acc.push(i)
@@ -1452,7 +1460,8 @@ fn Parser::last_pass(
       _ => abort("unreachable")
     }
   }
-  self.try_add_text_inline(line, first=k, last=line.last, acc)
+  let strip = strip_first || line != first_line
+  self.try_add_text_inline(line, first=k, last=line.last, acc, strip~)
   acc
 }
 
@@ -1461,11 +1470,12 @@ fn Parser::parse_tokens(
   self : Parser,
   toks : Tokens,
   first_line : LineSpan,
+  strip_first? : Bool = true,
 ) -> (Array[Inline], Bool) {
   let toks : Ref[Tokens] = Ref(toks)
   let had_link = self.first_pass(toks, first_line)
   self.second_pass(toks, first_line)
-  let inlines = self.last_pass(toks.val, first_line)
+  let inlines = self.last_pass(toks.val, first_line, strip_first~)
   (inlines, had_link)
 }
 
