@@ -7,7 +7,7 @@ fn char_is_atext_plus_dot(c : Char) -> Bool {
   | '$'
   | '%'
   | '&'
-  | '\\'
+  | '\''
   | '*'
   | '+'
   | '-'

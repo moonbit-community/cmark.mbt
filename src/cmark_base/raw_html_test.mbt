@@ -201,18 +201,7 @@ test "raw_html_closing_tag_invalid_name" {
     line=line_span,
     start=0,
   )
-  debug_inspect(
-    result,
-    content=(
-      #|Some(
-      #|  (
-      #|    { pos: LinePos(1, 0), first: 6, last: 6 },
-      #|    [{ start: 0, span: { pos: LinePos(1, 0), first: 0, last: 6 } }],
-      #|    6,
-      #|  ),
-      #|)
-    ),
-  )
+  debug_inspect(result, content="None")
 }
 
 ///|
@@ -250,18 +239,7 @@ test "raw_html_open_tag_invalid" {
     line=line_span,
     start=0,
   )
-  debug_inspect(
-    result,
-    content=(
-      #|Some(
-      #|  (
-      #|    { pos: LinePos(1, 0), first: 5, last: 5 },
-      #|    [{ start: 0, span: { pos: LinePos(1, 0), first: 0, last: 5 } }],
-      #|    5,
-      #|  ),
-      #|)
-    ),
-  )
+  debug_inspect(result, content="None")
 }
 
 ///|

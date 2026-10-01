@@ -17,7 +17,7 @@ test "tag_name with hyphen" {
 test "tag_name with invalid start condition" {
   let s = "1div>"
   let result = tag_name(s, last=4, start=0)
-  debug_inspect(result, content="Some(3)")
+  debug_inspect(result, content="None")
 }
 
 ///|
