@@ -678,13 +678,20 @@ fn Parser::end_doc(self : Parser, bs : Array[BlockStruct]) -> Unit {
       self.end_doc(bq)
       bs.push(BlockQuote(indent, bq))
     }
-    Some(List(l)) => self.close_list(l, bs)
+    Some(List(l)) => {
+      // The last item may end with an unclosed fenced code or HTML block.
+      guard! l.items.last() is Some(item)
+      self.end_doc(item.blocks)
+      self.close_list(l, bs)
+    }
     Some(Paragraph(par)) => self.close_paragraph(par, bs)
     Some(CodeBlock(Indented(ls))) => self.close_indented_code_block(ls, bs)
     Some(CodeBlock(Fenced(f))) => self.end_doc_close_fenced_code_block(f, bs)
     Some(HtmlBlock(html)) => self.end_doc_close_html(html, bs)
-    Some(ExtFootnote(indent, label, blocks)) =>
+    Some(ExtFootnote(indent, label, blocks)) => {
+      self.end_doc(blocks)
       self.close_footnote(indent, label, blocks, bs)
+    }
     Some(b) => bs.push(b)
     None => ()
   }
