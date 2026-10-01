@@ -2857,7 +2857,7 @@ test "should tokenize nested strikethroughs and emphases" {
     tokenize_only(doc, strict=false),
     content=(
       #|(
-      #|  CloserIndex({ EmphasisMarks('*'): [25, 69], StrikethroughMarks: [35, 67, 72] }),
+      #|  CloserIndex({}),
       #|  Tokens(
       #|    <Deque:
       #|      [
@@ -2921,7 +2921,6 @@ test "should tokenize nested strikethroughs and emphases" {
       #|  ),
       #|  { pos: LinePos(1, 0), first: 0, last: 73 },
       #|)
-
     ),
   )
 }

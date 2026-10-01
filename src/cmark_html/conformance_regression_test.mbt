@@ -28,6 +28,18 @@ test "failed multi-line raw HTML keeps the following lines" {
     ),
   )
   inspect(
+    render_xhtml("a <!--\nb <? <![CDATA[ <!X\nc <!-- d <?\n"),
+    content=(
+      #|<p>a &lt;!--
+      #|b &lt;? &lt;![CDATA[ &lt;!X
+      #|c &lt;!-- d &lt;?</p>
+      #|
+    ),
+  )
+  // Unterminated constructs are not rescanned (linear time)
+  let unterminated = "a <!-- <? <![CDATA[ <!X\n".repeat(20000)
+  inspect(render_xhtml(unterminated).length(), content="720007")
+  inspect(
     render_xhtml("<a b=\n\"c\"d>\ne\n"),
     content=(
       #|<p>&lt;a b=
@@ -318,13 +330,21 @@ test "escaped backslash before a line ending is not a hard break" {
 }
 
 ///|
-test "emphasis marks that fail to open can still close" {
+test "closers match the nearest possible opener" {
+  // Process emphasis: a delimiter that can both open and close is first
+  // a closer.
   inspect(
-    render_xhtml("*a **b* c\n"),
+    render_xhtml("*a **b*c* d\n"),
     content=(
-      #|<p>*a *<em>b</em> c</p>
+      #|<p><em>a **b</em>c* d</p>
       #|
-
+    ),
+  )
+  inspect(
+    render_xhtml("**a *b**c* d\n"),
+    content=(
+      #|<p><strong>a *b</strong>c* d</p>
+      #|
     ),
   )
   inspect(
@@ -332,6 +352,66 @@ test "emphasis marks that fail to open can still close" {
     content=(
       #|<p>x <em>y
       #|**['_</em>&gt;~_</p>
+      #|
+    ),
+  )
+  inspect(
+    render_xhtml("**._<~>*>\\__*\n"),
+    content=(
+      #|<p>*<em>.<em>&lt;~&gt;*&gt;_</em></em></p>
+      #|
+    ),
+  )
+  // The rule of 3 uses the length of the delimiter runs
+  inspect(
+    render_xhtml("******._*****_>\n"),
+    content=(
+      #|<p>*<em><strong><strong>._</strong></strong></em>_&gt;</p>
+      #|
+    ),
+  )
+  // Strikethrough (extension)
+  inspect(
+    render_xhtml("~~a *b~~ c* ~~*d*~~ *~~e*~~\n", strict=false),
+    content=(
+      #|<p><del>a *b</del> c* <del><em>d</em></del> <em>~~e</em>~~</p>
+      #|
+    ),
+  )
+}
+
+///|
+test "attribute names and unquoted attribute values" {
+  inspect(
+    render_xhtml("a <a b=>c> <a b=`c> <a b=c> d\n"),
+    content=(
+      #|<p>a &lt;a b=&gt;c&gt; &lt;a b=`c&gt; <a b=c> d</p>
+      #|
+    ),
+  )
+  inspect(
+    render_xhtml("a <b 1=c> <b _1=c> d\n"),
+    content=(
+      #|<p>a &lt;b 1=c&gt; <b _1=c> d</p>
+      #|
+    ),
+  )
+  inspect(
+    render_xhtml("<a c=</a>\nb\n"),
+    content=(
+      #|<p>&lt;a c=</a>
+      #|b</p>
+      #|
+    ),
+  )
+}
+
+///|
+test "code span after an escaped backtick" {
+  inspect(
+    render_xhtml("\\``a` \\```b``\n"),
+    content=(
+      #|<p>`<code>a</code> `<code>b</code></p>
       #|
     ),
   )
