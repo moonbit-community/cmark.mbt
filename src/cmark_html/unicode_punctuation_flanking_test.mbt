@@ -14,11 +14,24 @@ test "Unicode symbols are punctuation for emphasis flanking" {
       #|
     ),
   )
-  // `+` and `=` are symbols: the closing `*` is right-flanking
+  // `+` and `=` are symbols: the second `*` is not right-flanking, so it
+  // can't close
   inspect(
     @cmark_html.render(safe=false, "*a+*b *a=*c\n"),
     content=(
       #|<p>*a+*b *a=*c</p>
+      #|
+    ),
+  )
+}
+
+///|
+test "symbols around underscores and astral symbols" {
+  // `_` after a symbol and before a letter is left-flanking only
+  inspect(
+    @cmark_html.render(safe=false, "_a+_b _a_ *😀*a\n"),
+    content=(
+      #|<p>_a+_b <em>a</em> *😀*a</p>
       #|
     ),
   )
