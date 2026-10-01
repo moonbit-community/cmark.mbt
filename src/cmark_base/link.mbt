@@ -122,7 +122,8 @@ pub fn[A] link_title(
 
 ///|
 /// Matches a link label on `line` starting at `start`.
-/// The byte ranges have the label's content, the string is the normalized label.
+/// The byte ranges have the label's content, the string is the normalized
+/// label (blanks collapsed, Unicode case folded).
 /// `buf` is used as scratch space.
 ///
 /// See: https://spec.commonmark.org/current/#link-label
@@ -166,7 +167,8 @@ pub fn[A] link_label(
       }
       (']', '\\') => ()
       (']', _) => {
-        let key = b.to_string()
+        // Labels match case-insensitively with Unicode case folding.
+        let key = @casefold.casefold(b.to_string())
         if key.iter().all(@char.is_ascii_whitespace) {
           break None
         }
@@ -192,7 +194,7 @@ pub fn[A] link_label(
       u = @char.rep
     }
     let k1 = k + @char.length_utf16(u.to_int())
-    b.write_char(@char.to_ascii_lower(u))
+    b.write_char(u)
     continue line, u, start, count + 1, k1
   }
 }
