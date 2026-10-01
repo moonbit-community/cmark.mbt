@@ -743,21 +743,19 @@ priv struct RawHtmlNoEnd(FixedArray[Int])
 
 ///|
 fn RawHtmlNoEnd::new() -> RawHtmlNoEnd {
-  RawHtmlNoEnd(FixedArray::make(3, @int.MAX_VALUE))
+  RawHtmlNoEnd(FixedArray::make(4, @int.MAX_VALUE))
 }
 
 ///|
 /// The kind of raw HTML starting at `start` if it ends with a specific
 /// string: 0 for processing instructions (`?>`), 1 for CDATA sections
-/// (`]]>`) and 2 for declarations (`>`).
-///
-/// Comments are not included: a comment can't contain `--`, so the scan
-/// of an unterminated comment stops at the next `<!--` at the latest.
+/// (`]]>`), 2 for declarations (`>`) and 3 for comments (`-->`).
 fn raw_html_end_kind(s : String, start~ : CharCodePos) -> Int? {
   match s.view(start_offset=start) {
     [.. "<?", ..] => Some(0)
     [.. "<![CDATA[", ..] => Some(1)
     [.. "<!", 'a'..='z' | 'A'..='Z', ..] => Some(2)
+    [.. "<!--", ..] => Some(3)
     _ => None
   }
 }
