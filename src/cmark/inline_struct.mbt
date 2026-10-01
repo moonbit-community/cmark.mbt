@@ -191,17 +191,37 @@ fn tokens_pop_until(start~ : Int, rev_toks : RevTokens) -> Unit {
 
 ///|
 fn tokens_next_line(rev_toks : RevTokens) -> LineSpan? {
-  let acc = []
+  tokens_next_line_consumed(rev_toks, [])
+}
+
+///|
+/// Drops the tokens of `rev_toks` up to and including the next newline,
+/// pushes them on `consumed` and returns the newline's line. Leaves
+/// `rev_toks` and `consumed` untouched if there is no newline.
+fn tokens_next_line_consumed(
+  rev_toks : RevTokens,
+  consumed : Array[Token],
+) -> LineSpan? {
+  let len = consumed.length()
   while rev_toks.pop() is Some(t) {
+    consumed.push(t)
     if t is Newline({ newline, .. }) {
       return Some(newline)
     }
-    acc.push(t)
   }
-  while acc.pop() is Some(t) {
-    rev_toks.push(t)
+  while consumed.length() > len {
+    rev_toks.push(consumed.unsafe_pop())
   }
   None
+}
+
+///|
+/// Puts back on `rev_toks` the tokens `consumed` by
+/// `tokens_next_line_consumed`.
+fn tokens_restore(rev_toks : RevTokens, consumed : Array[Token]) -> Unit {
+  while consumed.pop() is Some(t) {
+    rev_toks.push(t)
+  }
 }
 
 // Tokenization
@@ -715,13 +735,42 @@ fn Parser::try_math_span(
 }
 
 ///|
-/// Tries to push an inline emphasis to the `rev_toks` stack.
+/// For the kinds of raw HTML that end with a specific string (see
+/// `raw_html_end_kind`), the first position in a token stream from which
+/// they were found not to end. Later ones cannot end either: this keeps
+/// unterminated constructs from making parsing quadratic.
+priv struct RawHtmlNoEnd(FixedArray[Int])
+
+///|
+fn RawHtmlNoEnd::new() -> RawHtmlNoEnd {
+  RawHtmlNoEnd(FixedArray::make(3, @int.MAX_VALUE))
+}
+
+///|
+/// The kind of raw HTML starting at `start` if it ends with a specific
+/// string: 0 for processing instructions (`?>`), 1 for CDATA sections
+/// (`]]>`) and 2 for declarations (`>`).
+///
+/// Comments are not included: a comment can't contain `--`, so the scan
+/// of an unterminated comment stops at the next `<!--` at the latest.
+fn raw_html_end_kind(s : String, start~ : CharCodePos) -> Int? {
+  match s.view(start_offset=start) {
+    [.. "<?", ..] => Some(0)
+    [.. "<![CDATA[", ..] => Some(1)
+    [.. "<!", 'a'..='z' | 'A'..='Z', ..] => Some(2)
+    _ => None
+  }
+}
+
+///|
+/// Tries to push an inline autolink or raw HTML to the `rev_toks` stack.
 /// If this function returns `Some((line_span, token))`, it means the stack has been modified.
 fn Parser::try_autolink_or_html(
   self : Parser,
   rev_toks : Ref[RevTokens],
   line : LineSpan,
   start~ : CharCodePos,
+  no_end~ : RawHtmlNoEnd,
 ) -> (LineSpan, Token)? {
   // Weirdly, there's seemingly no `if let` in Moonbit.
   if @cmark_base.autolink_uri(self.i, last=line.last, start~) is Some(last) {
@@ -734,14 +783,20 @@ fn Parser::try_autolink_or_html(
     tokens_pop_until(start=last + 1, rev_toks.val)
     return Some((line, t))
   }
-  guard @cmark_base.raw_html(
-      next_line=tokens_next_line,
-      self.i,
-      rev_toks.val,
-      line~,
-      start~,
-    )
+  let end_kind = raw_html_end_kind(self.i, start~)
+  if end_kind is Some(k) && no_end.0[k] <= start {
+    return None
+  }
+  // Raw HTML may span lines: remember the tokens consumed by `next_line`
+  // to restore them if it turns out not to be raw HTML.
+  let consumed = []
+  let next_line = NextLineFn(toks => tokens_next_line_consumed(toks, consumed))
+  guard @cmark_base.raw_html(next_line~, self.i, rev_toks.val, line~, start~)
     is Some((last_line, spans, last)) else {
+    tokens_restore(rev_toks.val, consumed)
+    if end_kind is Some(k) {
+      no_end.0[k] = @cmp.minimum(no_end.0[k], start)
+    }
     None
   }
   let first = start
@@ -959,6 +1014,7 @@ fn Parser::find_link_text_tokens(
   rev_toks : Ref[RevTokens],
   start_line : LineSpan,
   start~ : CharCodePos,
+  no_end~ : RawHtmlNoEnd,
 ) -> (LineSpan, Tokens, CharCodePos)? {
   let _ = start
   let mut line = start_line
@@ -985,7 +1041,7 @@ fn Parser::find_link_text_tokens(
         acc.push(t)
       }
       (Some(AutolinkOrHtmlStart({ start, })), _) => {
-        guard self.try_autolink_or_html(rev_toks, line, start~)
+        guard self.try_autolink_or_html(rev_toks, line, start~, no_end~)
           is Some((line_, t)) else {
           continue
         }
@@ -1109,6 +1165,7 @@ fn Parser::try_link(
   start_line : LineSpan,
   image~ : Bool,
   start~ : CharCodePos,
+  no_end~ : RawHtmlNoEnd,
 ) -> (LineSpan, Token, Bool)? {
   guard self.cidx.has_right_brack(after=start) else { return None }
   let rev_toks : Ref[RevTokens] = Ref(start_rev_toks.val.0.copy())
@@ -1116,6 +1173,7 @@ fn Parser::try_link(
       rev_toks,
       start_line,
       start~,
+      no_end~,
     )
     is Some((line, text_toks, text_last)) else {
     None
@@ -1165,6 +1223,7 @@ fn Parser::first_pass(
   let mut had_link = false
   let mut line = line
   let rev_toks : Ref[RevTokens] = Ref(toks.val.0)
+  let no_end = RawHtmlNoEnd::new()
   while rev_toks.val.pop() is Some(t) {
     match t {
       Backticks({ start, count, escaped, }) =>
@@ -1182,12 +1241,13 @@ fn Parser::first_pass(
         acc.push(t)
       }
       AutolinkOrHtmlStart({ start, }) =>
-        if self.try_autolink_or_html(rev_toks, line, start~) is Some((line_, t)) {
+        if self.try_autolink_or_html(rev_toks, line, start~, no_end~)
+          is Some((line_, t)) {
           line = line_
           acc.push(t)
         }
       LinkStart({ start, image, }) =>
-        if self.try_link(rev_toks, line, image~, start~)
+        if self.try_link(rev_toks, line, image~, start~, no_end~)
           is Some((l, t, had_link_)) {
           acc.push(t)
           line = l
