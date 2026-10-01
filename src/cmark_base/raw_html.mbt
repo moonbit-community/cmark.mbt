@@ -2,6 +2,8 @@
 /// https://spec.commonmark.org/current/#tag-name
 fn tag_name(s : String, last? : Int = -1, start? : Int = 0) -> Int? {
   let last = if last < 0 { s.length() + last } else { last }
+  // A tag name starts with an ASCII letter
+  guard start <= last && s[start] is ('a'..='z' | 'A'..='Z') else { None }
   for k = start + 1 {
     guard k <= last else { break Some(k - 1) }
     match s.get_char(k) {
@@ -18,7 +20,7 @@ fn attribute_name(s : String, last? : Int = -1, start? : Int = 0) -> Next? {
   fn char_is_start(c : Char) -> Bool {
     match c {
       '_' | ':' => true
-      _ => @char.is_ascii_alphanum(c)
+      _ => c.is_ascii_alphabetic()
     }
   }
 
@@ -64,6 +66,7 @@ fn[A] attribute_value(
     !(c is (' ' | '\t' | '"' | '\'' | '=' | '<' | '>' | '`'))
   }
 
+  guard is_cont(c) else { None } // Unquoted values are non-empty
   for k = start + 1 {
     if k <= line.last && s[k].to_char() is Some(c) && is_cont(c) {
       continue k + 1
