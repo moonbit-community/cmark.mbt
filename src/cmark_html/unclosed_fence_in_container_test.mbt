@@ -56,3 +56,42 @@ test "unclosed fenced code block at the end of a footnote" {
   )
   inspect(html.contains("<pre><code>a\n</code></pre>"), content="true")
 }
+
+///|
+test "blank last line without a final newline is code block content" {
+  // The last line is blank after removing the container's indentation or
+  // marker, but it is a line of the input, not the end of the input.
+  inspect(
+    @cmark_html.render(safe=false, "- ```\n  a\n  "),
+    content=(
+      #|<ul>
+      #|<li>
+      #|<pre><code>a
+      #|
+      #|</code></pre>
+      #|</li>
+      #|</ul>
+      #|
+    ),
+  )
+  inspect(
+    @cmark_html.render(safe=false, "> ```\n> a\n>"),
+    content=(
+      #|<blockquote>
+      #|<pre><code>a
+      #|
+      #|</code></pre>
+      #|</blockquote>
+      #|
+    ),
+  )
+  inspect(
+    @cmark_html.render(safe=false, " ```\n a\n "),
+    content=(
+      #|<pre><code>a
+      #|
+      #|</code></pre>
+      #|
+    ),
+  )
+}
