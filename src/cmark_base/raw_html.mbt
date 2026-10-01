@@ -256,36 +256,35 @@ fn[A] html_comment(
   line~ : LineSpan,
   start~ : CharCodePos,
 ) -> (LineSpan, Array[Span], CharCodePos)? {
-  // Check we have at least <!-- and not <!--> or <!--->.
+  // Check we have at least <!--
   if start + 3 > line.last || s[start + 3] != '-' {
     return None
   }
-  if start + 4 <= line.last && s[start + 4] == '>' {
-    return None
+  // <!--> and <!---> are comments
+  let after_open = s.view(start_offset=start + 4, end_offset=line.last + 1)
+  let empty_comment_last = match after_open {
+    [.. ">", ..] => Some(start + 4)
+    [.. "->", ..] => Some(start + 5)
+    _ => None
   }
-  if start + 5 <= line.last && s[start + 4] == '-' && s[start + 5] == '>' {
-    return None
+  if empty_comment_last is Some(last) {
+    let acc = []
+    push_span(line~, start, last, acc)
+    return Some((line, acc, last))
   }
+  // Otherwise the comment ends at the first -->
   let acc = []
-  for line = line, start = start, k = start + 4 {
-    if k > line.last {
-      guard next_line(lines) is Some(new_line) else { break None }
-      push_span(line~, start, line.last, acc)
-      let start = first_non_blank_in_span(s, new_line)
-      continue new_line, start, start
+  for line = line, start = start, first = start + 4 {
+    let text = s.view(start_offset=first, end_offset=line.last + 1)
+    if text.find("-->") is Some(i) {
+      let last = first + i + 2
+      push_span(line~, start, last, acc)
+      break Some((line, acc, last))
     }
-    if s[k] == '-' && s[k - 1] != '-' {
-      let last = k + 2
-      if last <= line.last && s[k + 1] == '-' {
-        break if s[last] == '>' { // And we do not end with -
-          push_span(line~, start, last, acc)
-          Some((line, acc, last))
-        } else {
-          None // In the input
-        }
-      }
-    }
-    continue line, start, k + 1
+    guard next_line(lines) is Some(new_line) else { break None }
+    push_span(line~, start, line.last, acc)
+    let start = first_non_blank_in_span(s, new_line)
+    continue new_line, start, start
   }
 }
 

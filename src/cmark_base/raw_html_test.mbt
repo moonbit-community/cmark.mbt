@@ -420,9 +420,9 @@ test "raw_html_comment_incomplete" {
 }
 
 ///|
-/// Test HTML comment with invalid format 1
-test "raw_html_comment_invalid1" {
-  let s = "<!-->" // Invalid HTML comment
+/// Test HTML comment `<!-->` (valid since CommonMark 0.31)
+test "raw_html_comment_empty1" {
+  let s = "<!-->"
   let line_span = @cmark_base.LineSpan::{
     pos: LinePos(1, 0),
     first: 0,
@@ -435,13 +435,24 @@ test "raw_html_comment_invalid1" {
     line=line_span,
     start=0,
   )
-  debug_inspect(result, content="None")
+  debug_inspect(
+    result,
+    content=(
+      #|Some(
+      #|  (
+      #|    { pos: LinePos(1, 0), first: 0, last: 4 },
+      #|    [{ start: 0, span: { pos: LinePos(1, 0), first: 0, last: 4 } }],
+      #|    4,
+      #|  ),
+      #|)
+    ),
+  )
 }
 
 ///|
-/// Test HTML comment with invalid format 2
-test "raw_html_comment_invalid2" {
-  let s = "<!--->" // Invalid HTML comment
+/// Test HTML comment `<!--->` (valid since CommonMark 0.31)
+test "raw_html_comment_empty2" {
+  let s = "<!--->"
   let line_span = @cmark_base.LineSpan::{
     pos: LinePos(1, 0),
     first: 0,
@@ -454,7 +465,18 @@ test "raw_html_comment_invalid2" {
     line=line_span,
     start=0,
   )
-  debug_inspect(result, content="None")
+  debug_inspect(
+    result,
+    content=(
+      #|Some(
+      #|  (
+      #|    { pos: LinePos(1, 0), first: 0, last: 5 },
+      #|    [{ start: 0, span: { pos: LinePos(1, 0), first: 0, last: 5 } }],
+      #|    5,
+      #|  ),
+      #|)
+    ),
+  )
 }
 
 ///|
