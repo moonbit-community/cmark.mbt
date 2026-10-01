@@ -216,7 +216,12 @@ fn Token::newline(
   // https://spec.commonmark.org/current/#hard-line-breaks
   let { first, last, .. } = prev_line
   let non_space = @cmark_base.rev_drop_spaces(s, first~, start=last)
-  let (start, break_ty) = if non_space == last && s[non_space] == '\\' {
+  // A final `\` is a hard break unless it is escaped by another `\`
+  let odd_bslashes = () => {
+    let line = s.view(start_offset=first, end_offset=last + 1)
+    line.rev_iter().take_while(c => c == '\\').count() % 2 == 1
+  }
+  let (start, break_ty) = if non_space == last && odd_bslashes() {
     (non_space, Hard)
   } else {
     let start = non_space + 1
