@@ -469,10 +469,10 @@ fn Parser::parse_link_ref_definition(
         lines1.val = lines
         (lines1, [], '"', None, [], meta_last)
       }
+      // Only blanks may follow the title
       let after_title = {
-        let last = line1.last
         let start = last + 1
-        let nb = @cmark_base.first_non_blank(self.i, last~, start~)
+        let nb = @cmark_base.first_non_blank(self.i, last=line1.last, start~)
         if nb <= line1.last {
           None
         } else {
