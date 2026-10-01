@@ -80,6 +80,9 @@ fn[A] attribute_value(
 ///|
 /// https://spec.commonmark.org/current/#attribute
 /// https://spec.commonmark.org/current/#attribute-value-specification
+///
+/// Returns the line and position where the attribute ends, and whether the
+/// blanks following it have already been consumed.
 fn[A] attribute(
   next_line~ : NextLineFn[A],
   s : String,
@@ -87,7 +90,7 @@ fn[A] attribute(
   line~ : LineSpan,
   spans : Ref[Array[Span]],
   start~ : Int,
-) -> (LineSpan, Last)? {
+) -> (LineSpan, Last, Bool)? {
   guard attribute_name(s, last=line.last, start~) is Some(end_name) else {
     return None
   }
@@ -99,7 +102,14 @@ fn[A] attribute(
   }
   let nb = last_blank + 1
   if s[nb] != '=' {
-    return Some((line, end_name)) // No value
+    // No value
+    if line1.pos.0 == line.pos.0 {
+      return Some((line, end_name, false))
+    }
+    // The blanks up to the next line have already been consumed with
+    // `next_line` (which can't be undone): continue after them.
+    push_span(line=line1, nb, nb - 1, spans.val)
+    return Some((line1, last_blank, true))
   }
   push_span(line=line1, nb, nb, spans.val)
   let start = nb + 1
@@ -115,7 +125,9 @@ fn[A] attribute(
     None
   }
   let start = last_blank + 1
-  attribute_value(next_line~, s, lines, line~, spans.val, start~)
+  attribute_value(next_line~, s, lines, line~, spans.val, start~).map(r => {
+    (r.0, r.1, false)
+  })
 }
 
 ///|
@@ -134,7 +146,7 @@ fn[A] open_tag(
   let start = tag_name_end + 1
   let span = { ..line, first: tag_start, last: tag_name_end, }
   let spans = Ref([{ start: tag_start, span, }])
-  for line = line, start = start {
+  for line = line, start = start, blank_before = false {
     guard first_non_blank_over_nl1(
         next_line~,
         s,
@@ -162,14 +174,14 @@ fn[A] open_tag(
         }
       }
       _c =>
-        if next == start {
-          None
+        if next == start && !blank_before {
+          None // Attributes are preceded by blanks
         } else {
           guard attribute(next_line~, s, lines, line~, spans, start=next)
-            is Some((line, last)) else {
+            is Some((line, last, blank_after)) else {
             None
           }
-          continue line, last + 1
+          continue line, last + 1, blank_after
         }
     }
   }
