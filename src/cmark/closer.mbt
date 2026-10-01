@@ -9,8 +9,6 @@ priv enum Closer {
   Backticks(Int)
   RightBrack
   RightParen
-  EmphasisMarks(Char)
-  StrikethroughMarks
   MathSpanMarks(Int)
 } derive(Eq, Hash, Debug)
 

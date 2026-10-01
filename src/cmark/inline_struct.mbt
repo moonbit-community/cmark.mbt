@@ -40,7 +40,10 @@ priv struct TokenBackticks {
 priv struct TokenEmphasisMarks {
   start : CharCodePos
   char : Char
+  /// The number of marks left in the run.
   count : Int
+  /// The length of the delimiter run in the source (for the rule of 3).
+  run_length : Int
   may_open : Bool
   may_close : Bool
 } derive(Debug)
@@ -114,29 +117,6 @@ fn CloserIndex::has_right_brack(self : CloserIndex, after~ : Int) -> Bool {
 ///|
 fn CloserIndex::has_right_paren(self : CloserIndex, after~ : Int) -> Bool {
   self.exists(RightParen, after~)
-}
-
-///|
-fn CloserIndex::emphasis_pos(
-  self : CloserIndex,
-  char~ : Char,
-  after~ : Int,
-) -> Int? {
-  self.pos(EmphasisMarks(char), after~)
-}
-
-///|
-fn CloserIndex::has_emphasis(
-  self : CloserIndex,
-  char~ : Char,
-  after~ : Int,
-) -> Bool {
-  self.exists(EmphasisMarks(char), after~)
-}
-
-///|
-fn CloserIndex::has_strikethrough(self : CloserIndex, after~ : Int) -> Bool {
-  self.exists(StrikethroughMarks, after~)
 }
 
 ///|
@@ -282,7 +262,6 @@ fn tokens_try_add_image_link_start(
 ///|
 fn tokens_try_add_emphasis(
   toks : Tokens,
-  cidx : CloserIndex,
   s : String,
   line : LineSpan,
   start~ : Int,
@@ -308,17 +287,22 @@ fn tokens_try_add_emphasis(
   let may_close = (char == '*' && is_right_flanking) ||
     (char == '_' && is_right_flanking && (!is_left_flanking || is_next_punct))
   guard may_open || may_close else { next }
-  toks.push(EmphasisMarks({ start, char, count, may_open, may_close, }))
-  if may_close {
-    cidx.add(EmphasisMarks(char), start)
-  }
+  toks.push(
+    EmphasisMarks({
+      start,
+      char,
+      count,
+      run_length: count,
+      may_open,
+      may_close,
+    }),
+  )
   next
 }
 
 ///|
 fn tokens_try_add_strikethrough_marks(
   toks : Tokens,
-  cidx : CloserIndex,
   s : String,
   line : LineSpan,
   start~ : Int,
@@ -334,9 +318,6 @@ fn tokens_try_add_strikethrough_marks(
   let may_open = !@char.is_ascii_whitespace(next_char)
   let may_close = !@char.is_ascii_whitespace(prev_char)
   toks.push(StrikethroughMarks({ start, may_open, may_close, }))
-  if may_close {
-    cidx.add(StrikethroughMarks, start)
-  }
   next
 }
 
@@ -397,7 +378,7 @@ fn tokenize(
       _ if prev_bslash => (k + 1, only_newlines)
       '*' | '_' => {
         let before = toks.0.length()
-        let next = tokens_try_add_emphasis(toks, cidx, s, line, start=k)
+        let next = tokens_try_add_emphasis(toks, s, line, start=k)
         (next, only_newlines && toks.0.length() == before)
       }
       ']' => {
@@ -423,13 +404,7 @@ fn tokenize(
       }
       '~' if exts => {
         let before = toks.0.length()
-        let next = tokens_try_add_strikethrough_marks(
-          toks,
-          cidx,
-          s,
-          line,
-          start=k,
-        )
+        let next = tokens_try_add_strikethrough_marks(toks, s, line, start=k)
         (next, only_newlines && toks.0.length() == before)
       }
       '$' if exts => {
@@ -1266,226 +1241,263 @@ fn Parser::first_pass(
 // Second pass
 
 ///|
-fn Parser::find_emphasis_text(
-  self : Parser,
-  rev_toks : Ref[RevTokens],
-  line : LineSpan,
-  opener~ : TokenEmphasisMarks,
-) -> (LineSpan, Int, Tokens, TokenEmphasisMarks)? {
-  fn marks_match(marks : TokenEmphasisMarks, opener : TokenEmphasisMarks) {
-    opener.char == marks.char &&
-    (
-      (marks.may_open || !opener.may_close) ||
-      marks.count % 3 == 0 ||
-      (opener.count + marks.count) % 3 != 0
-    )
-  }
+/// Whether the emphasis marks `closer` can close `opener`.
+/// https://spec.commonmark.org/current/#can-open-emphasis (rules 9 and 10)
+fn emphasis_marks_match(
+  opener : TokenEmphasisMarks,
+  closer : TokenEmphasisMarks,
+) -> Bool {
+  opener.char == closer.char &&
+  opener.may_open &&
+  (
+    !(closer.may_open || opener.may_close) ||
+    (closer.run_length % 3 == 0 && opener.run_length % 3 == 0) ||
+    (opener.run_length + closer.run_length) % 3 != 0
+  )
+}
 
-  fn marks_has_precedence(
-    marks : TokenEmphasisMarks,
-    opener : TokenEmphasisMarks,
-  ) {
-    if marks.char == opener.char {
-      return true // Rule 16
-    }
-    // Rule 15
-    let after = marks.start
-    self.cidx.emphasis_pos(char=marks.char, after~) <
-    self.cidx.emphasis_pos(char=opener.char, after~)
-  }
+///|
+/// The tokens of a paragraph (or of a link text) as a doubly linked list,
+/// for processing emphasis and strikethrough delimiters.
+priv struct DelimList {
+  toks : Array[Token]
+  /// The line in effect at the start of each token.
+  lines : Array[LineSpan]
+  next : Array[Int]
+  prev : Array[Int]
+  mut head : Int
+}
 
+///|
+fn DelimList::new(toks : Tokens, line : LineSpan) -> DelimList {
+  let toks = toks.0.to_array()
+  let n = toks.length()
+  let lines = []
   let mut line = line
+  for t in toks {
+    lines.push(line)
+    match t {
+      Newline({ newline: l, .. }) | Inline({ endline: l, .. }) => line = l
+      _ => ()
+    }
+  }
+  let next = Array::makei(n, i => if i + 1 < n { i + 1 } else { -1 })
+  let prev = Array::makei(n, i => i - 1)
+  { toks, lines, next, prev, head: if n == 0 { -1 } else { 0 }, }
+}
+
+///|
+fn DelimList::unlink(self : DelimList, i : Int) -> Unit {
+  let prev = self.prev[i]
+  let next = self.next[i]
+  if prev < 0 {
+    self.head = next
+  } else {
+    self.next[prev] = next
+  }
+  if next >= 0 {
+    self.prev[next] = prev
+  }
+}
+
+///|
+/// The `Newline` and `Inline` tokens strictly between `first` and `last`.
+fn DelimList::between(self : DelimList, first : Int, last : Int) -> Tokens {
   let acc : Tokens = Deque([])
-  for ;; {
-    match rev_toks.val.pop() {
-      None => break
-      Some(EmphasisMarks(marks) as t) => {
-        let after = marks.start
-        if marks.may_close && marks_match(marks, opener) {
-          let used = if marks.count >= 2 && opener.count >= 2 { 2 } else { 1 }
-          let to_last = marks.start - 1
-          tokens_shorten_last_line(to_last~, acc)
-          return Some((line, used, acc, marks))
-        } else if marks.may_open && marks_has_precedence(marks, opener) {
-          if self.try_emphasis(rev_toks, line, opener=marks) is Some(l) {
-            line = l
-          }
-        } else {
-          acc.push(t)
-          guard self.cidx.has_emphasis(char=opener.char, after~) else { break }
-        }
-      }
-      Some(Newline({ newline: l, .. }) | Inline({ endline: l, .. }) as t) => {
-        line = l
-        acc.push(t)
-      }
-      Some(t) => acc.push(t)
+  for k = self.next[first]; k != last; k = self.next[k] {
+    match self.toks[k] {
+      Newline(_) | Inline(_) as t => acc.push(t)
+      _ => () // Unmatched delimiters are text
     }
   }
-  for i = acc.0.length() - 1; i >= 0; i = i - 1 {
-    rev_toks.val.push(acc.0[i])
-  }
-  None
+  acc
 }
 
 ///|
-/// Tries to push an emphasis to the `rev_toks` stack.
-/// If this function returns `Some(line_span)`, it means the stack has been modified.
-fn Parser::try_emphasis(
+/// Replaces the tokens strictly between `first` and `last` by `t`.
+fn DelimList::replace_between(
+  self : DelimList,
+  first : Int,
+  last : Int,
+  t : Token,
+) -> Unit {
+  let k = self.toks.length()
+  self.toks.push(t)
+  self.lines.push(self.lines[first])
+  self.prev.push(first)
+  self.next.push(last)
+  self.next[first] = k
+  self.prev[last] = k
+}
+
+///|
+/// The inline made of the `toks` between `first` and `last` which start
+/// after an opener on `first_line` and end before a closer on `last_line`.
+fn Parser::delimited_text(
   self : Parser,
-  rev_toks : Ref[RevTokens],
-  start_line : LineSpan,
-  opener~ : TokenEmphasisMarks,
-) -> LineSpan? {
-  let start = opener.start
-  guard self.cidx.has_emphasis(char=opener.char, after=start) else { None }
-  guard self.find_emphasis_text(rev_toks, start_line, opener~)
-    is Some((line, used, emph_toks, closer)) else {
-    None
+  toks : Tokens,
+  first~ : CharCodePos,
+  last~ : CharCodePos,
+  first_line~ : LineSpan,
+  last_line~ : LineSpan,
+  text_first~ : CharCodePos,
+) -> Inline {
+  tokens_shorten_last_line(to_last=last, toks)
+  let text_start = {
+    let last = if first_line == last_line { last } else { first_line.last }
+    { ..first_line, first: text_first, last, }
   }
-  let text_first = start + opener.count
-  let text_last = closer.start - 1
-  let first = text_first - used
-  let last = closer.start + used - 1
-  let first_line = line
-  let last_line = line
-  let emph = {
-    let last = if start_line == line { text_last } else { start_line.last }
-    let text_start = { ..start_line, first: text_first, last, }
-    let emph_toks : Ref[Tokens] = Ref(emph_toks)
-    self.second_pass(emph_toks, text_start)
-    let text = self.last_pass(emph_toks.val, text_start)
-    self.inlines_inline(first~, last=text_last, first_line~, last_line~, text)
-  }
-  let count = closer.count - used
-  if count != 0 {
-    rev_toks.val.push(EmphasisMarks({ ..closer, start: last + 1, count, }))
-  }
-  let emph = self.emphasis_token(
-    first~,
-    last~,
-    first_line~,
-    last_line~,
-    strong=used == 2,
-    emph,
-  )
-  rev_toks.val.push(emph)
-  let count = opener.count - used
-  if count != 0 {
-    rev_toks.val.push(EmphasisMarks({ ..opener, count, }))
-  }
-  Some(line)
+  let text = self.last_pass(toks, text_start)
+  self.inlines_inline(first~, last~, first_line~, last_line~, text)
 }
 
 ///|
-/// Tries to extract stricken-through tokens from the `rev_toks` stack and collect them into `striken_toks`.
-/// If this function returns `Some((line_span, stricken_toks, closer))`, it means the stack has been modified.
-fn Parser::find_strikethrough_text(
-  self : Parser,
-  rev_toks : Ref[RevTokens],
-  start_line : LineSpan,
-) -> (LineSpan, Tokens, TokenStrikethroughMarks)? {
-  let acc : Tokens = Deque([])
-  let mut line = start_line
-  for ;; {
-    match rev_toks.val.pop() {
-      None => break
-      Some(StrikethroughMarks(marks)) =>
-        if marks.may_close {
-          let to_last = marks.start - 1
-          tokens_shorten_last_line(to_last~, acc)
-          return Some((line, acc, marks))
-        } else if marks.may_open {
-          if self.try_strikethrough(rev_toks, line, opener=marks) is Some(l) {
-            line = l
-          }
-        } else {
-          abort("unreachable")
-        }
-      Some(Newline({ newline: l, .. }) | Inline({ endline: l, .. }) as t) => {
-        acc.push(t)
-        line = l
-      }
-      Some(t) => acc.push(t)
-    }
-  }
-  for i = acc.0.length() - 1; i >= 0; i = i - 1 {
-    rev_toks.val.push(acc.0[i])
-  }
-  None
-}
-
-///|
-/// Tries to push a strikethrough to the `rev_toks` stack.
-/// If this function returns `Some(line_span)`, it means the stack has been modified.
-fn Parser::try_strikethrough(
-  self : Parser,
-  rev_toks : Ref[RevTokens],
-  start_line : LineSpan,
-  opener~ : TokenStrikethroughMarks,
-) -> LineSpan? {
-  let start = opener.start
-  guard self.cidx.has_strikethrough(after=start) else { None }
-  guard self.find_strikethrough_text(rev_toks, start_line)
-    is Some((line, stricken_toks, closer)) else {
-    None
-  }
-  let first_line = start_line
-  let last_line = line
-  let text = {
-    let first = start + 2
-    let last = closer.start - 1
-    let text_start = {
-      let last = if start_line == line { last } else { start_line.last }
-      { ..start_line, first, last, }
-    }
-    let emph_toks : Ref[Tokens] = Ref(stricken_toks)
-    self.second_pass(emph_toks, text_start)
-    let text = self.last_pass(emph_toks.val, text_start)
-    self.inlines_inline(first~, last~, first_line~, last_line~, text)
-  }
-  rev_toks.val.push(
-    self.ext_strikethough_token(
-      first=opener.start,
-      last=closer.start + 1,
-      first_line~,
-      last_line~,
-      text,
-    ),
-  )
-  Some(line)
-}
-
-///|
+/// Turns the emphasis and strikethrough delimiters of `toks` into inlines
+/// with the [process emphasis](https://spec.commonmark.org/current/#process-emphasis)
+/// procedure. Afterwards only `Inline` and `Newline` tokens remain.
 fn Parser::second_pass(
   self : Parser,
   toks : Ref[Tokens],
   line : LineSpan,
 ) -> Unit {
-  let rev_toks : Ref[RevTokens] = Ref(toks.val.0)
-  let acc : Tokens = Deque([])
-  toks.val = acc
-  let mut line = line
-  for ;; {
-    match rev_toks.val.pop() {
-      None => break
-      Some(EmphasisMarks(opener)) =>
-        if opener.may_open &&
-          self.try_emphasis(rev_toks, line, opener~) is Some(l) {
-          line = l
-        }
-      Some(StrikethroughMarks(opener)) =>
-        if opener.may_open &&
-          self.try_strikethrough(rev_toks, line, opener~) is Some(l) {
-          line = l
-        }
-      Some(Newline({ newline: l, .. }) | Inline({ endline: l, .. }) as t) => {
-        acc.push(t)
-        line = l
-      }
-      Some(t) => acc.push(t)
+  let l = DelimList::new(toks.val, line)
+  // The delimiter stack: the token indices of delimiters, as a doubly
+  // linked list.
+  let delims = []
+  for i, t in l.toks {
+    if t is (EmphasisMarks(_) | StrikethroughMarks(_)) {
+      delims.push(i)
     }
   }
+  let n = delims.length()
+  let dprev = Array::makei(n, i => i - 1)
+  let dnext = Array::makei(n, i => i + 1)
+  let remove = fn(d) {
+    if dprev[d] >= 0 {
+      dnext[dprev[d]] = dnext[d]
+    }
+    if dnext[d] < n {
+      dprev[dnext[d]] = dprev[d]
+    }
+  }
+  // For each kind of closer, the delimiter index below which (inclusive)
+  // there is no opener for it (`openers_bottom` in the spec).
+  let bottoms : Map[(Char, Bool, Int), Int] = Map([])
+  let mut d = 0
+  while d < n {
+    let c = delims[d]
+    let (may_close, key) = match l.toks[c] {
+      EmphasisMarks(m) => (m.may_close, (m.char, m.may_open, m.run_length % 3))
+      StrikethroughMarks(m) => (m.may_close, ('~', false, 0))
+      _ => abort("unreachable")
+    }
+    if !may_close {
+      d += 1
+      continue
+    }
+    let bottom = bottoms.get(key).unwrap_or(-1)
+    let opener = for j = dprev[d]; j > bottom; j = dprev[j] {
+      let matches = match (l.toks[delims[j]], l.toks[c]) {
+        (EmphasisMarks(o), EmphasisMarks(c)) => emphasis_marks_match(o, c)
+        (StrikethroughMarks(o), StrikethroughMarks(_)) => o.may_open
+        _ => false
+      }
+      if matches {
+        break Some(j)
+      }
+    } nobreak {
+      None
+    }
+    guard opener is Some(od) else {
+      bottoms[key] = d - 1
+      if !(l.toks[c]
+        is (EmphasisMarks({ may_open: true, .. })
+        | StrikethroughMarks({ may_open: true, .. }))) {
+        remove(d)
+      }
+      d += 1
+      continue
+    }
+    // The delimiters between the opener and the closer become text
+    dnext[od] = d
+    dprev[d] = od
+    let o = delims[od]
+    let first_line = l.lines[o]
+    let last_line = l.lines[c]
+    let text = l.between(o, c)
+    match (l.toks[o], l.toks[c]) {
+      (EmphasisMarks(opener), EmphasisMarks(closer)) => {
+        let used = if opener.count >= 2 && closer.count >= 2 { 2 } else { 1 }
+        let text_first = opener.start + opener.count
+        let first = text_first - used
+        let last = closer.start + used - 1
+        let emph = self.delimited_text(
+          text,
+          first~,
+          last=closer.start - 1,
+          first_line~,
+          last_line~,
+          text_first~,
+        )
+        let t = self.emphasis_token(
+          first~,
+          last~,
+          first_line~,
+          last_line~,
+          strong=used == 2,
+          emph,
+        )
+        l.replace_between(o, c, t)
+        if opener.count == used {
+          l.unlink(o)
+          remove(od)
+        } else {
+          l.toks[o] = EmphasisMarks({ ..opener, count: opener.count - used, })
+        }
+        if closer.count == used {
+          l.unlink(c)
+          remove(d)
+          d += 1
+        } else {
+          let count = closer.count - used
+          l.toks[c] = EmphasisMarks({ ..closer, start: last + 1, count, })
+        }
+      }
+      (StrikethroughMarks(opener), StrikethroughMarks(closer)) => {
+        let text_first = opener.start + 2
+        let s = self.delimited_text(
+          text,
+          first=text_first,
+          last=closer.start - 1,
+          first_line~,
+          last_line~,
+          text_first~,
+        )
+        let t = self.ext_strikethough_token(
+          first=opener.start,
+          last=closer.start + 1,
+          first_line~,
+          last_line~,
+          s,
+        )
+        l.replace_between(o, c, t)
+        l.unlink(o)
+        l.unlink(c)
+        remove(od)
+        remove(d)
+        d += 1
+      }
+      _ => abort("unreachable")
+    }
+  }
+  let acc : Tokens = Deque([])
+  for k = l.head; k >= 0; k = l.next[k] {
+    match l.toks[k] {
+      Newline(_) | Inline(_) as t => acc.push(t)
+      _ => () // Unmatched delimiters are text
+    }
+  }
+  toks.val = acc
 }
 
 // Last pass
