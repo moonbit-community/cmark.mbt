@@ -612,8 +612,14 @@ fn Parser::try_code(
   count~ : Int,
   escaped~ : Bool,
 ) -> (LineSpan, Token)? {
-  let cstart = start
-  guard !escaped && self.cidx.has_backticks(count~, after=cstart) else { None }
+  // If the run is preceded by a `\`, its first backtick is escaped: the
+  // backtick string that opens starts after it.
+  let (cstart, count) = if escaped {
+    (start + 1, count - 1)
+  } else {
+    (start, count)
+  }
+  guard count > 0 && self.cidx.has_backticks(count~, after=cstart) else { None }
   let first = cstart + count
   let mut line = { ..start_line, first, }
   let spans = []
