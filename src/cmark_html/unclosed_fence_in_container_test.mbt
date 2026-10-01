@@ -129,3 +129,39 @@ test "closed fenced code block at the end of input keeps its lines" {
   )
   inspect(footnote.contains("<pre><code>a\n\n</code></pre>"), content="true")
 }
+
+///|
+test "unclosed HTML block at the end of a list item or footnote" {
+  inspect(
+    @cmark_html.render(safe=false, "- <pre>\n  a\n"),
+    content=(
+      #|<ul>
+      #|<li>
+      #|<pre>
+      #|a
+      #|</li>
+      #|</ul>
+      #|
+    ),
+  )
+  // A blank last line without a final newline is content
+  inspect(
+    @cmark_html.render(safe=false, "- <pre>\n  a\n  "),
+    content=(
+      #|<ul>
+      #|<li>
+      #|<pre>
+      #|a
+      #|
+      #|</li>
+      #|</ul>
+      #|
+    ),
+  )
+  let footnote = @cmark_html.render(
+    safe=false,
+    strict=false,
+    "x[^1]\n\n[^1]:\n  <pre>\n  a\n",
+  )
+  inspect(footnote.contains("a\n\n"), content="false")
+}
