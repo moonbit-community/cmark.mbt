@@ -638,6 +638,14 @@ fn Parser::close_last_list_item(self : Parser, l : ListBlockStruct) -> Unit {
 }
 
 ///|
+/// Whether `l` is the empty line that follows a final newline of the
+/// input. Its raw line is empty, unlike a line made empty by stripping
+/// container markers or indentation, which is content.
+fn is_end_of_input_line(l : LineSpan) -> Bool {
+  l.last < l.pos.1
+}
+
+///|
 fn Parser::end_doc_close_fenced_code_block(
   self : Parser,
   fenced : FenceCodeBlockStruct,
@@ -645,8 +653,7 @@ fn Parser::end_doc_close_fenced_code_block(
 ) -> Unit {
   let _ = self
   let { code, .. } = fenced
-  if code is [.., (_, { first, last, .. } as l)] && first > last {
-    // Empty line
+  if code is [.., (_, l)] && is_end_of_input_line(l) {
     let _ = code.pop()
     bs..push(CodeBlock(Fenced({ ..fenced, code, }))).push(BlankLine(0, l))
     return
@@ -662,8 +669,7 @@ fn Parser::end_doc_close_html(
 ) -> Unit {
   let _ = self
   let { html, .. } = h
-  if html is [.., { first, last, .. } as l] && first > last {
-    // Empty line
+  if html is [.., l] && is_end_of_input_line(l) {
     let _ = html.pop()
     bs..push(HtmlBlock({ end_cond: None, html, })).push(BlankLine(0, l))
     return
