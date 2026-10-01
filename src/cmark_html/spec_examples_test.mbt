@@ -49,9 +49,10 @@ test "CommonMark spec examples" {
       renderer.doc_to_string(Doc::from_string(md)) != html
     })
     .map(example => example.0)
+  // The numbers of the failing examples first, so that they are reported
+  debug_inspect(failed, content="[]")
   inspect(
     "\{examples.length() - failed.length()}/\{examples.length()}",
     content="652/652",
   )
-  debug_inspect(failed, content="[]")
 }
