@@ -16,6 +16,10 @@
 //    - May differ for newly added punctuation in newer Unicode versions
 /// Note: Depends on JS engine's Unicode version, may differ from charclass
 //
+// 3. is_unicode_punctuation (private): punctuation (P) or symbol (S)
+//    categories, the CommonMark definition of punctuation for emphasis.
+//    Same differences as is_punctuation.
+//
 // For CommonMark parsing, these differences have minimal impact since
 // Markdown primarily uses ASCII whitespace and punctuation characters.
 
@@ -37,6 +41,20 @@ pub fn is_whitespace(c : Char) -> Bool {
 pub fn is_punctuation(c : Char) -> Bool {
   is_punctuation_ffi(c.to_int())
 }
+
+///|
+/// Check if a character is a
+/// [Unicode punctuation character](https://spec.commonmark.org/0.31.2/#unicode-punctuation-character),
+/// i.e. in the Unicode `P` (punctuation) or `S` (symbol) general categories.
+#cfg(target="js")
+fn is_unicode_punctuation(c : Char) -> Bool {
+  is_unicode_punctuation_ffi(c.to_int())
+}
+
+///|
+#cfg(target="js")
+extern "js" fn is_unicode_punctuation_ffi(code : Int) -> Bool =
+  #|(code) => /[\p{P}\p{S}]/u.test(String.fromCodePoint(code))
 
 ///|
 #cfg(target="js")
@@ -73,4 +91,13 @@ pub fn is_whitespace(c : Char) -> Bool {
 #cfg(not(target="js"))
 pub fn is_punctuation(c : Char) -> Bool {
   @unicode.is_punctuation(c)
+}
+
+///|
+/// Check if a character is a
+/// [Unicode punctuation character](https://spec.commonmark.org/0.31.2/#unicode-punctuation-character),
+/// i.e. in the Unicode `P` (punctuation) or `S` (symbol) general categories.
+#cfg(not(target="js"))
+fn is_unicode_punctuation(c : Char) -> Bool {
+  @unicode.is_punctuation(c) || @unicode.is_symbol(c)
 }

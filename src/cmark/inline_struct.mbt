@@ -274,9 +274,9 @@ fn tokens_try_add_emphasis(
   let prev_char = @char.prev_char(s, first~, before=start)
   let next_char = @char.next_char(s, last~, after=run_last)
   let is_prev_white = is_whitespace(prev_char)
-  let is_prev_punct = is_punctuation(prev_char)
+  let is_prev_punct = is_unicode_punctuation(prev_char)
   let is_next_white = is_whitespace(next_char)
-  let is_next_punct = is_punctuation(next_char)
+  let is_next_punct = is_unicode_punctuation(next_char)
   let is_left_flanking = !is_next_white &&
     (!is_next_punct || is_prev_white || is_prev_punct)
   let is_right_flanking = !is_prev_white &&
