@@ -470,10 +470,10 @@ fn Parser::parse_link_ref_definition(
         (lines1, [], '"', None, [], meta_last)
       }
       let after_title = {
-        let last = line1.last
         let start = last + 1
+        let last = line1.last
         let nb = @cmark_base.first_non_blank(self.i, last~, start~)
-        if nb <= line1.last {
+        if nb <= last {
           None
         } else {
           Some([self.layout_clean_raw_span({ ..line1, first: start, })])
@@ -678,13 +678,20 @@ fn Parser::end_doc(self : Parser, bs : Array[BlockStruct]) -> Unit {
       self.end_doc(bq)
       bs.push(BlockQuote(indent, bq))
     }
-    Some(List(l)) => self.close_list(l, bs)
+    Some(List(l)) => {
+      // The last item may end with an unclosed fenced code or HTML block.
+      guard! l.items.last() is Some(item)
+      self.end_doc(item.blocks)
+      self.close_list(l, bs)
+    }
     Some(Paragraph(par)) => self.close_paragraph(par, bs)
     Some(CodeBlock(Indented(ls))) => self.close_indented_code_block(ls, bs)
     Some(CodeBlock(Fenced(f))) => self.end_doc_close_fenced_code_block(f, bs)
     Some(HtmlBlock(html)) => self.end_doc_close_html(html, bs)
-    Some(ExtFootnote(indent, label, blocks)) =>
+    Some(ExtFootnote(indent, label, blocks)) => {
+      self.end_doc(blocks)
       self.close_footnote(indent, label, blocks, bs)
+    }
     Some(b) => bs.push(b)
     None => ()
   }
@@ -1195,7 +1202,8 @@ fn Parser::try_add_to_block_quote(
       self.add_line(bq)
       bs.push(BlockQuote(indent_layout, bq))
     }
-    IndentedCodeBlockLine | ParagraphLine as ltype =>
+    // These can't interrupt a paragraph: lazy continuation lines
+    IndentedCodeBlockLine | ParagraphLine | HtmlBlockLine(EndBlank7) as ltype =>
       if self.try_lazy_continuation(indent_start~, bq) {
         bs.push(BlockQuote(indent_layout, bq))
       } else {
@@ -1223,7 +1231,8 @@ fn Parser::try_add_to_footnote(
   let indent = self.curr_indent()
   if indent < fn_indent + 1 { // Position of ^
     match self.match_line_type(no_setext=true, indent~) {
-      IndentedCodeBlockLine | ParagraphLine as lt =>
+      // These can't interrupt a paragraph: lazy continuation lines
+      IndentedCodeBlockLine | ParagraphLine | HtmlBlockLine(EndBlank7) as lt =>
         if self.try_lazy_continuation(indent_start~, blocks) {
           bs.push(ExtFootnote(fn_indent, label, blocks))
         } else {
@@ -1278,7 +1287,8 @@ fn Parser::try_add_to_list_item(
       self.add_line(item.blocks)
       bs.push(List({ ..list, items, last_blank: true, }))
     }
-    IndentedCodeBlockLine | ParagraphLine as ltype => {
+    // These can't interrupt a paragraph: lazy continuation lines
+    IndentedCodeBlockLine | ParagraphLine | HtmlBlockLine(EndBlank7) as ltype => {
       let items = list.items
       guard! items.last() is Some(item)
       if self.try_lazy_continuation(indent_start~, item.blocks) {
@@ -1547,7 +1557,7 @@ fn Parser::block_struct_to_html_block(
 ) -> Block {
   guard! b.html.last() is Some({ last: last_ccode, pos: last_line, .. })
   let lines = b.html.map(fn(i) { self.clean_raw_span(i) })
-  let start_loc = lines.last().unwrap().meta.loc
+  let start_loc = lines[0].meta.loc
   let meta = self.meta({ ..start_loc, last_ccode, last_line, })
   HtmlBlock({ v: Seq::from_array(lines), meta, })
 }

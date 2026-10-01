@@ -40,7 +40,10 @@ priv struct TokenBackticks {
 priv struct TokenEmphasisMarks {
   start : CharCodePos
   char : Char
+  /// The number of marks left in the run.
   count : Int
+  /// The length of the delimiter run in the source (for the rule of 3).
+  run_length : Int
   may_open : Bool
   may_close : Bool
 } derive(Debug)
@@ -191,17 +194,37 @@ fn tokens_pop_until(start~ : Int, rev_toks : RevTokens) -> Unit {
 
 ///|
 fn tokens_next_line(rev_toks : RevTokens) -> LineSpan? {
-  let acc = []
+  tokens_next_line_consumed(rev_toks, [])
+}
+
+///|
+/// Drops the tokens of `rev_toks` up to and including the next newline,
+/// pushes them on `consumed` and returns the newline's line. Leaves
+/// `rev_toks` and `consumed` untouched if there is no newline.
+fn tokens_next_line_consumed(
+  rev_toks : RevTokens,
+  consumed : Array[Token],
+) -> LineSpan? {
+  let len = consumed.length()
   while rev_toks.pop() is Some(t) {
+    consumed.push(t)
     if t is Newline({ newline, .. }) {
       return Some(newline)
     }
-    acc.push(t)
   }
-  while acc.pop() is Some(t) {
-    rev_toks.push(t)
+  while consumed.length() > len {
+    rev_toks.push(consumed.unsafe_pop())
   }
   None
+}
+
+///|
+/// Puts back on `rev_toks` the tokens `consumed` by
+/// `tokens_next_line_consumed`.
+fn tokens_restore(rev_toks : RevTokens, consumed : Array[Token]) -> Unit {
+  while consumed.pop() is Some(t) {
+    rev_toks.push(t)
+  }
 }
 
 // Tokenization
@@ -216,7 +239,16 @@ fn Token::newline(
   // https://spec.commonmark.org/current/#hard-line-breaks
   let { first, last, .. } = prev_line
   let non_space = @cmark_base.rev_drop_spaces(s, first~, start=last)
-  let (start, break_ty) = if non_space == last && s[non_space] == '\\' {
+  // The final `\` must not be escaped by another `\`
+  let escaped_bslash = fn() {
+    for k = last - 1, escaped = false {
+      guard k >= first && s[k] == '\\' else { break escaped }
+      continue k - 1, !escaped
+    }
+  }
+  let (start, break_ty) = if non_space == last &&
+    s[non_space] == '\\' &&
+    !escaped_bslash() {
     (non_space, Hard)
   } else {
     let start = non_space + 1
@@ -269,9 +301,9 @@ fn tokens_try_add_emphasis(
   let prev_char = @char.prev_char(s, first~, before=start)
   let next_char = @char.next_char(s, last~, after=run_last)
   let is_prev_white = is_whitespace(prev_char)
-  let is_prev_punct = is_punctuation(prev_char)
+  let is_prev_punct = is_unicode_punctuation(prev_char)
   let is_next_white = is_whitespace(next_char)
-  let is_next_punct = is_punctuation(next_char)
+  let is_next_punct = is_unicode_punctuation(next_char)
   let is_left_flanking = !is_next_white &&
     (!is_next_punct || is_prev_white || is_prev_punct)
   let is_right_flanking = !is_prev_white &&
@@ -283,7 +315,9 @@ fn tokens_try_add_emphasis(
   let may_close = (char == '*' && is_right_flanking) ||
     (char == '_' && is_right_flanking && (!is_left_flanking || is_next_punct))
   guard may_open || may_close else { next }
-  toks.push(EmphasisMarks({ start, char, count, may_open, may_close, }))
+  toks.push(
+    EmphasisMarks({ start, char, count, run_length: count, may_open, may_close }),
+  )
   if may_close {
     cidx.add(EmphasisMarks(char), start)
   }
@@ -447,12 +481,13 @@ fn Parser::try_add_text_inline(
   first~ : Int,
   last~ : Int,
   acc : Array[Inline],
+  strip? : Bool = true,
 ) -> Unit {
   if first > last {
     return
   }
   let mut first = first
-  if first == line.first {
+  if strip && first == line.first {
     first = self.first_non_blank_in_span(line) // Strip leading blanks
   }
   acc.push(Text(self.clean_unesc_unref_span({ ..line, first, last, })))
@@ -722,14 +757,13 @@ fn Parser::try_autolink_or_html(
     tokens_pop_until(start=last + 1, rev_toks.val)
     return Some((line, t))
   }
-  guard @cmark_base.raw_html(
-      next_line=tokens_next_line,
-      self.i,
-      rev_toks.val,
-      line~,
-      start~,
-    )
+  // Raw HTML may span lines: remember the tokens consumed by `next_line`
+  // to restore them if it turns out not to be raw HTML.
+  let consumed = []
+  let next_line = NextLineFn(toks => tokens_next_line_consumed(toks, consumed))
+  guard @cmark_base.raw_html(next_line~, self.i, rev_toks.val, line~, start~)
     is Some((last_line, spans, last)) else {
+    tokens_restore(rev_toks.val, consumed)
     None
   }
   let first = start
@@ -1119,6 +1153,7 @@ fn Parser::try_link(
       }
       { ..start_line, first, last, }
     },
+    strip_first=false, // Blanks after `[` are part of the text
   )
   if had_link && !image {
     return None
@@ -1195,18 +1230,22 @@ fn Parser::first_pass(
 // Second pass
 
 ///|
+///
+/// `outer` are the openers whose text is being looked up and that enclose
+/// `opener`, from the outermost one.
 fn Parser::find_emphasis_text(
   self : Parser,
   rev_toks : Ref[RevTokens],
   line : LineSpan,
   opener~ : TokenEmphasisMarks,
+  outer~ : Array[TokenEmphasisMarks],
 ) -> (LineSpan, Int, Tokens, TokenEmphasisMarks)? {
   fn marks_match(marks : TokenEmphasisMarks, opener : TokenEmphasisMarks) {
     opener.char == marks.char &&
     (
-      (marks.may_open || !opener.may_close) ||
-      marks.count % 3 == 0 ||
-      (opener.count + marks.count) % 3 != 0
+      !(marks.may_open || opener.may_close) ||
+      (marks.run_length % 3 == 0 && opener.run_length % 3 == 0) ||
+      (opener.run_length + marks.run_length) % 3 != 0
     )
   }
 
@@ -1235,9 +1274,19 @@ fn Parser::find_emphasis_text(
           let to_last = marks.start - 1
           tokens_shorten_last_line(to_last~, acc)
           return Some((line, used, acc, marks))
+        } else if marks.may_close &&
+          outer.iter().any(outer => marks_match(marks, outer)) {
+          // The marks close an enclosing opener: `opener` has no closer.
+          rev_toks.val.push(t)
+          break
         } else if marks.may_open && marks_has_precedence(marks, opener) {
-          if self.try_emphasis(rev_toks, line, opener=marks) is Some(l) {
-            line = l
+          outer.push(opener)
+          let emph = self.try_emphasis(rev_toks, line, opener=marks, outer~)
+          outer.unsafe_pop() |> ignore
+          match emph {
+            Some(l) => line = l
+            // Keep the marks: they may still close an enclosing opener.
+            None => acc.push(t)
           }
         } else {
           acc.push(t)
@@ -1265,10 +1314,11 @@ fn Parser::try_emphasis(
   rev_toks : Ref[RevTokens],
   start_line : LineSpan,
   opener~ : TokenEmphasisMarks,
+  outer? : Array[TokenEmphasisMarks] = [],
 ) -> LineSpan? {
   let start = opener.start
   guard self.cidx.has_emphasis(char=opener.char, after=start) else { None }
-  guard self.find_emphasis_text(rev_toks, start_line, opener~)
+  guard self.find_emphasis_text(rev_toks, start_line, opener~, outer~)
     is Some((line, used, emph_toks, closer)) else {
     None
   }
@@ -1423,25 +1473,31 @@ fn Parser::second_pass(
 /// Only `Inline` and `Newline` tokens remain. We fold over them to
 /// convert them to `inline` values and `Break`s. `Text` inlines
 /// are created for data between them.
+///
+/// If `strip_first` is `false`, the initial blanks of `line` are kept:
+/// `line` does not start a line of the paragraph (e.g. link text).
 fn Parser::last_pass(
   self : Parser,
   toks : Tokens,
   line : LineSpan,
+  strip_first? : Bool = true,
 ) -> Array[Inline] {
   let acc = []
+  let first_line = line
   let mut line = line
   let mut k = line.first
   for tok in toks.0 {
+    let strip = strip_first || line != first_line
     match tok {
       Newline({ start, break_ty, newline, }) => {
-        self.try_add_text_inline(line, first=k, last=start - 1, acc)
+        self.try_add_text_inline(line, first=k, last=start - 1, acc, strip~)
         let break_ = self.break_inline(line, start~, break_ty~, newline~)
         line = newline
         acc.push(break_)
         k = newline.first
       }
       Inline({ start, inline, endline, next, }) => {
-        self.try_add_text_inline(line, first=k, last=start - 1, acc)
+        self.try_add_text_inline(line, first=k, last=start - 1, acc, strip~)
         match inline {
           Inlines({ v: is_, .. }) => acc.push_iter(is_.iter())
           i => acc.push(i)
@@ -1452,7 +1508,8 @@ fn Parser::last_pass(
       _ => abort("unreachable")
     }
   }
-  self.try_add_text_inline(line, first=k, last=line.last, acc)
+  let strip = strip_first || line != first_line
+  self.try_add_text_inline(line, first=k, last=line.last, acc, strip~)
   acc
 }
 
@@ -1461,11 +1518,12 @@ fn Parser::parse_tokens(
   self : Parser,
   toks : Tokens,
   first_line : LineSpan,
+  strip_first? : Bool = true,
 ) -> (Array[Inline], Bool) {
   let toks : Ref[Tokens] = Ref(toks)
   let had_link = self.first_pass(toks, first_line)
   self.second_pass(toks, first_line)
-  let inlines = self.last_pass(toks.val, first_line)
+  let inlines = self.last_pass(toks.val, first_line, strip_first~)
   (inlines, had_link)
 }
 

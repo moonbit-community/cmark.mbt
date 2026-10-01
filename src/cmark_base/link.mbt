@@ -192,7 +192,19 @@ pub fn[A] link_label(
       u = @char.rep
     }
     let k1 = k + @char.length_utf16(u.to_int())
-    b.write_char(@char.to_ascii_lower(u))
+    // Labels match case-insensitively with Unicode case folding.
+    match @casefold.casefold_char(u) {
+      One(c) => b.write_char(c)
+      Two(c1, c2) => {
+        b.write_char(c1)
+        b.write_char(c2)
+      }
+      Three(c1, c2, c3) => {
+        b.write_char(c1)
+        b.write_char(c2)
+        b.write_char(c3)
+      }
+    }
     continue line, u, start, count + 1, k1
   }
 }

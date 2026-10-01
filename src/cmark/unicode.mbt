@@ -39,6 +39,20 @@ pub fn is_punctuation(c : Char) -> Bool {
 }
 
 ///|
+/// Check if a character is a
+/// [Unicode punctuation character](https://spec.commonmark.org/0.31.2/#unicode-punctuation-character),
+/// i.e. in the Unicode `P` (punctuation) or `S` (symbol) general categories.
+#cfg(target="js")
+fn is_unicode_punctuation(c : Char) -> Bool {
+  is_unicode_punctuation_ffi(c.to_int())
+}
+
+///|
+#cfg(target="js")
+extern "js" fn is_unicode_punctuation_ffi(code : Int) -> Bool =
+  #|(code) => /[\p{P}\p{S}]/u.test(String.fromCodePoint(code))
+
+///|
 #cfg(target="js")
 extern "js" fn is_whitespace_ffi(code : Int) -> Bool =
   #|(code) => {
@@ -73,4 +87,13 @@ pub fn is_whitespace(c : Char) -> Bool {
 #cfg(not(target="js"))
 pub fn is_punctuation(c : Char) -> Bool {
   @unicode.is_punctuation(c)
+}
+
+///|
+/// Check if a character is a
+/// [Unicode punctuation character](https://spec.commonmark.org/0.31.2/#unicode-punctuation-character),
+/// i.e. in the Unicode `P` (punctuation) or `S` (symbol) general categories.
+#cfg(not(target="js"))
+fn is_unicode_punctuation(c : Char) -> Bool {
+  @unicode.is_punctuation(c) || @unicode.is_symbol(c)
 }

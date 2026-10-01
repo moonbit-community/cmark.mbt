@@ -2857,25 +2857,71 @@ test "should tokenize nested strikethroughs and emphases" {
     tokenize_only(doc, strict=false),
     content=(
       #|(
-      #|  CloserIndex({ EmphasisMarks('*'): [19, 25, 69], StrikethroughMarks: [35, 67, 72] }),
+      #|  CloserIndex({ EmphasisMarks('*'): [25, 69], StrikethroughMarks: [35, 67, 72] }),
       #|  Tokens(
       #|    <Deque:
       #|      [
       #|        StrikethroughMarks({ start: 17, may_open: true, may_close: false }),
-      #|        EmphasisMarks({ start: 19, char: '*', count: 1, may_open: true, may_close: true }),
-      #|        EmphasisMarks({ start: 25, char: '*', count: 1, may_open: false, may_close: true }),
+      #|        EmphasisMarks(
+      #|          {
+      #|            start: 19,
+      #|            char: '*',
+      #|            count: 1,
+      #|            run_length: 1,
+      #|            may_open: true,
+      #|            may_close: false,
+      #|          },
+      #|        ),
+      #|        EmphasisMarks(
+      #|          {
+      #|            start: 25,
+      #|            char: '*',
+      #|            count: 1,
+      #|            run_length: 1,
+      #|            may_open: false,
+      #|            may_close: true,
+      #|          },
+      #|        ),
       #|        StrikethroughMarks({ start: 27, may_open: true, may_close: false }),
       #|        StrikethroughMarks({ start: 35, may_open: false, may_close: true }),
-      #|        EmphasisMarks({ start: 38, char: '*', count: 1, may_open: true, may_close: false }),
-      #|        EmphasisMarks({ start: 45, char: '*', count: 2, may_open: true, may_close: false }),
+      #|        EmphasisMarks(
+      #|          {
+      #|            start: 38,
+      #|            char: '*',
+      #|            count: 1,
+      #|            run_length: 1,
+      #|            may_open: true,
+      #|            may_close: false,
+      #|          },
+      #|        ),
+      #|        EmphasisMarks(
+      #|          {
+      #|            start: 45,
+      #|            char: '*',
+      #|            count: 2,
+      #|            run_length: 2,
+      #|            may_open: true,
+      #|            may_close: false,
+      #|          },
+      #|        ),
       #|        StrikethroughMarks({ start: 54, may_open: true, may_close: false }),
       #|        StrikethroughMarks({ start: 67, may_open: true, may_close: true }),
-      #|        EmphasisMarks({ start: 69, char: '*', count: 3, may_open: true, may_close: true }),
+      #|        EmphasisMarks(
+      #|          {
+      #|            start: 69,
+      #|            char: '*',
+      #|            count: 3,
+      #|            run_length: 3,
+      #|            may_open: true,
+      #|            may_close: true,
+      #|          },
+      #|        ),
       #|        StrikethroughMarks({ start: 72, may_open: false, may_close: true }),
       #|      ]>,
       #|  ),
       #|  { pos: LinePos(1, 0), first: 0, last: 73 },
       #|)
+
     ),
   )
 }

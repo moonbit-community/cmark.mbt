@@ -454,10 +454,16 @@ fn image(c : Context, i : @cmark.InlineLink, close? : String = " >") -> Unit {
       c.b.write_string("<img src=\"")
       pct_encoded_string(c, link)
       c.b.write_string("\" alt=\"")
+      // The segments of a line are concatenated, lines are separated by
+      // newlines (hard breaks).
       let lines = i.text.to_plain_text(break_on_soft=false)
-      for line in lines {
-        let joined = { iter: line.iter(), sep: "\n", }
-        joined_string(c, joined)
+      for k, line in lines.to_array() {
+        if k > 0 {
+          c.b.write_char('\n')
+        }
+        for s in line.iter() {
+          html_escaped_string(c, s)
+        }
       }
       c.b.write_char('"')
       if title is Some(title) {

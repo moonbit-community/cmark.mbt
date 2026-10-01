@@ -2,6 +2,11 @@
 /// https://spec.commonmark.org/current/#tag-name
 fn tag_name(s : String, last? : Int = -1, start? : Int = 0) -> Int? {
   let last = if last < 0 { s.length() + last } else { last }
+  guard start <= last &&
+    s[start].to_char() is Some(c) &&
+    c.is_ascii_alphabetic() else {
+    return None
+  }
   for k = start + 1 {
     guard k <= last else { break Some(k - 1) }
     match s.get_char(k) {
@@ -77,6 +82,9 @@ fn[A] attribute_value(
 ///|
 /// https://spec.commonmark.org/current/#attribute
 /// https://spec.commonmark.org/current/#attribute-value-specification
+///
+/// Returns the line and position where the attribute ends, and whether the
+/// blanks following it have already been consumed.
 fn[A] attribute(
   next_line~ : NextLineFn[A],
   s : String,
@@ -84,7 +92,7 @@ fn[A] attribute(
   line~ : LineSpan,
   spans : Ref[Array[Span]],
   start~ : Int,
-) -> (LineSpan, Last)? {
+) -> (LineSpan, Last, Bool)? {
   guard attribute_name(s, last=line.last, start~) is Some(end_name) else {
     return None
   }
@@ -96,7 +104,14 @@ fn[A] attribute(
   }
   let nb = last_blank + 1
   if s[nb] != '=' {
-    return Some((line, end_name)) // No value
+    // No value
+    if line1.pos.0 == line.pos.0 {
+      return Some((line, end_name, false))
+    }
+    // The blanks up to the next line have already been consumed with
+    // `next_line` (which can't be undone): continue after them.
+    push_span(line=line1, nb, nb - 1, spans.val)
+    return Some((line1, last_blank, true))
   }
   push_span(line=line1, nb, nb, spans.val)
   let start = nb + 1
@@ -112,7 +127,9 @@ fn[A] attribute(
     None
   }
   let start = last_blank + 1
-  attribute_value(next_line~, s, lines, line~, spans.val, start~)
+  attribute_value(next_line~, s, lines, line~, spans.val, start~).map(r => {
+    (r.0, r.1, false)
+  })
 }
 
 ///|
@@ -131,7 +148,7 @@ fn[A] open_tag(
   let start = tag_name_end + 1
   let span = { ..line, first: tag_start, last: tag_name_end, }
   let spans = Ref([{ start: tag_start, span, }])
-  for line = line, start = start {
+  for line = line, start = start, blank_before = false {
     guard first_non_blank_over_nl1(
         next_line~,
         s,
@@ -159,14 +176,14 @@ fn[A] open_tag(
         }
       }
       _c =>
-        if next == start {
+        if next == start && !blank_before {
           None
         } else {
           guard attribute(next_line~, s, lines, line~, spans, start=next)
-            is Some((line, last)) else {
+            is Some((line1, last, blank_after)) else {
             None
           }
-          continue line, last + 1
+          continue line1, last + 1, blank_after
         }
     }
   }
@@ -256,15 +273,20 @@ fn[A] html_comment(
   line~ : LineSpan,
   start~ : CharCodePos,
 ) -> (LineSpan, Array[Span], CharCodePos)? {
-  // Check we have at least <!-- and not <!--> or <!--->.
+  // Check we have at least <!--
   if start + 3 > line.last || s[start + 3] != '-' {
     return None
   }
-  if start + 4 <= line.last && s[start + 4] == '>' {
-    return None
-  }
-  if start + 5 <= line.last && s[start + 4] == '-' && s[start + 5] == '>' {
-    return None
+  // <!--> and <!---> are comments
+  for k in (start + 4)..<=@cmp.minimum(start + 5, line.last) {
+    if s[k] == '>' {
+      let acc = []
+      push_span(line~, start, k, acc)
+      return Some((line, acc, k))
+    }
+    if s[k] != '-' {
+      break
+    }
   }
   let acc = []
   for line = line, start = start, k = start + 4 {
@@ -274,16 +296,10 @@ fn[A] html_comment(
       let start = first_non_blank_in_span(s, new_line)
       continue new_line, start, start
     }
-    if s[k] == '-' && s[k - 1] != '-' {
-      let last = k + 2
-      if last <= line.last && s[k + 1] == '-' {
-        break if s[last] == '>' { // And we do not end with -
-          push_span(line~, start, last, acc)
-          Some((line, acc, last))
-        } else {
-          None // In the input
-        }
-      }
+    let last = k + 2
+    if last <= line.last && s[k] == '-' && s[k + 1] == '-' && s[last] == '>' {
+      push_span(line~, start, last, acc)
+      break Some((line, acc, last))
     }
     continue line, start, k + 1
   }
