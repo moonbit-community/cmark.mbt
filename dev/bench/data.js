@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1790904995090,
+  "lastUpdate": 1790905024834,
   "repoUrl": "https://github.com/moonbit-community/cmark.mbt",
   "entries": {
     "Benchmark.js Benchmark": [
@@ -14150,6 +14150,86 @@ window.BENCHMARK_DATA = {
             "name": "cmarkNative(spec * 200)",
             "value": 0.58,
             "range": "±0.70%",
+            "unit": "ops/sec",
+            "extra": "5 samples"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "bobzhang1988@gmail.com",
+            "name": "Hongbo Zhang",
+            "username": "bobzhang"
+          },
+          "committer": {
+            "email": "bobzhang1988@gmail.com",
+            "name": "Hongbo Zhang",
+            "username": "bobzhang"
+          },
+          "distinct": true,
+          "id": "123740b02a6a88e9e50c7997a6dc11f515e6ac45",
+          "message": "Reject link reference definitions with text after the title\n\nThe check that only blanks follow the title of a link reference\ndefinition started after the end of the line instead of after the\ntitle, so it always succeeded: `[foo]: /url \"title\" ok` was a\ndefinition (spec examples 209 and 210).",
+          "timestamp": "2026-10-02T09:34:18+08:00",
+          "tree_id": "0b49040ecc0e60c45195b5d3ec637adcca89e9a3",
+          "url": "https://github.com/moonbit-community/cmark.mbt/commit/123740b02a6a88e9e50c7997a6dc11f515e6ac45"
+        },
+        "date": 1790905024384,
+        "tool": "benchmarkjs",
+        "benches": [
+          {
+            "name": "cmarkJS(spec * 100)",
+            "value": 0.59,
+            "range": "±14.47%",
+            "unit": "ops/sec",
+            "extra": "5 samples"
+          },
+          {
+            "name": "cmarkJS(spec * 200)",
+            "value": 0.29,
+            "range": "±39.79%",
+            "unit": "ops/sec",
+            "extra": "5 samples"
+          },
+          {
+            "name": "cmarkWASM1(spec * 100)",
+            "value": 0.63,
+            "range": "±0.90%",
+            "unit": "ops/sec",
+            "extra": "5 samples"
+          },
+          {
+            "name": "cmarkWASM1(spec * 200)",
+            "value": 0.32,
+            "range": "±2.08%",
+            "unit": "ops/sec",
+            "extra": "5 samples"
+          },
+          {
+            "name": "cmarkWASM(spec * 100)",
+            "value": 0.89,
+            "range": "±3.63%",
+            "unit": "ops/sec",
+            "extra": "5 samples"
+          },
+          {
+            "name": "cmarkWASM(spec * 200)",
+            "value": 0.43,
+            "range": "±3.63%",
+            "unit": "ops/sec",
+            "extra": "5 samples"
+          },
+          {
+            "name": "cmarkNative(spec * 100)",
+            "value": 1.16,
+            "range": "±0.26%",
+            "unit": "ops/sec",
+            "extra": "5 samples"
+          },
+          {
+            "name": "cmarkNative(spec * 200)",
+            "value": 0.58,
+            "range": "±0.50%",
             "unit": "ops/sec",
             "extra": "5 samples"
           }
