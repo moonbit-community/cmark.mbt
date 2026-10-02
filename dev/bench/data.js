@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1790905089258,
+  "lastUpdate": 1790905147049,
   "repoUrl": "https://github.com/moonbit-community/cmark.mbt",
   "entries": {
     "Benchmark.js Benchmark": [
@@ -14310,6 +14310,86 @@ window.BENCHMARK_DATA = {
             "name": "cmarkNative(spec * 200)",
             "value": 0.58,
             "range": "±0.97%",
+            "unit": "ops/sec",
+            "extra": "5 samples"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "bobzhang1988@gmail.com",
+            "name": "Hongbo Zhang",
+            "username": "bobzhang"
+          },
+          "committer": {
+            "email": "bobzhang1988@gmail.com",
+            "name": "Hongbo Zhang",
+            "username": "bobzhang"
+          },
+          "distinct": true,
+          "id": "74f76bd299bfcaa10a034007122be4ce84205f06",
+          "message": "Treat a line starting with an HTML tag as a lazy continuation line\n\nHTML blocks of type 7 (a line starting with a complete open or closing\ntag) can't interrupt a paragraph. In a block quote, list item or\nfootnote whose last block is a paragraph, such a line must therefore be\na lazy continuation line of that paragraph. It started an HTML block\ninstead: `- a\\n</kbd>` closed the list.",
+          "timestamp": "2026-10-02T09:36:20+08:00",
+          "tree_id": "ee23de81f3798964f909110f96c21a5206a1e3e2",
+          "url": "https://github.com/moonbit-community/cmark.mbt/commit/74f76bd299bfcaa10a034007122be4ce84205f06"
+        },
+        "date": 1790905146048,
+        "tool": "benchmarkjs",
+        "benches": [
+          {
+            "name": "cmarkJS(spec * 100)",
+            "value": 0.57,
+            "range": "±17.90%",
+            "unit": "ops/sec",
+            "extra": "5 samples"
+          },
+          {
+            "name": "cmarkJS(spec * 200)",
+            "value": 0.28,
+            "range": "±42.13%",
+            "unit": "ops/sec",
+            "extra": "5 samples"
+          },
+          {
+            "name": "cmarkWASM1(spec * 100)",
+            "value": 0.61,
+            "range": "±2.02%",
+            "unit": "ops/sec",
+            "extra": "5 samples"
+          },
+          {
+            "name": "cmarkWASM1(spec * 200)",
+            "value": 0.31,
+            "range": "±1.88%",
+            "unit": "ops/sec",
+            "extra": "5 samples"
+          },
+          {
+            "name": "cmarkWASM(spec * 100)",
+            "value": 0.87,
+            "range": "±3.34%",
+            "unit": "ops/sec",
+            "extra": "5 samples"
+          },
+          {
+            "name": "cmarkWASM(spec * 200)",
+            "value": 0.42,
+            "range": "±3.92%",
+            "unit": "ops/sec",
+            "extra": "5 samples"
+          },
+          {
+            "name": "cmarkNative(spec * 100)",
+            "value": 1.13,
+            "range": "±0.60%",
+            "unit": "ops/sec",
+            "extra": "5 samples"
+          },
+          {
+            "name": "cmarkNative(spec * 200)",
+            "value": 0.57,
+            "range": "±0.74%",
             "unit": "ops/sec",
             "extra": "5 samples"
           }
