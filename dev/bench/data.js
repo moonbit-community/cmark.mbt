@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1790557476625,
+  "lastUpdate": 1790904734565,
   "repoUrl": "https://github.com/moonbit-community/cmark.mbt",
   "entries": {
     "Benchmark.js Benchmark": [
@@ -13910,6 +13910,86 @@ window.BENCHMARK_DATA = {
             "name": "cmarkNative(spec * 200)",
             "value": 0.57,
             "range": "±1.10%",
+            "unit": "ops/sec",
+            "extra": "5 samples"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "bobzhang1988@gmail.com",
+            "name": "Hongbo Zhang",
+            "username": "bobzhang"
+          },
+          "committer": {
+            "email": "bobzhang1988@gmail.com",
+            "name": "Hongbo Zhang",
+            "username": "bobzhang"
+          },
+          "distinct": true,
+          "id": "39d94de21d36a80105de73cbcef6f684238a1853",
+          "message": "Keep blanks after [ in link text\n\nThe last pass strips the leading blanks of each line of a paragraph.\nFor link text it also stripped the blanks after the opening [, which\nare not at the start of a line: `[ foo](/u)` gave <a href=\"/u\">foo</a>\ninstead of <a href=\"/u\"> foo</a>.",
+          "timestamp": "2026-10-02T09:30:24+08:00",
+          "tree_id": "e4882f4d15956c776d57c5eedade9b3978c4490d",
+          "url": "https://github.com/moonbit-community/cmark.mbt/commit/39d94de21d36a80105de73cbcef6f684238a1853"
+        },
+        "date": 1790904733819,
+        "tool": "benchmarkjs",
+        "benches": [
+          {
+            "name": "cmarkJS(spec * 100)",
+            "value": 0.95,
+            "range": "±14.43%",
+            "unit": "ops/sec",
+            "extra": "5 samples"
+          },
+          {
+            "name": "cmarkJS(spec * 200)",
+            "value": 0.46,
+            "range": "±55.43%",
+            "unit": "ops/sec",
+            "extra": "5 samples"
+          },
+          {
+            "name": "cmarkWASM1(spec * 100)",
+            "value": 0.96,
+            "range": "±1.61%",
+            "unit": "ops/sec",
+            "extra": "5 samples"
+          },
+          {
+            "name": "cmarkWASM1(spec * 200)",
+            "value": 0.48,
+            "range": "±5.52%",
+            "unit": "ops/sec",
+            "extra": "5 samples"
+          },
+          {
+            "name": "cmarkWASM(spec * 100)",
+            "value": 1.37,
+            "range": "±7.90%",
+            "unit": "ops/sec",
+            "extra": "5 samples"
+          },
+          {
+            "name": "cmarkWASM(spec * 200)",
+            "value": 0.63,
+            "range": "±9.75%",
+            "unit": "ops/sec",
+            "extra": "5 samples"
+          },
+          {
+            "name": "cmarkNative(spec * 100)",
+            "value": 1.72,
+            "range": "±0.46%",
+            "unit": "ops/sec",
+            "extra": "5 samples"
+          },
+          {
+            "name": "cmarkNative(spec * 200)",
+            "value": 0.86,
+            "range": "±1.68%",
             "unit": "ops/sec",
             "extra": "5 samples"
           }
