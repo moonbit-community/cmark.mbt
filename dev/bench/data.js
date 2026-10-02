@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1790905355317,
+  "lastUpdate": 1790905430134,
   "repoUrl": "https://github.com/moonbit-community/cmark.mbt",
   "entries": {
     "Benchmark.js Benchmark": [
@@ -14630,6 +14630,86 @@ window.BENCHMARK_DATA = {
             "name": "cmarkNative(spec * 200)",
             "value": 0.61,
             "range": "±1.42%",
+            "unit": "ops/sec",
+            "extra": "5 samples"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "bobzhang1988@gmail.com",
+            "name": "Hongbo Zhang",
+            "username": "bobzhang"
+          },
+          "committer": {
+            "email": "bobzhang1988@gmail.com",
+            "name": "Hongbo Zhang",
+            "username": "bobzhang"
+          },
+          "distinct": true,
+          "id": "7ab3f4ce4a314baa862cd466e2b21e51362ec9c5",
+          "message": "Concatenate the text segments of image alt text\n\nThe HTML renderer joined the plain text segments of each line of an\nimage description with newlines and the lines with nothing, the reverse\nof what is intended: `![foo *bar*](/u)` gave alt=\"foo \\nbar\" instead of\nalt=\"foo bar\" (spec examples 520, 573-577, 585 and 589). Segments are\nnow concatenated and lines (hard breaks) separated by newlines.",
+          "timestamp": "2026-10-02T09:40:56+08:00",
+          "tree_id": "7e458a76721b74760edf1a0283065d4e0b8c838b",
+          "url": "https://github.com/moonbit-community/cmark.mbt/commit/7ab3f4ce4a314baa862cd466e2b21e51362ec9c5"
+        },
+        "date": 1790905429324,
+        "tool": "benchmarkjs",
+        "benches": [
+          {
+            "name": "cmarkJS(spec * 100)",
+            "value": 0.54,
+            "range": "±26.10%",
+            "unit": "ops/sec",
+            "extra": "5 samples"
+          },
+          {
+            "name": "cmarkJS(spec * 200)",
+            "value": 0.25,
+            "range": "±56.37%",
+            "unit": "ops/sec",
+            "extra": "5 samples"
+          },
+          {
+            "name": "cmarkWASM1(spec * 100)",
+            "value": 0.58,
+            "range": "±1.59%",
+            "unit": "ops/sec",
+            "extra": "5 samples"
+          },
+          {
+            "name": "cmarkWASM1(spec * 200)",
+            "value": 0.29,
+            "range": "±3.11%",
+            "unit": "ops/sec",
+            "extra": "5 samples"
+          },
+          {
+            "name": "cmarkWASM(spec * 100)",
+            "value": 0.81,
+            "range": "±10.71%",
+            "unit": "ops/sec",
+            "extra": "5 samples"
+          },
+          {
+            "name": "cmarkWASM(spec * 200)",
+            "value": 0.4,
+            "range": "±3.64%",
+            "unit": "ops/sec",
+            "extra": "5 samples"
+          },
+          {
+            "name": "cmarkNative(spec * 100)",
+            "value": 1.04,
+            "range": "±1.56%",
+            "unit": "ops/sec",
+            "extra": "5 samples"
+          },
+          {
+            "name": "cmarkNative(spec * 200)",
+            "value": 0.52,
+            "range": "±1.21%",
             "unit": "ops/sec",
             "extra": "5 samples"
           }
