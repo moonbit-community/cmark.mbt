@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1790905595692,
+  "lastUpdate": 1790905695772,
   "repoUrl": "https://github.com/moonbit-community/cmark.mbt",
   "entries": {
     "Benchmark.js Benchmark": [
@@ -14870,6 +14870,86 @@ window.BENCHMARK_DATA = {
             "name": "cmarkNative(spec * 200)",
             "value": 0.56,
             "range": "±1.39%",
+            "unit": "ops/sec",
+            "extra": "5 samples"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "bobzhang1988@gmail.com",
+            "name": "Hongbo Zhang",
+            "username": "bobzhang"
+          },
+          "committer": {
+            "email": "bobzhang1988@gmail.com",
+            "name": "Hongbo Zhang",
+            "username": "bobzhang"
+          },
+          "distinct": true,
+          "id": "5fea43c3aa0c42e5071b9c5b53ebb548951b1973",
+          "message": "Skip unterminated comments known not to end\n\nWith comments ending at the first -->, an unterminated <!-- scans to\nthe end of the paragraph, so many unterminated comments made parsing\nquadratic. Add comments to the kinds of raw HTML that are skipped once\none of them is found not to end. With the CommonMark 0.31 rule this is\nsound: if a comment at p has no --> after it, neither has one at q > p.\n\nFound by Codex review.",
+          "timestamp": "2026-10-02T09:45:27+08:00",
+          "tree_id": "87552924b12ed90bd76c3c54d7aeb0e288a812e1",
+          "url": "https://github.com/moonbit-community/cmark.mbt/commit/5fea43c3aa0c42e5071b9c5b53ebb548951b1973"
+        },
+        "date": 1790905694784,
+        "tool": "benchmarkjs",
+        "benches": [
+          {
+            "name": "cmarkJS(spec * 100)",
+            "value": 0.57,
+            "range": "±24.96%",
+            "unit": "ops/sec",
+            "extra": "5 samples"
+          },
+          {
+            "name": "cmarkJS(spec * 200)",
+            "value": 0.28,
+            "range": "±41.50%",
+            "unit": "ops/sec",
+            "extra": "5 samples"
+          },
+          {
+            "name": "cmarkWASM1(spec * 100)",
+            "value": 0.61,
+            "range": "±0.73%",
+            "unit": "ops/sec",
+            "extra": "5 samples"
+          },
+          {
+            "name": "cmarkWASM1(spec * 200)",
+            "value": 0.31,
+            "range": "±2.34%",
+            "unit": "ops/sec",
+            "extra": "5 samples"
+          },
+          {
+            "name": "cmarkWASM(spec * 100)",
+            "value": 0.85,
+            "range": "±7.16%",
+            "unit": "ops/sec",
+            "extra": "5 samples"
+          },
+          {
+            "name": "cmarkWASM(spec * 200)",
+            "value": 0.4,
+            "range": "±19.28%",
+            "unit": "ops/sec",
+            "extra": "5 samples"
+          },
+          {
+            "name": "cmarkNative(spec * 100)",
+            "value": 1.13,
+            "range": "±0.15%",
+            "unit": "ops/sec",
+            "extra": "5 samples"
+          },
+          {
+            "name": "cmarkNative(spec * 200)",
+            "value": 0.56,
+            "range": "±0.44%",
             "unit": "ops/sec",
             "extra": "5 samples"
           }
