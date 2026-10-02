@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1790904734565,
+  "lastUpdate": 1790904935208,
   "repoUrl": "https://github.com/moonbit-community/cmark.mbt",
   "entries": {
     "Benchmark.js Benchmark": [
@@ -13990,6 +13990,86 @@ window.BENCHMARK_DATA = {
             "name": "cmarkNative(spec * 200)",
             "value": 0.86,
             "range": "±1.68%",
+            "unit": "ops/sec",
+            "extra": "5 samples"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "bobzhang1988@gmail.com",
+            "name": "Hongbo Zhang",
+            "username": "bobzhang"
+          },
+          "committer": {
+            "email": "bobzhang1988@gmail.com",
+            "name": "Hongbo Zhang",
+            "username": "bobzhang"
+          },
+          "distinct": true,
+          "id": "f019054c8a904788f1bccb52f1a34589f66f6233",
+          "message": "Open a code span after an escaped backtick\n\nA backtick string preceded by a backslash could never open a code span.\nOnly its first backtick is escaped, the rest of the string can open one:\nthe Markdown \\``a` must render as `<code>a</code>.",
+          "timestamp": "2026-10-02T09:32:51+08:00",
+          "tree_id": "ecdf1819016d396b8c9303c1cb2510139a82cdc5",
+          "url": "https://github.com/moonbit-community/cmark.mbt/commit/f019054c8a904788f1bccb52f1a34589f66f6233"
+        },
+        "date": 1790904934168,
+        "tool": "benchmarkjs",
+        "benches": [
+          {
+            "name": "cmarkJS(spec * 100)",
+            "value": 0.59,
+            "range": "±22.49%",
+            "unit": "ops/sec",
+            "extra": "5 samples"
+          },
+          {
+            "name": "cmarkJS(spec * 200)",
+            "value": 0.28,
+            "range": "±37.87%",
+            "unit": "ops/sec",
+            "extra": "5 samples"
+          },
+          {
+            "name": "cmarkWASM1(spec * 100)",
+            "value": 0.69,
+            "range": "±1.43%",
+            "unit": "ops/sec",
+            "extra": "5 samples"
+          },
+          {
+            "name": "cmarkWASM1(spec * 200)",
+            "value": 0.34,
+            "range": "±1.90%",
+            "unit": "ops/sec",
+            "extra": "5 samples"
+          },
+          {
+            "name": "cmarkWASM(spec * 100)",
+            "value": 0.81,
+            "range": "±7.39%",
+            "unit": "ops/sec",
+            "extra": "5 samples"
+          },
+          {
+            "name": "cmarkWASM(spec * 200)",
+            "value": 0.39,
+            "range": "±9.30%",
+            "unit": "ops/sec",
+            "extra": "5 samples"
+          },
+          {
+            "name": "cmarkNative(spec * 100)",
+            "value": 1.24,
+            "range": "±0.76%",
+            "unit": "ops/sec",
+            "extra": "5 samples"
+          },
+          {
+            "name": "cmarkNative(spec * 200)",
+            "value": 0.62,
+            "range": "±3.93%",
             "unit": "ops/sec",
             "extra": "5 samples"
           }
