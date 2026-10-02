@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1790905212295,
+  "lastUpdate": 1790905297400,
   "repoUrl": "https://github.com/moonbit-community/cmark.mbt",
   "entries": {
     "Benchmark.js Benchmark": [
@@ -14470,6 +14470,86 @@ window.BENCHMARK_DATA = {
             "name": "cmarkNative(spec * 200)",
             "value": 0.58,
             "range": "±1.14%",
+            "unit": "ops/sec",
+            "extra": "5 samples"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "bobzhang1988@gmail.com",
+            "name": "Hongbo Zhang",
+            "username": "bobzhang"
+          },
+          "committer": {
+            "email": "bobzhang1988@gmail.com",
+            "name": "Hongbo Zhang",
+            "username": "bobzhang"
+          },
+          "distinct": true,
+          "id": "41dc7036e24880e96c18bbc16be2d514323fadd6",
+          "message": "Accept a value-less HTML attribute followed by a line break\n\nIn an open tag, an attribute without a value followed by a line break\nmade the tag fail to match: `attribute` had already consumed the line\nbreak with next_line to look for a `=`, but returned the old line, and\nopen_tag then required blanks before the next attribute. `<b then\\nc >`\nwas not raw HTML.\n\n`attribute` now continues on the new line and tells open_tag that the\nblanks before the next attribute were already consumed.",
+          "timestamp": "2026-10-02T09:38:37+08:00",
+          "tree_id": "5ad7c7b2fa2f08da1710cb3ca937447ea8b186af",
+          "url": "https://github.com/moonbit-community/cmark.mbt/commit/41dc7036e24880e96c18bbc16be2d514323fadd6"
+        },
+        "date": 1790905296537,
+        "tool": "benchmarkjs",
+        "benches": [
+          {
+            "name": "cmarkJS(spec * 100)",
+            "value": 0.51,
+            "range": "±30.45%",
+            "unit": "ops/sec",
+            "extra": "5 samples"
+          },
+          {
+            "name": "cmarkJS(spec * 200)",
+            "value": 0.25,
+            "range": "±47.36%",
+            "unit": "ops/sec",
+            "extra": "5 samples"
+          },
+          {
+            "name": "cmarkWASM1(spec * 100)",
+            "value": 0.58,
+            "range": "±1.70%",
+            "unit": "ops/sec",
+            "extra": "5 samples"
+          },
+          {
+            "name": "cmarkWASM1(spec * 200)",
+            "value": 0.29,
+            "range": "±1.12%",
+            "unit": "ops/sec",
+            "extra": "5 samples"
+          },
+          {
+            "name": "cmarkWASM(spec * 100)",
+            "value": 0.8,
+            "range": "±4.91%",
+            "unit": "ops/sec",
+            "extra": "5 samples"
+          },
+          {
+            "name": "cmarkWASM(spec * 200)",
+            "value": 0.38,
+            "range": "±16.04%",
+            "unit": "ops/sec",
+            "extra": "5 samples"
+          },
+          {
+            "name": "cmarkNative(spec * 100)",
+            "value": 1.03,
+            "range": "±1.10%",
+            "unit": "ops/sec",
+            "extra": "5 samples"
+          },
+          {
+            "name": "cmarkNative(spec * 200)",
+            "value": 0.52,
+            "range": "±1.85%",
             "unit": "ops/sec",
             "extra": "5 samples"
           }
