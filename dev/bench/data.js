@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1790905147049,
+  "lastUpdate": 1790905212295,
   "repoUrl": "https://github.com/moonbit-community/cmark.mbt",
   "entries": {
     "Benchmark.js Benchmark": [
@@ -14390,6 +14390,86 @@ window.BENCHMARK_DATA = {
             "name": "cmarkNative(spec * 200)",
             "value": 0.57,
             "range": "±0.74%",
+            "unit": "ops/sec",
+            "extra": "5 samples"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "bobzhang1988@gmail.com",
+            "name": "Hongbo Zhang",
+            "username": "bobzhang"
+          },
+          "committer": {
+            "email": "bobzhang1988@gmail.com",
+            "name": "Hongbo Zhang",
+            "username": "bobzhang"
+          },
+          "distinct": true,
+          "id": "ae7b1896059f8a93ff8da38f5e13b10efcf356cb",
+          "message": "Reject invalid raw HTML tags, attributes and email autolinks\n\n- Tag names must start with an ASCII letter: <33>, < a> and </1a> are\n  not raw HTML (spec examples 618 and 621).\n- Attribute names must start with an ASCII letter, _ or :, not a digit.\n- Unquoted attribute values must be non-empty: <a b=>c> and <a b=`c>\n  are not raw HTML.\n- The atext set of email autolinks had \\ where ' belongs:\n  <foo\\+@bar.example.com> is not an autolink (spec example 606).",
+          "timestamp": "2026-10-02T09:37:30+08:00",
+          "tree_id": "2a26649ab970abeef2654c5fd824cfb8b0c867b7",
+          "url": "https://github.com/moonbit-community/cmark.mbt/commit/ae7b1896059f8a93ff8da38f5e13b10efcf356cb"
+        },
+        "date": 1790905211800,
+        "tool": "benchmarkjs",
+        "benches": [
+          {
+            "name": "cmarkJS(spec * 100)",
+            "value": 0.61,
+            "range": "±21.87%",
+            "unit": "ops/sec",
+            "extra": "5 samples"
+          },
+          {
+            "name": "cmarkJS(spec * 200)",
+            "value": 0.28,
+            "range": "±76.54%",
+            "unit": "ops/sec",
+            "extra": "5 samples"
+          },
+          {
+            "name": "cmarkWASM1(spec * 100)",
+            "value": 0.62,
+            "range": "±0.89%",
+            "unit": "ops/sec",
+            "extra": "5 samples"
+          },
+          {
+            "name": "cmarkWASM1(spec * 200)",
+            "value": 0.31,
+            "range": "±1.41%",
+            "unit": "ops/sec",
+            "extra": "5 samples"
+          },
+          {
+            "name": "cmarkWASM(spec * 100)",
+            "value": 0.89,
+            "range": "±7.71%",
+            "unit": "ops/sec",
+            "extra": "5 samples"
+          },
+          {
+            "name": "cmarkWASM(spec * 200)",
+            "value": 0.43,
+            "range": "±5.53%",
+            "unit": "ops/sec",
+            "extra": "5 samples"
+          },
+          {
+            "name": "cmarkNative(spec * 100)",
+            "value": 1.14,
+            "range": "±0.45%",
+            "unit": "ops/sec",
+            "extra": "5 samples"
+          },
+          {
+            "name": "cmarkNative(spec * 200)",
+            "value": 0.58,
+            "range": "±1.14%",
             "unit": "ops/sec",
             "extra": "5 samples"
           }
