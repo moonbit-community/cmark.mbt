@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1790905024834,
+  "lastUpdate": 1790905089258,
   "repoUrl": "https://github.com/moonbit-community/cmark.mbt",
   "entries": {
     "Benchmark.js Benchmark": [
@@ -14230,6 +14230,86 @@ window.BENCHMARK_DATA = {
             "name": "cmarkNative(spec * 200)",
             "value": 0.58,
             "range": "±0.50%",
+            "unit": "ops/sec",
+            "extra": "5 samples"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "bobzhang1988@gmail.com",
+            "name": "Hongbo Zhang",
+            "username": "bobzhang"
+          },
+          "committer": {
+            "email": "bobzhang1988@gmail.com",
+            "name": "Hongbo Zhang",
+            "username": "bobzhang"
+          },
+          "distinct": true,
+          "id": "d0b8ad7ee6b89621ae337836d48b57674854f25a",
+          "message": "Match link labels with Unicode case folding\n\nLink labels were only lowercased for ASCII. The spec matches labels\nafter Unicode case folding, so [ΑΓΩ] must match [αγω] and [ẞ] must\nmatch [SS] (spec examples 206 and 540).",
+          "timestamp": "2026-10-02T09:35:23+08:00",
+          "tree_id": "e8ee0c509b75f7b90575a2e84a483009cbac983c",
+          "url": "https://github.com/moonbit-community/cmark.mbt/commit/d0b8ad7ee6b89621ae337836d48b57674854f25a"
+        },
+        "date": 1790905088303,
+        "tool": "benchmarkjs",
+        "benches": [
+          {
+            "name": "cmarkJS(spec * 100)",
+            "value": 0.62,
+            "range": "±32.15%",
+            "unit": "ops/sec",
+            "extra": "5 samples"
+          },
+          {
+            "name": "cmarkJS(spec * 200)",
+            "value": 0.28,
+            "range": "±53.33%",
+            "unit": "ops/sec",
+            "extra": "5 samples"
+          },
+          {
+            "name": "cmarkWASM1(spec * 100)",
+            "value": 0.66,
+            "range": "±0.95%",
+            "unit": "ops/sec",
+            "extra": "5 samples"
+          },
+          {
+            "name": "cmarkWASM1(spec * 200)",
+            "value": 0.33,
+            "range": "±1.32%",
+            "unit": "ops/sec",
+            "extra": "5 samples"
+          },
+          {
+            "name": "cmarkWASM(spec * 100)",
+            "value": 0.91,
+            "range": "±7.23%",
+            "unit": "ops/sec",
+            "extra": "5 samples"
+          },
+          {
+            "name": "cmarkWASM(spec * 200)",
+            "value": 0.43,
+            "range": "±5.07%",
+            "unit": "ops/sec",
+            "extra": "5 samples"
+          },
+          {
+            "name": "cmarkNative(spec * 100)",
+            "value": 1.15,
+            "range": "±1.59%",
+            "unit": "ops/sec",
+            "extra": "5 samples"
+          },
+          {
+            "name": "cmarkNative(spec * 200)",
+            "value": 0.58,
+            "range": "±0.97%",
             "unit": "ops/sec",
             "extra": "5 samples"
           }
