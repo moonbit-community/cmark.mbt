@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1790905297400,
+  "lastUpdate": 1790905355317,
   "repoUrl": "https://github.com/moonbit-community/cmark.mbt",
   "entries": {
     "Benchmark.js Benchmark": [
@@ -14550,6 +14550,86 @@ window.BENCHMARK_DATA = {
             "name": "cmarkNative(spec * 200)",
             "value": 0.52,
             "range": "±1.85%",
+            "unit": "ops/sec",
+            "extra": "5 samples"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "bobzhang1988@gmail.com",
+            "name": "Hongbo Zhang",
+            "username": "bobzhang"
+          },
+          "committer": {
+            "email": "bobzhang1988@gmail.com",
+            "name": "Hongbo Zhang",
+            "username": "bobzhang"
+          },
+          "distinct": true,
+          "id": "f6ba90312dff2bb3f53af2bec66fdb03aceb183a",
+          "message": "Do not treat an escaped backslash at the end of a line as a hard break\n\nA backslash at the end of a line is a hard line break, but not when it\nis escaped by another backslash: `a\\\\` followed by a line ending must\nrender as `a\\` and a soft break, not as a hard break.",
+          "timestamp": "2026-10-02T09:40:09+08:00",
+          "tree_id": "adbe0b8be8ab2a7b3b2a64fb6f19009ea8d93df3",
+          "url": "https://github.com/moonbit-community/cmark.mbt/commit/f6ba90312dff2bb3f53af2bec66fdb03aceb183a"
+        },
+        "date": 1790905354232,
+        "tool": "benchmarkjs",
+        "benches": [
+          {
+            "name": "cmarkJS(spec * 100)",
+            "value": 0.73,
+            "range": "±16.87%",
+            "unit": "ops/sec",
+            "extra": "5 samples"
+          },
+          {
+            "name": "cmarkJS(spec * 200)",
+            "value": 0.35,
+            "range": "±33.33%",
+            "unit": "ops/sec",
+            "extra": "5 samples"
+          },
+          {
+            "name": "cmarkWASM1(spec * 100)",
+            "value": 0.72,
+            "range": "±0.86%",
+            "unit": "ops/sec",
+            "extra": "5 samples"
+          },
+          {
+            "name": "cmarkWASM1(spec * 200)",
+            "value": 0.36,
+            "range": "±2.82%",
+            "unit": "ops/sec",
+            "extra": "5 samples"
+          },
+          {
+            "name": "cmarkWASM(spec * 100)",
+            "value": 0.97,
+            "range": "±5.95%",
+            "unit": "ops/sec",
+            "extra": "5 samples"
+          },
+          {
+            "name": "cmarkWASM(spec * 200)",
+            "value": 0.48,
+            "range": "±4.93%",
+            "unit": "ops/sec",
+            "extra": "5 samples"
+          },
+          {
+            "name": "cmarkNative(spec * 100)",
+            "value": 1.23,
+            "range": "±2.14%",
+            "unit": "ops/sec",
+            "extra": "5 samples"
+          },
+          {
+            "name": "cmarkNative(spec * 200)",
+            "value": 0.61,
+            "range": "±1.42%",
             "unit": "ops/sec",
             "extra": "5 samples"
           }
