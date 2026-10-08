@@ -5,6 +5,7 @@ using @cmark {type LabelKey}
 priv struct State {
   safe : Bool
   backend_blocks : Bool
+  node_attributes : NodeAttributesFn?
   ids : StringSet
   mut footnote_count : Int
   footnotes : Map[LabelKey, HtmlRenderFootnote]
@@ -59,12 +60,14 @@ fn backend_blocks(c : Context) -> Bool {
 fn init_context(
   backend_blocks? : Bool = false,
   safe~ : Bool,
+  node_attributes? : NodeAttributesFn,
   c : Context,
   _doc : Doc,
 ) -> Unit {
   let st = {
     safe,
     backend_blocks,
+    node_attributes,
     ids: Set([]),
     footnote_count: 0,
     footnotes: Map([]),
@@ -595,14 +598,24 @@ fn inline(c : Context, i : @cmark.Inline) -> Bool raise {
 // Block rendering
 
 ///|
-fn block_quote(c : Context, bq : @cmark.BlockQuote) -> Unit raise {
-  c.b.write_string("<blockquote>\n")
+fn block_quote(
+  c : Context,
+  bq : @cmark.BlockQuote,
+  meta : @cmark_base.Meta,
+) -> Unit raise {
+  c.b.write_string("<blockquote")
+  write_node_attributes(c, meta, "blockquote")
+  c.b.write_string(">\n")
   c.block(bq.block)
   c.b.write_string("</blockquote>\n")
 }
 
 ///|
-fn code_block(c : Context, cb : @cmark.CodeBlock) -> Unit {
+fn code_block(
+  c : Context,
+  cb : @cmark.CodeBlock,
+  meta : @cmark_base.Meta,
+) -> Unit raise {
   let i = cb.info_string.map(fn(i) { i.v })
   let lang = i.bind(@cmark.CodeBlock::language_of_info_string)
   let line = fn(l : @cmark.StringNode) {
@@ -617,7 +630,9 @@ fn code_block(c : Context, cb : @cmark.CodeBlock) -> Unit {
       return
     }
   }
-  c.b.write_string("<pre><code")
+  c.b.write_string("<pre")
+  write_node_attributes(c, meta, "pre")
+  c.b.write_string("><code")
   if lang is Some((lang, _env)) {
     c.b.write_string(" class=\"language-")
     html_escaped_string(c, lang)
@@ -631,9 +646,19 @@ fn code_block(c : Context, cb : @cmark.CodeBlock) -> Unit {
 }
 
 ///|
-fn heading(c : Context, h : @cmark.BlockHeading) -> Unit raise {
+fn heading(
+  c : Context,
+  h : @cmark.BlockHeading,
+  meta : @cmark_base.Meta,
+) -> Unit raise {
   c.b.write_string("<h")
   c.b.write_object(h.level)
+  write_node_attributes(
+    c,
+    meta,
+    "h\{h.level}",
+    reserved=if h.id is Some(_) { ["id"] } else { [] },
+  )
   match h.id {
     None => c.b.write_char('>')
     Some(Auto(id) | Id(id)) => {
@@ -652,8 +677,14 @@ fn heading(c : Context, h : @cmark.BlockHeading) -> Unit raise {
 }
 
 ///|
-fn paragraph(c : Context, p : @cmark.BlockParagraph) -> Unit raise {
-  c.b.write_string("<p>")
+fn paragraph(
+  c : Context,
+  p : @cmark.BlockParagraph,
+  meta : @cmark_base.Meta,
+) -> Unit raise {
+  c.b.write_string("<p")
+  write_node_attributes(c, meta, "p")
+  c.b.write_string(">")
   c.inline(p.inline)
   c.b.write_string("</p>\n")
 }
@@ -694,7 +725,9 @@ fn list_item(
   c : Context,
   i : @cmark.Node[@cmark.ListItem],
 ) -> Unit raise {
-  c.b.write_string("<li>")
+  c.b.write_string("<li")
+  write_node_attributes(c, i.meta, "li")
+  c.b.write_string(">")
   guard i.v.ext_task_marker is Some(mark) else {
     item_block(tight~, c, i.v.block)
     c.b.write_string("</li>\n")
@@ -725,11 +758,17 @@ fn list_item(
 }
 
 ///|
-fn list(c : Context, l : @cmark.BlockList) -> Unit raise {
+fn list(
+  c : Context,
+  l : @cmark.BlockList,
+  meta : @cmark_base.Meta,
+) -> Unit raise {
   let tight = l.tight
   match l.ty {
     Unordered(_) => {
-      c.b.write_string("<ul>\n")
+      c.b.write_string("<ul")
+      write_node_attributes(c, meta, "ul")
+      c.b.write_string(">\n")
       for i in l.items {
         list_item(tight~, c, i)
       }
@@ -737,6 +776,12 @@ fn list(c : Context, l : @cmark.BlockList) -> Unit raise {
     }
     Ordered(start, _) => {
       c.b.write_string("<ol")
+      write_node_attributes(
+        c,
+        meta,
+        "ol",
+        reserved=if start == 1 { [] } else { ["start"] },
+      )
       if start == 1 {
         c.b.write_string(">\n")
       } else {
@@ -766,8 +811,10 @@ fn html_block(c : Context, html : @cmark.HtmlBlock) -> Unit {
 }
 
 ///|
-fn thematic_break(c : Context) -> Unit {
-  c.b.write_string("<hr>\n")
+fn thematic_break(c : Context, meta : @cmark_base.Meta) -> Unit raise {
+  c.b.write_string("<hr")
+  write_node_attributes(c, meta, "hr")
+  c.b.write_string(">\n")
 }
 
 ///|
@@ -781,10 +828,23 @@ fn math_block(c : Context, cb : @cmark.CodeBlock) -> Unit {
 }
 
 ///|
-fn table(c : Context, t : @cmark.Table) -> Unit raise {
-  fn start(c : Context, align : @cmark.TableAlign?, tag) {
+fn table(c : Context, t : @cmark.Table, meta : @cmark_base.Meta) -> Unit raise {
+  fn start(
+    c : Context,
+    align : @cmark.TableAlign?,
+    tag,
+    meta : @cmark_base.Meta?,
+  ) raise {
     c.b.write_char('<')
     c.b.write_string(tag)
+    if meta is Some(meta) {
+      write_node_attributes(
+        c,
+        meta,
+        tag,
+        reserved=if align is Some(_) { ["class"] } else { [] },
+      )
+    }
     match align {
       None => c.b.write_char('>')
       Some(Left) => c.b.write_string(" class=\"left\">")
@@ -804,46 +864,48 @@ fn table(c : Context, t : @cmark.Table) -> Unit raise {
     tag,
     align : ArrayView[@cmark.Node[@cmark.TableSep]],
     count,
-    cs : ArrayView[(_, _)],
+    cs : ArrayView[(@cmark.Inline, @cmark.TableCellLayout)],
   ) raise {
     match (align, cs) {
       ([{ v, .. }, .. align], [(col, _), .. cs]) => {
-        start(c, v.0.0, tag)
+        start(c, v.0.0, tag, Some(col.meta()))
         c.inline(col)
         close(c, tag)
         cols(c, tag, align, count - 1, cs)
       }
       ([{ v, .. }, .. align], []) => {
-        start(c, v.0.0, tag)
+        start(c, v.0.0, tag, None)
         close(c, tag)
         cols(c, tag, align, count - 1, [][:])
       }
       ([], [(col, _), .. cs]) => {
-        start(c, None, tag)
+        start(c, None, tag, Some(col.meta()))
         c.inline(col)
         close(c, tag)
         cols(c, tag, [][:], count - 1, cs)
       }
       ([], []) =>
         for _ in 0..<count {
-          start(c, None, tag)
+          start(c, None, tag, None)
           close(c, tag)
         }
     }
   }
 
-  fn row(c : Context, tag, align, count, cs) raise {
-    c.b.write_string("<tr>\n")
+  fn row(c : Context, meta, tag, align, count, cs) raise {
+    c.b.write_string("<tr")
+    write_node_attributes(c, meta, "tr")
+    c.b.write_string(">\n")
     cols(c, tag, align, count, cs)
     c.b.write_string("</tr>\n")
   }
 
-  fn header(c : Context, count, align, cols) raise {
-    row(c, "th", align, count, cols)
+  fn header(c : Context, meta, count, align, cols) raise {
+    row(c, meta, "th", align, count, cols)
   }
 
-  fn data(c : Context, count, align, cols) raise {
-    row(c, "td", align, count, cols)
+  fn data(c : Context, meta, count, align, cols) raise {
+    row(c, meta, "td", align, count, cols)
   }
 
   fn rows(
@@ -853,16 +915,16 @@ fn table(c : Context, t : @cmark.Table) -> Unit raise {
     rs : ArrayView[(@cmark.Node[@cmark.TableRow], _)],
   ) raise {
     match rs {
-      [({ v: Header(cols), .. }, _), .. rs] => {
+      [({ v: Header(cols), meta, }, _), .. rs] => {
         let (align, rs) = match rs {
           [({ v: Sep(align), .. }, _), .. rs] => (align.to_array()[:], rs)
           _ => (align, rs)
         }
-        header(c, col_count, align, cols.to_array()[:])
+        header(c, meta, col_count, align, cols.to_array()[:])
         rows(c, col_count, align, rs)
       }
-      [({ v: Data(cols), .. }, _), .. rs] => {
-        data(c, col_count, align, cols.to_array()[:])
+      [({ v: Data(cols), meta, }, _), .. rs] => {
+        data(c, meta, col_count, align, cols.to_array()[:])
         rows(c, col_count, align, rs)
       }
       [({ v: Sep(align), .. }, _), .. rs] =>
@@ -871,7 +933,9 @@ fn table(c : Context, t : @cmark.Table) -> Unit raise {
     }
   }
 
-  c.b.write_string("<div role=\"region\"><table>\n")
+  c.b.write_string("<div role=\"region\"")
+  write_node_attributes(c, meta, "div", reserved=["role"])
+  c.b.write_string("><table>\n")
   rows(c, t.col_count, [][:], t.rows.to_array()[:])
   c.b.write_string("</table></div>")
 }
@@ -879,19 +943,19 @@ fn table(c : Context, t : @cmark.Table) -> Unit raise {
 ///|
 fn block(c : Context, b : @cmark.Block) -> Bool raise {
   match b {
-    BlockQuote(bq) => block_quote(c, bq.v)
+    BlockQuote(bq) => block_quote(c, bq.v, bq.meta)
     Blocks(bs) =>
       for b in bs.v {
         c.block(b)
       }
-    CodeBlock(cb) => code_block(c, cb.v)
-    Heading(h) => heading(c, h.v)
+    CodeBlock(cb) => code_block(c, cb.v, cb.meta)
+    Heading(h) => heading(c, h.v, h.meta)
     HtmlBlock(lines) => html_block(c, lines.v)
-    List(l) => list(c, l.v)
-    Paragraph(p) => paragraph(c, p.v)
-    ThematicBreak(_) => thematic_break(c)
+    List(l) => list(c, l.v, l.meta)
+    Paragraph(p) => paragraph(c, p.v, p.meta)
+    ThematicBreak(node) => thematic_break(c, node.meta)
     ExtMathBlock(cb) => math_block(c, cb.v)
-    ExtTable(t) => table(c, t.v)
+    ExtTable(t) => table(c, t.v, t.meta)
     BlankLine(_) | LinkRefDefinition(_) | ExtFootnoteDefinition(_) => ()
   }
   true
@@ -902,8 +966,10 @@ fn block(c : Context, b : @cmark.Block) -> Bool raise {
 ///|
 fn xhtml_block(c : Context, b : @cmark.Block) -> Bool raise {
   match b {
-    ThematicBreak(_) => {
-      c.b.write_string("<hr />\n")
+    ThematicBreak(node) => {
+      c.b.write_string("<hr")
+      write_node_attributes(c, node.meta, "hr")
+      c.b.write_string(" />\n")
       true
     }
     _ => block(c, b)
@@ -981,12 +1047,17 @@ fn doc(c : Context, d : Doc) -> Bool raise {
 ///   link and image destinations are cleared.
 /// - `backend_blocks` — when `true`, fenced code blocks whose info string
 ///   starts with `=` are treated as backend-specific blocks (e.g. `=html`).
+/// - `node_attributes` — additional attributes on source-owning block, list-item,
+///   and table-row/cell elements; values are HTML-escaped. See `NodeAttributesFn`.
 pub fn renderer(
   backend_blocks? : Bool = false,
   safe~ : Bool,
+  node_attributes? : NodeAttributesFn,
 ) -> @cmark_renderer.Renderer {
   @cmark_renderer.Renderer::new(
-    init_context=fn(ctx, doc) { init_context(backend_blocks~, safe~, ctx, doc) },
+    init_context=fn(ctx, doc) {
+      init_context(backend_blocks~, safe~, node_attributes?, ctx, doc)
+    },
     inline~,
     block~,
     doc~,
@@ -998,9 +1069,12 @@ pub fn renderer(
 pub fn xhtml_renderer(
   backend_blocks? : Bool = false,
   safe~ : Bool,
+  node_attributes? : NodeAttributesFn,
 ) -> @cmark_renderer.Renderer {
   @cmark_renderer.Renderer::new(
-    init_context=fn(ctx, doc) { init_context(backend_blocks~, safe~, ctx, doc) },
+    init_context=fn(ctx, doc) {
+      init_context(backend_blocks~, safe~, node_attributes?, ctx, doc)
+    },
     inline=xhtml_inline,
     block=xhtml_block,
     doc~,
@@ -1012,9 +1086,10 @@ pub fn xhtml_renderer(
 pub fn from_doc(
   backend_blocks? : Bool = false,
   safe~ : Bool,
+  node_attributes? : NodeAttributesFn,
   doc : Doc,
 ) -> String raise {
-  renderer(backend_blocks~, safe~).doc_to_string(doc)
+  renderer(backend_blocks~, safe~, node_attributes?).doc_to_string(doc)
 }
 
 ///|
@@ -1033,7 +1108,13 @@ pub fn render(
   backend_blocks? : Bool = false,
   safe? : Bool = true,
   strict? : Bool = true,
+  node_attributes? : NodeAttributesFn,
   s : String,
 ) -> String raise {
-  from_doc(backend_blocks~, safe~, @cmark.Doc::from_string(s, strict~))
+  from_doc(
+    backend_blocks~,
+    safe~,
+    node_attributes?,
+    @cmark.Doc::from_string(s, strict~),
+  )
 }
