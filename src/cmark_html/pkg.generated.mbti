@@ -3,23 +3,25 @@ package "moonbit-community/cmark/cmark_html"
 
 import {
   "moonbit-community/cmark/cmark",
+  "moonbit-community/cmark/cmark_base",
   "moonbit-community/cmark/cmark_renderer",
 }
 
 // Values
-pub fn from_doc(backend_blocks? : Bool, safe~ : Bool, @cmark.Doc) -> String raise
+pub fn from_doc(backend_blocks? : Bool, safe~ : Bool, node_attributes? : NodeAttributesFn, @cmark.Doc) -> String raise
 
-pub fn render(backend_blocks? : Bool, safe? : Bool, strict? : Bool, String) -> String raise
+pub fn render(backend_blocks? : Bool, safe? : Bool, strict? : Bool, node_attributes? : NodeAttributesFn, String) -> String raise
 
-pub fn renderer(backend_blocks? : Bool, safe~ : Bool) -> @cmark_renderer.Renderer
+pub fn renderer(backend_blocks? : Bool, safe~ : Bool, node_attributes? : NodeAttributesFn) -> @cmark_renderer.Renderer
 
 pub fn safe(@cmark_renderer.Context) -> Bool
 
-pub fn xhtml_renderer(backend_blocks? : Bool, safe~ : Bool) -> @cmark_renderer.Renderer
+pub fn xhtml_renderer(backend_blocks? : Bool, safe~ : Bool, node_attributes? : NodeAttributesFn) -> @cmark_renderer.Renderer
 
 // Errors
 
 // Types and methods
+pub(all) struct NodeAttributesFn((@cmark_base.Meta, String) -> Array[(String, String)] raise)
 
 // Type aliases
 
