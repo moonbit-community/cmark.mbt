@@ -28,12 +28,9 @@ fn write_node_attributes(
   tag : String,
   reserved? : Array[String] = [],
 ) -> Unit raise {
-  guard c.state is Some(EState({ node_attributes, .. })) else {
-    raise @cmark_renderer.RenderError(
-      "HTML renderer context is not initialized",
-    )
+  guard c.state is Some(EState({ node_attributes: Some(hook), .. })) else {
+    return
   }
-  guard node_attributes is Some(hook) else { return }
   let names : Set[String] = Set::from_array(reserved)
   for (name, value) in hook(meta, tag) {
     guard attribute_name_is_valid(name) else {

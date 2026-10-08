@@ -232,6 +232,30 @@ test "empty attributes preserve default HTML and XHTML output" {
 }
 
 ///|
+test "direct block rendering without node attributes preserves HTML and XHTML output" {
+  for
+    (renderer, rule) in [
+      (@cmark_html.renderer(safe=true), "<hr>\n"),
+      (@cmark_html.xhtml_renderer(safe=true), "<hr />\n"),
+    ] {
+    for
+      (source, expected) in [
+        ("plain", "<p>plain</p>\n"),
+        ("# heading", "<h1>heading</h1>\n"),
+        ("***", rule),
+        ("- item", "<ul>\n<li>item</li>\n</ul>\n"),
+        ("3. item", "<ol start=\"3\">\n<li>item</li>\n</ol>\n"),
+      ] {
+      let doc = @cmark.Doc::from_string(source)
+      let output = StringBuilder()
+      let context = @cmark_renderer.Context::new(renderer, output)
+      context.block(doc.block)
+      assert_eq(output.to_string(), expected)
+    }
+  }
+}
+
+///|
 test "node attributes compose with overrides and survive renderer reuse" {
   let doc = @cmark.Doc::from_string(
     "# Heading\n\nplain\n\n```text\ncode\n```",
