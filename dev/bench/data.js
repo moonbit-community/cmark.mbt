@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1791444141769,
+  "lastUpdate": 1791446334384,
   "repoUrl": "https://github.com/moonbit-community/cmark.mbt",
   "entries": {
     "Benchmark.js Benchmark": [
@@ -15350,6 +15350,86 @@ window.BENCHMARK_DATA = {
             "name": "cmarkNative(spec * 200)",
             "value": 0.7,
             "range": "±3.19%",
+            "unit": "ops/sec",
+            "extra": "5 samples"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "71200607+bzy-debug@users.noreply.github.com",
+            "name": "Bao Zhiyuan",
+            "username": "bzy-debug"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "90fbab35a4e1ddbe2dfcd7839f130843a8ee3c38",
+          "message": "Fix cancelled task list strikethrough closing tag (#171)\n\nCo-authored-by: Bao Zhiyuan <baozhiyuan@idea.edu.cn>",
+          "timestamp": "2026-10-08T15:56:56+08:00",
+          "tree_id": "5ebbe865fa344852872b1d04af263110234c8b07",
+          "url": "https://github.com/moonbit-community/cmark.mbt/commit/90fbab35a4e1ddbe2dfcd7839f130843a8ee3c38"
+        },
+        "date": 1791446333544,
+        "tool": "benchmarkjs",
+        "benches": [
+          {
+            "name": "cmarkJS(spec * 100)",
+            "value": 0.88,
+            "range": "±22.49%",
+            "unit": "ops/sec",
+            "extra": "5 samples"
+          },
+          {
+            "name": "cmarkJS(spec * 200)",
+            "value": 0.42,
+            "range": "±37.81%",
+            "unit": "ops/sec",
+            "extra": "5 samples"
+          },
+          {
+            "name": "cmarkWASM1(spec * 100)",
+            "value": 0.89,
+            "range": "±1.79%",
+            "unit": "ops/sec",
+            "extra": "5 samples"
+          },
+          {
+            "name": "cmarkWASM1(spec * 200)",
+            "value": 0.44,
+            "range": "±3.34%",
+            "unit": "ops/sec",
+            "extra": "5 samples"
+          },
+          {
+            "name": "cmarkWASM(spec * 100)",
+            "value": 1.29,
+            "range": "±3.09%",
+            "unit": "ops/sec",
+            "extra": "5 samples"
+          },
+          {
+            "name": "cmarkWASM(spec * 200)",
+            "value": 0.56,
+            "range": "±17.57%",
+            "unit": "ops/sec",
+            "extra": "5 samples"
+          },
+          {
+            "name": "cmarkNative(spec * 100)",
+            "value": 1.52,
+            "range": "±2.22%",
+            "unit": "ops/sec",
+            "extra": "5 samples"
+          },
+          {
+            "name": "cmarkNative(spec * 200)",
+            "value": 0.76,
+            "range": "±3.85%",
             "unit": "ops/sec",
             "extra": "5 samples"
           }
