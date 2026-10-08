@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1790953103200,
+  "lastUpdate": 1791444141769,
   "repoUrl": "https://github.com/moonbit-community/cmark.mbt",
   "entries": {
     "Benchmark.js Benchmark": [
@@ -15270,6 +15270,86 @@ window.BENCHMARK_DATA = {
             "name": "cmarkNative(spec * 200)",
             "value": 0.62,
             "range": "±0.28%",
+            "unit": "ops/sec",
+            "extra": "5 samples"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "71200607+bzy-debug@users.noreply.github.com",
+            "name": "Bao Zhiyuan",
+            "username": "bzy-debug"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "587dbed435805f8f62b0685d1f6ed65b32903884",
+          "message": "Add node attribute hooks to HTML renderers (#170)\n\n* Add node attribute hooks to HTML renderers\n\n* Fix direct block rendering without node attribute hooks\n\n---------\n\nCo-authored-by: Bao Zhiyuan <baozhiyuan@idea.edu.cn>",
+          "timestamp": "2026-10-08T15:20:09+08:00",
+          "tree_id": "2f540cc240011b04078a98e8c25d5f11ecc682eb",
+          "url": "https://github.com/moonbit-community/cmark.mbt/commit/587dbed435805f8f62b0685d1f6ed65b32903884"
+        },
+        "date": 1791444140973,
+        "tool": "benchmarkjs",
+        "benches": [
+          {
+            "name": "cmarkJS(spec * 100)",
+            "value": 0.76,
+            "range": "±17.05%",
+            "unit": "ops/sec",
+            "extra": "5 samples"
+          },
+          {
+            "name": "cmarkJS(spec * 200)",
+            "value": 0.34,
+            "range": "±23.62%",
+            "unit": "ops/sec",
+            "extra": "5 samples"
+          },
+          {
+            "name": "cmarkWASM1(spec * 100)",
+            "value": 0.84,
+            "range": "±1.91%",
+            "unit": "ops/sec",
+            "extra": "5 samples"
+          },
+          {
+            "name": "cmarkWASM1(spec * 200)",
+            "value": 0.42,
+            "range": "±1.34%",
+            "unit": "ops/sec",
+            "extra": "5 samples"
+          },
+          {
+            "name": "cmarkWASM(spec * 100)",
+            "value": 1.07,
+            "range": "±7.07%",
+            "unit": "ops/sec",
+            "extra": "5 samples"
+          },
+          {
+            "name": "cmarkWASM(spec * 200)",
+            "value": 0.51,
+            "range": "±17.62%",
+            "unit": "ops/sec",
+            "extra": "5 samples"
+          },
+          {
+            "name": "cmarkNative(spec * 100)",
+            "value": 1.43,
+            "range": "±1.42%",
+            "unit": "ops/sec",
+            "extra": "5 samples"
+          },
+          {
+            "name": "cmarkNative(spec * 200)",
+            "value": 0.7,
+            "range": "±3.19%",
             "unit": "ops/sec",
             "extra": "5 samples"
           }
