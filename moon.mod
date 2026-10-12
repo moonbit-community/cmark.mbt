@@ -3,7 +3,7 @@ name = "moonbit-community/cmark"
 version = "0.4.11"
 
 import {
-  "moonbit-community/casefold@0.1.5",
+  "moonbit-community/casefold@0.1.7",
   "moonbit-community/charclass@0.1.4",
   "moonbitlang/async@0.22.4",
 }
