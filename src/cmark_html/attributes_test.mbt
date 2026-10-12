@@ -19,10 +19,10 @@ test "node attributes retain same-parse metadata on block and list owners" {
     #|---
   let doc = @cmark.Doc::from_string(source, locs=true, file="example.md")
   let owners : Array[(String, String)] = []
-  let identities : Array[(String, Int)] = []
+  let identities : Array[(String, Int32)] = []
   let html = @cmark_html.from_doc(
     safe=true,
-    node_attributes=fn(meta, tag) {
+    node_attributes=(meta, tag) => {
       assert_eq(meta.loc.file, "example.md")
       owners.push(
         (
@@ -288,7 +288,7 @@ test "node attributes compose with overrides and survive renderer reuse" {
 test "attribute callback errors propagate to the rendering caller" {
   try
     @cmark_html.render(
-      node_attributes=fn(_, _) {
+      node_attributes=(_, _) => {
         raise @cmark_renderer.RenderError("attribute provider failed")
       },
       "text",

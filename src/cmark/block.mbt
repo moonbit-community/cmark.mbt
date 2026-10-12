@@ -76,7 +76,7 @@ pub fn Block::normalize(self : Block) -> Block {
 ///|
 /// Collects the given `Block`'s link definitions (e.g. `LinkRefDefinition`
 /// and `ExtFootnoteDefinition`) and adds them to `init` (defaults to an empty map).
-pub fn Block::defs(self : Block, init? : LabelDefs = Map([])) -> LabelDefs {
+pub fn Block::defs(self : Block, init~ : LabelDefs = Map([])) -> LabelDefs {
   match self {
     BlockQuote(bl) => bl.v.block.defs(init~)
     Blocks(bl) => bl.v.fold(init~, fn(init, b) { b.defs(init~) })
@@ -110,7 +110,7 @@ pub(all) struct BlockQuote {
 } derive(Debug)
 
 ///|
-pub fn BlockQuote::new(indent? : Int = 0, block : Block) -> BlockQuote {
+pub fn BlockQuote::new(indent~ : Int32 = 0, block : Block) -> BlockQuote {
   { indent, block, }
 }
 
@@ -156,8 +156,8 @@ pub fn CodeBlockFencedLayout::default() -> CodeBlockFencedLayout {
 
 ///|
 pub fn CodeBlock::new(
-  layout? : CodeBlockLayout = Fenced(CodeBlockFencedLayout::default()),
-  info_string? : StringNode? = None,
+  layout~ : CodeBlockLayout = Fenced(CodeBlockFencedLayout::default()),
+  info_string~ : StringNode? = None,
   code : Seq[StringNode],
 ) -> CodeBlock {
   let layout = match (info_string, layout) {
@@ -205,7 +205,7 @@ pub fn CodeBlock::language_of_info_string(s : String) -> (String, String)? {
     }
   }
   let rem_first = @cmark_base.first_non_blank(s, last=max, start=white)
-  let buf = StringBuilder::new()
+  let buf = StringBuilder()
   let lang = @char.utf_16_clean_raw(buf, s, first=0, last=white - 1)
   guard !lang.is_empty() else { None }
   Some((lang, @char.utf_16_clean_raw(buf, s, first=rem_first, last=max)))
@@ -222,7 +222,7 @@ fn CodeBlock::is_math_block(s : String?) -> Bool {
 /// and [Setext](https://spec.commonmark.org/0.30/#setext-headings) headings.
 pub(all) struct BlockHeading {
   layout : BlockHeadingLayout
-  level : Int
+  level : Int32
   inline : Inline
   id : BlockHeadingId?
 } derive(Debug)
@@ -262,9 +262,9 @@ pub(all) enum BlockHeadingId {
 
 ///|
 pub fn BlockHeading::new(
-  id? : BlockHeadingId? = None,
-  layout? : BlockHeadingLayout = Atx(BlockHeadingAtxLayout::default()),
-  level~ : Int,
+  id~ : BlockHeadingId? = None,
+  layout~ : BlockHeadingLayout = Atx(BlockHeadingAtxLayout::default()),
+  level~ : Int32,
   inline : Inline,
 ) -> BlockHeading {
   { layout, level, inline, id, }
@@ -288,9 +288,9 @@ pub type ListItemBlock = ListItem
 
 ///|
 pub fn ListItem::new(
-  before_marker? : Indent = 0,
-  marker? : StringNode = layout_empty,
-  after_marker? : Indent = 1,
+  before_marker~ : Indent = 0,
+  marker~ : StringNode = layout_empty,
+  after_marker~ : Indent = 1,
   ext_task_marker~ : Node[Char]?,
   block : Block,
 ) -> ListItem {
@@ -356,8 +356,8 @@ pub(all) struct BlockParagraph {
 
 ///|
 pub fn BlockParagraph::new(
-  leading_indent? : Indent = 0,
-  trailing_blanks? : Blanks = "",
+  leading_indent~ : Indent = 0,
+  trailing_blanks~ : Blanks = "",
   inline : Inline,
 ) -> BlockParagraph {
   { leading_indent, inline, trailing_blanks, }
@@ -372,8 +372,8 @@ pub(all) struct BlockThematicBreak {
 
 ///|
 pub fn BlockThematicBreak::new(
-  indent? : Indent = 0,
-  layout? : String = "---",
+  indent~ : Indent = 0,
+  layout~ : String = "---",
 ) -> BlockThematicBreak {
   { indent, layout, }
 }
@@ -390,7 +390,7 @@ pub(all) struct Footnote {
 
 ///|
 pub fn Footnote::new(
-  indent? : Indent = 0,
+  indent~ : Indent = 0,
   defined_label? : Label?,
   label : Label,
   block : Block,
@@ -445,7 +445,7 @@ pub(all) struct TableCellLayout((Blanks, Blanks)) derive(Debug, Eq, Compare)
 
 ///|
 pub fn Table::new(
-  indent? : Indent = 0,
+  indent~ : Indent = 0,
   rows : Seq[(Node[TableRow], Blanks)],
 ) -> Table {
   let mut col_count = 0

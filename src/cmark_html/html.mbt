@@ -7,7 +7,7 @@ priv struct State {
   backend_blocks : Bool
   node_attributes : NodeAttributesFn?
   ids : StringSet
-  mut footnote_count : Int
+  mut footnote_count : Int32
   footnotes : Map[LabelKey, HtmlRenderFootnote]
 }
 
@@ -15,7 +15,7 @@ priv struct State {
 priv struct HtmlRenderFootnote {
   text : String
   id : String
-  mut count : Int
+  mut count : Int32
   footnote : @cmark.Footnote
 }
 
@@ -58,7 +58,7 @@ fn backend_blocks(c : Context) -> Bool {
 
 ///|
 fn init_context(
-  backend_blocks? : Bool = false,
+  backend_blocks~ : Bool = false,
   safe~ : Bool,
   node_attributes? : NodeAttributesFn,
   c : Context,
@@ -90,7 +90,7 @@ fn uid(c : Context, id : String) -> String {
 
 ///|
 fn footnote_id(l : String) -> String {
-  let res = StringBuilder::new()
+  let res = StringBuilder()
   res.write_string("fn-")
   let l = l[1:]
   for c in l {
@@ -105,7 +105,7 @@ fn footnote_id(l : String) -> String {
 }
 
 ///|
-fn footnote_ref_id(fnid : String, c : Int) -> String {
+fn footnote_ref_id(fnid : String, c : Int32) -> String {
   ["ref", c.to_string(), fnid].join("-")
 }
 
@@ -167,7 +167,12 @@ fn joined_string(c : Context, join : Joined[String]) -> Unit {
 /// U+FFFD for any unpaired surrogate. This avoids the abort that a view
 /// boundary on a surrogate half would cause and keeps output well-formed
 /// even for a programmatically built, unsanitized document.
-fn write_span(b : StringBuilder, s : String, start : Int, end : Int) -> Unit {
+fn write_span(
+  b : StringBuilder,
+  s : String,
+  start : Int32,
+  end : Int32,
+) -> Unit {
   guard start < end && start < s.length() else { return }
   let has_surrogate = for k = start {
     guard k < end else { break false }
@@ -198,7 +203,7 @@ fn write_span(b : StringBuilder, s : String, start : Int, end : Int) -> Unit {
 fn buffer_add_html_escaped_string(b : StringBuilder, s : String) -> Unit {
   let len = s.length()
   let max_idx = len - 1
-  fn flush(b : StringBuilder, start : Int, i : Int) {
+  fn flush(b : StringBuilder, start : Int32, i : Int32) {
     if start < len {
       write_span(b, s, start, i)
     }
@@ -253,7 +258,7 @@ fn html_escaped_string(c : Context, s : String) -> Unit {
 
 ///|
 fn buffer_add_pct_encoded_string(b : StringBuilder, s : String) -> Unit { // Percent encoded + HTML escaped
-  fn unsafe_hexdigit(i : Int) {
+  fn unsafe_hexdigit(i : Int32) {
     (if i < 10 { i + 0x30 } else { i + 0x37 }).unsafe_to_char()
   }
 
@@ -281,14 +286,14 @@ fn buffer_add_pct_encoded_string(b : StringBuilder, s : String) -> Unit { // Per
     | '@')
   }
 
-  fn pct_byte(b : StringBuilder, byte : Int) {
+  fn pct_byte(b : StringBuilder, byte : Int32) {
     b.write_char('%')
     b.write_char(unsafe_hexdigit((byte >> 4) & 0xF))
     b.write_char(unsafe_hexdigit(byte & 0xF))
   }
 
   // Percent-encodes the UTF-8 bytes of code point [cp].
-  fn pct_utf8(b : StringBuilder, cp : Int) {
+  fn pct_utf8(b : StringBuilder, cp : Int32) {
     if cp < 0x80 {
       pct_byte(b, cp)
     } else if cp < 0x800 {
@@ -450,7 +455,7 @@ fn link_dest_and_title(
 }
 
 ///|
-fn image(c : Context, i : @cmark.InlineLink, close? : String = " >") -> Unit {
+fn image(c : Context, i : @cmark.InlineLink, close~ : String = " >") -> Unit {
   match i.reference_definition(c.doc.defs) {
     Some(LinkDef({ v: ld, .. })) => {
       let (link, title) = link_dest_and_title(c, ld)
@@ -1050,7 +1055,7 @@ fn doc(c : Context, d : Doc) -> Bool raise {
 /// - `node_attributes` — additional attributes on source-owning block, list-item,
 ///   and table-row/cell elements; values are HTML-escaped. See `NodeAttributesFn`.
 pub fn renderer(
-  backend_blocks? : Bool = false,
+  backend_blocks~ : Bool = false,
   safe~ : Bool,
   node_attributes? : NodeAttributesFn,
 ) -> @cmark_renderer.Renderer {
@@ -1067,7 +1072,7 @@ pub fn renderer(
 ///|
 /// Create an XHTML renderer (self-closing tags like `<br />` and `<hr />`).
 pub fn xhtml_renderer(
-  backend_blocks? : Bool = false,
+  backend_blocks~ : Bool = false,
   safe~ : Bool,
   node_attributes? : NodeAttributesFn,
 ) -> @cmark_renderer.Renderer {
@@ -1084,7 +1089,7 @@ pub fn xhtml_renderer(
 ///|
 /// Render a parsed `Doc` to an HTML string.
 pub fn from_doc(
-  backend_blocks? : Bool = false,
+  backend_blocks~ : Bool = false,
   safe~ : Bool,
   node_attributes? : NodeAttributesFn,
   doc : Doc,
@@ -1105,9 +1110,9 @@ pub fn from_doc(
 ///
 /// For more parsing options, call `@cmark.Doc::from_string()` and `from_doc()` manually.
 pub fn render(
-  backend_blocks? : Bool = false,
-  safe? : Bool = true,
-  strict? : Bool = true,
+  backend_blocks~ : Bool = false,
+  safe~ : Bool = true,
+  strict~ : Bool = true,
   node_attributes? : NodeAttributesFn,
   s : String,
 ) -> String raise {

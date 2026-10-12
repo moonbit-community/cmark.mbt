@@ -740,9 +740,7 @@ test "Inline::to_plain_text with image in heading auto id (issue #138)" {
     heading_auto_ids=true,
   )
   guard doc.block is Heading({ v, .. }) else { abort("expected heading") }
-  guard v.id is Some(@cmark.BlockHeadingId::Auto(id)) else {
-    abort("expected auto id")
-  }
+  guard v.id is Some(Auto(id)) else { abort("expected auto id") }
   debug_inspect(id, content="\"title-badge\"")
 }
 

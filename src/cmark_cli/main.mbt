@@ -8,7 +8,7 @@ struct Options {
 
 ///|
 fn command() -> @argparse.Command {
-  @argparse.Command(
+  Command(
     "cmark",
     about="Render CommonMark input as HTML.",
     version="0.4.11",
@@ -34,7 +34,7 @@ fn command() -> @argparse.Command {
       PositionArg(
         "file",
         about="file to read; use - or no file for stdin",
-        num_args=@argparse.ValueRange(lower=0),
+        num_args=ValueRange(lower=0),
         allow_hyphen_values=true,
       ),
     ],

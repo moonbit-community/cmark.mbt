@@ -47,7 +47,7 @@ fn Parser::update_next_non_blank(self : Parser) -> Unit {
 }
 
 ///|
-fn Parser::accept_cols(self : Parser, count~ : Int) -> Unit {
+fn Parser::accept_cols(self : Parser, count~ : Int32) -> Unit {
   for count = count, k = self.curr_char, col = self.curr_char_col {
     // Stop at the end of the line: a list marker or other prefix can
     // be the very last thing in the input, with nothing left to accept.
@@ -92,9 +92,9 @@ fn Parser::match_and_accept_block_quote(self : Parser) -> Bool {
 /// Returns min indent after marker for list item
 fn Parser::accept_list_marker_and_indent(
   self : Parser,
-  marker_size~ : Int,
-  last~ : Int,
-) -> Int {
+  marker_size~ : Int32,
+  last~ : Int32,
+) -> Int32 {
   let _ = last
   self.accept_cols(count=marker_size)
   let indent = self.curr_indent()
@@ -111,8 +111,8 @@ fn Parser::accept_list_marker_and_indent(
 /// Returns padding for partially consumed tab and content first char
 fn Parser::accept_code_indent(
   self : Parser,
-  count~ : Int,
-) -> (Int, CharCodePos) {
+  count~ : Int32,
+) -> (Int32, CharCodePos) {
   self.accept_cols(count~)
   if self.tab_consumed_cols == 0 {
     return (0, self.curr_char)
@@ -130,7 +130,7 @@ fn Parser::accept_code_indent(
 
 ///|
 /// Number of space characters to pad content with
-type SpacePad = Int
+type SpacePad = Int32
 
 ///|
 priv struct IndentedCodeLine {
@@ -143,7 +143,7 @@ priv struct IndentedCodeLine {
 priv struct Fence {
   indent : Indent
   opening_fence : LineSpan
-  fence : (Char, Int) // Fence length
+  fence : (Char, Int32) // Fence length
   info_string : LineSpan? // We drop the trailing blanks
   closing_fence : LineSpan?
 } derive(Debug)
@@ -403,14 +403,14 @@ fn Parser::parse_link_ref_definition(
   lines : Array[LineSpan],
 ) -> Node[LinkDefinition]? {
   let lines_arr = lines
-  fn next_line(i : Ref[Int]) {
+  fn next_line(i : Ref[Int32]) {
     guard i.val < lines_arr.length() else { None }
     let res = Some(lines_arr[i.val])
     i.val += 1
     res
   }
 
-  let lines : Ref[Int] = Ref(0)
+  let lines : Ref[Int32] = Ref(0)
   guard next_line(lines) is Some(line) else { None }
   let start = self.first_non_blank_in_span(line)
   let indent = start - line.first
@@ -758,7 +758,7 @@ fn Parser::match_line_type(
       guard r is Nomatch else { r }
       ParagraphLine
     }
-    '+' | '*' | '0'..='9' => {
+    '+' | '*' | '0'..<='9' => {
       let r = LineType::thematic_break(self.i, last~, start~)
       guard r is Nomatch else { r }
       let r = LineType::list_marker(self.i, last~, start~)

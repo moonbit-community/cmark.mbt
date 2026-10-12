@@ -102,7 +102,7 @@ fn[A] accept_to(
   line~ : LineSpan,
   spans : Array[Span],
   after~ : CharCodePos,
-) -> (LineSpan, Int)? {
+) -> (LineSpan, Int32)? {
   for line = line, start = after, k = after + 1 {
     if k > line.last {
       guard next_line(lines) is Some(new_line) else { break None }
@@ -128,7 +128,7 @@ fn[A] accept_upto(
   line~ : LineSpan,
   spans : Array[Span],
   after~ : CharCodePos,
-) -> (LineSpan, Int)? {
+) -> (LineSpan, Int32)? {
   let start = after + 1
   for line = line, prev_bslash = false, start = start, k = start {
     if k > line.last {

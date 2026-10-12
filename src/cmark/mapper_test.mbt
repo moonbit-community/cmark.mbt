@@ -19,7 +19,7 @@ test "mapper delete function" {
 ///|
 test "Default for MapperResult" {
   // Test Default impl
-  let default_result : @cmark.MapperResult[Int] = @cmark.MapperResult::default()
+  let default_result : @cmark.MapperResult[Int32] = Default::default()
   debug_inspect(default_result, content="Default")
 }
 

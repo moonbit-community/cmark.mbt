@@ -63,8 +63,8 @@ test "test link_destination with backslash before closing angle bracket" {
 ///|
 test "trigger uncovered line 28 and 29" {
   let input : String = "<test<text"
-  let last : Int = 10
-  let start : Int = 0
+  let last : Int32 = 10
+  let start : Int32 = 0
   debug_inspect(
     @cmark_base.link_destination(input, last~, start~),
     content="None",

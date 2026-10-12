@@ -1,6 +1,6 @@
 ///|
 /// The type for indentation magnitude.
-pub type Indent = Int
+pub type Indent = Int32
 
 ///|
 /// The type for the first first byte position of a parsed construct.
@@ -17,4 +17,4 @@ pub type Next = CharCodePos
 
 ///|
 /// The type for heading levels.
-pub type HeadingLevel = Int
+pub type HeadingLevel = Int32

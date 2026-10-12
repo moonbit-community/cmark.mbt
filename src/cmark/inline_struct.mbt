@@ -32,7 +32,7 @@ priv struct TokenStart {
 ///|
 priv struct TokenBackticks {
   start : CharCodePos
-  count : Int
+  count : Int32
   escaped : Bool
 } derive(Debug)
 
@@ -41,9 +41,9 @@ priv struct TokenEmphasisMarks {
   start : CharCodePos
   char : Char
   /// The number of marks left in the run.
-  count : Int
+  count : Int32
   /// The length of the delimiter run in the source (for the rule of 3).
-  run_length : Int
+  run_length : Int32
   may_open : Bool
   may_close : Bool
 } derive(Debug)
@@ -80,7 +80,7 @@ priv struct TokenStrikethroughMarks {
 ///|
 priv struct TokenMathSpanMarks {
   start : CharCodePos
-  count : Int
+  count : Int32
   may_open : Bool
   may_close : Bool
 } derive(Debug)
@@ -103,34 +103,34 @@ fn Token::start(self : Token) -> CharCodePos {
 ///|
 fn CloserIndex::has_backticks(
   self : CloserIndex,
-  count~ : Int,
-  after~ : Int,
+  count~ : Int32,
+  after~ : Int32,
 ) -> Bool {
   self.exists(Backticks(count), after~)
 }
 
 ///|
-fn CloserIndex::has_right_brack(self : CloserIndex, after~ : Int) -> Bool {
+fn CloserIndex::has_right_brack(self : CloserIndex, after~ : Int32) -> Bool {
   self.exists(RightBrack, after~)
 }
 
 ///|
-fn CloserIndex::has_right_paren(self : CloserIndex, after~ : Int) -> Bool {
+fn CloserIndex::has_right_paren(self : CloserIndex, after~ : Int32) -> Bool {
   self.exists(RightParen, after~)
 }
 
 ///|
 fn CloserIndex::has_math_span(
   self : CloserIndex,
-  count~ : Int,
-  after~ : Int,
+  count~ : Int32,
+  after~ : Int32,
 ) -> Bool {
   self.exists(MathSpanMarks(count), after~)
 }
 
 ///|
 /// Used to make the text delimitation precise for nested inlines.
-fn tokens_shorten_last_line(to_last~ : Int, toks : Tokens) -> Unit {
+fn tokens_shorten_last_line(to_last~ : Int32, toks : Tokens) -> Unit {
   let last = to_last
   for i = toks.0.length() - 1; i >= 0; i = i - 1 {
     match toks.0[i] {
@@ -158,7 +158,7 @@ fn tokens_drop_stop_after_right_brack(rev_toks : RevTokens) -> Unit {
 }
 
 ///|
-fn tokens_pop_until(start~ : Int, rev_toks : RevTokens) -> Unit {
+fn tokens_pop_until(start~ : Int32, rev_toks : RevTokens) -> Unit {
   for ;; {
     guard rev_toks.pop() is Some(t) else { break }
     if t.start() < start {
@@ -237,8 +237,8 @@ fn tokens_add_backtick(
   s : String,
   line : LineSpan,
   prev_bslash~ : Bool,
-  start~ : Int,
-) -> Int {
+  start~ : Int32,
+) -> Int32 {
   let last = @cmark_base.run_of(char='`', s, last=line.last, start=start + 1)
   let count = last - start + 1
   toks.push(Backticks({ start, count, escaped: prev_bslash, }))
@@ -251,8 +251,8 @@ fn tokens_try_add_image_link_start(
   toks : Tokens,
   s : String,
   line : LineSpan,
-  start~ : Int,
-) -> Int {
+  start~ : Int32,
+) -> Int32 {
   let next = start + 1
   guard next <= line.last && s[next] == '[' else { next }
   toks.push(LinkStart({ start, image: true, }))
@@ -264,8 +264,8 @@ fn tokens_try_add_emphasis(
   toks : Tokens,
   s : String,
   line : LineSpan,
-  start~ : Int,
-) -> Int {
+  start~ : Int32,
+) -> Int32 {
   let { first, last, .. } = line
   let char = s[start].unsafe_to_char()
   let run_last = @cmark_base.run_of(char~, last~, s, start=start + 1)
@@ -305,8 +305,8 @@ fn tokens_try_add_strikethrough_marks(
   toks : Tokens,
   s : String,
   line : LineSpan,
-  start~ : Int,
-) -> Int {
+  start~ : Int32,
+) -> Int32 {
   let { first, last, .. } = line
   let char = s[start].unsafe_to_char()
   let run_last = @cmark_base.run_of(char~, s, last~, start=start + 1)
@@ -327,8 +327,8 @@ fn tokens_try_add_math_span_marks(
   cidx : CloserIndex,
   s : String,
   line : LineSpan,
-  start~ : Int,
-) -> Int {
+  start~ : Int32,
+) -> Int32 {
   let { first, last, .. } = line
   let char = s[start].unsafe_to_char()
   let run_last = @cmark_base.run_of(char~, s, last~, start=start + 1)
@@ -425,7 +425,7 @@ fn tokenize(
 fn Parser::break_inline(
   self : Parser,
   line : LineSpan,
-  start~ : Int,
+  start~ : Int32,
   break_ty~ : InlineBreakType,
   newline~ : LineSpan,
 ) -> Inline {
@@ -444,10 +444,10 @@ fn Parser::break_inline(
 fn Parser::try_add_text_inline(
   self : Parser,
   line : LineSpan,
-  first~ : Int,
-  last~ : Int,
+  first~ : Int32,
+  last~ : Int32,
   acc : Array[Inline],
-  strip? : Bool = true,
+  strip~ : Bool = true,
 ) -> Unit {
   if first > last {
     return
@@ -485,7 +485,7 @@ fn Parser::inlines_inline(
 ///|
 fn Parser::code_span_token(
   self : Parser,
-  count~ : Int,
+  count~ : Int32,
   first~ : CharCodePos,
   last~ : CharCodePos,
   first_line~ : LineSpan,
@@ -503,8 +503,8 @@ fn Parser::code_span_token(
 fn Parser::autolink_token(
   self : Parser,
   line : LineSpan,
-  first~ : Int,
-  last~ : Int,
+  first~ : Int32,
+  last~ : Int32,
   is_email~ : Bool,
 ) -> Token {
   let meta = self.meta(self.text_loc_of_span({ ..line, first, last, }))
@@ -517,8 +517,8 @@ fn Parser::autolink_token(
 ///|
 fn Parser::raw_html_token(
   self : Parser,
-  first~ : Int,
-  last~ : Int,
+  first~ : Int32,
+  last~ : Int32,
   first_line~ : LineSpan,
   last_line~ : LineSpan,
   spans : ArrayView[Span],
@@ -537,8 +537,8 @@ fn Parser::raw_html_token(
 ///|
 fn Parser::link_token(
   self : Parser,
-  first~ : Int,
-  last~ : Int,
+  first~ : Int32,
+  last~ : Int32,
   first_line~ : LineSpan,
   last_line~ : LineSpan,
   image~ : Bool,
@@ -553,8 +553,8 @@ fn Parser::link_token(
 ///|
 fn Parser::emphasis_token(
   self : Parser,
-  first~ : Int,
-  last~ : Int,
+  first~ : Int32,
+  last~ : Int32,
   first_line~ : LineSpan,
   last_line~ : LineSpan,
   strong~ : Bool,
@@ -570,8 +570,8 @@ fn Parser::emphasis_token(
 ///|
 fn Parser::ext_strikethough_token(
   self : Parser,
-  first~ : Int,
-  last~ : Int,
+  first~ : Int32,
+  last~ : Int32,
   first_line~ : LineSpan,
   last_line~ : LineSpan,
   s : Inline,
@@ -584,9 +584,9 @@ fn Parser::ext_strikethough_token(
 ///|
 fn Parser::ext_math_span_token(
   self : Parser,
-  count~ : Int,
-  first~ : Int,
-  last~ : Int,
+  count~ : Int32,
+  first~ : Int32,
+  last~ : Int32,
   first_line~ : LineSpan,
   last_line~ : LineSpan,
   spans : ArrayView[Span],
@@ -610,7 +610,7 @@ fn Parser::try_code(
   rev_toks : Ref[RevTokens],
   start_line : LineSpan,
   start~ : CharCodePos,
-  count~ : Int,
+  count~ : Int32,
   escaped~ : Bool,
 ) -> (LineSpan, Token)? {
   // If the run is preceded by a `\`, its first backtick is escaped: the
@@ -667,7 +667,7 @@ fn Parser::try_math_span(
   rev_toks : Ref[RevTokens],
   start_line : LineSpan,
   start~ : CharCodePos,
-  count~ : Int,
+  count~ : Int32,
 ) -> (LineSpan, Token)? {
   let cstart = start
   guard self.cidx.has_math_span(count~, after=cstart) else { None }
@@ -714,7 +714,7 @@ fn Parser::try_math_span(
 /// `raw_html_end_kind`), the first position in a token stream from which
 /// they were found not to end. Later ones cannot end either: this keeps
 /// unterminated constructs from making parsing quadratic.
-priv struct RawHtmlNoEnd(FixedArray[Int])
+priv struct RawHtmlNoEnd(FixedArray[Int32])
 
 ///|
 fn RawHtmlNoEnd::new() -> RawHtmlNoEnd {
@@ -725,11 +725,11 @@ fn RawHtmlNoEnd::new() -> RawHtmlNoEnd {
 /// The kind of raw HTML starting at `start` if it ends with a specific
 /// string: 0 for processing instructions (`?>`), 1 for CDATA sections
 /// (`]]>`), 2 for declarations (`>`) and 3 for comments (`-->`).
-fn raw_html_end_kind(s : String, start~ : CharCodePos) -> Int? {
+fn raw_html_end_kind(s : String, start~ : CharCodePos) -> Int32? {
   match s.view(start_offset=start) {
     [.. "<?", ..] => Some(0)
     [.. "<![CDATA[", ..] => Some(1)
-    [.. "<!", 'a'..='z' | 'A'..='Z', ..] => Some(2)
+    [.. "<!", 'a'..<='z' | 'A'..<='Z', ..] => Some(2)
     [.. "<!--", ..] => Some(3)
     _ => None
   }
@@ -1263,9 +1263,9 @@ priv struct DelimList {
   toks : Array[Token]
   /// The line in effect at the start of each token.
   lines : Array[LineSpan]
-  next : Array[Int]
-  prev : Array[Int]
-  mut head : Int
+  next : Array[Int32]
+  prev : Array[Int32]
+  mut head : Int32
 }
 
 ///|
@@ -1287,7 +1287,7 @@ fn DelimList::new(toks : Tokens, line : LineSpan) -> DelimList {
 }
 
 ///|
-fn DelimList::unlink(self : DelimList, i : Int) -> Unit {
+fn DelimList::unlink(self : DelimList, i : Int32) -> Unit {
   let prev = self.prev[i]
   let next = self.next[i]
   if prev < 0 {
@@ -1302,7 +1302,7 @@ fn DelimList::unlink(self : DelimList, i : Int) -> Unit {
 
 ///|
 /// The `Newline` and `Inline` tokens strictly between `first` and `last`.
-fn DelimList::between(self : DelimList, first : Int, last : Int) -> Tokens {
+fn DelimList::between(self : DelimList, first : Int32, last : Int32) -> Tokens {
   let acc : Tokens = Deque([])
   for k = self.next[first]; k != last; k = self.next[k] {
     match self.toks[k] {
@@ -1317,8 +1317,8 @@ fn DelimList::between(self : DelimList, first : Int, last : Int) -> Tokens {
 /// Replaces the tokens strictly between `first` and `last` by `t`.
 fn DelimList::replace_between(
   self : DelimList,
-  first : Int,
-  last : Int,
+  first : Int32,
+  last : Int32,
   t : Token,
 ) -> Unit {
   let k = self.toks.length()
@@ -1382,7 +1382,7 @@ fn Parser::second_pass(
   }
   // For each kind of closer, the delimiter index below which (inclusive)
   // there is no opener for it (`openers_bottom` in the spec).
-  let bottoms : Map[(Char, Bool, Int), Int] = Map([])
+  let bottoms : Map[(Char, Bool, Int32), Int32] = Map([])
   let mut d = 0
   while d < n {
     let c = delims[d]
@@ -1513,7 +1513,7 @@ fn Parser::last_pass(
   self : Parser,
   toks : Tokens,
   line : LineSpan,
-  strip_first? : Bool = true,
+  strip_first~ : Bool = true,
 ) -> Array[Inline] {
   let acc = []
   let first_line = line
@@ -1551,7 +1551,7 @@ fn Parser::parse_tokens(
   self : Parser,
   toks : Tokens,
   first_line : LineSpan,
-  strip_first? : Bool = true,
+  strip_first~ : Bool = true,
 ) -> (Array[Inline], Bool) {
   let toks : Ref[Tokens] = Ref(toks)
   let had_link = self.first_pass(toks, first_line)

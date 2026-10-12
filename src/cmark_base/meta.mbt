@@ -6,13 +6,13 @@ pub(all) struct Meta {
 } derive(Debug)
 
 ///|
-type MetaId = Int
+type MetaId = Int32
 
 ///|
 let curr_id : Ref[MetaId] = Ref(0)
 
 ///|
-pub fn Meta::new(loc? : TextLoc = text_loc_none) -> Meta {
+pub fn Meta::new(loc~ : TextLoc = text_loc_none) -> Meta {
   let res = { loc, id: curr_id.val, extra: None, }
   curr_id.val += 1
   res
@@ -32,7 +32,7 @@ pub impl Eq for Meta with fn equal(self, other) {
 }
 
 ///|
-pub fn Meta::compare(self : Meta, other : Meta) -> Int {
+pub fn Meta::compare(self : Meta, other : Meta) -> Int32 {
   self.id.compare(other.id)
 }
 

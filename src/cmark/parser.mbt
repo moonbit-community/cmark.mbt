@@ -35,20 +35,20 @@ priv struct Parser {
 
 ///|
 fn Parser::new(
-  defs? : LabelDefs = Map([]),
-  resolver? : LabelResolverFn = LabelContext::default_resolver,
-  nested_links? : Bool = false,
-  heading_auto_ids? : Bool = false,
-  layout? : Bool = false,
-  locs? : Bool = false,
-  file? : FilePath = file_path_none,
-  strict? : Bool = true,
+  defs~ : LabelDefs = Map([]),
+  resolver~ : LabelResolverFn = LabelContext::default_resolver,
+  nested_links~ : Bool = false,
+  heading_auto_ids~ : Bool = false,
+  layout~ : Bool = false,
+  locs~ : Bool = false,
+  file~ : FilePath = file_path_none,
+  strict~ : Bool = true,
   i : String,
 ) -> Parser {
   {
     file,
     i,
-    buf: StringBuilder::new(size_hint=512),
+    buf: StringBuilder(size_hint=512),
     no_locs: !locs,
     no_layouts: !layout,
     exts: !strict,
@@ -190,7 +190,7 @@ fn Parser::meta_of_metas(self : Parser, first~ : Meta, last~ : Meta) -> Meta {
 ///|
 fn Parser::clean_raw_span(
   self : Parser,
-  pad? : Int = 0,
+  pad~ : Int32 = 0,
   span : LineSpan,
 ) -> StringNode {
   {
@@ -234,7 +234,7 @@ fn Parser::clean_unesc_unref_span(self : Parser, span : LineSpan) -> StringNode 
 ///|
 fn Parser::layout_clean_raw_span(
   self : Parser,
-  pad? : Int = 0,
+  pad~ : Int32 = 0,
   span : LineSpan,
 ) -> StringNode {
   if self.no_layouts {
@@ -249,7 +249,7 @@ fn Parser::layout_clean_raw_span(
 ///|
 fn Parser::layout_clean_raw_span1(
   self : Parser,
-  pad? : Int = 0,
+  pad~ : Int32 = 0,
   span : LineSpan,
 ) -> String {
   if self.no_layouts {
@@ -327,7 +327,7 @@ fn[A] Parser::first_non_blank_over_nl(
   lines : A,
   line : LineSpan,
   start~ : CharCodePos,
-) -> (LineSpan, Array[StringNode], Int)? {
+) -> (LineSpan, Array[StringNode], Int32)? {
   match
     @cmark_base.first_non_blank_over_nl(
       next_line~,

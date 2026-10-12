@@ -83,13 +83,13 @@ pub type FilePath = String
 pub let file_path_none = "-"
 
 ///|
-pub type CharCodePos = Int // 0-based
+pub type CharCodePos = Int32 // 0-based
 
 ///|
 pub let char_code_pos_none : CharCodePos = -1
 
 ///|
-pub type LineNum = Int // 1-based
+pub type LineNum = Int32 // 1-based
 
 ///|
 pub let line_num_none = -1

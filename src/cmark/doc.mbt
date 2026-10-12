@@ -8,8 +8,8 @@ pub(all) struct Doc {
 
 ///|
 pub fn Doc::new(
-  nl? : String = "\n",
-  defs? : LabelDefs = Map([]),
+  nl~ : String = "\n",
+  defs~ : LabelDefs = Map([]),
   block : Block,
 ) -> Doc {
   { nl, block, defs, }
@@ -22,14 +22,14 @@ pub fn Doc::empty() -> Doc {
 
 ///|
 pub fn Doc::from_string(
-  defs? : LabelDefs = Map([]),
-  resolver? : LabelResolverFn = LabelContext::default_resolver,
-  nested_links? : Bool = false,
-  heading_auto_ids? : Bool = false,
-  layout? : Bool = false,
-  locs? : Bool = false,
-  file? : FilePath = file_path_none,
-  strict? : Bool = true,
+  defs~ : LabelDefs = Map([]),
+  resolver~ : LabelResolverFn = LabelContext::default_resolver,
+  nested_links~ : Bool = false,
+  heading_auto_ids~ : Bool = false,
+  layout~ : Bool = false,
+  locs~ : Bool = false,
+  file~ : FilePath = file_path_none,
+  strict~ : Bool = true,
   s : String,
 ) -> Doc {
   let p = Parser::new(
