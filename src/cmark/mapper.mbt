@@ -33,9 +33,24 @@ pub(all) enum MapperResult[A] {
 } derive(Eq, Debug)
 
 ///|
+#deprecated
+#doc(hidden)
+pub extend MapperResult with Eq::{not_equal, equal}
+
+///|
+#deprecated
+#doc(hidden)
+pub extend MapperResult with @debug.Debug::{to_repr}
+
+///|
 pub impl[A] Default for MapperResult[A] with fn default() {
   Default
 }
+
+///|
+#deprecated
+#doc(hidden)
+pub extend MapperResult with Default::{default}
 
 ///|
 pub fn[A] Mapper::delete() -> MapperResult[A] {

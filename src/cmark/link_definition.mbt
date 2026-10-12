@@ -12,6 +12,16 @@ pub(all) struct LinkDefinition {
 } derive(Eq, Debug)
 
 ///|
+#deprecated
+#doc(hidden)
+pub extend LinkDefinition with Eq::{not_equal, equal}
+
+///|
+#deprecated
+#doc(hidden)
+pub extend LinkDefinition with @debug.Debug::{to_repr}
+
+///|
 pub fn LinkDefinition::new(
   layout~ : LinkDefinitionLayout = LinkDefinitionLayout::default(),
   label~ : Label? = None,
@@ -31,6 +41,16 @@ pub(all) struct LinkDefinitionLayout {
   title_open_delim : Char
   after_title : Seq[BlockLineBlank]
 } derive(Eq, Debug)
+
+///|
+#deprecated
+#doc(hidden)
+pub extend LinkDefinitionLayout with Eq::{not_equal, equal}
+
+///|
+#deprecated
+#doc(hidden)
+pub extend LinkDefinitionLayout with @debug.Debug::{to_repr}
 
 ///|
 pub fn LinkDefinitionLayout::default() -> LinkDefinitionLayout {

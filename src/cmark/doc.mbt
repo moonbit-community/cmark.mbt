@@ -7,6 +7,11 @@ pub(all) struct Doc {
 } derive(Debug)
 
 ///|
+#deprecated
+#doc(hidden)
+pub extend Doc with @debug.Debug::{to_repr}
+
+///|
 pub fn Doc::new(
   nl~ : String = "\n",
   defs~ : LabelDefs = Map([]),

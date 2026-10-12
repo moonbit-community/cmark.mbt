@@ -5,6 +5,16 @@ pub(all) struct Node[A] {
 } derive(Eq, Debug)
 
 ///|
+#deprecated
+#doc(hidden)
+pub extend Node with Eq::{not_equal, equal}
+
+///|
+#deprecated
+#doc(hidden)
+pub extend Node with @debug.Debug::{to_repr}
+
+///|
 pub fn[A] Node::new(v : A, meta~ : Meta = Meta::none()) -> Node[A] {
   { v, meta, }
 }

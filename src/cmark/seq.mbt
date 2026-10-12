@@ -2,6 +2,16 @@
 struct Seq[A](Array[A]) derive(Eq, Debug)
 
 ///|
+#deprecated
+#doc(hidden)
+pub extend Seq with Eq::{not_equal, equal}
+
+///|
+#deprecated
+#doc(hidden)
+pub extend Seq with @debug.Debug::{to_repr}
+
+///|
 /// @coverage.skip
 pub fn[A] Seq::empty() -> Seq[A] {
   []

@@ -17,6 +17,11 @@ pub(all) enum Block {
 } derive(Debug)
 
 ///|
+#deprecated
+#doc(hidden)
+pub extend Block with @debug.Debug::{to_repr}
+
+///|
 pub fn Block::empty() -> Block {
   Blocks({ v: [], meta: Meta::none(), })
 }
@@ -110,6 +115,11 @@ pub(all) struct BlockQuote {
 } derive(Debug)
 
 ///|
+#deprecated
+#doc(hidden)
+pub extend BlockQuote with @debug.Debug::{to_repr}
+
+///|
 pub fn BlockQuote::new(indent~ : Int32 = 0, block : Block) -> BlockQuote {
   { indent, block, }
 }
@@ -137,10 +147,20 @@ pub(all) struct CodeBlock {
 } derive(Debug)
 
 ///|
+#deprecated
+#doc(hidden)
+pub extend CodeBlock with @debug.Debug::{to_repr}
+
+///|
 pub(all) enum CodeBlockLayout {
   Indented
   Fenced(CodeBlockFencedLayout)
 } derive(Debug)
+
+///|
+#deprecated
+#doc(hidden)
+pub extend CodeBlockLayout with @debug.Debug::{to_repr}
 
 ///|
 pub(all) struct CodeBlockFencedLayout {
@@ -148,6 +168,11 @@ pub(all) struct CodeBlockFencedLayout {
   opening_fence : StringNode
   closing_fence : StringNode?
 } derive(Debug)
+
+///|
+#deprecated
+#doc(hidden)
+pub extend CodeBlockFencedLayout with @debug.Debug::{to_repr}
 
 ///|
 pub fn CodeBlockFencedLayout::default() -> CodeBlockFencedLayout {
@@ -228,10 +253,20 @@ pub(all) struct BlockHeading {
 } derive(Debug)
 
 ///|
+#deprecated
+#doc(hidden)
+pub extend BlockHeading with @debug.Debug::{to_repr}
+
+///|
 pub(all) enum BlockHeadingLayout {
   Atx(BlockHeadingAtxLayout)
   Setext(BlockHeadingSetextLayout)
 } derive(Debug)
+
+///|
+#deprecated
+#doc(hidden)
+pub extend BlockHeadingLayout with @debug.Debug::{to_repr}
 
 ///|
 pub(all) struct BlockHeadingAtxLayout {
@@ -239,6 +274,21 @@ pub(all) struct BlockHeadingAtxLayout {
   after_opening : Blanks
   closing : String
 } derive(Debug, FromJson, ToJson)
+
+///|
+#deprecated
+#doc(hidden)
+pub extend BlockHeadingAtxLayout with @debug.Debug::{to_repr}
+
+///|
+#deprecated
+#doc(hidden)
+pub extend BlockHeadingAtxLayout with @json.FromJson::{from_json}
+
+///|
+#deprecated
+#doc(hidden)
+pub extend BlockHeadingAtxLayout with ToJson::{to_json}
 
 ///|
 pub fn BlockHeadingAtxLayout::default() -> BlockHeadingAtxLayout {
@@ -255,10 +305,30 @@ pub(all) struct BlockHeadingSetextLayout {
 } derive(Debug)
 
 ///|
+#deprecated
+#doc(hidden)
+pub extend BlockHeadingSetextLayout with @debug.Debug::{to_repr}
+
+///|
 pub(all) enum BlockHeadingId {
   Auto(String)
   Id(String)
 } derive(Debug, FromJson, ToJson)
+
+///|
+#deprecated
+#doc(hidden)
+pub extend BlockHeadingId with @debug.Debug::{to_repr}
+
+///|
+#deprecated
+#doc(hidden)
+pub extend BlockHeadingId with @json.FromJson::{from_json}
+
+///|
+#deprecated
+#doc(hidden)
+pub extend BlockHeadingId with ToJson::{to_json}
 
 ///|
 pub fn BlockHeading::new(
@@ -275,6 +345,11 @@ pub fn BlockHeading::new(
 pub(all) struct HtmlBlock(Seq[StringNode]) derive(Debug)
 
 ///|
+#deprecated
+#doc(hidden)
+pub extend HtmlBlock with @debug.Debug::{to_repr}
+
+///|
 pub(all) struct ListItem {
   before_marker : Indent
   marker : StringNode
@@ -282,6 +357,11 @@ pub(all) struct ListItem {
   block : Block
   ext_task_marker : Node[Char]?
 } derive(Debug)
+
+///|
+#deprecated
+#doc(hidden)
+pub extend ListItem with @debug.Debug::{to_repr}
 
 ///|
 pub type ListItemBlock = ListItem
@@ -334,6 +414,11 @@ pub(all) struct BlockList {
 } derive(Debug)
 
 ///|
+#deprecated
+#doc(hidden)
+pub extend BlockList with @debug.Debug::{to_repr}
+
+///|
 pub fn BlockList::map_items(
   self : BlockList,
   f : (ListItem) -> ListItem,
@@ -355,6 +440,11 @@ pub(all) struct BlockParagraph {
 } derive(Debug)
 
 ///|
+#deprecated
+#doc(hidden)
+pub extend BlockParagraph with @debug.Debug::{to_repr}
+
+///|
 pub fn BlockParagraph::new(
   leading_indent~ : Indent = 0,
   trailing_blanks~ : Blanks = "",
@@ -369,6 +459,21 @@ pub(all) struct BlockThematicBreak {
   indent : Indent
   layout : String
 } derive(Debug, FromJson, ToJson)
+
+///|
+#deprecated
+#doc(hidden)
+pub extend BlockThematicBreak with @debug.Debug::{to_repr}
+
+///|
+#deprecated
+#doc(hidden)
+pub extend BlockThematicBreak with @json.FromJson::{from_json}
+
+///|
+#deprecated
+#doc(hidden)
+pub extend BlockThematicBreak with ToJson::{to_json}
 
 ///|
 pub fn BlockThematicBreak::new(
@@ -387,6 +492,11 @@ pub(all) struct Footnote {
   defined_label : Label?
   block : Block
 } derive(Debug)
+
+///|
+#deprecated
+#doc(hidden)
+pub extend Footnote with @debug.Debug::{to_repr}
 
 ///|
 pub fn Footnote::new(
@@ -424,11 +534,31 @@ pub(all) struct Table {
 } derive(Debug)
 
 ///|
+#deprecated
+#doc(hidden)
+pub extend Table with @debug.Debug::{to_repr}
+
+///|
 pub(all) enum TableAlign {
   Left
   Center
   Right
 } derive(Debug, FromJson, ToJson)
+
+///|
+#deprecated
+#doc(hidden)
+pub extend TableAlign with @debug.Debug::{to_repr}
+
+///|
+#deprecated
+#doc(hidden)
+pub extend TableAlign with @json.FromJson::{from_json}
+
+///|
+#deprecated
+#doc(hidden)
+pub extend TableAlign with ToJson::{to_json}
 
 ///|
 pub(all) enum TableRow {
@@ -438,10 +568,35 @@ pub(all) enum TableRow {
 } derive(Debug)
 
 ///|
+#deprecated
+#doc(hidden)
+pub extend TableRow with @debug.Debug::{to_repr}
+
+///|
 pub(all) struct TableSep((TableAlign?, Count)) derive(Debug)
 
 ///|
+#deprecated
+#doc(hidden)
+pub extend TableSep with @debug.Debug::{to_repr}
+
+///|
 pub(all) struct TableCellLayout((Blanks, Blanks)) derive(Debug, Eq, Compare)
+
+///|
+#deprecated
+#doc(hidden)
+pub extend TableCellLayout with @debug.Debug::{to_repr}
+
+///|
+#deprecated
+#doc(hidden)
+pub extend TableCellLayout with Eq::{not_equal, equal}
+
+///|
+#deprecated
+#doc(hidden)
+pub extend TableCellLayout with Compare::{op_lt, op_le, op_ge, compare, op_gt}
 
 ///|
 pub fn Table::new(

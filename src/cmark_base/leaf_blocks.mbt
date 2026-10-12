@@ -10,12 +10,42 @@ pub(all) enum HtmlBlockEndCond {
 } derive(Debug, Eq)
 
 ///|
+#deprecated
+#doc(hidden)
+pub extend HtmlBlockEndCond with @debug.Debug::{to_repr}
+
+///|
+#deprecated
+#doc(hidden)
+pub extend HtmlBlockEndCond with Eq::{not_equal, equal}
+
+///|
 pub(all) enum ListType {
   /// With the given marker.
   Unordered(Char)
   /// Starting at given integer, markers ending with given character, i.e. ')' or '.'.
   Ordered(Int32, Char)
 } derive(Debug, FromJson, ToJson, Eq)
+
+///|
+#deprecated
+#doc(hidden)
+pub extend ListType with @debug.Debug::{to_repr}
+
+///|
+#deprecated
+#doc(hidden)
+pub extend ListType with @json.FromJson::{from_json}
+
+///|
+#deprecated
+#doc(hidden)
+pub extend ListType with ToJson::{to_json}
+
+///|
+#deprecated
+#doc(hidden)
+pub extend ListType with Eq::{not_equal, equal}
 
 ///|
 pub fn ListType::is_same_type(self : ListType, other : ListType) -> Bool {
@@ -40,6 +70,16 @@ pub(all) enum LineType {
   ExtFootnoteLabel(Array[Span], Last, String)
   Nomatch
 } derive(Debug, Eq)
+
+///|
+#deprecated
+#doc(hidden)
+pub extend LineType with @debug.Debug::{to_repr}
+
+///|
+#deprecated
+#doc(hidden)
+pub extend LineType with Eq::{not_equal, equal}
 
 ///|
 /// https://spec.commonmark.org/current/#thematic-breaks
@@ -238,6 +278,11 @@ pub(all) enum FencedCodeBlockContinue {
   Close(First, Last)
   Code
 } derive(Debug)
+
+///|
+#deprecated
+#doc(hidden)
+pub extend FencedCodeBlockContinue with @debug.Debug::{to_repr}
 
 ///|
 /// `fenced_code_block_continue(fence, s, last, start)` indicates

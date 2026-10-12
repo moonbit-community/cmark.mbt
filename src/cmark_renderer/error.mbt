@@ -4,6 +4,11 @@ pub(all) suberror RenderError {
 } derive(Debug)
 
 ///|
+#deprecated
+#doc(hidden)
+pub extend RenderError with @debug.Debug::{to_repr}
+
+///|
 pub impl Show for RenderError with fn output(self, logger) {
   match self {
     RenderError(message) => {
@@ -13,3 +18,8 @@ pub impl Show for RenderError with fn output(self, logger) {
     }
   }
 }
+
+///|
+#deprecated
+#doc(hidden)
+pub extend RenderError with Show::{to_string, output}

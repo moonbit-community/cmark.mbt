@@ -18,6 +18,16 @@ pub(all) enum Inline {
 } derive(Eq, Debug)
 
 ///|
+#deprecated
+#doc(hidden)
+pub extend Inline with Eq::{not_equal, equal}
+
+///|
+#deprecated
+#doc(hidden)
+pub extend Inline with @debug.Debug::{to_repr}
+
+///|
 pub fn Inline::empty() -> Inline {
   Inlines({ v: [], meta: Meta::none(), })
 }
@@ -219,6 +229,16 @@ pub(all) struct InlineAutolink {
 } derive(Eq, Debug)
 
 ///|
+#deprecated
+#doc(hidden)
+pub extend InlineAutolink with Eq::{not_equal, equal}
+
+///|
+#deprecated
+#doc(hidden)
+pub extend InlineAutolink with @debug.Debug::{to_repr}
+
+///|
 pub fn InlineAutolink::new(link : StringNode) -> InlineAutolink {
   let raw_link = "<{$link.raw}>"
   { is_email: !(@cmark_base.autolink_email(raw_link) is None), link, }
@@ -230,6 +250,16 @@ pub(all) struct InlineBreak {
   ty : InlineBreakType
   layout_after : BlanksNode
 } derive(Eq, Debug)
+
+///|
+#deprecated
+#doc(hidden)
+pub extend InlineBreak with Eq::{not_equal, equal}
+
+///|
+#deprecated
+#doc(hidden)
+pub extend InlineBreak with @debug.Debug::{to_repr}
 
 ///|
 pub fn InlineBreak::new(
@@ -247,11 +277,46 @@ pub(all) enum InlineBreakType {
 } derive(Eq, Compare, Debug, FromJson, ToJson)
 
 ///|
+#deprecated
+#doc(hidden)
+pub extend InlineBreakType with Eq::{not_equal, equal}
+
+///|
+#deprecated
+#doc(hidden)
+pub extend InlineBreakType with Compare::{op_lt, op_le, op_ge, compare, op_gt}
+
+///|
+#deprecated
+#doc(hidden)
+pub extend InlineBreakType with @debug.Debug::{to_repr}
+
+///|
+#deprecated
+#doc(hidden)
+pub extend InlineBreakType with @json.FromJson::{from_json}
+
+///|
+#deprecated
+#doc(hidden)
+pub extend InlineBreakType with ToJson::{to_json}
+
+///|
 /// The type for [code spans](https://spec.commonmark.org/0.30/#code-spans).
 pub(all) struct InlineCodeSpan {
   backticks : Count
   code_layout : Seq[Tight]
 } derive(Eq, Debug)
+
+///|
+#deprecated
+#doc(hidden)
+pub extend InlineCodeSpan with Eq::{not_equal, equal}
+
+///|
+#deprecated
+#doc(hidden)
+pub extend InlineCodeSpan with @debug.Debug::{to_repr}
 
 ///|
 pub fn InlineCodeSpan::new(
@@ -346,6 +411,16 @@ pub(all) struct InlineEmphasis {
 } derive(Eq, Debug)
 
 ///|
+#deprecated
+#doc(hidden)
+pub extend InlineEmphasis with Eq::{not_equal, equal}
+
+///|
+#deprecated
+#doc(hidden)
+pub extend InlineEmphasis with @debug.Debug::{to_repr}
+
+///|
 pub fn InlineEmphasis::new(
   delim~ : Char = '*',
   inline : Inline,
@@ -360,6 +435,16 @@ pub(all) struct InlineLink {
 } derive(Eq, Debug)
 
 ///|
+#deprecated
+#doc(hidden)
+pub extend InlineLink with Eq::{not_equal, equal}
+
+///|
+#deprecated
+#doc(hidden)
+pub extend InlineLink with @debug.Debug::{to_repr}
+
+///|
 pub(all) enum ReferenceKind {
   /// https://spec.commonmark.org/0.30/#inline-link
   Inline(Node[LinkDefinition])
@@ -367,6 +452,16 @@ pub(all) enum ReferenceKind {
   /// First label is the label of the reference, second label is the label of the referenced definition.
   Ref(ReferenceLayout, Label, Label)
 } derive(Eq, Debug)
+
+///|
+#deprecated
+#doc(hidden)
+pub extend ReferenceKind with Eq::{not_equal, equal}
+
+///|
+#deprecated
+#doc(hidden)
+pub extend ReferenceKind with @debug.Debug::{to_repr}
 
 ///|
 /// The type for reference link layouts.
@@ -378,6 +473,26 @@ pub(all) enum ReferenceLayout {
   /// https://spec.commonmark.org/0.30/#shortcut-reference-link
   Shortcut
 } derive(Eq, Debug, FromJson, ToJson)
+
+///|
+#deprecated
+#doc(hidden)
+pub extend ReferenceLayout with Eq::{not_equal, equal}
+
+///|
+#deprecated
+#doc(hidden)
+pub extend ReferenceLayout with @debug.Debug::{to_repr}
+
+///|
+#deprecated
+#doc(hidden)
+pub extend ReferenceLayout with @json.FromJson::{from_json}
+
+///|
+#deprecated
+#doc(hidden)
+pub extend ReferenceLayout with ToJson::{to_json}
 
 ///|
 pub fn InlineLink::new(text : Inline, reference : ReferenceKind) -> InlineLink {
@@ -444,6 +559,16 @@ pub fn InlineLink::is_unsafe(l : String) -> Bool {
 pub(all) struct InlineRawHtml(Seq[Tight]) derive(Eq, Debug)
 
 ///|
+#deprecated
+#doc(hidden)
+pub extend InlineRawHtml with Eq::{not_equal, equal}
+
+///|
+#deprecated
+#doc(hidden)
+pub extend InlineRawHtml with @debug.Debug::{to_repr}
+
+///|
 /// The type for [textual content](https://spec.commonmark.org/0.30/#textual-content).
 ///
 /// Normally these strings should not contain newlines. This can
@@ -457,10 +582,30 @@ pub type InlineText = String
 pub(all) struct InlineStrikethrough(Inline) derive(Eq, Debug)
 
 ///|
+#deprecated
+#doc(hidden)
+pub extend InlineStrikethrough with Eq::{not_equal, equal}
+
+///|
+#deprecated
+#doc(hidden)
+pub extend InlineStrikethrough with @debug.Debug::{to_repr}
+
+///|
 pub(all) struct InlineMathSpan {
   display : Bool
   tex_layout : Seq[Tight]
 } derive(Eq, Debug)
+
+///|
+#deprecated
+#doc(hidden)
+pub extend InlineMathSpan with Eq::{not_equal, equal}
+
+///|
+#deprecated
+#doc(hidden)
+pub extend InlineMathSpan with @debug.Debug::{to_repr}
 
 ///|
 pub fn InlineMathSpan::tex(self : Self) -> String {
