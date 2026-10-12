@@ -53,12 +53,12 @@ fn is_unicode_punctuation(c : Char) -> Bool {
 
 ///|
 #cfg(target="js")
-extern "js" fn is_unicode_punctuation_ffi(code : Int) -> Bool =
+extern "js" fn is_unicode_punctuation_ffi(code : Int32) -> Bool =
   #|(code) => /[\p{P}\p{S}]/u.test(String.fromCodePoint(code))
 
 ///|
 #cfg(target="js")
-extern "js" fn is_whitespace_ffi(code : Int) -> Bool =
+extern "js" fn is_whitespace_ffi(code : Int32) -> Bool =
   #|(code) => {
   #|  const char = String.fromCodePoint(code);
   #|  // Match Unicode whitespace using JS regex
@@ -67,7 +67,7 @@ extern "js" fn is_whitespace_ffi(code : Int) -> Bool =
 
 ///|
 #cfg(target="js")
-extern "js" fn is_punctuation_ffi(code : Int) -> Bool =
+extern "js" fn is_punctuation_ffi(code : Int32) -> Bool =
   #|(code) => {
   #|  const char = String.fromCodePoint(code);
   #|  // Match Unicode punctuation categories (Pc, Pd, Pe, Pf, Pi, Po, Ps)
@@ -77,11 +77,21 @@ extern "js" fn is_punctuation_ffi(code : Int) -> Bool =
 // Non-JS backend implementation using charclass library
 
 ///|
+// These aliases are intentionally unused by the JS implementation.
+let _unicode_is_whitespace : (Char) -> Bool = @unicode.is_whitespace
+
+///|
+let _unicode_is_punctuation : (Char) -> Bool = @unicode.is_punctuation
+
+///|
+let _unicode_is_symbol : (Char) -> Bool = @unicode.is_symbol
+
+///|
 /// Uses charclass library with full Unicode Whitespace property
 /// Check if a character is a Unicode whitespace
 #cfg(not(target="js"))
 pub fn is_whitespace(c : Char) -> Bool {
-  @unicode.is_whitespace(c)
+  _unicode_is_whitespace(c)
 }
 
 /// Uses charclass library with fixed Unicode version
@@ -90,7 +100,7 @@ pub fn is_whitespace(c : Char) -> Bool {
 /// Check if a character is a Unicode punctuation
 #cfg(not(target="js"))
 pub fn is_punctuation(c : Char) -> Bool {
-  @unicode.is_punctuation(c)
+  _unicode_is_punctuation(c)
 }
 
 ///|
@@ -99,5 +109,5 @@ pub fn is_punctuation(c : Char) -> Bool {
 /// i.e. in the Unicode `P` (punctuation) or `S` (symbol) general categories.
 #cfg(not(target="js"))
 fn is_unicode_punctuation(c : Char) -> Bool {
-  @unicode.is_punctuation(c) || @unicode.is_symbol(c)
+  _unicode_is_punctuation(c) || _unicode_is_symbol(c)
 }

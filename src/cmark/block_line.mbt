@@ -33,7 +33,7 @@ pub(all) struct Tight {
 } derive(Eq, Debug)
 
 ///|
-pub fn Tight::empty(meta? : Meta = Meta::none()) -> Tight {
+pub fn Tight::empty(meta~ : Meta = Meta::none()) -> Tight {
   { blanks: "", node: StringNode::empty(meta~), }
 }
 
@@ -63,10 +63,10 @@ pub fn Tight::list_text_loc(ls : Seq[Tight]) -> TextLoc {
 
 ///|
 fn BlockLine::flush_tight(
-  meta? : Meta = Meta::none(),
+  meta~ : Meta = Meta::none(),
   s : String,
-  start : Int,
-  last : Int,
+  start : Int32,
+  last : Int32,
   acc : Array[Tight],
 ) -> Unit {
   // If [s] has newlines, blanks after newlines are layout

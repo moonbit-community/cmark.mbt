@@ -4,7 +4,7 @@ fn code_point_of_surrogate_pair(leading : UInt16, trailing : UInt16) -> Char {
 }
 
 ///|
-pub fn at_checked(s : StringView, idx : Int) -> Result[Char, Int] {
+pub fn at_checked(s : StringView, idx : Int32) -> Result[Char, Int32] {
   guard 0 <= idx && idx < s.length() else { Err(0) }
   let c1 = s[idx]
   if c1.is_leading_surrogate() {
@@ -23,8 +23,8 @@ pub fn at_checked(s : StringView, idx : Int) -> Result[Char, Int] {
 pub fn sub_includes(
   affix~ : String,
   s : String,
-  first~ : Int,
-  last~ : Int,
+  first~ : Int32,
+  last~ : Int32,
 ) -> Bool {
   let len_a = affix.length()
   let len_s = last - first + 1
@@ -46,7 +46,7 @@ pub fn sub_includes(
 /// Uses UTF-16 semantics: if the code unit at `before - 1` is a trailing
 /// surrogate (0xDC00–0xDFFF), the character is a surrogate pair starting at
 /// `before - 2`; otherwise the character starts at `before - 1`.
-pub fn prev_char(s : StringView, first~ : Int, before~ : Int) -> Char {
+pub fn prev_char(s : StringView, first~ : Int32, before~ : Int32) -> Char {
   guard 0 <= first && first < before && before <= s.length() else { ' ' }
   let k = before - 1
   let u = s[k]
@@ -66,7 +66,7 @@ pub fn prev_char(s : StringView, first~ : Int, before~ : Int) -> Char {
 }
 
 ///|
-pub fn next_char(s : StringView, last~ : Int, after~ : Int) -> Char {
+pub fn next_char(s : StringView, last~ : Int32, after~ : Int32) -> Char {
   guard after < last && after + 1 < s.length() else { ' ' }
   match at_checked(s, after + 1) {
     Ok(c) => c
@@ -76,11 +76,11 @@ pub fn next_char(s : StringView, last~ : Int, after~ : Int) -> Char {
 
 ///|
 pub fn utf_16_clean_raw(
-  pad? : Int = 0,
+  pad~ : Int32 = 0,
   buf : StringBuilder,
   s : String,
-  first~ : Int,
-  last~ : Int,
+  first~ : Int32,
+  last~ : Int32,
 ) -> String {
   fn pad_it() {
     for _ in 0..<pad {
@@ -166,8 +166,8 @@ pub fn utf_16_clean_raw(
 pub fn utf_16_clean_unesc_unref(
   buf : StringBuilder,
   s : String,
-  first~ : Int,
-  last~ : Int,
+  first~ : Int32,
+  last~ : Int32,
 ) -> String {
   _utf_16_clean_unesc_unref(do_unesc=true, buf, s, first~, last~)
 }
@@ -176,8 +176,8 @@ pub fn utf_16_clean_unesc_unref(
 pub fn utf_16_clean_unref(
   buf : StringBuilder,
   s : String,
-  first~ : Int,
-  last~ : Int,
+  first~ : Int32,
+  last~ : Int32,
 ) -> String {
   _utf_16_clean_unesc_unref(do_unesc=false, buf, s, first~, last~)
 }
@@ -186,9 +186,9 @@ pub fn utf_16_clean_unref(
 fn flush(
   buf : StringBuilder,
   s : String,
-  last : Int,
-  start : Int,
-  k : Int,
+  last : Int32,
+  start : Int32,
+  k : Int32,
 ) -> Unit {
   if start <= last {
     for j = start {
@@ -212,8 +212,8 @@ fn _utf_16_clean_unesc_unref(
   do_unesc~ : Bool,
   buf : StringBuilder,
   s : String,
-  first~ : Int,
-  last~ : Int,
+  first~ : Int32,
+  last~ : Int32,
 ) -> String {
   let flush = fn(last, start, k) { flush(buf, s, last, start, k) }
 
@@ -229,7 +229,7 @@ fn _utf_16_clean_unesc_unref(
           if k == num_start {
             return resolve(last, start, next)
           }
-          let u = match Int::to_char(u) {
+          let u = match Int32::to_char(u) {
             Some('\u{0}') | None => rep
             Some(u) => u
           }
@@ -257,7 +257,7 @@ fn _utf_16_clean_unesc_unref(
           if k == num_start {
             return resolve(last, start, next)
           }
-          let u = match Int::to_char(u) {
+          let u = match Int32::to_char(u) {
             Some('\u{0}') | None => rep
             Some(u) => u
           }

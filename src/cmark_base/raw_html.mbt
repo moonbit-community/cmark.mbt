@@ -1,9 +1,9 @@
 ///|
 /// https://spec.commonmark.org/current/#tag-name
-fn tag_name(s : String, last? : Int = -1, start? : Int = 0) -> Int? {
+fn tag_name(s : String, last~ : Int32 = -1, start~ : Int32 = 0) -> Int32? {
   let last = if last < 0 { s.length() + last } else { last }
   // A tag name starts with an ASCII letter
-  guard start <= last && s[start] is ('a'..='z' | 'A'..='Z') else { None }
+  guard start <= last && s[start] is ('a'..<='z' | 'A'..<='Z') else { None }
   for k = start + 1 {
     guard k <= last else { break Some(k - 1) }
     match s.get_char(k) {
@@ -15,7 +15,7 @@ fn tag_name(s : String, last? : Int = -1, start? : Int = 0) -> Int? {
 
 ///|
 /// https://spec.commonmark.org/current/#attribute-name
-fn attribute_name(s : String, last? : Int = -1, start? : Int = 0) -> Next? {
+fn attribute_name(s : String, last~ : Int32 = -1, start~ : Int32 = 0) -> Next? {
   let last = if last < 0 { s.length() + last } else { last }
   fn char_is_start(c : Char) -> Bool {
     match c {
@@ -50,8 +50,8 @@ fn[A] attribute_value(
   lines : A,
   line~ : LineSpan,
   spans : Array[Span],
-  start~ : Int,
-) -> (LineSpan, Int)? {
+  start~ : Int32,
+) -> (LineSpan, Int32)? {
   if start > line.last {
     return None
   }
@@ -89,7 +89,7 @@ fn[A] attribute(
   lines : A,
   line~ : LineSpan,
   spans : Ref[Array[Span]],
-  start~ : Int,
+  start~ : Int32,
 ) -> (LineSpan, Last, Bool)? {
   guard attribute_name(s, last=line.last, start~) is Some(end_name) else {
     return None

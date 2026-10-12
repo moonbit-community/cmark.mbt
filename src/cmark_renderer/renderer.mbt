@@ -11,10 +11,10 @@ pub(all) struct Renderer {
 
 ///|
 pub fn Renderer::new(
-  init_context? : InitContextFn = fn(_c, _d) {  },
-  inline? : InlineFn = fn(_c, _i) { false },
-  block? : BlockFn = fn(_c, _b) { false },
-  doc? : DocFn = fn(_c, _d) { false },
+  init_context~ : InitContextFn = fn(_c, _d) {  },
+  inline~ : InlineFn = fn(_c, _i) { false },
+  block~ : BlockFn = fn(_c, _b) { false },
+  doc~ : DocFn = fn(_c, _d) { false },
 ) -> Renderer {
   { init_context, inline, block, doc, }
 }
@@ -104,7 +104,7 @@ pub fn Context::doc(self : Context, doc : Doc) -> Unit raise {
 
 ///|
 pub fn Renderer::doc_to_string(self : Renderer, doc : Doc) -> String raise {
-  let buf = StringBuilder::new(size_hint=1024)
+  let buf = StringBuilder(size_hint=1024)
   self.buffer_add_doc(buf, doc)
   buf.to_string()
 }

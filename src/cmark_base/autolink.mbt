@@ -1,13 +1,17 @@
 ///|
 /// `autolink_email(s, last, start)` matches an email autolink starting at
 /// `start` in the range `[start;last]` (assumed on the same line).
-pub fn autolink_email(s : String, last? : Int = -1, start? : Int = 0) -> Last? {
+pub fn autolink_email(
+  s : String,
+  last~ : Int32 = -1,
+  start~ : Int32 = 0,
+) -> Last? {
   let last = if last < 0 { s.length() + last } else { last }
   fn char_is_alphanum_or_hyp(c) {
     @char.is_ascii_alphanum(c) || c == '-'
   }
 
-  fn label_seq(last : Int, k : Int) -> Int? {
+  fn label_seq(last : Int32, k : Int32) -> Int32? {
     guard k <= last && s[k].to_char() is Some(c) && @char.is_ascii_alphanum(c) else {
       return None
     }
@@ -48,7 +52,11 @@ pub fn autolink_email(s : String, last? : Int = -1, start? : Int = 0) -> Last? {
 ///|
 /// `autolink_uri(s, last, start)` matches an URI autolink starting at
 /// `start` in the range `[start;last]` (assumed on the same line).
-pub fn autolink_uri(s : String, last? : Int = -1, start? : Int = 0) -> Last? {
+pub fn autolink_uri(
+  s : String,
+  last~ : Int32 = -1,
+  start~ : Int32 = 0,
+) -> Last? {
   let last = if last < 0 { s.length() + last } else { last }
   let char_is_scheme = fn(c) {
     @char.is_ascii_alphanum(c) || c is ('+' | '-' | '.')
@@ -57,7 +65,7 @@ pub fn autolink_uri(s : String, last? : Int = -1, start? : Int = 0) -> Last? {
   // halves belong to non-ASCII chars, which are allowed.
   let unit_is_uri = fn(u : UInt16) {
     match u.to_char() {
-      Some(c) => !(c is ('\u{0}'..='\u{1f}' | '\u{7f}' | '<' | '>' | ' '))
+      Some(c) => !(c is ('\u{0}'..<='\u{1f}' | '\u{7f}' | '<' | '>' | ' '))
       None => true
     }
   }

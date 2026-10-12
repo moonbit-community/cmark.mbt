@@ -96,7 +96,7 @@ test "string processing" {
 
   // UTF-16 cleaning (handles invalid sequences)
   let s = "&#xcab;&#XD800;"
-  let buf = StringBuilder::new()
+  let buf = StringBuilder()
   let cleaned = @char.utf_16_clean_unref(buf, s, first=0, last=6)
   inspect(cleaned, content="ಫ")
   let cleaned = @char.utf_16_clean_unref(buf, s, first=7, last=14)

@@ -33,7 +33,7 @@ pub fn[A] Seq::iter(self : Seq[A]) -> Iter[A] {
 
 ///|
 /// @coverage.skip
-pub fn[A] Seq::length(self : Seq[A]) -> Int {
+pub fn[A] Seq::length(self : Seq[A]) -> Int32 {
   self.0.length()
 }
 
@@ -57,21 +57,21 @@ pub fn[A, B] Seq::rev_fold(self : Seq[A], init~ : B, f : (B, A) -> B) -> B {
 
 ///|
 /// @coverage.skip
-pub fn[A] Seq::get(self : Seq[A], idx : Int) -> A? {
+pub fn[A] Seq::get(self : Seq[A], idx : Int32) -> A? {
   self.0.get(idx)
 }
 
 ///|
 /// @coverage.skip
 #alias("_[_]")
-pub fn[A] Seq::unsafe_get(self : Seq[A], idx : Int) -> A {
+pub fn[A] Seq::unsafe_get(self : Seq[A], idx : Int32) -> A {
   self.0[idx]
 }
 
 ///|
 /// @coverage.skip
 #alias("_[_]=_")
-pub fn[A] Seq::set(self : Seq[A], idx : Int, val : A) -> Unit {
+pub fn[A] Seq::set(self : Seq[A], idx : Int32, val : A) -> Unit {
   self.0[idx] = val
 }
 

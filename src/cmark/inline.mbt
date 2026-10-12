@@ -158,7 +158,7 @@ pub fn Inline::to_plain_text(
 ///|
 pub fn Inline::id(
   self : Inline,
-  buf? : StringBuilder = StringBuilder::new(size_hint=256),
+  buf~ : StringBuilder = StringBuilder(size_hint=256),
 ) -> String {
   let text = self.to_plain_text(break_on_soft=false)
   let s = text.0.map(fn(l) { l.0.join("") }).join("\n")
@@ -233,8 +233,8 @@ pub(all) struct InlineBreak {
 
 ///|
 pub fn InlineBreak::new(
-  layout_before? : BlanksNode = layout_empty,
-  layout_after? : BlanksNode = layout_empty,
+  layout_before~ : BlanksNode = layout_empty,
+  layout_after~ : BlanksNode = layout_empty,
   ty : InlineBreakType,
 ) -> InlineBreak {
   { layout_before, ty, layout_after, }
@@ -283,7 +283,7 @@ fn InlineCodeSpan::min_backticks(
 /// the lines of the resulting code layout (see `code_layout`).
 /// the resulting code layout (see `code_layout`).
 pub fn InlineCodeSpan::from_string(
-  meta? : Meta = Meta::none(),
+  meta~ : Meta = Meta::none(),
   s : String,
 ) -> InlineCodeSpan {
   if s.is_empty() {
@@ -347,7 +347,7 @@ pub(all) struct InlineEmphasis {
 
 ///|
 pub fn InlineEmphasis::new(
-  delim? : Char = '*',
+  delim~ : Char = '*',
   inline : Inline,
 ) -> InlineEmphasis {
   { delim, inline, }

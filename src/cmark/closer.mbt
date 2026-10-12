@@ -6,14 +6,14 @@
 /// `inline_struct`
 priv enum Closer {
   /// Run length of backticks.
-  Backticks(Int)
+  Backticks(Int32)
   RightBrack
   RightParen
-  MathSpanMarks(Int)
+  MathSpanMarks(Int32)
 } derive(Eq, Hash, Debug)
 
 ///|
-type Positions = Array[Int]
+type Positions = Array[Int32]
 
 ///|
 priv struct CloserIndex(Map[Closer, Positions]) derive(Debug)
@@ -30,7 +30,7 @@ fn CloserIndex::new() -> CloserIndex {
 }
 
 ///|
-fn CloserIndex::add(self : CloserIndex, key : Closer, pos : Int) -> Unit {
+fn CloserIndex::add(self : CloserIndex, key : Closer, pos : Int32) -> Unit {
   (match self.0.get(key) {
     Some(ps) => ps
     None => {
@@ -42,7 +42,7 @@ fn CloserIndex::add(self : CloserIndex, key : Closer, pos : Int) -> Unit {
 }
 
 ///|
-fn CloserIndex::pos(self : CloserIndex, key : Closer, after~ : Int) -> Int? {
+fn CloserIndex::pos(self : CloserIndex, key : Closer, after~ : Int32) -> Int32? {
   guard self.0.get(key) is Some(positions) else { return None }
   let len = positions.length()
   let first = for lo = 0, hi = len {
@@ -63,6 +63,10 @@ fn CloserIndex::pos(self : CloserIndex, key : Closer, after~ : Int) -> Int? {
 }
 
 ///|
-fn CloserIndex::exists(self : CloserIndex, key : Closer, after~ : Int) -> Bool {
+fn CloserIndex::exists(
+  self : CloserIndex,
+  key : Closer,
+  after~ : Int32,
+) -> Bool {
   !(self.pos(key, after~) is None)
 }

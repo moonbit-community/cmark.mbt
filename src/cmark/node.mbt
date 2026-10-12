@@ -5,7 +5,7 @@ pub(all) struct Node[A] {
 } derive(Eq, Debug)
 
 ///|
-pub fn[A] Node::new(v : A, meta? : Meta = Meta::none()) -> Node[A] {
+pub fn[A] Node::new(v : A, meta~ : Meta = Meta::none()) -> Node[A] {
   { v, meta, }
 }
 
@@ -21,6 +21,6 @@ pub type StringNode = Node[String]
 pub type BlanksNode = Node[Blanks]
 
 ///|
-pub fn StringNode::empty(meta? : Meta = Meta::none()) -> StringNode {
+pub fn StringNode::empty(meta~ : Meta = Meta::none()) -> StringNode {
   { v: "", meta, }
 }

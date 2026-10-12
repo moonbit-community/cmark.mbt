@@ -8,7 +8,7 @@ priv enum SpecSection {
 ///|
 /// The examples of the CommonMark spec (`src/data/test/spec.md`) as
 /// `(number, markdown, expected_html)`.
-fn spec_examples() -> Array[(Int, String, String)] {
+fn spec_examples() -> Array[(Int32, String, String)] {
   let fence = "`".repeat(32)
   let tabs = (s : String) => s.replace_all(old="→", new="\t")
   let examples = []

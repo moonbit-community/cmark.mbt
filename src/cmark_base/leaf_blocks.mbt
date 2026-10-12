@@ -14,7 +14,7 @@ pub(all) enum ListType {
   /// With the given marker.
   Unordered(Char)
   /// Starting at given integer, markers ending with given character, i.e. ')' or '.'.
-  Ordered(Int, Char)
+  Ordered(Int32, Char)
 } derive(Debug, FromJson, ToJson, Eq)
 
 ///|
@@ -246,7 +246,7 @@ pub(all) enum FencedCodeBlockContinue {
 /// indent, fence char and number of fence chars.
 pub fn FencedCodeBlockContinue::new(
   s : String,
-  fence~ : (Char, Int),
+  fence~ : (Char, Int32),
   last~ : CharCodePos,
   start~ : CharCodePos,
 ) -> FencedCodeBlockContinue {
@@ -402,7 +402,7 @@ pub fn LineType::html_block_start(
       // view boundary at tag_last + 1 could land on an unpaired
       // surrogate and abort.
       let tag = {
-        let b = StringBuilder::new(size_hint=tag_last - tag_first + 1)
+        let b = StringBuilder(size_hint=tag_last - tag_first + 1)
         for i in tag_first..<=tag_last {
           b.write_char(@char.to_ascii_lower(s[i].unsafe_to_char()))
         }
@@ -565,13 +565,13 @@ pub fn LineType::list_marker(
         Nomatch
       }
     }
-    '0'..='9' as c =>
+    '0'..<='9' as c =>
       for count = 1, acc = @char.ascii_digit_to_int(c), k = start + 1 {
         if k > last || count > 9 {
           return Nomatch
         }
         break match s[k].unsafe_to_char() {
-          '0'..='9' as c =>
+          '0'..<='9' as c =>
             continue count + 1, acc * 10 + @char.ascii_digit_to_int(c), k + 1
           '.' | ')' as c => {
             let next = k + 1

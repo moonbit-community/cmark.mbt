@@ -1,5 +1,5 @@
 ///|
-type Col = Int
+type Col = Int32
 
 ///|
 #coverage.skip

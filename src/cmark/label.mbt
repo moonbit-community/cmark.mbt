@@ -20,7 +20,7 @@ pub type LabelKey = String
 
 ///|
 pub fn Label::new(
-  meta? : Meta = Meta::none(),
+  meta~ : Meta = Meta::none(),
   key~ : String,
   text : Seq[Tight],
 ) -> Label {
@@ -38,7 +38,7 @@ pub impl Eq for Label with fn equal(self, other) {
 }
 
 ///|
-pub fn Label::compare(self : Label, other : Label) -> Int {
+pub fn Label::compare(self : Label, other : Label) -> Int32 {
   self.key.compare(other.key)
 }
 

@@ -10,10 +10,10 @@ pub(all) struct NodeAttributesFn(
 fn attribute_name_is_valid(name : String) -> Bool {
   guard !name.is_empty() else { return false }
   for index, unit in name {
-    if unit is ('A'..='Z' | 'a'..='z' | '_' | ':') {
+    if unit is ('A'..<='Z' | 'a'..<='z' | '_' | ':') {
       continue
     }
-    if index > 0 && unit is ('0'..='9' | '-' | '.') {
+    if index > 0 && unit is ('0'..<='9' | '-' | '.') {
       continue
     }
     return false
@@ -26,7 +26,7 @@ fn write_node_attributes(
   c : Context,
   meta : @cmark_base.Meta,
   tag : String,
-  reserved? : Array[String] = [],
+  reserved~ : Array[String] = [],
 ) -> Unit raise {
   guard c.state is Some(EState({ node_attributes: Some(hook), .. })) else {
     return
