@@ -21,9 +21,24 @@ pub(all) enum FolderResult[A] {
 } derive(Eq, Debug)
 
 ///|
+#deprecated
+#doc(hidden)
+pub extend FolderResult with Eq::{not_equal, equal}
+
+///|
+#deprecated
+#doc(hidden)
+pub extend FolderResult with @debug.Debug::{to_repr}
+
+///|
 pub impl[A] Default for FolderResult[A] with fn default() {
   Default
 }
+
+///|
+#deprecated
+#doc(hidden)
+pub extend FolderResult with Default::{default}
 
 ///|
 pub fn[A] Folder::ret(a : A) -> FolderResult[A] {

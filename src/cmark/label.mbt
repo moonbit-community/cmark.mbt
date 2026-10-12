@@ -13,6 +13,11 @@ pub(all) struct Label {
 } derive(Debug)
 
 ///|
+#deprecated
+#doc(hidden)
+pub extend Label with @debug.Debug::{to_repr}
+
+///|
 /// The type for label keys. These are
 /// [link labels](https://spec.commonmark.org/0.30/#link-label)
 /// normalized for [matches](https://spec.commonmark.org/0.30/#matches).
@@ -38,6 +43,11 @@ pub impl Eq for Label with fn equal(self, other) {
 }
 
 ///|
+#deprecated
+#doc(hidden)
+pub extend Label with Eq::{not_equal, equal}
+
+///|
 pub fn Label::compare(self : Label, other : Label) -> Int32 {
   self.key.compare(other.key)
 }
@@ -47,6 +57,11 @@ pub(all) enum LabelDef {
   LinkDef(Node[LinkDefinition])
   FootnoteDef(Node[Footnote])
 } derive(Debug)
+
+///|
+#deprecated
+#doc(hidden)
+pub extend LabelDef with @debug.Debug::{to_repr}
 
 ///|
 pub type LabelDefs = Map[LabelKey, LabelDef]

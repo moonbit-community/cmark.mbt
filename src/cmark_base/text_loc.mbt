@@ -8,6 +8,31 @@ pub(all) struct TextLoc {
 } derive(Eq, Compare, Debug, FromJson, ToJson)
 
 ///|
+#deprecated
+#doc(hidden)
+pub extend TextLoc with Eq::{not_equal, equal}
+
+///|
+#deprecated
+#doc(hidden)
+pub extend TextLoc with Compare::{op_lt, op_le, op_ge, compare, op_gt}
+
+///|
+#deprecated
+#doc(hidden)
+pub extend TextLoc with @debug.Debug::{to_repr}
+
+///|
+#deprecated
+#doc(hidden)
+pub extend TextLoc with @json.FromJson::{from_json}
+
+///|
+#deprecated
+#doc(hidden)
+pub extend TextLoc with ToJson::{to_json}
+
+///|
 let text_loc_none : TextLoc = {
   file: file_path_none,
   first_ccode: char_code_pos_none,
@@ -104,6 +129,31 @@ pub(all) struct LinePos(LineNum, CharCodePos) derive (
 )
 
 ///|
+#deprecated
+#doc(hidden)
+pub extend LinePos with @debug.Debug::{to_repr}
+
+///|
+#deprecated
+#doc(hidden)
+pub extend LinePos with Eq::{not_equal, equal}
+
+///|
+#deprecated
+#doc(hidden)
+pub extend LinePos with Compare::{op_lt, op_le, op_ge, compare, op_gt}
+
+///|
+#deprecated
+#doc(hidden)
+pub extend LinePos with @json.FromJson::{from_json}
+
+///|
+#deprecated
+#doc(hidden)
+pub extend LinePos with ToJson::{to_json}
+
+///|
 pub let line_pos_none : LinePos = LinePos(line_num_none, char_code_pos_none)
 
 ///|
@@ -114,11 +164,41 @@ pub(all) struct LineSpan {
 } derive(Debug, Eq, Compare)
 
 ///|
+#deprecated
+#doc(hidden)
+pub extend LineSpan with @debug.Debug::{to_repr}
+
+///|
+#deprecated
+#doc(hidden)
+pub extend LineSpan with Eq::{not_equal, equal}
+
+///|
+#deprecated
+#doc(hidden)
+pub extend LineSpan with Compare::{op_lt, op_le, op_ge, compare, op_gt}
+
+///|
 ///  A line span with the byte position on where the line starts (inside a CommonMark container).  The [line_start] is the start of line in the container, the [line_span] has the actual data. The characters in the \[[line_start];[line_span.first - 1]\] are blanks.
 pub(all) struct Span {
   start : CharCodePos
   span : LineSpan
 } derive(Debug, Eq, Compare)
+
+///|
+#deprecated
+#doc(hidden)
+pub extend Span with @debug.Debug::{to_repr}
+
+///|
+#deprecated
+#doc(hidden)
+pub extend Span with Eq::{not_equal, equal}
+
+///|
+#deprecated
+#doc(hidden)
+pub extend Span with Compare::{op_lt, op_le, op_ge, compare, op_gt}
 
 ///|
 pub(all) struct NextLineFn[A]((A) -> LineSpan?)
@@ -128,3 +208,8 @@ pub(all) enum NextLineResult {
   ThisLine(CharCodePos)
   NextLine(LineSpan, CharCodePos)
 } derive(Debug)
+
+///|
+#deprecated
+#doc(hidden)
+pub extend NextLineResult with @debug.Debug::{to_repr}

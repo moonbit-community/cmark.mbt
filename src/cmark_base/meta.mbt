@@ -6,6 +6,11 @@ pub(all) struct Meta {
 } derive(Debug)
 
 ///|
+#deprecated
+#doc(hidden)
+pub extend Meta with @debug.Debug::{to_repr}
+
+///|
 type MetaId = Int32
 
 ///|
@@ -30,6 +35,11 @@ pub fn Meta::none() -> Meta {
 pub impl Eq for Meta with fn equal(self, other) {
   self.id == other.id
 }
+
+///|
+#deprecated
+#doc(hidden)
+pub extend Meta with Eq::{not_equal, equal}
 
 ///|
 pub fn Meta::compare(self : Meta, other : Meta) -> Int32 {

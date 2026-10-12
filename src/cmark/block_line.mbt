@@ -33,6 +33,16 @@ pub(all) struct Tight {
 } derive(Eq, Debug)
 
 ///|
+#deprecated
+#doc(hidden)
+pub extend Tight with Eq::{not_equal, equal}
+
+///|
+#deprecated
+#doc(hidden)
+pub extend Tight with @debug.Debug::{to_repr}
+
+///|
 pub fn Tight::empty(meta~ : Meta = Meta::none()) -> Tight {
   { blanks: "", node: StringNode::empty(meta~), }
 }
