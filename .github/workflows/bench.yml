@@ -32,10 +32,12 @@ jobs:
         env:
           MOONC_INTERNAL_PARAMS: "allocator = tlsf-mbt |"
         run: |
-          moon update
+          set -euo pipefail
           cd cmarkwrap
+          moon update
+          : > ../bench-output.txt
           for t in js wasm wasm-gc native; do
-            moon run --target $t --release src/main/ | tee -a ../bench-output.txt
+            moon run --target "$t" --release src/main/ | tee -a ../bench-output.txt
           done
 
       - name: Store benchmark result

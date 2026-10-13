@@ -4,7 +4,7 @@ version = "0.1.0"
 
 import {
   "moonbit-community/cmark@0.4.4",
-  "moonbitlang/x@0.4.43",
+  "moonbitlang/x@0.5.5",
 }
 
 readme = "README.md"
