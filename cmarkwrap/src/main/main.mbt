@@ -63,7 +63,7 @@ fn round_2(d : Double) -> String {
     raw = "0".repeat(3 - raw.length()) + raw
   }
   let raw_len = raw.length()
-  "\{raw.view(end_offset=raw_len - 2)}.\{raw.view(start_offset=raw_len - 2)}"
+  "\{raw.clamped_view(end=raw_len - 2)}.\{raw.clamped_view(start=raw_len - 2)}"
 }
 
 ///|
