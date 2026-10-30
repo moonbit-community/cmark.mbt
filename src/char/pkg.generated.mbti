@@ -2,13 +2,13 @@
 package "moonbit-community/cmark/char"
 
 // Values
-pub fn ascii_digit_to_int(Char) -> Int
+pub fn ascii_digit_to_int(Char) -> Int32
 
-pub fn ascii_hexdigit_to_int(Char) -> Int
+pub fn ascii_hexdigit_to_int(Char) -> Int32
 
-pub fn ascii_octdigit_to_int(Char) -> Int
+pub fn ascii_octdigit_to_int(Char) -> Int32
 
-pub fn at_checked(StringView, Int) -> Result[Char, Int]
+pub fn at_checked(StringView, Int32) -> Result[Char, Int32]
 
 pub fn is_ascii_alphanum(Char) -> Bool
 
@@ -22,29 +22,29 @@ pub fn is_ascii_punctuation(Char) -> Bool
 
 pub fn is_ascii_whitespace(Char) -> Bool
 
-pub fn length_utf16(Int) -> Int
+pub fn length_utf16(Int32) -> Int32
 
-pub fn length_utf32(Int) -> Int
+pub fn length_utf32(Int32) -> Int32
 
-pub fn length_utf8(Int) -> Int
+pub fn length_utf8(Int32) -> Int32
 
-pub fn next_char(StringView, last~ : Int, after~ : Int) -> Char
+pub fn next_char(StringView, last~ : Int32, after~ : Int32) -> Char
 
-pub fn prev_char(StringView, first~ : Int, before~ : Int) -> Char
+pub fn prev_char(StringView, first~ : Int32, before~ : Int32) -> Char
 
 pub let rep : Char
 
-pub fn sub_includes(affix~ : String, String, first~ : Int, last~ : Int) -> Bool
+pub fn sub_includes(affix~ : String, String, first~ : Int32, last~ : Int32) -> Bool
 
 pub fn to_ascii_lower(Char) -> Char
 
 pub fn to_ascii_upper(Char) -> Char
 
-pub fn utf_16_clean_raw(pad? : Int, StringBuilder, String, first~ : Int, last~ : Int) -> String
+pub fn utf_16_clean_raw(pad? : Int32, StringBuilder, String, first~ : Int32, last~ : Int32) -> String
 
-pub fn utf_16_clean_unesc_unref(StringBuilder, String, first~ : Int, last~ : Int) -> String
+pub fn utf_16_clean_unesc_unref(StringBuilder, String, first~ : Int32, last~ : Int32) -> String
 
-pub fn utf_16_clean_unref(StringBuilder, String, first~ : Int, last~ : Int) -> String
+pub fn utf_16_clean_unref(StringBuilder, String, first~ : Int32, last~ : Int32) -> String
 
 // Errors
 

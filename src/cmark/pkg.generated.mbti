@@ -50,14 +50,14 @@ pub fn Block::normalize(Self) -> Self
 
 pub(all) struct BlockHeading {
   layout : BlockHeadingLayout
-  level : Int
+  level : Int32
   inline : Inline
   id : BlockHeadingId?
 } derive(@debug.Debug)
-pub fn BlockHeading::new(id? : BlockHeadingId?, layout? : BlockHeadingLayout, level~ : Int, Inline) -> Self
+pub fn BlockHeading::new(id? : BlockHeadingId?, layout? : BlockHeadingLayout, level~ : Int32, Inline) -> Self
 
 pub(all) struct BlockHeadingAtxLayout {
-  indent : Int
+  indent : Int32
   after_opening : String
   closing : String
 } derive(ToJson, @debug.Debug, @json.FromJson)
@@ -74,10 +74,10 @@ pub(all) enum BlockHeadingLayout {
 } derive(@debug.Debug)
 
 pub(all) struct BlockHeadingSetextLayout {
-  leading_indent : Int
+  leading_indent : Int32
   trailing_blanks : String
-  underline_indent : Int
-  underline_count : Node[Int]
+  underline_indent : Int32
+  underline_count : Node[Int32]
   underline_blanks : String
 } derive(@debug.Debug)
 
@@ -94,25 +94,25 @@ pub fn BlockList::map_items(Self, (ListItem) -> ListItem) -> Self
 pub fn BlockList::normalize_items(Self) -> Self
 
 pub(all) struct BlockParagraph {
-  leading_indent : Int
+  leading_indent : Int32
   inline : Inline
   trailing_blanks : String
 } derive(@debug.Debug)
-pub fn BlockParagraph::new(leading_indent? : Int, trailing_blanks? : String, Inline) -> Self
+pub fn BlockParagraph::new(leading_indent? : Int32, trailing_blanks? : String, Inline) -> Self
 
 pub(all) struct BlockQuote {
-  indent : Int
+  indent : Int32
   block : Block
 } derive(@debug.Debug)
 pub fn BlockQuote::map_block(Self, (Block) -> Block) -> Self
-pub fn BlockQuote::new(indent? : Int, Block) -> Self
+pub fn BlockQuote::new(indent? : Int32, Block) -> Self
 pub fn BlockQuote::normalize_block(Self) -> Self
 
 pub(all) struct BlockThematicBreak {
-  indent : Int
+  indent : Int32
   layout : String
 } derive(ToJson, @debug.Debug, @json.FromJson)
-pub fn BlockThematicBreak::new(indent? : Int, layout? : String) -> Self
+pub fn BlockThematicBreak::new(indent? : Int32, layout? : String) -> Self
 
 pub(all) struct CodeBlock {
   layout : CodeBlockLayout
@@ -120,11 +120,11 @@ pub(all) struct CodeBlock {
   code : Seq[Node[String]]
 } derive(@debug.Debug)
 pub fn CodeBlock::language_of_info_string(String) -> (String, String)?
-pub fn CodeBlock::make_fence(Self) -> (Char, Int)
+pub fn CodeBlock::make_fence(Self) -> (Char, Int32)
 pub fn CodeBlock::new(layout? : CodeBlockLayout, info_string? : Node[String]?, Seq[Node[String]]) -> Self
 
 pub(all) struct CodeBlockFencedLayout {
-  indent : Int
+  indent : Int32
   opening_fence : Node[String]
   closing_fence : Node[String]?
 } derive(@debug.Debug)
@@ -170,13 +170,13 @@ pub(all) enum FolderResult[A] {
 pub impl[A] Default for FolderResult[A]
 
 pub(all) struct Footnote {
-  indent : Int
+  indent : Int32
   label : Label
   defined_label : Label?
   block : Block
 } derive(@debug.Debug)
 pub fn Footnote::map_block(Self, (Block) -> Block) -> Self
-pub fn Footnote::new(indent? : Int, defined_label? : Label?, Label, Block) -> Self
+pub fn Footnote::new(indent? : Int32, defined_label? : Label?, Label, Block) -> Self
 pub fn Footnote::normalize_block(Self) -> Self
 
 pub(all) struct HtmlBlock(Seq[Node[String]]) derive(@debug.Debug)
@@ -221,12 +221,12 @@ pub(all) enum InlineBreakType {
 } derive(Compare, Eq, ToJson, @debug.Debug, @json.FromJson)
 
 pub(all) struct InlineCodeSpan {
-  backticks : Int
+  backticks : Int32
   code_layout : Seq[Tight]
 } derive(Eq, @debug.Debug)
 pub fn InlineCodeSpan::code(Self) -> String
 pub fn InlineCodeSpan::from_string(meta? : @cmark_base.Meta, String) -> Self
-pub fn InlineCodeSpan::new(backticks~ : Int, Seq[Tight]) -> Self
+pub fn InlineCodeSpan::new(backticks~ : Int32, Seq[Tight]) -> Self
 
 pub(all) struct InlineEmphasis {
   delim : Char
@@ -258,7 +258,7 @@ pub(all) struct Label {
   key : String
   text : Seq[Tight]
 } derive(@debug.Debug)
-pub fn Label::compare(Self, Self) -> Int
+pub fn Label::compare(Self, Self) -> Int32
 pub fn Label::new(meta? : @cmark_base.Meta, key~ : String, Seq[Tight]) -> Self
 pub fn Label::text_loc(Self) -> @cmark_base.TextLoc
 pub impl Eq for Label
@@ -286,7 +286,7 @@ pub(all) struct LinkDefinition {
 pub fn LinkDefinition::new(layout? : LinkDefinitionLayout, label? : Label?, defined_label? : Label?, dest? : Node[String]?, title? : Seq[Tight]?) -> Self
 
 pub(all) struct LinkDefinitionLayout {
-  indent : Int
+  indent : Int32
   angled_dest : Bool
   before_dest : Seq[Node[String]]
   after_dest : Seq[Node[String]]
@@ -303,14 +303,14 @@ pub(all) enum LinkKind {
 
 #alias(ListItemBlock)
 pub(all) struct ListItem {
-  before_marker : Int
+  before_marker : Int32
   marker : Node[String]
-  after_marker : Int
+  after_marker : Int32
   block : Block
   ext_task_marker : Node[Char]?
 } derive(@debug.Debug)
 pub fn ListItem::map_block(Self, (Block) -> Block) -> Self
-pub fn ListItem::new(before_marker? : Int, marker? : Node[String], after_marker? : Int, ext_task_marker~ : Node[Char]?, Block) -> Self
+pub fn ListItem::new(before_marker? : Int32, marker? : Node[String], after_marker? : Int32, ext_task_marker~ : Node[Char]?, Block) -> Self
 pub fn ListItem::normalize_block(Self) -> Self
 
 pub(all) enum ListTaskStatus {
@@ -371,24 +371,24 @@ pub fn[A] Seq::empty() -> Self[A]
 pub fn[A, B] Seq::fold(Self[A], init~ : B, (B, A) -> B) -> B
 pub fn[A] Seq::from_array(Array[A]) -> Self[A]
 pub fn[A] Seq::from_iter(Iter[A]) -> Self[A]
-pub fn[A] Seq::get(Self[A], Int) -> A?
+pub fn[A] Seq::get(Self[A], Int32) -> A?
 pub fn[A] Seq::is_empty(Self[A]) -> Bool
 pub fn[A] Seq::iter(Self[A]) -> Iter[A]
-pub fn[A] Seq::length(Self[A]) -> Int
+pub fn[A] Seq::length(Self[A]) -> Int32
 pub fn[A, B] Seq::map(Self[A], (A) -> B) -> Self[B]
 pub fn[A, B] Seq::rev_fold(Self[A], init~ : B, (B, A) -> B) -> B
 #alias("_[_]=_")
-pub fn[A] Seq::set(Self[A], Int, A) -> Unit
+pub fn[A] Seq::set(Self[A], Int32, A) -> Unit
 pub fn[A] Seq::to_array(Self[A]) -> Array[A]
 #alias("_[_]")
-pub fn[A] Seq::unsafe_get(Self[A], Int) -> A
+pub fn[A] Seq::unsafe_get(Self[A], Int32) -> A
 
 pub(all) struct Table {
-  indent : Int
-  col_count : Int
+  indent : Int32
+  col_count : Int32
   rows : Seq[(Node[TableRow], String)]
 } derive(@debug.Debug)
-pub fn Table::new(indent? : Int, Seq[(Node[TableRow], String)]) -> Self
+pub fn Table::new(indent? : Int32, Seq[(Node[TableRow], String)]) -> Self
 
 pub(all) enum TableAlign {
   Left
@@ -404,7 +404,7 @@ pub(all) enum TableRow {
   Data(Seq[(Inline, TableCellLayout)])
 } derive(@debug.Debug)
 
-pub(all) struct TableSep((TableAlign?, Int)) derive(@debug.Debug)
+pub(all) struct TableSep((TableAlign?, Int32)) derive(@debug.Debug)
 
 pub(all) struct Tight {
   blanks : String
@@ -423,7 +423,7 @@ pub type BlockBlankLine = String
 
 pub type BlockLineBlank = Node[String]
 
-pub type Count = Int
+pub type Count = Int32
 
 pub type InlineText = String
 
