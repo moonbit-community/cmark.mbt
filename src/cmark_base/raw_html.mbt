@@ -276,7 +276,7 @@ fn[A] html_comment(
     return None
   }
   // <!--> and <!---> are comments
-  let after_open = s.view(start_offset=start + 4, end_offset=line.last + 1)
+  let after_open = s.clamped_view(start=start + 4, end=line.last + 1)
   let empty_comment_last = match after_open {
     [.. ">", ..] => Some(start + 4)
     [.. "->", ..] => Some(start + 5)
@@ -290,7 +290,7 @@ fn[A] html_comment(
   // Otherwise the comment ends at the first -->
   let acc = []
   for line = line, start = start, first = start + 4 {
-    let text = s.view(start_offset=first, end_offset=line.last + 1)
+    let text = s.clamped_view(start=first, end=line.last + 1)
     if text.find("-->") is Some(i) {
       let last = first + i + 2
       push_span(line~, start, last, acc)

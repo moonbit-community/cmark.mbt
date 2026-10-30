@@ -536,11 +536,11 @@ pub fn InlineLink::is_unsafe(l : String) -> Bool {
   let allowed_data_url = fn(l : String) {
     // Extract mediatype from data:[<mediatype>][;base64],<data>
     let start_offset = 4
-    let j = match l.view(start_offset~).find(",") {
+    let j = match l.clamped_view(start=start_offset).find(",") {
       Some(i) => i + start_offset
       None => return false
     }
-    let k = match l.view(start_offset~).find(";") {
+    let k = match l.clamped_view(start=start_offset).find(";") {
       Some(i) => i + start_offset
       None => j
     }

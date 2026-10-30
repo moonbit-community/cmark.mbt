@@ -7,43 +7,43 @@ import {
 }
 
 // Values
-pub fn autolink_email(String, last? : Int, start? : Int) -> Int?
+pub fn autolink_email(String, last? : Int32, start? : Int32) -> Int32?
 
-pub fn autolink_uri(String, last? : Int, start? : Int) -> Int?
+pub fn autolink_uri(String, last? : Int32, start? : Int32) -> Int32?
 
-pub let char_code_pos_none : Int
+pub let char_code_pos_none : Int32
 
-pub fn could_be_link_ref_definition(String, last~ : Int, start~ : Int) -> Bool
+pub fn could_be_link_ref_definition(String, last~ : Int32, start~ : Int32) -> Bool
 
-pub fn ext_task_marker(String, last~ : Int, start~ : Int) -> (Char, Int)?
+pub fn ext_task_marker(String, last~ : Int32, start~ : Int32) -> (Char, Int32)?
 
 pub let file_path_none : String
 
-pub fn first_non_blank(String, last~ : Int, start~ : Int) -> Int
+pub fn first_non_blank(String, last~ : Int32, start~ : Int32) -> Int32
 
-pub fn first_non_blank_in_span(String, LineSpan) -> Int
+pub fn first_non_blank_in_span(String, LineSpan) -> Int32
 
-pub fn[A] first_non_blank_over_nl(next_line~ : NextLineFn[A], String, A, line~ : LineSpan, start~ : Int) -> NextLineResult?
+pub fn[A] first_non_blank_over_nl(next_line~ : NextLineFn[A], String, A, line~ : LineSpan, start~ : Int32) -> NextLineResult?
 
-pub fn first_non_escaped_char(Char, String, last~ : Int, start~ : Int) -> Int
+pub fn first_non_escaped_char(Char, String, last~ : Int32, start~ : Int32) -> Int32
 
-pub fn last_non_blank(String, first~ : Int, start~ : Int) -> Int
+pub fn last_non_blank(String, first~ : Int32, start~ : Int32) -> Int32
 
-pub let line_num_none : Int
+pub let line_num_none : Int32
 
 pub let line_pos_none : LinePos
 
-pub fn link_destination(String, last~ : Int, start~ : Int) -> (Bool, Int, Int)?
+pub fn link_destination(String, last~ : Int32, start~ : Int32) -> (Bool, Int32, Int32)?
 
-pub fn[A] link_label(StringBuilder, next_line~ : NextLineFn[A], String, A, line~ : LineSpan, start~ : Int) -> (LineSpan, Array[Span], Int, String)?
+pub fn[A] link_label(StringBuilder, next_line~ : NextLineFn[A], String, A, line~ : LineSpan, start~ : Int32) -> (LineSpan, Array[Span], Int32, String)?
 
-pub fn[A] link_title(next_line~ : NextLineFn[A], String, A, line~ : LineSpan, start~ : Int) -> (LineSpan, Array[Span], Int)?
+pub fn[A] link_title(next_line~ : NextLineFn[A], String, A, line~ : LineSpan, start~ : Int32) -> (LineSpan, Array[Span], Int32)?
 
-pub fn[A] raw_html(next_line~ : NextLineFn[A], String, A, line~ : LineSpan, start~ : Int) -> (LineSpan, Array[Span], Int)?
+pub fn[A] raw_html(next_line~ : NextLineFn[A], String, A, line~ : LineSpan, start~ : Int32) -> (LineSpan, Array[Span], Int32)?
 
-pub fn rev_drop_spaces(String, first~ : Int, start~ : Int) -> Int
+pub fn rev_drop_spaces(String, first~ : Int32, start~ : Int32) -> Int32
 
-pub fn run_of(char~ : Char, String, last~ : Int, start~ : Int) -> Int
+pub fn run_of(char~ : Char, String, last~ : Int32, start~ : Int32) -> Int32
 
 // Errors
 
@@ -52,10 +52,10 @@ pub extenum ContextState {
 }
 
 pub(all) enum FencedCodeBlockContinue {
-  Close(Int, Int)
+  Close(Int32, Int32)
   Code
 } derive(@debug.Debug)
-pub fn FencedCodeBlockContinue::new(String, fence~ : (Char, Int), last~ : Int, start~ : Int) -> Self
+pub fn FencedCodeBlockContinue::new(String, fence~ : (Char, Int32), last~ : Int32, start~ : Int32) -> Self
 
 pub(all) enum HtmlBlockEndCond {
   EndStr(String)
@@ -64,51 +64,51 @@ pub(all) enum HtmlBlockEndCond {
   EndBlank7
 } derive(Eq, @debug.Debug)
 
-pub(all) struct LinePos(Int, Int) derive(Compare, Eq, ToJson, @debug.Debug, @json.FromJson)
+pub(all) struct LinePos(Int32, Int32) derive(Compare, Eq, ToJson, @debug.Debug, @json.FromJson)
 
 pub(all) struct LineSpan {
   pos : LinePos
-  first : Int
-  last : Int
+  first : Int32
+  last : Int32
 } derive(Compare, Eq, @debug.Debug)
 
 pub(all) enum LineType {
-  AtxHeadingLine(Int, Int, Int, Int)
+  AtxHeadingLine(Int32, Int32, Int32, Int32)
   BlankLine
   BlockQuoteLine
-  FencedCodeBlockLine(Int, Int, (Int, Int)?)
+  FencedCodeBlockLine(Int32, Int32, (Int32, Int32)?)
   HtmlBlockLine(HtmlBlockEndCond)
   IndentedCodeBlockLine
-  ListMarkerLine(ListType, Int)
+  ListMarkerLine(ListType, Int32)
   ParagraphLine
-  SetextUnderlineLine(Int, Int)
-  ThematicBreakLine(Int)
-  ExtTableRow(Int)
-  ExtFootnoteLabel(Array[Span], Int, String)
+  SetextUnderlineLine(Int32, Int32)
+  ThematicBreakLine(Int32)
+  ExtTableRow(Int32)
+  ExtFootnoteLabel(Array[Span], Int32, String)
   Nomatch
 } derive(Eq, @debug.Debug)
-pub fn LineType::atx_heading(String, last~ : Int, start~ : Int) -> Self
-pub fn LineType::ext_footnote_label(StringBuilder, String, line_pos~ : LinePos, last~ : Int, start~ : Int) -> Self
-pub fn LineType::ext_table_row(String, last~ : Int, start~ : Int) -> Self
-pub fn LineType::fenced_code_block_start(String, last~ : Int, start~ : Int) -> Self
-pub fn LineType::html_block_end(String, end_cond~ : HtmlBlockEndCond, last~ : Int, start~ : Int) -> Bool
-pub fn LineType::html_block_start(String, last~ : Int, start~ : Int) -> Self
-pub fn LineType::list_marker(String, last~ : Int, start~ : Int) -> Self
-pub fn LineType::setext_heading_underline(String, last~ : Int, start~ : Int) -> Self
-pub fn LineType::thematic_break(String, last~ : Int, start~ : Int) -> Self
+pub fn LineType::atx_heading(String, last~ : Int32, start~ : Int32) -> Self
+pub fn LineType::ext_footnote_label(StringBuilder, String, line_pos~ : LinePos, last~ : Int32, start~ : Int32) -> Self
+pub fn LineType::ext_table_row(String, last~ : Int32, start~ : Int32) -> Self
+pub fn LineType::fenced_code_block_start(String, last~ : Int32, start~ : Int32) -> Self
+pub fn LineType::html_block_end(String, end_cond~ : HtmlBlockEndCond, last~ : Int32, start~ : Int32) -> Bool
+pub fn LineType::html_block_start(String, last~ : Int32, start~ : Int32) -> Self
+pub fn LineType::list_marker(String, last~ : Int32, start~ : Int32) -> Self
+pub fn LineType::setext_heading_underline(String, last~ : Int32, start~ : Int32) -> Self
+pub fn LineType::thematic_break(String, last~ : Int32, start~ : Int32) -> Self
 
 pub(all) enum ListType {
   Unordered(Char)
-  Ordered(Int, Char)
+  Ordered(Int32, Char)
 } derive(Eq, ToJson, @debug.Debug, @json.FromJson)
 pub fn ListType::is_same_type(Self, Self) -> Bool
 
 pub(all) struct Meta {
-  id : Int
+  id : Int32
   loc : TextLoc
   extra : Error?
 } derive(@debug.Debug)
-pub fn Meta::compare(Self, Self) -> Int
+pub fn Meta::compare(Self, Self) -> Int32
 pub fn Meta::is_none(Self) -> Bool
 pub fn Meta::new(loc? : TextLoc) -> Self
 pub fn Meta::none() -> Self
@@ -117,19 +117,19 @@ pub impl Eq for Meta
 pub(all) struct NextLineFn[A]((A) -> LineSpan?)
 
 pub(all) enum NextLineResult {
-  ThisLine(Int)
-  NextLine(LineSpan, Int)
+  ThisLine(Int32)
+  NextLine(LineSpan, Int32)
 } derive(@debug.Debug)
 
 pub(all) struct Span {
-  start : Int
+  start : Int32
   span : LineSpan
 } derive(Compare, Eq, @debug.Debug)
 
 pub(all) struct TextLoc {
   file : String
-  first_ccode : Int
-  last_ccode : Int
+  first_ccode : Int32
+  last_ccode : Int32
   first_line : LinePos
   last_line : LinePos
 } derive(Compare, Eq, ToJson, @debug.Debug, @json.FromJson)
@@ -143,20 +143,20 @@ pub fn TextLoc::to_first(Self) -> Self
 pub fn TextLoc::to_last(Self) -> Self
 
 // Type aliases
-pub type CharCodePos = Int
+pub type CharCodePos = Int32
 
 pub type FilePath = String
 
-pub type First = Int
+pub type First = Int32
 
-pub type HeadingLevel = Int
+pub type HeadingLevel = Int32
 
-pub type Indent = Int
+pub type Indent = Int32
 
-pub type Last = Int
+pub type Last = Int32
 
-pub type LineNum = Int
+pub type LineNum = Int32
 
-pub type Next = Int
+pub type Next = Int32
 
 // Traits

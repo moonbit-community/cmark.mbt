@@ -218,7 +218,7 @@ fn Token::newline(
   let non_space = @cmark_base.rev_drop_spaces(s, first~, start=last)
   // A final `\` is a hard break unless it is escaped by another `\`
   let odd_bslashes = () => {
-    let line = s.view(start_offset=first, end_offset=last + 1)
+    let line = s.clamped_view(start=first, end=last + 1)
     line.rev_iter().take_while(c => c == '\\').count() % 2 == 1
   }
   let (start, break_ty) = if non_space == last && odd_bslashes() {
@@ -726,7 +726,7 @@ fn RawHtmlNoEnd::new() -> RawHtmlNoEnd {
 /// string: 0 for processing instructions (`?>`), 1 for CDATA sections
 /// (`]]>`), 2 for declarations (`>`) and 3 for comments (`-->`).
 fn raw_html_end_kind(s : String, start~ : CharCodePos) -> Int32? {
-  match s.view(start_offset=start) {
+  match s.clamped_view(start~) {
     [.. "<?", ..] => Some(0)
     [.. "<![CDATA[", ..] => Some(1)
     [.. "<!", 'a'..<='z' | 'A'..<='Z', ..] => Some(2)
