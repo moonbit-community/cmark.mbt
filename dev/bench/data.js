@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1793369552796,
+  "lastUpdate": 1793893673640,
   "repoUrl": "https://github.com/moonbit-community/cmark.mbt",
   "entries": {
     "Benchmark.js Benchmark": [
@@ -15750,6 +15750,86 @@ window.BENCHMARK_DATA = {
             "name": "cmarkNative(spec * 200)",
             "value": 0.63,
             "range": "±4.28%",
+            "unit": "ops/sec",
+            "extra": "5 samples"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "feihaoxiang2014@gmail.com",
+            "name": "Haoxiang Fei",
+            "username": "tonyfettes"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "466b25ccc7e9d39afc67d806fec629986b55a04e",
+          "message": "refactor: use the `#derive` attribute instead of `derive(...)` (#177)\n\nThe trailing `} derive(...)` clause is deprecated in favor of an\nattribute placed before the type declaration. Move every derive clause\nin `src/**/*.mbt` (82 sites) to `#derive(...)` and regenerate the\n`pkg.generated.mbti` interfaces with `moon info`.\n\nValidation:\n- `moon check --deny-warn`\n- `moon test` on wasm, wasm-gc, js, native (debug and release)\n- `moon cram test cram`\n- `moon fmt --check`\n\nCo-authored-by: SeekMoon <seekmoon@moonbitlang.com>",
+          "timestamp": "2026-11-05T23:44:49+08:00",
+          "tree_id": "182d3c8417c87935bf209786a4417ac0ae454c6a",
+          "url": "https://github.com/moonbit-community/cmark.mbt/commit/466b25ccc7e9d39afc67d806fec629986b55a04e"
+        },
+        "date": 1793893672569,
+        "tool": "benchmarkjs",
+        "benches": [
+          {
+            "name": "cmarkJS(spec * 100)",
+            "value": 0.49,
+            "range": "±29.47%",
+            "unit": "ops/sec",
+            "extra": "5 samples"
+          },
+          {
+            "name": "cmarkJS(spec * 200)",
+            "value": 0.24,
+            "range": "±70.79%",
+            "unit": "ops/sec",
+            "extra": "5 samples"
+          },
+          {
+            "name": "cmarkWASM1(spec * 100)",
+            "value": 0.59,
+            "range": "±2.83%",
+            "unit": "ops/sec",
+            "extra": "5 samples"
+          },
+          {
+            "name": "cmarkWASM1(spec * 200)",
+            "value": 0.3,
+            "range": "±4.46%",
+            "unit": "ops/sec",
+            "extra": "5 samples"
+          },
+          {
+            "name": "cmarkWASM(spec * 100)",
+            "value": 0.81,
+            "range": "±7.27%",
+            "unit": "ops/sec",
+            "extra": "5 samples"
+          },
+          {
+            "name": "cmarkWASM(spec * 200)",
+            "value": 0.38,
+            "range": "±5.91%",
+            "unit": "ops/sec",
+            "extra": "5 samples"
+          },
+          {
+            "name": "cmarkNative(spec * 100)",
+            "value": 0.96,
+            "range": "±4.43%",
+            "unit": "ops/sec",
+            "extra": "5 samples"
+          },
+          {
+            "name": "cmarkNative(spec * 200)",
+            "value": 0.48,
+            "range": "±4.36%",
             "unit": "ops/sec",
             "extra": "5 samples"
           }
