@@ -1,7 +1,8 @@
 ///|
+#derive(Debug)
 pub(all) suberror FolderError {
   FolderError(String)
-} derive(Debug)
+}
 
 ///|
 #deprecated
@@ -25,9 +26,10 @@ pub impl Show for FolderError with fn output(self, logger) {
 pub extend FolderError with Show::{to_string, output}
 
 ///|
+#derive(Debug)
 pub(all) suberror MapperError {
   MapperError(String)
-} derive(Debug)
+}
 
 ///|
 #deprecated

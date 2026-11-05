@@ -1,8 +1,9 @@
 ///|
+#derive(Eq, Debug)
 pub(all) struct Node[A] {
   v : A
   meta : Meta
-} derive(Eq, Debug)
+}
 
 ///|
 #deprecated

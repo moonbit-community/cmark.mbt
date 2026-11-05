@@ -27,10 +27,11 @@ pub(all) struct MapperFn[A]((Mapper, A) -> MapperResult[A])
 ///|
 /// The type for mapper results.
 /// `Default` means doing the default map.
+#derive(Eq, Debug)
 pub(all) enum MapperResult[A] {
   Default
   Map(A?)
-} derive(Eq, Debug)
+}
 
 ///|
 #deprecated

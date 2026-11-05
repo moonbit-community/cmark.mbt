@@ -1,5 +1,6 @@
 ///|
-struct Seq[A](Array[A]) derive(Eq, Debug)
+#derive(Eq, Debug)
+struct Seq[A](Array[A])
 
 ///|
 #deprecated

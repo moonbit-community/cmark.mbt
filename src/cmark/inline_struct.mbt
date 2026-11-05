@@ -12,6 +12,7 @@
 /// The token list also represents newlines explicitly, either via
 /// the `Newline` token or via the `Inline` token since inlines may
 /// start on a line and up on another one.
+#derive(Debug)
 priv enum Token {
   AutolinkOrHtmlStart(TokenStart)
   Backticks(TokenBackticks)
@@ -22,21 +23,24 @@ priv enum Token {
   RightBrack(TokenStart)
   StrikethroughMarks(TokenStrikethroughMarks)
   MathSpanMarks(TokenMathSpanMarks)
-} derive(Debug)
+}
 
 ///|
+#derive(Debug)
 priv struct TokenStart {
   start : CharCodePos
-} derive(Debug)
+}
 
 ///|
+#derive(Debug)
 priv struct TokenBackticks {
   start : CharCodePos
   count : Int32
   escaped : Bool
-} derive(Debug)
+}
 
 ///|
+#derive(Debug)
 priv struct TokenEmphasisMarks {
   start : CharCodePos
   char : Char
@@ -46,44 +50,49 @@ priv struct TokenEmphasisMarks {
   run_length : Int32
   may_open : Bool
   may_close : Bool
-} derive(Debug)
+}
 
 ///|
+#derive(Debug)
 priv struct TokenInline {
   start : CharCodePos
   inline : Inline
   endline : LineSpan
   next : CharCodePos
-} derive(Debug)
+}
 
 ///|
+#derive(Debug)
 priv struct TokenLinkStart {
   start : CharCodePos
   image : Bool
-} derive(Debug)
+}
 
 ///|
+#derive(Debug)
 priv struct TokenNewline {
   /// Points at spaces or `\` on the broken line
   start : CharCodePos
   break_ty : InlineBreakType
   newline : LineSpan
-} derive(Debug)
+}
 
 ///|
+#derive(Debug)
 priv struct TokenStrikethroughMarks {
   start : CharCodePos
   may_open : Bool
   may_close : Bool
-} derive(Debug)
+}
 
 ///|
+#derive(Debug)
 priv struct TokenMathSpanMarks {
   start : CharCodePos
   count : Int32
   may_open : Bool
   may_close : Bool
-} derive(Debug)
+}
 
 ///|
 fn Token::start(self : Token) -> CharCodePos {

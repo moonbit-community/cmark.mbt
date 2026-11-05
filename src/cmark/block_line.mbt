@@ -27,10 +27,11 @@ pub fn BlockLine::list_text_loc(ls : Seq[BlockLine]) -> TextLoc {
 
 ///|
 /// Tight block lines: a block line with its initial blanks trimmed but kept for layout. 
+#derive(Eq, Debug)
 pub(all) struct Tight {
   blanks : Blanks
   node : StringNode
-} derive(Eq, Debug)
+}
 
 ///|
 #deprecated
