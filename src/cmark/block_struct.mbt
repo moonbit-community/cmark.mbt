@@ -894,11 +894,11 @@ fn Parser::list_item(
   let marker_size = last - self.curr_char + 1
   let marker = self.curr_line_span(first=self.curr_char, last~)
   let after_marker = self.accept_list_marker_and_indent(marker_size~, last~)
-  let (ext_task_marker, ext_task_marker_size) = if self.exts {
+  let ext_task_marker = if self.exts {
     let start = self.curr_char
     let last = self.curr_line_last_char
     match @cmark_base.ext_task_marker(self.i, last~, start~) {
-      None => (None, 0)
+      None => None
       Some((u, last)) => {
         self.accept_cols(count=last - start + 1)
         let last = if last == self.curr_line_last_char {
@@ -906,13 +906,15 @@ fn Parser::list_item(
         } else {
           last - 1
         }
-        (Some((u, self.curr_line_span(first=start, last~))), 4)
+        Some((u, self.curr_line_span(first=start, last~)))
       }
     }
   } else {
-    (None, 0)
+    None
   }
-  let min = indent + marker_size + after_marker + ext_task_marker_size
+  // The task marker is item content. Continuation indentation is measured
+  // from the list marker, just as for an ordinary list item.
+  let min = indent + marker_size + after_marker
   let blocks = []
   self.add_open_blocks(blocks)
   (min, { before_marker, marker, after_marker, ext_task_marker, blocks, })
