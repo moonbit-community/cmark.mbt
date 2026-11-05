@@ -1,7 +1,8 @@
 ///|
+#derive(Debug)
 pub(all) suberror RenderError {
   RenderError(String)
-} derive(Debug)
+}
 
 ///|
 #deprecated

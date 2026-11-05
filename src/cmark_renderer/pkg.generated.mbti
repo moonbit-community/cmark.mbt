@@ -10,9 +10,10 @@ import {
 // Values
 
 // Errors
+#derive(@debug.Debug)
 pub(all) suberror RenderError {
   RenderError(String)
-} derive(@debug.Debug)
+}
 pub impl Show for RenderError
 
 // Types and methods

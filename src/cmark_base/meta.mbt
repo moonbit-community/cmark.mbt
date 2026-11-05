@@ -1,9 +1,10 @@
 ///|
+#derive(Debug)
 pub(all) struct Meta {
   id : MetaId
   loc : TextLoc
   extra : Error?
-} derive(Debug)
+}
 
 ///|
 #deprecated

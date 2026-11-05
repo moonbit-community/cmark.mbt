@@ -133,69 +133,79 @@ fn Parser::accept_code_indent(
 type SpacePad = Int32
 
 ///|
+#derive(Debug)
 priv struct IndentedCodeLine {
   pad : SpacePad
   code : LineSpan
   is_blank : Bool
-} derive(Debug)
+}
 
 ///|
+#derive(Debug)
 priv struct Fence {
   indent : Indent
   opening_fence : LineSpan
   fence : (Char, Int32) // Fence length
   info_string : LineSpan? // We drop the trailing blanks
   closing_fence : LineSpan?
-} derive(Debug)
+}
 
 ///|
+#derive(Debug)
 priv struct FenceCodeBlockStruct {
   fence : Fence
   code : Array[(SpacePad, LineSpan)]
-} derive(Debug)
+}
 
 ///|
+#derive(Debug)
 priv enum CodeBlockStruct {
   Indented(Array[IndentedCodeLine])
   Fenced(FenceCodeBlockStruct)
-} derive(Debug)
+}
 
 ///|
+#derive(Debug)
 priv struct Atx {
   indent : Indent
   level : HeadingLevel
   after_open : CharCodePos
   heading : LineSpan
   layout_after : LineSpan
-} derive(Debug)
+}
 
 ///|
+#derive(Debug)
 priv struct Setext {
   level : HeadingLevel
   heading_lines : Array[LineSpan]
   /// Indent, underline char count, blanks
   underline : (Indent, LineSpan, LineSpan)
-} derive(Debug)
+}
 
 ///|
+#derive(Debug)
 priv enum Heading {
   Atx(Atx)
   Setext(Setext)
-} derive(Debug)
+}
 
 ///|
+#derive(Debug)
 priv struct HtmlBlockStruct {
   end_cond : HtmlBlockEndCond?
   html : Array[LineSpan]
-} derive(Debug)
+}
 
 ///|
+#derive(Debug)
 priv struct Paragraph {
   maybe_ref : Bool
   lines : Array[LineSpan]
-} derive(Debug)
+}
 
 ///|
+#derive(Debug)
 priv enum BlockStruct {
   BlockQuote(Indent, Array[BlockStruct])
   BlankLine(SpacePad, LineSpan)
@@ -208,25 +218,27 @@ priv enum BlockStruct {
   ThematicBreak(Indent, LineSpan) // Including trailing blanks
   ExtTable(Indent, Array[(LineSpan, LineSpan)]) // The second `LineSpan` is for trailing blanks
   ExtFootnote(Indent, (Label, Label?), Array[BlockStruct])
-} derive(Debug)
+}
 
 ///|
+#derive(Debug)
 priv struct ListItemStruct {
   before_marker : Indent
   marker : LineSpan
   after_marker : Indent
   ext_task_marker : (Char, LineSpan)?
   blocks : Array[BlockStruct]
-} derive(Debug)
+}
 
 ///|
+#derive(Debug)
 priv struct ListBlockStruct {
   mut last_blank : Bool // Last added line was blank and not first line of item
   loose : Bool // Inter-item looseness, intra-item is computed later
   item_min_indent : Indent // Last item minimal indent
   list_type : ListType
   items : Array[ListItemStruct]
-} derive(Debug)
+}
 
 ///|
 fn BlockStruct::is_blank_line(self : BlockStruct) -> Bool {
@@ -1677,11 +1689,12 @@ fn Parser::block_struct_to_footnote_definition(
 }
 
 ///|
+#derive(Eq)
 priv enum BState {
   Blank
   TrailBlank
   NonBlank
-} derive(Eq)
+}
 
 ///|
 fn Parser::block_struct_to_list_item(

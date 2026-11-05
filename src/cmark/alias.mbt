@@ -26,7 +26,8 @@ using @cmark_base {type Span}
 using @cmark_base {type LineSpan}
 
 ///|
-priv struct Tokens(@deque.Deque[Token]) derive(Debug)
+#derive(Debug)
+priv struct Tokens(@deque.Deque[Token])
 
 ///|
 test {
@@ -44,7 +45,8 @@ fn Tokens::push(self : Tokens, t : Token) -> Unit {
 // }
 
 ///|
-priv struct RevTokens(@deque.Deque[Token]) derive(Debug)
+#derive(Debug)
+priv struct RevTokens(@deque.Deque[Token])
 
 ///|
 test {

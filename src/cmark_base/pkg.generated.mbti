@@ -51,27 +51,32 @@ pub fn run_of(char~ : Char, String, last~ : Int32, start~ : Int32) -> Int32
 pub extenum ContextState {
 }
 
+#derive(@debug.Debug)
 pub(all) enum FencedCodeBlockContinue {
   Close(Int32, Int32)
   Code
-} derive(@debug.Debug)
+}
 pub fn FencedCodeBlockContinue::new(String, fence~ : (Char, Int32), last~ : Int32, start~ : Int32) -> Self
 
+#derive(Eq, @debug.Debug)
 pub(all) enum HtmlBlockEndCond {
   EndStr(String)
   EndCond1
   EndBlank
   EndBlank7
-} derive(Eq, @debug.Debug)
+}
 
-pub(all) struct LinePos(Int32, Int32) derive(Compare, Eq, ToJson, @debug.Debug, @json.FromJson)
+#derive(Compare, Eq, @debug.Debug, @json.FromJson, @json.ToJson)
+pub(all) struct LinePos(Int32, Int32)
 
+#derive(Compare, Eq, @debug.Debug)
 pub(all) struct LineSpan {
   pos : LinePos
   first : Int32
   last : Int32
-} derive(Compare, Eq, @debug.Debug)
+}
 
+#derive(Eq, @debug.Debug)
 pub(all) enum LineType {
   AtxHeadingLine(Int32, Int32, Int32, Int32)
   BlankLine
@@ -86,7 +91,7 @@ pub(all) enum LineType {
   ExtTableRow(Int32)
   ExtFootnoteLabel(Array[Span], Int32, String)
   Nomatch
-} derive(Eq, @debug.Debug)
+}
 pub fn LineType::atx_heading(String, last~ : Int32, start~ : Int32) -> Self
 pub fn LineType::ext_footnote_label(StringBuilder, String, line_pos~ : LinePos, last~ : Int32, start~ : Int32) -> Self
 pub fn LineType::ext_table_row(String, last~ : Int32, start~ : Int32) -> Self
@@ -97,17 +102,19 @@ pub fn LineType::list_marker(String, last~ : Int32, start~ : Int32) -> Self
 pub fn LineType::setext_heading_underline(String, last~ : Int32, start~ : Int32) -> Self
 pub fn LineType::thematic_break(String, last~ : Int32, start~ : Int32) -> Self
 
+#derive(Eq, @debug.Debug, @json.FromJson, @json.ToJson)
 pub(all) enum ListType {
   Unordered(Char)
   Ordered(Int32, Char)
-} derive(Eq, ToJson, @debug.Debug, @json.FromJson)
+}
 pub fn ListType::is_same_type(Self, Self) -> Bool
 
+#derive(@debug.Debug)
 pub(all) struct Meta {
   id : Int32
   loc : TextLoc
   extra : Error?
-} derive(@debug.Debug)
+}
 pub fn Meta::compare(Self, Self) -> Int32
 pub fn Meta::is_none(Self) -> Bool
 pub fn Meta::new(loc? : TextLoc) -> Self
@@ -116,23 +123,26 @@ pub impl Eq for Meta
 
 pub(all) struct NextLineFn[A]((A) -> LineSpan?)
 
+#derive(@debug.Debug)
 pub(all) enum NextLineResult {
   ThisLine(Int32)
   NextLine(LineSpan, Int32)
-} derive(@debug.Debug)
+}
 
+#derive(Compare, Eq, @debug.Debug)
 pub(all) struct Span {
   start : Int32
   span : LineSpan
-} derive(Compare, Eq, @debug.Debug)
+}
 
+#derive(Compare, Eq, @debug.Debug, @json.FromJson, @json.ToJson)
 pub(all) struct TextLoc {
   file : String
   first_ccode : Int32
   last_ccode : Int32
   first_line : LinePos
   last_line : LinePos
-} derive(Compare, Eq, ToJson, @debug.Debug, @json.FromJson)
+}
 pub fn TextLoc::after(Self) -> Self
 pub fn TextLoc::is_empty(Self) -> Bool
 pub fn TextLoc::is_none(Self) -> Bool

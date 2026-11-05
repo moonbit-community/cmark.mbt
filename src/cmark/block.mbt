@@ -1,5 +1,6 @@
 ///|
 /// A markdown block.
+#derive(Debug)
 pub(all) enum Block {
   BlankLine(Node[BlockBlankLine])
   BlockQuote(Node[BlockQuote])
@@ -14,7 +15,7 @@ pub(all) enum Block {
   ExtMathBlock(Node[CodeBlock])
   ExtTable(Node[Table])
   ExtFootnoteDefinition(Node[Footnote])
-} derive(Debug)
+}
 
 ///|
 #deprecated
@@ -107,12 +108,13 @@ pub type BlockBlankLine = Blanks
 
 ///|
 /// The type for [block quotes](https://spec.commonmark.org/0.30/#block-quotes).
+#derive(Debug)
 pub(all) struct BlockQuote {
   /// The indentation to the block quote marker found on the first line.
   indent : Indent
   /// The quoted block.
   block : Block
-} derive(Debug)
+}
 
 ///|
 #deprecated
@@ -140,11 +142,12 @@ pub fn BlockQuote::normalize_block(self : BlockQuote) -> BlockQuote {
 ///|
 /// The type for [indented](https://spec.commonmark.org/0.30/#indented-code-block) and
 /// [fenced](:https://spec.commonmark.org/0.30/#fenced-code-blocks) code blocks.
+#derive(Debug)
 pub(all) struct CodeBlock {
   layout : CodeBlockLayout
   info_string : StringNode?
   code : Seq[StringNode]
-} derive(Debug)
+}
 
 ///|
 #deprecated
@@ -152,10 +155,11 @@ pub(all) struct CodeBlock {
 pub extend CodeBlock with @debug.Debug::{to_repr}
 
 ///|
+#derive(Debug)
 pub(all) enum CodeBlockLayout {
   Indented
   Fenced(CodeBlockFencedLayout)
-} derive(Debug)
+}
 
 ///|
 #deprecated
@@ -163,11 +167,12 @@ pub(all) enum CodeBlockLayout {
 pub extend CodeBlockLayout with @debug.Debug::{to_repr}
 
 ///|
+#derive(Debug)
 pub(all) struct CodeBlockFencedLayout {
   indent : Indent
   opening_fence : StringNode
   closing_fence : StringNode?
-} derive(Debug)
+}
 
 ///|
 #deprecated
@@ -245,12 +250,13 @@ fn CodeBlock::is_math_block(s : String?) -> Bool {
 ///|
 /// The type for [ATX](https://spec.commonmark.org/0.30/#atx-headings) 
 /// and [Setext](https://spec.commonmark.org/0.30/#setext-headings) headings.
+#derive(Debug)
 pub(all) struct BlockHeading {
   layout : BlockHeadingLayout
   level : Int32
   inline : Inline
   id : BlockHeadingId?
-} derive(Debug)
+}
 
 ///|
 #deprecated
@@ -258,10 +264,11 @@ pub(all) struct BlockHeading {
 pub extend BlockHeading with @debug.Debug::{to_repr}
 
 ///|
+#derive(Debug)
 pub(all) enum BlockHeadingLayout {
   Atx(BlockHeadingAtxLayout)
   Setext(BlockHeadingSetextLayout)
-} derive(Debug)
+}
 
 ///|
 #deprecated
@@ -269,11 +276,12 @@ pub(all) enum BlockHeadingLayout {
 pub extend BlockHeadingLayout with @debug.Debug::{to_repr}
 
 ///|
+#derive(Debug, FromJson, ToJson)
 pub(all) struct BlockHeadingAtxLayout {
   indent : Indent
   after_opening : Blanks
   closing : String
-} derive(Debug, FromJson, ToJson)
+}
 
 ///|
 #deprecated
@@ -296,13 +304,14 @@ pub fn BlockHeadingAtxLayout::default() -> BlockHeadingAtxLayout {
 }
 
 ///|
+#derive(Debug)
 pub(all) struct BlockHeadingSetextLayout {
   leading_indent : Indent
   trailing_blanks : Blanks
   underline_indent : Indent
   underline_count : Node[Count]
   underline_blanks : Blanks
-} derive(Debug)
+}
 
 ///|
 #deprecated
@@ -310,10 +319,11 @@ pub(all) struct BlockHeadingSetextLayout {
 pub extend BlockHeadingSetextLayout with @debug.Debug::{to_repr}
 
 ///|
+#derive(Debug, FromJson, ToJson)
 pub(all) enum BlockHeadingId {
   Auto(String)
   Id(String)
-} derive(Debug, FromJson, ToJson)
+}
 
 ///|
 #deprecated
@@ -342,7 +352,8 @@ pub fn BlockHeading::new(
 
 ///|
 /// The type for [HTML blocks](https://spec.commonmark.org/0.30/#html-blocks).
-pub(all) struct HtmlBlock(Seq[StringNode]) derive(Debug)
+#derive(Debug)
+pub(all) struct HtmlBlock(Seq[StringNode])
 
 ///|
 #deprecated
@@ -350,13 +361,14 @@ pub(all) struct HtmlBlock(Seq[StringNode]) derive(Debug)
 pub extend HtmlBlock with @debug.Debug::{to_repr}
 
 ///|
+#derive(Debug)
 pub(all) struct ListItem {
   before_marker : Indent
   marker : StringNode
   after_marker : Indent
   block : Block
   ext_task_marker : Node[Char]?
-} derive(Debug)
+}
 
 ///|
 #deprecated
@@ -407,11 +419,12 @@ pub fn ListTaskStatus::from_marker(marker : Char) -> ListTaskStatus {
 
 ///|
 /// The type for [lists](https://spec.commonmark.org/0.30/#lists).
+#derive(Debug)
 pub(all) struct BlockList {
   ty : ListType
   tight : Bool
   items : Seq[Node[ListItem]]
-} derive(Debug)
+}
 
 ///|
 #deprecated
@@ -433,11 +446,12 @@ pub fn BlockList::normalize_items(self : BlockList) -> BlockList {
 
 ///|
 /// The type for [paragraphs](https://spec.commonmark.org/0.30/#paragraphs).
+#derive(Debug)
 pub(all) struct BlockParagraph {
   leading_indent : Indent
   inline : Inline
   trailing_blanks : Blanks
-} derive(Debug)
+}
 
 ///|
 #deprecated
@@ -455,10 +469,11 @@ pub fn BlockParagraph::new(
 
 ///|
 /// The type for [thematic breaks](https://spec.commonmark.org/0.30/#thematic-break).
+#derive(Debug, FromJson, ToJson)
 pub(all) struct BlockThematicBreak {
   indent : Indent
   layout : String
-} derive(Debug, FromJson, ToJson)
+}
 
 ///|
 #deprecated
@@ -486,12 +501,13 @@ pub fn BlockThematicBreak::new(
 // Extensions
 
 ///|
+#derive(Debug)
 pub(all) struct Footnote {
   indent : Indent
   label : Label
   defined_label : Label?
   block : Block
-} derive(Debug)
+}
 
 ///|
 #deprecated
@@ -527,11 +543,12 @@ fn Label::stub(label : Label, defined_label : Label?) -> LabelDef {
 }
 
 ///|
+#derive(Debug)
 pub(all) struct Table {
   indent : Indent
   col_count : Count
   rows : Seq[(Node[TableRow], Blanks)]
-} derive(Debug)
+}
 
 ///|
 #deprecated
@@ -539,11 +556,12 @@ pub(all) struct Table {
 pub extend Table with @debug.Debug::{to_repr}
 
 ///|
+#derive(Debug, FromJson, ToJson)
 pub(all) enum TableAlign {
   Left
   Center
   Right
-} derive(Debug, FromJson, ToJson)
+}
 
 ///|
 #deprecated
@@ -561,11 +579,12 @@ pub extend TableAlign with @json.FromJson::{from_json}
 pub extend TableAlign with ToJson::{to_json}
 
 ///|
+#derive(Debug)
 pub(all) enum TableRow {
   Header(Seq[(Inline, TableCellLayout)])
   Sep(Seq[Node[TableSep]])
   Data(Seq[(Inline, TableCellLayout)])
-} derive(Debug)
+}
 
 ///|
 #deprecated
@@ -573,7 +592,8 @@ pub(all) enum TableRow {
 pub extend TableRow with @debug.Debug::{to_repr}
 
 ///|
-pub(all) struct TableSep((TableAlign?, Count)) derive(Debug)
+#derive(Debug)
+pub(all) struct TableSep((TableAlign?, Count))
 
 ///|
 #deprecated
@@ -581,7 +601,8 @@ pub(all) struct TableSep((TableAlign?, Count)) derive(Debug)
 pub extend TableSep with @debug.Debug::{to_repr}
 
 ///|
-pub(all) struct TableCellLayout((Blanks, Blanks)) derive(Debug, Eq, Compare)
+#derive(Debug, Eq, Compare)
+pub(all) struct TableCellLayout((Blanks, Blanks))
 
 ///|
 #deprecated

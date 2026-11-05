@@ -15,10 +15,11 @@ pub(all) struct FolderFn[A, B]((Folder[B], B, A) -> FolderResult[B])
 ///|
 /// The type for folder results.
 /// `Default` means doing the default fold.
+#derive(Eq, Debug)
 pub(all) enum FolderResult[A] {
   Default
   Fold(A)
-} derive(Eq, Debug)
+}
 
 ///|
 #deprecated

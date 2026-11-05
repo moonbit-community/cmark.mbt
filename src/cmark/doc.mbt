@@ -1,10 +1,11 @@
 ///|
 /// The type for CommonMark documents.
+#derive(Debug)
 pub(all) struct Doc {
   nl : String
   block : Block
   defs : LabelDefs
-} derive(Debug)
+}
 
 ///|
 #deprecated
