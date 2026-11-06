@@ -1,20 +1,23 @@
 // Unicode character classification with platform-specific implementations
-// JS backend uses FFI to avoid 2MB static data from charclass
+//
+// The JS backend calls into the engine's own Unicode data, so the
+// multi-megabyte static tables of `moonbit-community/unicode` are not shipped
+// to the browser.
 //
 // IMPLEMENTATION DIFFERENCES:
 //
 // 1. is_whitespace:
 //    - JS backend: Uses \s regex, matches only ASCII whitespace characters
 //      (space, tab, newline, carriage return, form feed, vertical tab)
-//    - Non-JS backend: Uses full Unicode Whitespace property (~25 characters)
+//    - Non-JS backend: Uses the Unicode White_Space property (~25 characters)
 //      including U+2028 (Line Separator), U+2029 (Paragraph Separator), etc.
 //
 // 2. is_punctuation:
 //    - JS backend: Uses \p{P} regex, depends on JS engine's Unicode version
-//    - Non-JS backend: Uses charclass library with fixed Unicode version
+//    - Non-JS backend: Uses the `moonbit-community/unicode` tables, i.e. one
+//      fixed Unicode version (18.0.0)
 //    - Both cover Unicode punctuation categories (Pc, Pd, Pe, Pf, Pi, Po, Ps)
 //    - May differ for newly added punctuation in newer Unicode versions
-/// Note: Depends on JS engine's Unicode version, may differ from charclass
 //
 // 3. is_unicode_punctuation (private): punctuation (P) or symbol (S)
 //    categories, the CommonMark definition of punctuation for emphasis.
@@ -74,30 +77,37 @@ extern "js" fn is_punctuation_ffi(code : Int32) -> Bool =
   #|  return /[\p{P}]/u.test(char);
   #|}
 
-// Non-JS backend implementation using charclass library
+// Non-JS backend implementation using the `moonbit-community/unicode` tables.
 
 ///|
-// These aliases are intentionally unused by the JS implementation.
-let _unicode_is_whitespace : (Char) -> Bool = @unicode.is_whitespace
+// These values are intentionally unused by the JS implementation; they keep
+// the `@unicode` import live on every target.
+let _unicode_is_whitespace : (Char) -> Bool = @unicode.is_white_space
 
 ///|
+// `true` for the Unicode `P` (punctuation) general category group.
 let _unicode_is_punctuation : (Char) -> Bool = @unicode.is_punctuation
 
 ///|
-let _unicode_is_symbol : (Char) -> Bool = @unicode.is_symbol
+// `true` for the Unicode `P` (punctuation) or `S` (symbol) general category
+// groups, with a single category lookup. `@unicode.is_punctuation` covers `P`
+// only, while CommonMark counts both groups as punctuation.
+let _unicode_is_unicode_punctuation : (Char) -> Bool = c => {
+  let group = @unicode.general_category(c).group()
+  group is P || group is S
+}
 
 ///|
-/// Uses charclass library with full Unicode Whitespace property
 /// Check if a character is a Unicode whitespace
+/// Uses the Unicode White_Space property
 #cfg(not(target="js"))
 pub fn is_whitespace(c : Char) -> Bool {
   _unicode_is_whitespace(c)
 }
 
-/// Uses charclass library with fixed Unicode version
-
 ///|
 /// Check if a character is a Unicode punctuation
+/// Uses the Unicode `P` (punctuation) general category group
 #cfg(not(target="js"))
 pub fn is_punctuation(c : Char) -> Bool {
   _unicode_is_punctuation(c)
@@ -109,5 +119,5 @@ pub fn is_punctuation(c : Char) -> Bool {
 /// i.e. in the Unicode `P` (punctuation) or `S` (symbol) general categories.
 #cfg(not(target="js"))
 fn is_unicode_punctuation(c : Char) -> Bool {
-  _unicode_is_punctuation(c) || _unicode_is_symbol(c)
+  _unicode_is_unicode_punctuation(c)
 }
