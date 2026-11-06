@@ -168,7 +168,7 @@ pub fn[A] link_label(
       (']', '\\') => ()
       (']', _) => {
         // Labels match case-insensitively with Unicode case folding.
-        let key = @casefold.casefold(b.to_string())
+        let key = @casefold.case_fold(b.to_string())
         if key.iter().all(@char.is_ascii_whitespace) {
           break None
         }
