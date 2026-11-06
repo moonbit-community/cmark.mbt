@@ -201,17 +201,12 @@ pub fn Inline::id(
         if @char.is_ascii_punctuation(c) || is_punctuation(c) {
           continue '\u{0}', k
         }
-        match @casefold.casefold_char(u) {
-          One(c) => buf.write_char(c)
-          Two(c1, c2) => {
-            buf.write_char(c1)
-            buf.write_char(c2)
-          }
-          Three(c1, c2, c3) => {
-            buf.write_char(c1)
-            buf.write_char(c2)
-            buf.write_char(c3)
-          }
+        // Full case folding; ASCII folds to itself except for `A`..`Z`, so
+        // the common case needs no allocation.
+        if u <= '\u{7F}' {
+          buf.write_char(u.to_ascii_lowercase())
+        } else {
+          buf.write_string(@casefold.case_fold(u.to_string()))
         }
         let prev = c
         continue prev, k
@@ -556,7 +551,7 @@ pub fn InlineLink::is_unsafe(l : String) -> Bool {
     let allowed = ["image/gif", "image/png", "image/jpeg", "image/webp"]
     allowed.contains(l[5:@cmp.minimum(j, k)].to_owned())
   }
-  let lower = @casefold.casefold(l)
+  let lower = @casefold.case_fold(l)
   lower.has_prefix("javascript:") ||
   lower.has_prefix("vbscript:") ||
   lower.has_prefix("file:") ||

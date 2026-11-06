@@ -1,6 +1,6 @@
 import {
-  "moonbit-community/casefold",
-  "moonbit-community/charclass/unicode",
+  "moonbit-community/unicode",
+  "moonbit-community/unicode/casefold",
   "moonbit-community/cmark/char",
   "moonbit-community/cmark/cmark_base",
   "moonbitlang/core/cmp",
