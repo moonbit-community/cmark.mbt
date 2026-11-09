@@ -281,18 +281,16 @@ fn _utf_16_clean_unesc_unref(
         return resolve(last, start, k)
       }
       match s[k] {
-        ';' => {
-          let name = s[name_start:k].to_owned()
-          match html_named_entity(name) {
+        ';' =>
+          match html_named_entity(s[name_start:k]) {
             None => return resolve(last, start, k + 1)
             Some(e) => {
               let next = k + 1
               flush(last, start, name_start - 1) // Chop off `&`
-              buf.write_string(e)
+              buf.write_view(e)
               return resolve(last, next, next)
             }
           }
-        }
         c => {
           let c = c.unsafe_to_char()
           guard is_ascii_alphanum(c) else { return resolve(last, start, k) }
