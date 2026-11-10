@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1793893673640,
+  "lastUpdate": 1794310489185,
   "repoUrl": "https://github.com/moonbit-community/cmark.mbt",
   "entries": {
     "Benchmark.js Benchmark": [
@@ -15830,6 +15830,86 @@ window.BENCHMARK_DATA = {
             "name": "cmarkNative(spec * 200)",
             "value": 0.48,
             "range": "±4.36%",
+            "unit": "ops/sec",
+            "extra": "5 samples"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "feihaoxiang2014@gmail.com",
+            "name": "Haoxiang Fei",
+            "username": "tonyfettes"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "7a730e8ef69caf901f2d315b4ebbcf447bf83961",
+          "message": "perf(char): store HTML named entities as static data (#179)\n\nThe entity table was a top-level `Json` object literal, which compiles\ninto startup code that inserts 2125 entries into a map on every program\nstart. Generate it instead as two packed strings (names and values) plus\n`ReadOnlyArray[UInt16]` offset tables, and look names up by binary search\nover the code-unit-sorted names, returning a view into the values string.\n\nThe lookup now takes the name as a `StringView`, so the caller no longer\nallocates a `String` per candidate entity.\n\ncmark_cli, native release, macOS arm64, stripped: 1,173,016 -> 991,384\nbytes. `moonbit_init` machine code: 184,276 -> 37,584 bytes.",
+          "timestamp": "2026-11-10T19:32:22+08:00",
+          "tree_id": "38264f634b019d00b480db260ef65945cd573b62",
+          "url": "https://github.com/moonbit-community/cmark.mbt/commit/7a730e8ef69caf901f2d315b4ebbcf447bf83961"
+        },
+        "date": 1794310488616,
+        "tool": "benchmarkjs",
+        "benches": [
+          {
+            "name": "cmarkJS(spec * 100)",
+            "value": 0.59,
+            "range": "±16.29%",
+            "unit": "ops/sec",
+            "extra": "5 samples"
+          },
+          {
+            "name": "cmarkJS(spec * 200)",
+            "value": 0.3,
+            "range": "±31.58%",
+            "unit": "ops/sec",
+            "extra": "5 samples"
+          },
+          {
+            "name": "cmarkWASM1(spec * 100)",
+            "value": 0.61,
+            "range": "±2.79%",
+            "unit": "ops/sec",
+            "extra": "5 samples"
+          },
+          {
+            "name": "cmarkWASM1(spec * 200)",
+            "value": 0.3,
+            "range": "±5.81%",
+            "unit": "ops/sec",
+            "extra": "5 samples"
+          },
+          {
+            "name": "cmarkWASM(spec * 100)",
+            "value": 0.8,
+            "range": "±7.78%",
+            "unit": "ops/sec",
+            "extra": "5 samples"
+          },
+          {
+            "name": "cmarkWASM(spec * 200)",
+            "value": 0.41,
+            "range": "±1.38%",
+            "unit": "ops/sec",
+            "extra": "5 samples"
+          },
+          {
+            "name": "cmarkNative(spec * 100)",
+            "value": 1.02,
+            "range": "±3.91%",
+            "unit": "ops/sec",
+            "extra": "5 samples"
+          },
+          {
+            "name": "cmarkNative(spec * 200)",
+            "value": 0.52,
+            "range": "±6.59%",
             "unit": "ops/sec",
             "extra": "5 samples"
           }
