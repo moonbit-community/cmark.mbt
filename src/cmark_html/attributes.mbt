@@ -1,10 +1,13 @@
 ///|
+type NodeAttributesCallback = (@cmark_base.Meta, String) -> Array[
+  (String, String),
+] raise
+
+///|
 /// Additional attributes for the HTML element that owns a parsed source node.
 /// The callback receives the node's metadata and the lowercase HTML tag name.
 /// Use `Doc::from_string(..., locs=true)` to retain source locations and IDs.
-pub(all) struct NodeAttributesFn(
-  (@cmark_base.Meta, String) -> Array[(String, String)] raise
-)
+pub(all) struct NodeAttributesFn(NodeAttributesCallback)
 
 ///|
 fn attribute_name_is_valid(name : String) -> Bool {
