@@ -643,7 +643,7 @@ fn Table::parse_sep_row(
   for cs = cs {
     match cs {
       [] => break Some(acc)
-      [(Text({ v, meta, }), TableCellLayout(("", ""))), .. cs] => {
+      [(Text({ v, meta, }), _), .. cs] => {
         guard !v.is_empty() else { break None }
         let max = v.length() - 1
         let first_colon = v[0] == ':'
