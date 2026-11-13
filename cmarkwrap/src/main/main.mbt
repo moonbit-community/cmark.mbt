@@ -1,6 +1,8 @@
 ///|
 fn main {
-  let doc : String = try! @fs.read_file_to_string("../cmark/src/data/test/spec.md")
+  let doc : String = try! @fs.read_file_to_string(
+    "../cmark/src/data/test/spec.md",
+  )
   let count = 5
   let cases : Map[String, String] = Map([])
   cases["\{ident}(spec * 100)"] = doc.repeat(100)
