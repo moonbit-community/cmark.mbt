@@ -19,6 +19,15 @@ Supported CommonMark features include:
   - Inline math
   - Math blocks
 
+## Workspace
+
+The root workspace contains two parallel modules:
+
+- [`cmark/`](cmark/): the `moonbit-community/cmark` library, without an async dependency.
+- [`cmark_cli/`](cmark_cli/): the native `moonbit-community/cmark-cli` renderer.
+
+[`cmarkwrap/`](cmarkwrap/) keeps a separate benchmark workspace using the local library.
+
 ## Building
 
 To begin, you will need to install a recent MoonBit toolchain.
@@ -40,9 +49,9 @@ The repository includes a native command-line renderer that follows the basic
 write rendered HTML to stdout.
 
 ```sh
-printf '# Hello\n' | moon run src/cmark_cli -- -
-moon run src/cmark_cli -- README.md
-moon run src/cmark_cli -- --safe --to xhtml README.md
+printf '# Hello\n' | moon run cmark_cli -- -
+moon run cmark_cli -- README.md
+moon run cmark_cli -- --safe --to xhtml README.md
 ```
 
 For reference comparisons, install the upstream CommonMark CLI and compare
@@ -51,15 +60,22 @@ against the MoonBit executable:
 ```sh
 brew install cmark
 printf '# Hello\n' | cmark --unsafe
-printf '# Hello\n' | moon run src/cmark_cli -- -
+printf '# Hello\n' | moon run cmark_cli -- -
 ```
 
 ## Testing
 
-With the MoonBit toolchain installed, you can run the tests by executing the following command:
+Run the library tests on a selected backend (wasm, wasm-gc, js, or native):
 
 ```sh
-moon test
+moon test -p moonbit-community/cmark/ --target wasm
+```
+
+Run the CLI unit and command-line tests on native:
+
+```sh
+moon test cmark_cli --target native
+moon cram test cmark_cli/cram
 ```
 
 ## Acknowledgements
