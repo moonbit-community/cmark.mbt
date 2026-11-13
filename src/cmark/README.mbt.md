@@ -4,7 +4,7 @@ This package provides a CommonMark parser in MoonBit, with support for tables, t
 
 ## Basic Usage
 
-Let's start with a simple example of parsing Markdown text:
+Parse Markdown and inspect the relevant parts of the resulting syntax tree:
 
 ```mbt check
 ///|
@@ -14,127 +14,20 @@ test "basic parsing" {
     #|
     #|This is a paragraph.
   let doc = @cmark.Doc::from_string(input)
-  // Should contain a heading and a paragraph
-  debug_inspect(
-    doc,
-    content=(
-      #|{
-      #|  nl: "\n",
-      #|  block: Blocks(
-      #|    {
-      #|      v: Seq(
-      #|        [
-      #|          Heading(
-      #|            {
-      #|              v: {
-      #|                layout: Atx({ indent: 0, after_opening: "", closing: "" }),
-      #|                level: 1,
-      #|                inline: Text(
-      #|                  {
-      #|                    v: "Hello World",
-      #|                    meta: {
-      #|                      id: 0,
-      #|                      loc: {
-      #|                        file: "-",
-      #|                        first_ccode: -1,
-      #|                        last_ccode: -1,
-      #|                        first_line: LinePos(-1, -1),
-      #|                        last_line: LinePos(-1, -1),
-      #|                      },
-      #|                      extra: None,
-      #|                    },
-      #|                  },
-      #|                ),
-      #|                id: None,
-      #|              },
-      #|              meta: {
-      #|                id: 0,
-      #|                loc: {
-      #|                  file: "-",
-      #|                  first_ccode: -1,
-      #|                  last_ccode: -1,
-      #|                  first_line: LinePos(-1, -1),
-      #|                  last_line: LinePos(-1, -1),
-      #|                },
-      #|                extra: None,
-      #|              },
-      #|            },
-      #|          ),
-      #|          BlankLine(
-      #|            {
-      #|              v: "",
-      #|              meta: {
-      #|                id: 0,
-      #|                loc: {
-      #|                  file: "-",
-      #|                  first_ccode: -1,
-      #|                  last_ccode: -1,
-      #|                  first_line: LinePos(-1, -1),
-      #|                  last_line: LinePos(-1, -1),
-      #|                },
-      #|                extra: None,
-      #|              },
-      #|            },
-      #|          ),
-      #|          Paragraph(
-      #|            {
-      #|              v: {
-      #|                leading_indent: 0,
-      #|                inline: Text(
-      #|                  {
-      #|                    v: "This is a paragraph.",
-      #|                    meta: {
-      #|                      id: 0,
-      #|                      loc: {
-      #|                        file: "-",
-      #|                        first_ccode: -1,
-      #|                        last_ccode: -1,
-      #|                        first_line: LinePos(-1, -1),
-      #|                        last_line: LinePos(-1, -1),
-      #|                      },
-      #|                      extra: None,
-      #|                    },
-      #|                  },
-      #|                ),
-      #|                trailing_blanks: "",
-      #|              },
-      #|              meta: {
-      #|                id: 0,
-      #|                loc: {
-      #|                  file: "-",
-      #|                  first_ccode: -1,
-      #|                  last_ccode: -1,
-      #|                  first_line: LinePos(-1, -1),
-      #|                  last_line: LinePos(-1, -1),
-      #|                },
-      #|                extra: None,
-      #|              },
-      #|            },
-      #|          ),
-      #|        ],
-      #|      ),
-      #|      meta: {
-      #|        id: 0,
-      #|        loc: {
-      #|          file: "-",
-      #|          first_ccode: -1,
-      #|          last_ccode: -1,
-      #|          first_line: LinePos(-1, -1),
-      #|          last_line: LinePos(-1, -1),
-      #|        },
-      #|        extra: None,
-      #|      },
-      #|    },
-      #|  ),
-      #|  defs: {},
-      #|}
-    ),
-  )
+  guard doc.block is Blocks(blocks) else { fail("expected multiple blocks") }
+  guard blocks.v.to_array()
+    is [Heading(heading), BlankLine(_), Paragraph(paragraph)] else {
+    fail("expected a heading followed by a paragraph")
+  }
+  @test.assert_eq(heading.v.level, 1)
+  guard heading.v.inline is Text(title) else { fail("expected heading text") }
+  guard paragraph.v.inline is Text(text) else {
+    fail("expected paragraph text")
+  }
+  @test.assert_eq(title.v, "Hello World")
+  @test.assert_eq(text.v, "This is a paragraph.")
 }
 ```
-
-Below are some simple examples showing how to parse Markdown text with `cmark` and
-what the resulting syntax tree looks like. For more examples, please checkout the test suite.
 
 ## Working with Inline Elements
 
@@ -143,144 +36,28 @@ what the resulting syntax tree looks like. For more examples, please checkout th
 ```mbt check
 ///|
 test "emphasis and strong emphasis" {
-  let input =
-    #|_Emphasis_ and **strong emphasis**
-  let doc = @cmark.Doc::from_string(input)
-  debug_inspect(
-    doc,
-    content=(
-      #|{
-      #|  nl: "\n",
-      #|  block: Paragraph(
-      #|    {
-      #|      v: {
-      #|        leading_indent: 0,
-      #|        inline: Inlines(
-      #|          {
-      #|            v: Seq(
-      #|              [
-      #|                Emphasis(
-      #|                  {
-      #|                    v: {
-      #|                      delim: '_',
-      #|                      inline: Text(
-      #|                        {
-      #|                          v: "Emphasis",
-      #|                          meta: {
-      #|                            id: 0,
-      #|                            loc: {
-      #|                              file: "-",
-      #|                              first_ccode: -1,
-      #|                              last_ccode: -1,
-      #|                              first_line: LinePos(-1, -1),
-      #|                              last_line: LinePos(-1, -1),
-      #|                            },
-      #|                            extra: None,
-      #|                          },
-      #|                        },
-      #|                      ),
-      #|                    },
-      #|                    meta: {
-      #|                      id: 0,
-      #|                      loc: {
-      #|                        file: "-",
-      #|                        first_ccode: -1,
-      #|                        last_ccode: -1,
-      #|                        first_line: LinePos(-1, -1),
-      #|                        last_line: LinePos(-1, -1),
-      #|                      },
-      #|                      extra: None,
-      #|                    },
-      #|                  },
-      #|                ),
-      #|                Text(
-      #|                  {
-      #|                    v: " and ",
-      #|                    meta: {
-      #|                      id: 0,
-      #|                      loc: {
-      #|                        file: "-",
-      #|                        first_ccode: -1,
-      #|                        last_ccode: -1,
-      #|                        first_line: LinePos(-1, -1),
-      #|                        last_line: LinePos(-1, -1),
-      #|                      },
-      #|                      extra: None,
-      #|                    },
-      #|                  },
-      #|                ),
-      #|                StrongEmphasis(
-      #|                  {
-      #|                    v: {
-      #|                      delim: '*',
-      #|                      inline: Text(
-      #|                        {
-      #|                          v: "strong emphasis",
-      #|                          meta: {
-      #|                            id: 0,
-      #|                            loc: {
-      #|                              file: "-",
-      #|                              first_ccode: -1,
-      #|                              last_ccode: -1,
-      #|                              first_line: LinePos(-1, -1),
-      #|                              last_line: LinePos(-1, -1),
-      #|                            },
-      #|                            extra: None,
-      #|                          },
-      #|                        },
-      #|                      ),
-      #|                    },
-      #|                    meta: {
-      #|                      id: 0,
-      #|                      loc: {
-      #|                        file: "-",
-      #|                        first_ccode: -1,
-      #|                        last_ccode: -1,
-      #|                        first_line: LinePos(-1, -1),
-      #|                        last_line: LinePos(-1, -1),
-      #|                      },
-      #|                      extra: None,
-      #|                    },
-      #|                  },
-      #|                ),
-      #|              ],
-      #|            ),
-      #|            meta: {
-      #|              id: 0,
-      #|              loc: {
-      #|                file: "-",
-      #|                first_ccode: -1,
-      #|                last_ccode: -1,
-      #|                first_line: LinePos(-1, -1),
-      #|                last_line: LinePos(-1, -1),
-      #|              },
-      #|              extra: None,
-      #|            },
-      #|          },
-      #|        ),
-      #|        trailing_blanks: "",
-      #|      },
-      #|      meta: {
-      #|        id: 0,
-      #|        loc: {
-      #|          file: "-",
-      #|          first_ccode: -1,
-      #|          last_ccode: -1,
-      #|          first_line: LinePos(-1, -1),
-      #|          last_line: LinePos(-1, -1),
-      #|        },
-      #|        extra: None,
-      #|      },
-      #|    },
-      #|  ),
-      #|  defs: {},
-      #|}
-    ),
-  )
+  let doc = @cmark.Doc::from_string("_Emphasis_ and **strong emphasis**")
+  guard doc.block is Paragraph(paragraph) else { fail("expected a paragraph") }
+  guard paragraph.v.inline is Inlines(inlines) else {
+    fail("expected inline elements")
+  }
+  guard inlines.v.to_array()
+    is [Emphasis(emphasis), Text(separator), StrongEmphasis(strong)] else {
+    fail("expected emphasis and strong emphasis")
+  }
+  guard emphasis.v.inline is Text(text) else { fail("expected emphasis text") }
+  guard strong.v.inline is Text(strong_text) else {
+    fail("expected strong emphasis text")
+  }
+  @test.assert_eq((emphasis.v.delim, text.v), ('_', "Emphasis"))
+  @test.assert_eq(separator.v, " and ")
+  @test.assert_eq((strong.v.delim, strong_text.v), ('*', "strong emphasis"))
 }
 ```
 
 ### Inline Code and Math
+
+Extensions are enabled with `strict=false`:
 
 ```mbt check
 ///|
@@ -288,121 +65,17 @@ test "inline code and math" {
   let input =
     $|$E = mc^2$ in Python: `E = m * (c ** 2)`
   let doc = @cmark.Doc::from_string(input, strict=false)
-  debug_inspect(
-    doc,
-    content=(
-      #|{
-      #|  nl: "\n",
-      #|  block: Paragraph(
-      #|    {
-      #|      v: {
-      #|        leading_indent: 0,
-      #|        inline: Inlines(
-      #|          {
-      #|            v: Seq(
-      #|              [
-      #|                ExtMathSpan(
-      #|                  {
-      #|                    v: {
-      #|                      display: false,
-      #|                      tex_layout: Seq(
-      #|                        [
-      #|                          {
-      #|                            blanks: "",
-      #|                            node: { v: "E = mc^2", meta: { id: 0, loc: ..., extra: None } },
-      #|                          },
-      #|                        ],
-      #|                      ),
-      #|                    },
-      #|                    meta: {
-      #|                      id: 0,
-      #|                      loc: {
-      #|                        file: "-",
-      #|                        first_ccode: -1,
-      #|                        last_ccode: -1,
-      #|                        first_line: LinePos(-1, -1),
-      #|                        last_line: LinePos(-1, -1),
-      #|                      },
-      #|                      extra: None,
-      #|                    },
-      #|                  },
-      #|                ),
-      #|                Text(
-      #|                  {
-      #|                    v: " in Python: ",
-      #|                    meta: {
-      #|                      id: 0,
-      #|                      loc: {
-      #|                        file: "-",
-      #|                        first_ccode: -1,
-      #|                        last_ccode: -1,
-      #|                        first_line: LinePos(-1, -1),
-      #|                        last_line: LinePos(-1, -1),
-      #|                      },
-      #|                      extra: None,
-      #|                    },
-      #|                  },
-      #|                ),
-      #|                CodeSpan(
-      #|                  {
-      #|                    v: {
-      #|                      backticks: 1,
-      #|                      code_layout: Seq(
-      #|                        [
-      #|                          {
-      #|                            blanks: "",
-      #|                            node: { v: "E = m * (c ** 2)", meta: { id: 0, loc: ..., extra: None } },
-      #|                          },
-      #|                        ],
-      #|                      ),
-      #|                    },
-      #|                    meta: {
-      #|                      id: 0,
-      #|                      loc: {
-      #|                        file: "-",
-      #|                        first_ccode: -1,
-      #|                        last_ccode: -1,
-      #|                        first_line: LinePos(-1, -1),
-      #|                        last_line: LinePos(-1, -1),
-      #|                      },
-      #|                      extra: None,
-      #|                    },
-      #|                  },
-      #|                ),
-      #|              ],
-      #|            ),
-      #|            meta: {
-      #|              id: 0,
-      #|              loc: {
-      #|                file: "-",
-      #|                first_ccode: -1,
-      #|                last_ccode: -1,
-      #|                first_line: LinePos(-1, -1),
-      #|                last_line: LinePos(-1, -1),
-      #|              },
-      #|              extra: None,
-      #|            },
-      #|          },
-      #|        ),
-      #|        trailing_blanks: "",
-      #|      },
-      #|      meta: {
-      #|        id: 0,
-      #|        loc: {
-      #|          file: "-",
-      #|          first_ccode: -1,
-      #|          last_ccode: -1,
-      #|          first_line: LinePos(-1, -1),
-      #|          last_line: LinePos(-1, -1),
-      #|        },
-      #|        extra: None,
-      #|      },
-      #|    },
-      #|  ),
-      #|  defs: {},
-      #|}
-    ),
-  )
+  guard doc.block is Paragraph(paragraph) else { fail("expected a paragraph") }
+  guard paragraph.v.inline is Inlines(inlines) else {
+    fail("expected inline elements")
+  }
+  guard inlines.v.to_array()
+    is [ExtMathSpan(math), Text(separator), CodeSpan(code)] else {
+    fail("expected inline math and code")
+  }
+  @test.assert_eq((math.v.display, math.v.tex()), (false, "E = mc^2"))
+  @test.assert_eq(separator.v, " in Python: ")
+  @test.assert_eq(code.v.code(), "E = m * (c ** 2)")
 }
 ```
 
@@ -413,55 +86,10 @@ test "inline code and math" {
 ```mbt check
 ///|
 test "headings" {
-  let input =
-    #|# Level 1
-  let doc = @cmark.Doc::from_string(input)
-  // Should contain a heading and a paragraph
-  debug_inspect(
-    doc,
-    content=(
-      #|{
-      #|  nl: "\n",
-      #|  block: Heading(
-      #|    {
-      #|      v: {
-      #|        layout: Atx({ indent: 0, after_opening: "", closing: "" }),
-      #|        level: 1,
-      #|        inline: Text(
-      #|          {
-      #|            v: "Level 1",
-      #|            meta: {
-      #|              id: 0,
-      #|              loc: {
-      #|                file: "-",
-      #|                first_ccode: -1,
-      #|                last_ccode: -1,
-      #|                first_line: LinePos(-1, -1),
-      #|                last_line: LinePos(-1, -1),
-      #|              },
-      #|              extra: None,
-      #|            },
-      #|          },
-      #|        ),
-      #|        id: None,
-      #|      },
-      #|      meta: {
-      #|        id: 0,
-      #|        loc: {
-      #|          file: "-",
-      #|          first_ccode: -1,
-      #|          last_ccode: -1,
-      #|          first_line: LinePos(-1, -1),
-      #|          last_line: LinePos(-1, -1),
-      #|        },
-      #|        extra: None,
-      #|      },
-      #|    },
-      #|  ),
-      #|  defs: {},
-      #|}
-    ),
-  )
+  let doc = @cmark.Doc::from_string("# Level 1")
+  guard doc.block is Heading(heading) else { fail("expected a heading") }
+  guard heading.v.inline is Text(text) else { fail("expected heading text") }
+  @test.assert_eq((heading.v.level, text.v), (1, "Level 1"))
 }
 ```
 
@@ -475,189 +103,29 @@ test "lists" {
     #|- Second item
     #|  1. Nested item
   let doc = @cmark.Doc::from_string(input)
-  // Should find an ordered list within an unordered one.
-  debug_inspect(
-    doc,
-    content=(
-      #|{
-      #|  nl: "\n",
-      #|  block: List(
-      #|    {
-      #|      v: {
-      #|        ty: Unordered('-'),
-      #|        tight: true,
-      #|        items: Seq(
-      #|          [
-      #|            {
-      #|              v: {
-      #|                before_marker: 0,
-      #|                marker: {
-      #|                  v: "-",
-      #|                  meta: {
-      #|                    id: 0,
-      #|                    loc: {
-      #|                      file: "-",
-      #|                      first_ccode: -1,
-      #|                      last_ccode: -1,
-      #|                      first_line: LinePos(-1, -1),
-      #|                      last_line: LinePos(-1, -1),
-      #|                    },
-      #|                    extra: None,
-      #|                  },
-      #|                },
-      #|                after_marker: 1,
-      #|                block: Paragraph(
-      #|                  {
-      #|                    v: {
-      #|                      leading_indent: 0,
-      #|                      inline: Text(
-      #|                        {
-      #|                          v: "First item",
-      #|                          meta: {
-      #|                            id: 0,
-      #|                            loc: {
-      #|                              file: "-",
-      #|                              first_ccode: -1,
-      #|                              last_ccode: -1,
-      #|                              first_line: LinePos(-1, -1),
-      #|                              last_line: LinePos(-1, -1),
-      #|                            },
-      #|                            extra: None,
-      #|                          },
-      #|                        },
-      #|                      ),
-      #|                      trailing_blanks: "",
-      #|                    },
-      #|                    meta: {
-      #|                      id: 0,
-      #|                      loc: {
-      #|                        file: "-",
-      #|                        first_ccode: -1,
-      #|                        last_ccode: -1,
-      #|                        first_line: LinePos(-1, -1),
-      #|                        last_line: LinePos(-1, -1),
-      #|                      },
-      #|                      extra: None,
-      #|                    },
-      #|                  },
-      #|                ),
-      #|                ext_task_marker: None,
-      #|              },
-      #|              meta: {
-      #|                id: 0,
-      #|                loc: {
-      #|                  file: "-",
-      #|                  first_ccode: -1,
-      #|                  last_ccode: -1,
-      #|                  first_line: LinePos(-1, -1),
-      #|                  last_line: LinePos(-1, -1),
-      #|                },
-      #|                extra: None,
-      #|              },
-      #|            },
-      #|            {
-      #|              v: {
-      #|                before_marker: 0,
-      #|                marker: {
-      #|                  v: "-",
-      #|                  meta: {
-      #|                    id: 0,
-      #|                    loc: {
-      #|                      file: "-",
-      #|                      first_ccode: -1,
-      #|                      last_ccode: -1,
-      #|                      first_line: LinePos(-1, -1),
-      #|                      last_line: LinePos(-1, -1),
-      #|                    },
-      #|                    extra: None,
-      #|                  },
-      #|                },
-      #|                after_marker: 1,
-      #|                block: Blocks(
-      #|                  {
-      #|                    v: Seq(
-      #|                      [
-      #|                        Paragraph(
-      #|                          {
-      #|                            v: { leading_indent: 0, inline: Text(...), trailing_blanks: "" },
-      #|                            meta: {
-      #|                              id: 0,
-      #|                              loc: {
-      #|                                file: "-",
-      #|                                first_ccode: -1,
-      #|                                last_ccode: -1,
-      #|                                first_line: ...,
-      #|                                last_line: ...,
-      #|                              },
-      #|                              extra: None,
-      #|                            },
-      #|                          },
-      #|                        ),
-      #|                        List(
-      #|                          {
-      #|                            v: { ty: Ordered(1, '.'), tight: true, items: Seq(...) },
-      #|                            meta: {
-      #|                              id: 0,
-      #|                              loc: {
-      #|                                file: "-",
-      #|                                first_ccode: -1,
-      #|                                last_ccode: -1,
-      #|                                first_line: ...,
-      #|                                last_line: ...,
-      #|                              },
-      #|                              extra: None,
-      #|                            },
-      #|                          },
-      #|                        ),
-      #|                      ],
-      #|                    ),
-      #|                    meta: {
-      #|                      id: 0,
-      #|                      loc: {
-      #|                        file: "-",
-      #|                        first_ccode: -1,
-      #|                        last_ccode: -1,
-      #|                        first_line: LinePos(-1, -1),
-      #|                        last_line: LinePos(-1, -1),
-      #|                      },
-      #|                      extra: None,
-      #|                    },
-      #|                  },
-      #|                ),
-      #|                ext_task_marker: None,
-      #|              },
-      #|              meta: {
-      #|                id: 0,
-      #|                loc: {
-      #|                  file: "-",
-      #|                  first_ccode: -1,
-      #|                  last_ccode: -1,
-      #|                  first_line: LinePos(-1, -1),
-      #|                  last_line: LinePos(-1, -1),
-      #|                },
-      #|                extra: None,
-      #|              },
-      #|            },
-      #|          ],
-      #|        ),
-      #|      },
-      #|      meta: {
-      #|        id: 0,
-      #|        loc: {
-      #|          file: "-",
-      #|          first_ccode: -1,
-      #|          last_ccode: -1,
-      #|          first_line: LinePos(-1, -1),
-      #|          last_line: LinePos(-1, -1),
-      #|        },
-      #|        extra: None,
-      #|      },
-      #|    },
-      #|  ),
-      #|  defs: {},
-      #|}
-    ),
-  )
+  guard doc.block is List(list) else { fail("expected a list") }
+  guard list.v.ty is Unordered('-') else { fail("expected an unordered list") }
+  guard list.v.items.to_array() is [first, second] else {
+    fail("expected two items")
+  }
+  guard first.v.block is Paragraph({ v: { inline: Text(text), .. }, .. }) else {
+    fail("expected the first item's paragraph")
+  }
+  @test.assert_eq(text.v, "First item")
+  guard second.v.block is Blocks(blocks) else { fail("expected a nested list") }
+  guard blocks.v.to_array()
+    is [Paragraph({ v: { inline: Text(text), .. }, .. }), List(nested)] else {
+    fail("expected a paragraph followed by a nested list")
+  }
+  @test.assert_eq(text.v, "Second item")
+  guard nested.v.ty is Ordered(1, '.') else { fail("expected an ordered list") }
+  guard nested.v.items.to_array()
+    is [
+      { v: { block: Paragraph({ v: { inline: Text(text), .. }, .. }), .. }, .. },
+    ] else {
+    fail("expected the nested item's paragraph")
+  }
+  @test.assert_eq(text.v, "Nested item")
 }
 ```
 
@@ -674,129 +142,12 @@ test "code blocks" {
     $|}
     $|\{tick3}
   let doc = @cmark.Doc::from_string(input)
-  debug_inspect(
-    doc,
-    content=(
-      #|{
-      #|  nl: "\n",
-      #|  block: CodeBlock(
-      #|    {
-      #|      v: {
-      #|        layout: Fenced(
-      #|          {
-      #|            indent: 0,
-      #|            opening_fence: {
-      #|              v: "",
-      #|              meta: {
-      #|                id: 0,
-      #|                loc: {
-      #|                  file: "-",
-      #|                  first_ccode: -1,
-      #|                  last_ccode: -1,
-      #|                  first_line: LinePos(-1, -1),
-      #|                  last_line: LinePos(-1, -1),
-      #|                },
-      #|                extra: None,
-      #|              },
-      #|            },
-      #|            closing_fence: Some(
-      #|              {
-      #|                v: "",
-      #|                meta: {
-      #|                  id: 0,
-      #|                  loc: {
-      #|                    file: "-",
-      #|                    first_ccode: -1,
-      #|                    last_ccode: -1,
-      #|                    first_line: LinePos(-1, -1),
-      #|                    last_line: LinePos(-1, -1),
-      #|                  },
-      #|                  extra: None,
-      #|                },
-      #|              },
-      #|            ),
-      #|          },
-      #|        ),
-      #|        info_string: Some(
-      #|          {
-      #|            v: "moonbit",
-      #|            meta: {
-      #|              id: 0,
-      #|              loc: {
-      #|                file: "-",
-      #|                first_ccode: -1,
-      #|                last_ccode: -1,
-      #|                first_line: LinePos(-1, -1),
-      #|                last_line: LinePos(-1, -1),
-      #|              },
-      #|              extra: None,
-      #|            },
-      #|          },
-      #|        ),
-      #|        code: Seq(
-      #|          [
-      #|            {
-      #|              v: "fn main {",
-      #|              meta: {
-      #|                id: 0,
-      #|                loc: {
-      #|                  file: "-",
-      #|                  first_ccode: -1,
-      #|                  last_ccode: -1,
-      #|                  first_line: LinePos(-1, -1),
-      #|                  last_line: LinePos(-1, -1),
-      #|                },
-      #|                extra: None,
-      #|              },
-      #|            },
-      #|            {
-      #|              v: "  println(\"Hello\")",
-      #|              meta: {
-      #|                id: 0,
-      #|                loc: {
-      #|                  file: "-",
-      #|                  first_ccode: -1,
-      #|                  last_ccode: -1,
-      #|                  first_line: LinePos(-1, -1),
-      #|                  last_line: LinePos(-1, -1),
-      #|                },
-      #|                extra: None,
-      #|              },
-      #|            },
-      #|            {
-      #|              v: "}",
-      #|              meta: {
-      #|                id: 0,
-      #|                loc: {
-      #|                  file: "-",
-      #|                  first_ccode: -1,
-      #|                  last_ccode: -1,
-      #|                  first_line: LinePos(-1, -1),
-      #|                  last_line: LinePos(-1, -1),
-      #|                },
-      #|                extra: None,
-      #|              },
-      #|            },
-      #|          ],
-      #|        ),
-      #|      },
-      #|      meta: {
-      #|        id: 0,
-      #|        loc: {
-      #|          file: "-",
-      #|          first_ccode: -1,
-      #|          last_ccode: -1,
-      #|          first_line: LinePos(-1, -1),
-      #|          last_line: LinePos(-1, -1),
-      #|        },
-      #|        extra: None,
-      #|      },
-      #|    },
-      #|  ),
-      #|  defs: {},
-      #|}
-    ),
-  )
+  guard doc.block is CodeBlock(code) else { fail("expected a code block") }
+  guard code.v.layout is Fenced(_) else { fail("expected fenced code") }
+  @test.assert_eq(code.v.info_string.map(fn(info) { info.v }), Some("moonbit"))
+  @test.assert_eq(code.v.code.to_array().map(fn(line) { line.v }), [
+    "fn main {", "  println(\"Hello\")", "}",
+  ])
 }
 ```
 
@@ -810,208 +161,26 @@ test "tables" {
     #||----------|----------|
     #|| Cell 1   | Cell 2   |
   let doc = @cmark.Doc::from_string(input, strict=false)
-  debug_inspect(
-    doc,
-    content=(
-      #|{
-      #|  nl: "\n",
-      #|  block: ExtTable(
-      #|    {
-      #|      v: {
-      #|        indent: 0,
-      #|        col_count: 2,
-      #|        rows: Seq(
-      #|          [
-      #|            (
-      #|              {
-      #|                v: Header(
-      #|                  Seq(
-      #|                    [
-      #|                      (
-      #|                        Text(
-      #|                          {
-      #|                            v: "Header 1",
-      #|                            meta: {
-      #|                              id: 0,
-      #|                              loc: {
-      #|                                file: "-",
-      #|                                first_ccode: -1,
-      #|                                last_ccode: -1,
-      #|                                first_line: ...,
-      #|                                last_line: ...,
-      #|                              },
-      #|                              extra: None,
-      #|                            },
-      #|                          },
-      #|                        ),
-      #|                        TableCellLayout(("", "")),
-      #|                      ),
-      #|                      (
-      #|                        Text(
-      #|                          {
-      #|                            v: "Header 2",
-      #|                            meta: {
-      #|                              id: 0,
-      #|                              loc: {
-      #|                                file: "-",
-      #|                                first_ccode: -1,
-      #|                                last_ccode: -1,
-      #|                                first_line: ...,
-      #|                                last_line: ...,
-      #|                              },
-      #|                              extra: None,
-      #|                            },
-      #|                          },
-      #|                        ),
-      #|                        TableCellLayout(("", "")),
-      #|                      ),
-      #|                    ],
-      #|                  ),
-      #|                ),
-      #|                meta: {
-      #|                  id: 0,
-      #|                  loc: {
-      #|                    file: "-",
-      #|                    first_ccode: -1,
-      #|                    last_ccode: -1,
-      #|                    first_line: LinePos(-1, -1),
-      #|                    last_line: LinePos(-1, -1),
-      #|                  },
-      #|                  extra: None,
-      #|                },
-      #|              },
-      #|              "",
-      #|            ),
-      #|            (
-      #|              {
-      #|                v: Sep(
-      #|                  Seq(
-      #|                    [
-      #|                      {
-      #|                        v: TableSep((None, 10)),
-      #|                        meta: {
-      #|                          id: 0,
-      #|                          loc: {
-      #|                            file: "-",
-      #|                            first_ccode: -1,
-      #|                            last_ccode: -1,
-      #|                            first_line: LinePos(-1, -1),
-      #|                            last_line: LinePos(-1, -1),
-      #|                          },
-      #|                          extra: None,
-      #|                        },
-      #|                      },
-      #|                      {
-      #|                        v: TableSep((None, 10)),
-      #|                        meta: {
-      #|                          id: 0,
-      #|                          loc: {
-      #|                            file: "-",
-      #|                            first_ccode: -1,
-      #|                            last_ccode: -1,
-      #|                            first_line: LinePos(-1, -1),
-      #|                            last_line: LinePos(-1, -1),
-      #|                          },
-      #|                          extra: None,
-      #|                        },
-      #|                      },
-      #|                    ],
-      #|                  ),
-      #|                ),
-      #|                meta: {
-      #|                  id: 0,
-      #|                  loc: {
-      #|                    file: "-",
-      #|                    first_ccode: -1,
-      #|                    last_ccode: -1,
-      #|                    first_line: LinePos(-1, -1),
-      #|                    last_line: LinePos(-1, -1),
-      #|                  },
-      #|                  extra: None,
-      #|                },
-      #|              },
-      #|              "",
-      #|            ),
-      #|            (
-      #|              {
-      #|                v: Data(
-      #|                  Seq(
-      #|                    [
-      #|                      (
-      #|                        Text(
-      #|                          {
-      #|                            v: "Cell 1",
-      #|                            meta: {
-      #|                              id: 0,
-      #|                              loc: {
-      #|                                file: "-",
-      #|                                first_ccode: -1,
-      #|                                last_ccode: -1,
-      #|                                first_line: ...,
-      #|                                last_line: ...,
-      #|                              },
-      #|                              extra: None,
-      #|                            },
-      #|                          },
-      #|                        ),
-      #|                        TableCellLayout(("", "")),
-      #|                      ),
-      #|                      (
-      #|                        Text(
-      #|                          {
-      #|                            v: "Cell 2",
-      #|                            meta: {
-      #|                              id: 0,
-      #|                              loc: {
-      #|                                file: "-",
-      #|                                first_ccode: -1,
-      #|                                last_ccode: -1,
-      #|                                first_line: ...,
-      #|                                last_line: ...,
-      #|                              },
-      #|                              extra: None,
-      #|                            },
-      #|                          },
-      #|                        ),
-      #|                        TableCellLayout(("", "")),
-      #|                      ),
-      #|                    ],
-      #|                  ),
-      #|                ),
-      #|                meta: {
-      #|                  id: 0,
-      #|                  loc: {
-      #|                    file: "-",
-      #|                    first_ccode: -1,
-      #|                    last_ccode: -1,
-      #|                    first_line: LinePos(-1, -1),
-      #|                    last_line: LinePos(-1, -1),
-      #|                  },
-      #|                  extra: None,
-      #|                },
-      #|              },
-      #|              "",
-      #|            ),
-      #|          ],
-      #|        ),
-      #|      },
-      #|      meta: {
-      #|        id: 0,
-      #|        loc: {
-      #|          file: "-",
-      #|          first_ccode: -1,
-      #|          last_ccode: -1,
-      #|          first_line: LinePos(-1, -1),
-      #|          last_line: LinePos(-1, -1),
-      #|        },
-      #|        extra: None,
-      #|      },
-      #|    },
-      #|  ),
-      #|  defs: {},
-      #|}
-    ),
-  )
+  guard doc.block is ExtTable(table) else { fail("expected a table") }
+  @test.assert_eq(table.v.col_count, 2)
+  guard table.v.rows.to_array() is [(header, _), (separator, _), (data, _)] else {
+    fail("expected a header, separator and data row")
+  }
+  guard header.v is Header(cells) else { fail("expected a header row") }
+  guard cells.to_array() is [(Text(first), _), (Text(second), _)] else {
+    fail("expected two header cells")
+  }
+  @test.assert_eq((first.v, second.v), ("Header 1", "Header 2"))
+  guard separator.v is Sep(columns) else { fail("expected a separator row") }
+  guard columns.to_array()
+    is [{ v: TableSep((None, 10)), .. }, { v: TableSep((None, 10)), .. }] else {
+    fail("expected two unaligned separator cells with ten dashes")
+  }
+  guard data.v is Data(cells) else { fail("expected a data row") }
+  guard cells.to_array() is [(Text(first), _), (Text(second), _)] else {
+    fail("expected two data cells")
+  }
+  @test.assert_eq((first.v, second.v), ("Cell 1", "Cell 2"))
 }
 ```
 
@@ -1025,374 +194,34 @@ test "footnotes" {
     #|
     #|[^1]: Footnote content
   let doc = @cmark.Doc::from_string(input, strict=false)
-  debug_inspect(
-    doc,
-    content=(
-      #|{
-      #|  nl: "\n",
-      #|  block: Blocks(
-      #|    {
-      #|      v: Seq(
-      #|        [
-      #|          Paragraph(
-      #|            {
-      #|              v: {
-      #|                leading_indent: 0,
-      #|                inline: Inlines(
-      #|                  {
-      #|                    v: Seq(
-      #|                      [
-      #|                        Text(
-      #|                          {
-      #|                            v: "Text",
-      #|                            meta: {
-      #|                              id: 0,
-      #|                              loc: {
-      #|                                file: "-",
-      #|                                first_ccode: -1,
-      #|                                last_ccode: -1,
-      #|                                first_line: ...,
-      #|                                last_line: ...,
-      #|                              },
-      #|                              extra: None,
-      #|                            },
-      #|                          },
-      #|                        ),
-      #|                        Link(
-      #|                          {
-      #|                            v: { text: Text(...), reference: Ref(Shortcut, ..., ...) },
-      #|                            meta: {
-      #|                              id: 0,
-      #|                              loc: {
-      #|                                file: "-",
-      #|                                first_ccode: -1,
-      #|                                last_ccode: -1,
-      #|                                first_line: ...,
-      #|                                last_line: ...,
-      #|                              },
-      #|                              extra: None,
-      #|                            },
-      #|                          },
-      #|                        ),
-      #|                      ],
-      #|                    ),
-      #|                    meta: {
-      #|                      id: 0,
-      #|                      loc: {
-      #|                        file: "-",
-      #|                        first_ccode: -1,
-      #|                        last_ccode: -1,
-      #|                        first_line: LinePos(-1, -1),
-      #|                        last_line: LinePos(-1, -1),
-      #|                      },
-      #|                      extra: None,
-      #|                    },
-      #|                  },
-      #|                ),
-      #|                trailing_blanks: "",
-      #|              },
-      #|              meta: {
-      #|                id: 0,
-      #|                loc: {
-      #|                  file: "-",
-      #|                  first_ccode: -1,
-      #|                  last_ccode: -1,
-      #|                  first_line: LinePos(-1, -1),
-      #|                  last_line: LinePos(-1, -1),
-      #|                },
-      #|                extra: None,
-      #|              },
-      #|            },
-      #|          ),
-      #|          BlankLine(
-      #|            {
-      #|              v: "",
-      #|              meta: {
-      #|                id: 0,
-      #|                loc: {
-      #|                  file: "-",
-      #|                  first_ccode: -1,
-      #|                  last_ccode: -1,
-      #|                  first_line: LinePos(-1, -1),
-      #|                  last_line: LinePos(-1, -1),
-      #|                },
-      #|                extra: None,
-      #|              },
-      #|            },
-      #|          ),
-      #|          ExtFootnoteDefinition(
-      #|            {
-      #|              v: {
-      #|                indent: 0,
-      #|                label: {
-      #|                  meta: {
-      #|                    id: 0,
-      #|                    loc: {
-      #|                      file: "-",
-      #|                      first_ccode: -1,
-      #|                      last_ccode: -1,
-      #|                      first_line: LinePos(-1, -1),
-      #|                      last_line: LinePos(-1, -1),
-      #|                    },
-      #|                    extra: None,
-      #|                  },
-      #|                  key: "^1",
-      #|                  text: Seq(
-      #|                    [
-      #|                      {
-      #|                        blanks: "",
-      #|                        node: {
-      #|                          v: "^1",
-      #|                          meta: {
-      #|                            id: 0,
-      #|                            loc: {
-      #|                              file: "-",
-      #|                              first_ccode: -1,
-      #|                              last_ccode: -1,
-      #|                              first_line: LinePos(-1, -1),
-      #|                              last_line: LinePos(-1, -1),
-      #|                            },
-      #|                            extra: None,
-      #|                          },
-      #|                        },
-      #|                      },
-      #|                    ],
-      #|                  ),
-      #|                },
-      #|                defined_label: Some(
-      #|                  {
-      #|                    meta: {
-      #|                      id: 0,
-      #|                      loc: {
-      #|                        file: "-",
-      #|                        first_ccode: -1,
-      #|                        last_ccode: -1,
-      #|                        first_line: LinePos(-1, -1),
-      #|                        last_line: LinePos(-1, -1),
-      #|                      },
-      #|                      extra: None,
-      #|                    },
-      #|                    key: "^1",
-      #|                    text: Seq(
-      #|                      [
-      #|                        {
-      #|                          blanks: "",
-      #|                          node: {
-      #|                            v: "^1",
-      #|                            meta: {
-      #|                              id: 0,
-      #|                              loc: {
-      #|                                file: "-",
-      #|                                first_ccode: -1,
-      #|                                last_ccode: -1,
-      #|                                first_line: ...,
-      #|                                last_line: ...,
-      #|                              },
-      #|                              extra: None,
-      #|                            },
-      #|                          },
-      #|                        },
-      #|                      ],
-      #|                    ),
-      #|                  },
-      #|                ),
-      #|                block: Paragraph(
-      #|                  {
-      #|                    v: {
-      #|                      leading_indent: 1,
-      #|                      inline: Text(
-      #|                        {
-      #|                          v: "Footnote content",
-      #|                          meta: {
-      #|                            id: 0,
-      #|                            loc: {
-      #|                              file: "-",
-      #|                              first_ccode: -1,
-      #|                              last_ccode: -1,
-      #|                              first_line: LinePos(-1, -1),
-      #|                              last_line: LinePos(-1, -1),
-      #|                            },
-      #|                            extra: None,
-      #|                          },
-      #|                        },
-      #|                      ),
-      #|                      trailing_blanks: "",
-      #|                    },
-      #|                    meta: {
-      #|                      id: 0,
-      #|                      loc: {
-      #|                        file: "-",
-      #|                        first_ccode: -1,
-      #|                        last_ccode: -1,
-      #|                        first_line: LinePos(-1, -1),
-      #|                        last_line: LinePos(-1, -1),
-      #|                      },
-      #|                      extra: None,
-      #|                    },
-      #|                  },
-      #|                ),
-      #|              },
-      #|              meta: {
-      #|                id: 0,
-      #|                loc: {
-      #|                  file: "-",
-      #|                  first_ccode: -1,
-      #|                  last_ccode: -1,
-      #|                  first_line: LinePos(-1, -1),
-      #|                  last_line: LinePos(-1, -1),
-      #|                },
-      #|                extra: None,
-      #|              },
-      #|            },
-      #|          ),
-      #|        ],
-      #|      ),
-      #|      meta: {
-      #|        id: 0,
-      #|        loc: {
-      #|          file: "-",
-      #|          first_ccode: -1,
-      #|          last_ccode: -1,
-      #|          first_line: LinePos(-1, -1),
-      #|          last_line: LinePos(-1, -1),
-      #|        },
-      #|        extra: None,
-      #|      },
-      #|    },
-      #|  ),
-      #|  defs: {
-      #|    "^1": FootnoteDef(
-      #|      {
-      #|        v: {
-      #|          indent: 0,
-      #|          label: {
-      #|            meta: {
-      #|              id: 0,
-      #|              loc: {
-      #|                file: "-",
-      #|                first_ccode: -1,
-      #|                last_ccode: -1,
-      #|                first_line: LinePos(-1, -1),
-      #|                last_line: LinePos(-1, -1),
-      #|              },
-      #|              extra: None,
-      #|            },
-      #|            key: "^1",
-      #|            text: Seq(
-      #|              [
-      #|                {
-      #|                  blanks: "",
-      #|                  node: {
-      #|                    v: "^1",
-      #|                    meta: {
-      #|                      id: 0,
-      #|                      loc: {
-      #|                        file: "-",
-      #|                        first_ccode: -1,
-      #|                        last_ccode: -1,
-      #|                        first_line: LinePos(-1, -1),
-      #|                        last_line: LinePos(-1, -1),
-      #|                      },
-      #|                      extra: None,
-      #|                    },
-      #|                  },
-      #|                },
-      #|              ],
-      #|            ),
-      #|          },
-      #|          defined_label: Some(
-      #|            {
-      #|              meta: {
-      #|                id: 0,
-      #|                loc: {
-      #|                  file: "-",
-      #|                  first_ccode: -1,
-      #|                  last_ccode: -1,
-      #|                  first_line: LinePos(-1, -1),
-      #|                  last_line: LinePos(-1, -1),
-      #|                },
-      #|                extra: None,
-      #|              },
-      #|              key: "^1",
-      #|              text: Seq(
-      #|                [
-      #|                  {
-      #|                    blanks: "",
-      #|                    node: {
-      #|                      v: "^1",
-      #|                      meta: {
-      #|                        id: 0,
-      #|                        loc: {
-      #|                          file: "-",
-      #|                          first_ccode: -1,
-      #|                          last_ccode: -1,
-      #|                          first_line: LinePos(-1, -1),
-      #|                          last_line: LinePos(-1, -1),
-      #|                        },
-      #|                        extra: None,
-      #|                      },
-      #|                    },
-      #|                  },
-      #|                ],
-      #|              ),
-      #|            },
-      #|          ),
-      #|          block: Paragraph(
-      #|            {
-      #|              v: {
-      #|                leading_indent: 1,
-      #|                inline: Text(
-      #|                  {
-      #|                    v: "Footnote content",
-      #|                    meta: {
-      #|                      id: 0,
-      #|                      loc: {
-      #|                        file: "-",
-      #|                        first_ccode: -1,
-      #|                        last_ccode: -1,
-      #|                        first_line: LinePos(-1, -1),
-      #|                        last_line: LinePos(-1, -1),
-      #|                      },
-      #|                      extra: None,
-      #|                    },
-      #|                  },
-      #|                ),
-      #|                trailing_blanks: "",
-      #|              },
-      #|              meta: {
-      #|                id: 0,
-      #|                loc: {
-      #|                  file: "-",
-      #|                  first_ccode: -1,
-      #|                  last_ccode: -1,
-      #|                  first_line: LinePos(-1, -1),
-      #|                  last_line: LinePos(-1, -1),
-      #|                },
-      #|                extra: None,
-      #|              },
-      #|            },
-      #|          ),
-      #|        },
-      #|        meta: {
-      #|          id: 0,
-      #|          loc: {
-      #|            file: "-",
-      #|            first_ccode: -1,
-      #|            last_ccode: -1,
-      #|            first_line: LinePos(-1, -1),
-      #|            last_line: LinePos(-1, -1),
-      #|          },
-      #|          extra: None,
-      #|        },
-      #|      },
-      #|    ),
-      #|  },
-      #|}
-    ),
+  guard doc.block is Blocks(blocks) else { fail("expected multiple blocks") }
+  guard blocks.v.to_array()
+    is [Paragraph(paragraph), BlankLine(_), ExtFootnoteDefinition(footnote)] else {
+    fail("expected a footnote reference and definition")
+  }
+  guard paragraph.v.inline is Inlines(inlines) else {
+    fail("expected a footnote reference")
+  }
+  guard inlines.v.to_array() is [Text(text), Link(reference)] else {
+    fail("expected text followed by a footnote reference")
+  }
+  @test.assert_eq(text.v, "Text")
+  @test.assert_eq(
+    reference.v.referenced_label().map(fn(label) { label.key }),
+    Some("^1"),
   )
+  @test.assert_eq(footnote.v.label.key, "^1")
+  @test.assert_eq(doc.defs.length(), 1)
+  guard doc.defs.get("^1") is Some(FootnoteDef(definition)) else {
+    fail("expected a registered footnote definition")
+  }
+  guard definition.v.block is Paragraph({ v: { inline: Text(text), .. }, .. }) else {
+    fail("expected footnote text")
+  }
+  @test.assert_eq(text.v, "Footnote content")
 }
 ```
 
 ## Document Transformation
 
-In addition, this package provides powerful APIs for transforming documents using the `Mapper` and `Folder` APIs.
+Use the `Mapper` and `Folder` APIs to transform or traverse documents.

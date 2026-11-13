@@ -11,12 +11,10 @@ import {
   "moonbitlang/core/json",
 }
 
-options(
-  "pre-build": [
-    {
-      "command": ":embed -i $input -o $output --name test_base_md_str",
-      "input": "../data/test/basic.md",
-      "output": "test_data_test.mbt",
-    },
-  ],
-)
+import {
+  "moonbitlang/core/test",
+} for "test"
+
+import {
+  "moonbitlang/core/test",
+} for "wbtest"

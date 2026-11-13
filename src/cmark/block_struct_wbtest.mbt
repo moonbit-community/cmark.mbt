@@ -1,695 +1,87 @@
 ///|
 test "plain" {
-  let doc =
+  let source =
     #|Basic tests
     #|===========
     #|Basic tests for all CommonMark constructs.
-  debug_inspect(
-    Doc::from_string(doc),
-    content=(
-      #|{
-      #|  nl: "\n",
-      #|  block: Blocks(
-      #|    {
-      #|      v: Seq(
-      #|        [
-      #|          Heading(
-      #|            {
-      #|              v: {
-      #|                layout: Setext(
-      #|                  {
-      #|                    leading_indent: 0,
-      #|                    trailing_blanks: "",
-      #|                    underline_indent: 0,
-      #|                    underline_count: {
-      #|                      v: 11,
-      #|                      meta: {
-      #|                        id: 0,
-      #|                        loc: {
-      #|                          file: "-",
-      #|                          first_ccode: -1,
-      #|                          last_ccode: -1,
-      #|                          first_line: LinePos(-1, -1),
-      #|                          last_line: LinePos(-1, -1),
-      #|                        },
-      #|                        extra: None,
-      #|                      },
-      #|                    },
-      #|                    underline_blanks: "",
-      #|                  },
-      #|                ),
-      #|                level: 1,
-      #|                inline: Text(
-      #|                  {
-      #|                    v: "Basic tests",
-      #|                    meta: {
-      #|                      id: 0,
-      #|                      loc: {
-      #|                        file: "-",
-      #|                        first_ccode: -1,
-      #|                        last_ccode: -1,
-      #|                        first_line: LinePos(-1, -1),
-      #|                        last_line: LinePos(-1, -1),
-      #|                      },
-      #|                      extra: None,
-      #|                    },
-      #|                  },
-      #|                ),
-      #|                id: None,
-      #|              },
-      #|              meta: {
-      #|                id: 0,
-      #|                loc: {
-      #|                  file: "-",
-      #|                  first_ccode: -1,
-      #|                  last_ccode: -1,
-      #|                  first_line: LinePos(-1, -1),
-      #|                  last_line: LinePos(-1, -1),
-      #|                },
-      #|                extra: None,
-      #|              },
-      #|            },
-      #|          ),
-      #|          Paragraph(
-      #|            {
-      #|              v: {
-      #|                leading_indent: 0,
-      #|                inline: Text(
-      #|                  {
-      #|                    v: "Basic tests for all CommonMark constructs.",
-      #|                    meta: {
-      #|                      id: 0,
-      #|                      loc: {
-      #|                        file: "-",
-      #|                        first_ccode: -1,
-      #|                        last_ccode: -1,
-      #|                        first_line: LinePos(-1, -1),
-      #|                        last_line: LinePos(-1, -1),
-      #|                      },
-      #|                      extra: None,
-      #|                    },
-      #|                  },
-      #|                ),
-      #|                trailing_blanks: "",
-      #|              },
-      #|              meta: {
-      #|                id: 0,
-      #|                loc: {
-      #|                  file: "-",
-      #|                  first_ccode: -1,
-      #|                  last_ccode: -1,
-      #|                  first_line: LinePos(-1, -1),
-      #|                  last_line: LinePos(-1, -1),
-      #|                },
-      #|                extra: None,
-      #|              },
-      #|            },
-      #|          ),
-      #|        ],
-      #|      ),
-      #|      meta: {
-      #|        id: 0,
-      #|        loc: {
-      #|          file: "-",
-      #|          first_ccode: -1,
-      #|          last_ccode: -1,
-      #|          first_line: LinePos(-1, -1),
-      #|          last_line: LinePos(-1, -1),
-      #|        },
-      #|        extra: None,
-      #|      },
-      #|    },
-      #|  ),
-      #|  defs: {},
-      #|}
-    ),
-  )
+  guard Doc::from_string(source).block
+    is Blocks({ v: Seq([Heading(heading), Paragraph(paragraph)]), .. }) else {
+    fail("expected a setext heading followed by a paragraph")
+  }
+  guard heading.v.layout is Setext(layout) else {
+    fail("expected a setext heading")
+  }
+  @test.assert_eq((heading.v.level, layout.underline_count.v), (1, 11))
+  guard heading.v.inline is Text(title) else { fail("expected heading text") }
+  guard paragraph.v.inline is Text(text) else {
+    fail("expected paragraph text")
+  }
+  @test.assert_eq(title.v, "Basic tests")
+  @test.assert_eq(text.v, "Basic tests for all CommonMark constructs.")
 }
 
 ///|
 test "complex ref definitions" {
-  let doc =
+  let source =
     #|  to [c    d][]
     #|> [c d]: /ha "Multi
     #|>   line titles"
-  debug_inspect(
-    Doc::from_string(doc),
-    content=(
-      #|{
-      #|  nl: "\n",
-      #|  block: Blocks(
-      #|    {
-      #|      v: Seq(
-      #|        [
-      #|          Paragraph(
-      #|            {
-      #|              v: {
-      #|                leading_indent: 2,
-      #|                inline: Inlines(
-      #|                  {
-      #|                    v: Seq(
-      #|                      [
-      #|                        Text(
-      #|                          {
-      #|                            v: "to ",
-      #|                            meta: {
-      #|                              id: 0,
-      #|                              loc: {
-      #|                                file: "-",
-      #|                                first_ccode: -1,
-      #|                                last_ccode: -1,
-      #|                                first_line: ...,
-      #|                                last_line: ...,
-      #|                              },
-      #|                              extra: None,
-      #|                            },
-      #|                          },
-      #|                        ),
-      #|                        Link(
-      #|                          {
-      #|                            v: { text: Text(...), reference: Ref(Collapsed, ..., ...) },
-      #|                            meta: {
-      #|                              id: 0,
-      #|                              loc: {
-      #|                                file: "-",
-      #|                                first_ccode: -1,
-      #|                                last_ccode: -1,
-      #|                                first_line: ...,
-      #|                                last_line: ...,
-      #|                              },
-      #|                              extra: None,
-      #|                            },
-      #|                          },
-      #|                        ),
-      #|                      ],
-      #|                    ),
-      #|                    meta: {
-      #|                      id: 0,
-      #|                      loc: {
-      #|                        file: "-",
-      #|                        first_ccode: -1,
-      #|                        last_ccode: -1,
-      #|                        first_line: LinePos(-1, -1),
-      #|                        last_line: LinePos(-1, -1),
-      #|                      },
-      #|                      extra: None,
-      #|                    },
-      #|                  },
-      #|                ),
-      #|                trailing_blanks: "",
-      #|              },
-      #|              meta: {
-      #|                id: 0,
-      #|                loc: {
-      #|                  file: "-",
-      #|                  first_ccode: -1,
-      #|                  last_ccode: -1,
-      #|                  first_line: LinePos(-1, -1),
-      #|                  last_line: LinePos(-1, -1),
-      #|                },
-      #|                extra: None,
-      #|              },
-      #|            },
-      #|          ),
-      #|          BlockQuote(
-      #|            {
-      #|              v: {
-      #|                indent: 0,
-      #|                block: LinkRefDefinition(
-      #|                  {
-      #|                    v: {
-      #|                      layout: {
-      #|                        indent: 0,
-      #|                        angled_dest: false,
-      #|                        before_dest: Seq([{ v: " ", meta: { id: 0, loc: ..., extra: None } }]),
-      #|                        after_dest: Seq([{ v: " ", meta: { id: 0, loc: ..., extra: None } }]),
-      #|                        title_open_delim: '"',
-      #|                        after_title: Seq([{ v: "", meta: { id: 0, loc: ..., extra: None } }]),
-      #|                      },
-      #|                      label: Some(
-      #|                        {
-      #|                          meta: {
-      #|                            id: 0,
-      #|                            loc: {
-      #|                              file: "-",
-      #|                              first_ccode: -1,
-      #|                              last_ccode: -1,
-      #|                              first_line: LinePos(-1, -1),
-      #|                              last_line: LinePos(-1, -1),
-      #|                            },
-      #|                            extra: None,
-      #|                          },
-      #|                          key: "c d",
-      #|                          text: Seq([{ blanks: "", node: ... }]),
-      #|                        },
-      #|                      ),
-      #|                      defined_label: Some(
-      #|                        {
-      #|                          meta: {
-      #|                            id: 0,
-      #|                            loc: {
-      #|                              file: "-",
-      #|                              first_ccode: -1,
-      #|                              last_ccode: -1,
-      #|                              first_line: LinePos(-1, -1),
-      #|                              last_line: LinePos(-1, -1),
-      #|                            },
-      #|                            extra: None,
-      #|                          },
-      #|                          key: "c d",
-      #|                          text: Seq([{ blanks: "", node: ... }]),
-      #|                        },
-      #|                      ),
-      #|                      dest: Some(
-      #|                        {
-      #|                          v: "/ha",
-      #|                          meta: {
-      #|                            id: 0,
-      #|                            loc: {
-      #|                              file: "-",
-      #|                              first_ccode: -1,
-      #|                              last_ccode: -1,
-      #|                              first_line: LinePos(-1, -1),
-      #|                              last_line: LinePos(-1, -1),
-      #|                            },
-      #|                            extra: None,
-      #|                          },
-      #|                        },
-      #|                      ),
-      #|                      title: Some(
-      #|                        Seq(
-      #|                          [
-      #|                            { blanks: "", node: { v: "Multi", meta: ... } },
-      #|                            { blanks: "", node: { v: "line titles", meta: ... } },
-      #|                          ],
-      #|                        ),
-      #|                      ),
-      #|                    },
-      #|                    meta: {
-      #|                      id: 0,
-      #|                      loc: {
-      #|                        file: "-",
-      #|                        first_ccode: -1,
-      #|                        last_ccode: -1,
-      #|                        first_line: LinePos(-1, -1),
-      #|                        last_line: LinePos(-1, -1),
-      #|                      },
-      #|                      extra: None,
-      #|                    },
-      #|                  },
-      #|                ),
-      #|              },
-      #|              meta: {
-      #|                id: 0,
-      #|                loc: {
-      #|                  file: "-",
-      #|                  first_ccode: -1,
-      #|                  last_ccode: -1,
-      #|                  first_line: LinePos(-1, -1),
-      #|                  last_line: LinePos(-1, -1),
-      #|                },
-      #|                extra: None,
-      #|              },
-      #|            },
-      #|          ),
-      #|        ],
-      #|      ),
-      #|      meta: {
-      #|        id: 0,
-      #|        loc: {
-      #|          file: "-",
-      #|          first_ccode: -1,
-      #|          last_ccode: -1,
-      #|          first_line: LinePos(-1, -1),
-      #|          last_line: LinePos(-1, -1),
-      #|        },
-      #|        extra: None,
-      #|      },
-      #|    },
-      #|  ),
-      #|  defs: {
-      #|    "c d": LinkDef(
-      #|      {
-      #|        v: {
-      #|          layout: {
-      #|            indent: 0,
-      #|            angled_dest: false,
-      #|            before_dest: Seq(
-      #|              [
-      #|                {
-      #|                  v: " ",
-      #|                  meta: {
-      #|                    id: 0,
-      #|                    loc: {
-      #|                      file: "-",
-      #|                      first_ccode: -1,
-      #|                      last_ccode: -1,
-      #|                      first_line: LinePos(-1, -1),
-      #|                      last_line: LinePos(-1, -1),
-      #|                    },
-      #|                    extra: None,
-      #|                  },
-      #|                },
-      #|              ],
-      #|            ),
-      #|            after_dest: Seq(
-      #|              [
-      #|                {
-      #|                  v: " ",
-      #|                  meta: {
-      #|                    id: 0,
-      #|                    loc: {
-      #|                      file: "-",
-      #|                      first_ccode: -1,
-      #|                      last_ccode: -1,
-      #|                      first_line: LinePos(-1, -1),
-      #|                      last_line: LinePos(-1, -1),
-      #|                    },
-      #|                    extra: None,
-      #|                  },
-      #|                },
-      #|              ],
-      #|            ),
-      #|            title_open_delim: '"',
-      #|            after_title: Seq(
-      #|              [
-      #|                {
-      #|                  v: "",
-      #|                  meta: {
-      #|                    id: 0,
-      #|                    loc: {
-      #|                      file: "-",
-      #|                      first_ccode: -1,
-      #|                      last_ccode: -1,
-      #|                      first_line: LinePos(-1, -1),
-      #|                      last_line: LinePos(-1, -1),
-      #|                    },
-      #|                    extra: None,
-      #|                  },
-      #|                },
-      #|              ],
-      #|            ),
-      #|          },
-      #|          label: Some(
-      #|            {
-      #|              meta: {
-      #|                id: 0,
-      #|                loc: {
-      #|                  file: "-",
-      #|                  first_ccode: -1,
-      #|                  last_ccode: -1,
-      #|                  first_line: LinePos(-1, -1),
-      #|                  last_line: LinePos(-1, -1),
-      #|                },
-      #|                extra: None,
-      #|              },
-      #|              key: "c d",
-      #|              text: Seq(
-      #|                [
-      #|                  {
-      #|                    blanks: "",
-      #|                    node: {
-      #|                      v: "c d",
-      #|                      meta: {
-      #|                        id: 0,
-      #|                        loc: {
-      #|                          file: "-",
-      #|                          first_ccode: -1,
-      #|                          last_ccode: -1,
-      #|                          first_line: LinePos(-1, -1),
-      #|                          last_line: LinePos(-1, -1),
-      #|                        },
-      #|                        extra: None,
-      #|                      },
-      #|                    },
-      #|                  },
-      #|                ],
-      #|              ),
-      #|            },
-      #|          ),
-      #|          defined_label: Some(
-      #|            {
-      #|              meta: {
-      #|                id: 0,
-      #|                loc: {
-      #|                  file: "-",
-      #|                  first_ccode: -1,
-      #|                  last_ccode: -1,
-      #|                  first_line: LinePos(-1, -1),
-      #|                  last_line: LinePos(-1, -1),
-      #|                },
-      #|                extra: None,
-      #|              },
-      #|              key: "c d",
-      #|              text: Seq(
-      #|                [
-      #|                  {
-      #|                    blanks: "",
-      #|                    node: {
-      #|                      v: "c d",
-      #|                      meta: {
-      #|                        id: 0,
-      #|                        loc: {
-      #|                          file: "-",
-      #|                          first_ccode: -1,
-      #|                          last_ccode: -1,
-      #|                          first_line: LinePos(-1, -1),
-      #|                          last_line: LinePos(-1, -1),
-      #|                        },
-      #|                        extra: None,
-      #|                      },
-      #|                    },
-      #|                  },
-      #|                ],
-      #|              ),
-      #|            },
-      #|          ),
-      #|          dest: Some(
-      #|            {
-      #|              v: "/ha",
-      #|              meta: {
-      #|                id: 0,
-      #|                loc: {
-      #|                  file: "-",
-      #|                  first_ccode: -1,
-      #|                  last_ccode: -1,
-      #|                  first_line: LinePos(-1, -1),
-      #|                  last_line: LinePos(-1, -1),
-      #|                },
-      #|                extra: None,
-      #|              },
-      #|            },
-      #|          ),
-      #|          title: Some(
-      #|            Seq(
-      #|              [
-      #|                {
-      #|                  blanks: "",
-      #|                  node: {
-      #|                    v: "Multi",
-      #|                    meta: {
-      #|                      id: 0,
-      #|                      loc: {
-      #|                        file: "-",
-      #|                        first_ccode: -1,
-      #|                        last_ccode: -1,
-      #|                        first_line: LinePos(-1, -1),
-      #|                        last_line: LinePos(-1, -1),
-      #|                      },
-      #|                      extra: None,
-      #|                    },
-      #|                  },
-      #|                },
-      #|                {
-      #|                  blanks: "",
-      #|                  node: {
-      #|                    v: "line titles",
-      #|                    meta: {
-      #|                      id: 0,
-      #|                      loc: {
-      #|                        file: "-",
-      #|                        first_ccode: -1,
-      #|                        last_ccode: -1,
-      #|                        first_line: LinePos(-1, -1),
-      #|                        last_line: LinePos(-1, -1),
-      #|                      },
-      #|                      extra: None,
-      #|                    },
-      #|                  },
-      #|                },
-      #|              ],
-      #|            ),
-      #|          ),
-      #|        },
-      #|        meta: {
-      #|          id: 0,
-      #|          loc: {
-      #|            file: "-",
-      #|            first_ccode: -1,
-      #|            last_ccode: -1,
-      #|            first_line: LinePos(-1, -1),
-      #|            last_line: LinePos(-1, -1),
-      #|          },
-      #|          extra: None,
-      #|        },
-      #|      },
-      #|    ),
-      #|  },
-      #|}
-    ),
-  )
+  let doc = Doc::from_string(source)
+  guard doc.block
+    is Blocks({ v: Seq([Paragraph(paragraph), BlockQuote(quote)]), .. }) else {
+    fail("expected a paragraph and quoted reference definition")
+  }
+  @test.assert_eq(paragraph.v.leading_indent, 2)
+  guard paragraph.v.inline
+    is Inlines({ v: Seq([Text(prefix), Link(link)]), .. }) else {
+    fail("expected a collapsed reference link")
+  }
+  @test.assert_eq(prefix.v, "to ")
+  guard link.v.text is Text(text) else { fail("expected link text") }
+  @test.assert_eq(text.v, "c    d")
+  guard link.v.reference is Ref(Collapsed, reference, defined) else {
+    fail("expected a collapsed reference")
+  }
+  @test.assert_eq((reference.key, defined.key), ("c d", "c d"))
+  guard quote.v.block is LinkRefDefinition(definition) else {
+    fail("expected a reference definition inside the quote")
+  }
+  @test.assert_eq(definition.v.dest.map(fn(dest) { dest.v }), Some("/ha"))
+  guard definition.v.title is Some(title) else {
+    fail("expected a multiline title")
+  }
+  @test.assert_eq(title.to_array().map(fn(line) { line.node.v }), [
+    "Multi", "line titles",
+  ])
+  @test.assert_eq(doc.defs.length(), 1)
+  guard link.v.reference_definition(doc.defs) is Some(LinkDef(registered)) else {
+    fail("expected the link to resolve to the quoted definition")
+  }
+  @test.assert_eq(registered.v, definition.v)
 }
 
 ///|
 test "HTML block" {
-  let doc =
+  let source =
     #|<div>
     #|  hello
     #|</div>
     #|
     #| world
-  debug_inspect(
-    Doc::from_string(doc),
-    content=(
-      #|{
-      #|  nl: "\n",
-      #|  block: Blocks(
-      #|    {
-      #|      v: Seq(
-      #|        [
-      #|          HtmlBlock(
-      #|            {
-      #|              v: HtmlBlock(
-      #|                Seq(
-      #|                  [
-      #|                    {
-      #|                      v: "<div>",
-      #|                      meta: {
-      #|                        id: 0,
-      #|                        loc: {
-      #|                          file: "-",
-      #|                          first_ccode: -1,
-      #|                          last_ccode: -1,
-      #|                          first_line: LinePos(-1, -1),
-      #|                          last_line: LinePos(-1, -1),
-      #|                        },
-      #|                        extra: None,
-      #|                      },
-      #|                    },
-      #|                    {
-      #|                      v: "  hello",
-      #|                      meta: {
-      #|                        id: 0,
-      #|                        loc: {
-      #|                          file: "-",
-      #|                          first_ccode: -1,
-      #|                          last_ccode: -1,
-      #|                          first_line: LinePos(-1, -1),
-      #|                          last_line: LinePos(-1, -1),
-      #|                        },
-      #|                        extra: None,
-      #|                      },
-      #|                    },
-      #|                    {
-      #|                      v: "</div>",
-      #|                      meta: {
-      #|                        id: 0,
-      #|                        loc: {
-      #|                          file: "-",
-      #|                          first_ccode: -1,
-      #|                          last_ccode: -1,
-      #|                          first_line: LinePos(-1, -1),
-      #|                          last_line: LinePos(-1, -1),
-      #|                        },
-      #|                        extra: None,
-      #|                      },
-      #|                    },
-      #|                  ],
-      #|                ),
-      #|              ),
-      #|              meta: {
-      #|                id: 0,
-      #|                loc: {
-      #|                  file: "-",
-      #|                  first_ccode: -1,
-      #|                  last_ccode: -1,
-      #|                  first_line: LinePos(-1, -1),
-      #|                  last_line: LinePos(-1, -1),
-      #|                },
-      #|                extra: None,
-      #|              },
-      #|            },
-      #|          ),
-      #|          BlankLine(
-      #|            {
-      #|              v: "",
-      #|              meta: {
-      #|                id: 0,
-      #|                loc: {
-      #|                  file: "-",
-      #|                  first_ccode: -1,
-      #|                  last_ccode: -1,
-      #|                  first_line: LinePos(-1, -1),
-      #|                  last_line: LinePos(-1, -1),
-      #|                },
-      #|                extra: None,
-      #|              },
-      #|            },
-      #|          ),
-      #|          Paragraph(
-      #|            {
-      #|              v: {
-      #|                leading_indent: 1,
-      #|                inline: Text(
-      #|                  {
-      #|                    v: "world",
-      #|                    meta: {
-      #|                      id: 0,
-      #|                      loc: {
-      #|                        file: "-",
-      #|                        first_ccode: -1,
-      #|                        last_ccode: -1,
-      #|                        first_line: LinePos(-1, -1),
-      #|                        last_line: LinePos(-1, -1),
-      #|                      },
-      #|                      extra: None,
-      #|                    },
-      #|                  },
-      #|                ),
-      #|                trailing_blanks: "",
-      #|              },
-      #|              meta: {
-      #|                id: 0,
-      #|                loc: {
-      #|                  file: "-",
-      #|                  first_ccode: -1,
-      #|                  last_ccode: -1,
-      #|                  first_line: LinePos(-1, -1),
-      #|                  last_line: LinePos(-1, -1),
-      #|                },
-      #|                extra: None,
-      #|              },
-      #|            },
-      #|          ),
-      #|        ],
-      #|      ),
-      #|      meta: {
-      #|        id: 0,
-      #|        loc: {
-      #|          file: "-",
-      #|          first_ccode: -1,
-      #|          last_ccode: -1,
-      #|          first_line: LinePos(-1, -1),
-      #|          last_line: LinePos(-1, -1),
-      #|        },
-      #|        extra: None,
-      #|      },
-      #|    },
-      #|  ),
-      #|  defs: {},
-      #|}
-    ),
-  )
+  guard Doc::from_string(source).block is Blocks(blocks) else {
+    fail("expected multiple blocks")
+  }
+  guard blocks.v.to_array()
+    is [HtmlBlock(html), BlankLine(_), Paragraph(paragraph)] else {
+    fail("expected HTML followed by a separate paragraph")
+  }
+  @test.assert_eq(html.v.0.to_array().map(fn(line) { line.v }), [
+    "<div>", "  hello", "</div>",
+  ])
+  guard paragraph.v.inline is Text(text) else {
+    fail("expected paragraph text")
+  }
+  @test.assert_eq(text.v, "world")
 }
 
 ///|
@@ -733,7 +125,7 @@ test "should tokenize inline image across multiple lines" {
 ///|
 /// https://github.com/moonbit-community/cmark/issues/41
 test "should parse normal raw HTML block" {
-  let doc =
+  let source =
     #|# My Document
     #|
     #|This is a standard paragraph in Markdown.
@@ -742,220 +134,35 @@ test "should parse normal raw HTML block" {
     #|  <h2>Section Title</h2>
     #|  <p>This is a paragraph inside a custom HTML container.</p>
     #|</div>
-  debug_inspect(
-    Doc::from_string(doc),
-    content=(
-      #|{
-      #|  nl: "\n",
-      #|  block: Blocks(
-      #|    {
-      #|      v: Seq(
-      #|        [
-      #|          Heading(
-      #|            {
-      #|              v: {
-      #|                layout: Atx({ indent: 0, after_opening: "", closing: "" }),
-      #|                level: 1,
-      #|                inline: Text(
-      #|                  {
-      #|                    v: "My Document",
-      #|                    meta: {
-      #|                      id: 0,
-      #|                      loc: {
-      #|                        file: "-",
-      #|                        first_ccode: -1,
-      #|                        last_ccode: -1,
-      #|                        first_line: LinePos(-1, -1),
-      #|                        last_line: LinePos(-1, -1),
-      #|                      },
-      #|                      extra: None,
-      #|                    },
-      #|                  },
-      #|                ),
-      #|                id: None,
-      #|              },
-      #|              meta: {
-      #|                id: 0,
-      #|                loc: {
-      #|                  file: "-",
-      #|                  first_ccode: -1,
-      #|                  last_ccode: -1,
-      #|                  first_line: LinePos(-1, -1),
-      #|                  last_line: LinePos(-1, -1),
-      #|                },
-      #|                extra: None,
-      #|              },
-      #|            },
-      #|          ),
-      #|          BlankLine(
-      #|            {
-      #|              v: "",
-      #|              meta: {
-      #|                id: 0,
-      #|                loc: {
-      #|                  file: "-",
-      #|                  first_ccode: -1,
-      #|                  last_ccode: -1,
-      #|                  first_line: LinePos(-1, -1),
-      #|                  last_line: LinePos(-1, -1),
-      #|                },
-      #|                extra: None,
-      #|              },
-      #|            },
-      #|          ),
-      #|          Paragraph(
-      #|            {
-      #|              v: {
-      #|                leading_indent: 0,
-      #|                inline: Text(
-      #|                  {
-      #|                    v: "This is a standard paragraph in Markdown.",
-      #|                    meta: {
-      #|                      id: 0,
-      #|                      loc: {
-      #|                        file: "-",
-      #|                        first_ccode: -1,
-      #|                        last_ccode: -1,
-      #|                        first_line: LinePos(-1, -1),
-      #|                        last_line: LinePos(-1, -1),
-      #|                      },
-      #|                      extra: None,
-      #|                    },
-      #|                  },
-      #|                ),
-      #|                trailing_blanks: "",
-      #|              },
-      #|              meta: {
-      #|                id: 0,
-      #|                loc: {
-      #|                  file: "-",
-      #|                  first_ccode: -1,
-      #|                  last_ccode: -1,
-      #|                  first_line: LinePos(-1, -1),
-      #|                  last_line: LinePos(-1, -1),
-      #|                },
-      #|                extra: None,
-      #|              },
-      #|            },
-      #|          ),
-      #|          BlankLine(
-      #|            {
-      #|              v: "",
-      #|              meta: {
-      #|                id: 0,
-      #|                loc: {
-      #|                  file: "-",
-      #|                  first_ccode: -1,
-      #|                  last_ccode: -1,
-      #|                  first_line: LinePos(-1, -1),
-      #|                  last_line: LinePos(-1, -1),
-      #|                },
-      #|                extra: None,
-      #|              },
-      #|            },
-      #|          ),
-      #|          HtmlBlock(
-      #|            {
-      #|              v: HtmlBlock(
-      #|                Seq(
-      #|                  [
-      #|                    {
-      #|                      v: "<div class=\"custom-container\">",
-      #|                      meta: {
-      #|                        id: 0,
-      #|                        loc: {
-      #|                          file: "-",
-      #|                          first_ccode: -1,
-      #|                          last_ccode: -1,
-      #|                          first_line: LinePos(-1, -1),
-      #|                          last_line: LinePos(-1, -1),
-      #|                        },
-      #|                        extra: None,
-      #|                      },
-      #|                    },
-      #|                    {
-      #|                      v: "  <h2>Section Title</h2>",
-      #|                      meta: {
-      #|                        id: 0,
-      #|                        loc: {
-      #|                          file: "-",
-      #|                          first_ccode: -1,
-      #|                          last_ccode: -1,
-      #|                          first_line: LinePos(-1, -1),
-      #|                          last_line: LinePos(-1, -1),
-      #|                        },
-      #|                        extra: None,
-      #|                      },
-      #|                    },
-      #|                    {
-      #|                      v: "  <p>This is a paragraph inside a custom HTML container.</p>",
-      #|                      meta: {
-      #|                        id: 0,
-      #|                        loc: {
-      #|                          file: "-",
-      #|                          first_ccode: -1,
-      #|                          last_ccode: -1,
-      #|                          first_line: LinePos(-1, -1),
-      #|                          last_line: LinePos(-1, -1),
-      #|                        },
-      #|                        extra: None,
-      #|                      },
-      #|                    },
-      #|                    {
-      #|                      v: "</div>",
-      #|                      meta: {
-      #|                        id: 0,
-      #|                        loc: {
-      #|                          file: "-",
-      #|                          first_ccode: -1,
-      #|                          last_ccode: -1,
-      #|                          first_line: LinePos(-1, -1),
-      #|                          last_line: LinePos(-1, -1),
-      #|                        },
-      #|                        extra: None,
-      #|                      },
-      #|                    },
-      #|                  ],
-      #|                ),
-      #|              ),
-      #|              meta: {
-      #|                id: 0,
-      #|                loc: {
-      #|                  file: "-",
-      #|                  first_ccode: -1,
-      #|                  last_ccode: -1,
-      #|                  first_line: LinePos(-1, -1),
-      #|                  last_line: LinePos(-1, -1),
-      #|                },
-      #|                extra: None,
-      #|              },
-      #|            },
-      #|          ),
-      #|        ],
-      #|      ),
-      #|      meta: {
-      #|        id: 0,
-      #|        loc: {
-      #|          file: "-",
-      #|          first_ccode: -1,
-      #|          last_ccode: -1,
-      #|          first_line: LinePos(-1, -1),
-      #|          last_line: LinePos(-1, -1),
-      #|        },
-      #|        extra: None,
-      #|      },
-      #|    },
-      #|  ),
-      #|  defs: {},
-      #|}
-    ),
-  )
+  guard Doc::from_string(source).block is Blocks(blocks) else {
+    fail("expected multiple blocks")
+  }
+  guard blocks.v.to_array()
+    is [
+      Heading(heading),
+      BlankLine(_),
+      Paragraph(paragraph),
+      BlankLine(_),
+      HtmlBlock(html),
+    ] else {
+    fail("expected a heading, paragraph and raw HTML block")
+  }
+  guard heading.v.inline is Text(title) else { fail("expected heading text") }
+  guard paragraph.v.inline is Text(text) else {
+    fail("expected paragraph text")
+  }
+  @test.assert_eq((heading.v.level, title.v), (1, "My Document"))
+  @test.assert_eq(text.v, "This is a standard paragraph in Markdown.")
+  @test.assert_eq(html.v.0.to_array().map(fn(line) { line.v }), [
+    "<div class=\"custom-container\">", "  <h2>Section Title</h2>", "  <p>This is a paragraph inside a custom HTML container.</p>",
+    "</div>",
+  ])
 }
 
 ///|
 /// https://github.com/moonbit-community/cmark/issues/41
 test "should parse normal code block" {
-  let doc =
+  let source =
     #| Checks if all elements in the array view match the condition.
     #| # Example
     #| ```
@@ -963,913 +170,93 @@ test "should parse normal code block" {
     #| assert_false!(v[:].all(fn(elem) { elem % 2 == 0 }))
     #| assert_true!(v[1:4].all(fn(elem) { elem % 2 == 0 }))
     #| ```
-  debug_inspect(
-    Doc::from_string(doc),
-    content=(
-      #|{
-      #|  nl: "\n",
-      #|  block: Blocks(
-      #|    {
-      #|      v: Seq(
-      #|        [
-      #|          Paragraph(
-      #|            {
-      #|              v: {
-      #|                leading_indent: 1,
-      #|                inline: Text(
-      #|                  {
-      #|                    v: "Checks if all elements in the array view match the condition.",
-      #|                    meta: {
-      #|                      id: 0,
-      #|                      loc: {
-      #|                        file: "-",
-      #|                        first_ccode: -1,
-      #|                        last_ccode: -1,
-      #|                        first_line: LinePos(-1, -1),
-      #|                        last_line: LinePos(-1, -1),
-      #|                      },
-      #|                      extra: None,
-      #|                    },
-      #|                  },
-      #|                ),
-      #|                trailing_blanks: "",
-      #|              },
-      #|              meta: {
-      #|                id: 0,
-      #|                loc: {
-      #|                  file: "-",
-      #|                  first_ccode: -1,
-      #|                  last_ccode: -1,
-      #|                  first_line: LinePos(-1, -1),
-      #|                  last_line: LinePos(-1, -1),
-      #|                },
-      #|                extra: None,
-      #|              },
-      #|            },
-      #|          ),
-      #|          Heading(
-      #|            {
-      #|              v: {
-      #|                layout: Atx({ indent: 1, after_opening: "", closing: "" }),
-      #|                level: 1,
-      #|                inline: Text(
-      #|                  {
-      #|                    v: "Example",
-      #|                    meta: {
-      #|                      id: 0,
-      #|                      loc: {
-      #|                        file: "-",
-      #|                        first_ccode: -1,
-      #|                        last_ccode: -1,
-      #|                        first_line: LinePos(-1, -1),
-      #|                        last_line: LinePos(-1, -1),
-      #|                      },
-      #|                      extra: None,
-      #|                    },
-      #|                  },
-      #|                ),
-      #|                id: None,
-      #|              },
-      #|              meta: {
-      #|                id: 0,
-      #|                loc: {
-      #|                  file: "-",
-      #|                  first_ccode: -1,
-      #|                  last_ccode: -1,
-      #|                  first_line: LinePos(-1, -1),
-      #|                  last_line: LinePos(-1, -1),
-      #|                },
-      #|                extra: None,
-      #|              },
-      #|            },
-      #|          ),
-      #|          CodeBlock(
-      #|            {
-      #|              v: {
-      #|                layout: Fenced(
-      #|                  {
-      #|                    indent: 1,
-      #|                    opening_fence: {
-      #|                      v: "",
-      #|                      meta: {
-      #|                        id: 0,
-      #|                        loc: {
-      #|                          file: "-",
-      #|                          first_ccode: -1,
-      #|                          last_ccode: -1,
-      #|                          first_line: LinePos(-1, -1),
-      #|                          last_line: LinePos(-1, -1),
-      #|                        },
-      #|                        extra: None,
-      #|                      },
-      #|                    },
-      #|                    closing_fence: Some(
-      #|                      {
-      #|                        v: "",
-      #|                        meta: {
-      #|                          id: 0,
-      #|                          loc: {
-      #|                            file: "-",
-      #|                            first_ccode: -1,
-      #|                            last_ccode: -1,
-      #|                            first_line: LinePos(-1, -1),
-      #|                            last_line: LinePos(-1, -1),
-      #|                          },
-      #|                          extra: None,
-      #|                        },
-      #|                      },
-      #|                    ),
-      #|                  },
-      #|                ),
-      #|                info_string: None,
-      #|                code: Seq(
-      #|                  [
-      #|                    {
-      #|                      v: "let v = [1, 4, 6, 8, 9]",
-      #|                      meta: {
-      #|                        id: 0,
-      #|                        loc: {
-      #|                          file: "-",
-      #|                          first_ccode: -1,
-      #|                          last_ccode: -1,
-      #|                          first_line: LinePos(-1, -1),
-      #|                          last_line: LinePos(-1, -1),
-      #|                        },
-      #|                        extra: None,
-      #|                      },
-      #|                    },
-      #|                    {
-      #|                      v: "assert_false!(v[:].all(fn(elem) { elem % 2 == 0 }))",
-      #|                      meta: {
-      #|                        id: 0,
-      #|                        loc: {
-      #|                          file: "-",
-      #|                          first_ccode: -1,
-      #|                          last_ccode: -1,
-      #|                          first_line: LinePos(-1, -1),
-      #|                          last_line: LinePos(-1, -1),
-      #|                        },
-      #|                        extra: None,
-      #|                      },
-      #|                    },
-      #|                    {
-      #|                      v: "assert_true!(v[1:4].all(fn(elem) { elem % 2 == 0 }))",
-      #|                      meta: {
-      #|                        id: 0,
-      #|                        loc: {
-      #|                          file: "-",
-      #|                          first_ccode: -1,
-      #|                          last_ccode: -1,
-      #|                          first_line: LinePos(-1, -1),
-      #|                          last_line: LinePos(-1, -1),
-      #|                        },
-      #|                        extra: None,
-      #|                      },
-      #|                    },
-      #|                  ],
-      #|                ),
-      #|              },
-      #|              meta: {
-      #|                id: 0,
-      #|                loc: {
-      #|                  file: "-",
-      #|                  first_ccode: -1,
-      #|                  last_ccode: -1,
-      #|                  first_line: LinePos(-1, -1),
-      #|                  last_line: LinePos(-1, -1),
-      #|                },
-      #|                extra: None,
-      #|              },
-      #|            },
-      #|          ),
-      #|        ],
-      #|      ),
-      #|      meta: {
-      #|        id: 0,
-      #|        loc: {
-      #|          file: "-",
-      #|          first_ccode: -1,
-      #|          last_ccode: -1,
-      #|          first_line: LinePos(-1, -1),
-      #|          last_line: LinePos(-1, -1),
-      #|        },
-      #|        extra: None,
-      #|      },
-      #|    },
-      #|  ),
-      #|  defs: {},
-      #|}
-    ),
+  guard Doc::from_string(source).block is Blocks(blocks) else {
+    fail("expected multiple blocks")
+  }
+  guard blocks.v.to_array()
+    is [Paragraph(paragraph), Heading(heading), CodeBlock(code)] else {
+    fail("expected a paragraph, heading and fenced code block")
+  }
+  guard paragraph.v.inline is Text(text) else {
+    fail("expected paragraph text")
+  }
+  @test.assert_eq(
+    text.v,
+    "Checks if all elements in the array view match the condition.",
   )
+  guard heading.v.inline is Text(title) else { fail("expected heading text") }
+  @test.assert_eq((heading.v.level, title.v), (1, "Example"))
+  guard code.v.layout is Fenced(_) else { fail("expected fenced code") }
+  @test.assert_eq(code.v.code.to_array().map(fn(line) { line.v }), [
+    "let v = [1, 4, 6, 8, 9]", "assert_false!(v[:].all(fn(elem) { elem % 2 == 0 }))",
+    "assert_true!(v[1:4].all(fn(elem) { elem % 2 == 0 }))",
+  ])
 }
 
 ///|
 test "should parse link refs" {
-  let doc =
+  let source =
     #|This is an [Extism PDK] that can be used to write [Extism Plug-ins].
     #|
     #|[Extism PDK]: https://extism.org/docs/concepts/pdk
     #|[Extism Plug-ins]: https://extism.org/docs/concepts/plug-in
-  debug_inspect(
-    Doc::from_string(doc),
-    content=(
-      #|{
-      #|  nl: "\n",
-      #|  block: Blocks(
-      #|    {
-      #|      v: Seq(
-      #|        [
-      #|          Paragraph(
-      #|            {
-      #|              v: {
-      #|                leading_indent: 0,
-      #|                inline: Inlines(
-      #|                  {
-      #|                    v: Seq(
-      #|                      [
-      #|                        Text(
-      #|                          {
-      #|                            v: "This is an ",
-      #|                            meta: {
-      #|                              id: 0,
-      #|                              loc: {
-      #|                                file: "-",
-      #|                                first_ccode: -1,
-      #|                                last_ccode: -1,
-      #|                                first_line: ...,
-      #|                                last_line: ...,
-      #|                              },
-      #|                              extra: None,
-      #|                            },
-      #|                          },
-      #|                        ),
-      #|                        Link(
-      #|                          {
-      #|                            v: { text: Text(...), reference: Ref(Shortcut, ..., ...) },
-      #|                            meta: {
-      #|                              id: 0,
-      #|                              loc: {
-      #|                                file: "-",
-      #|                                first_ccode: -1,
-      #|                                last_ccode: -1,
-      #|                                first_line: ...,
-      #|                                last_line: ...,
-      #|                              },
-      #|                              extra: None,
-      #|                            },
-      #|                          },
-      #|                        ),
-      #|                        Text(
-      #|                          {
-      #|                            v: " that can be used to write ",
-      #|                            meta: {
-      #|                              id: 0,
-      #|                              loc: {
-      #|                                file: "-",
-      #|                                first_ccode: -1,
-      #|                                last_ccode: -1,
-      #|                                first_line: ...,
-      #|                                last_line: ...,
-      #|                              },
-      #|                              extra: None,
-      #|                            },
-      #|                          },
-      #|                        ),
-      #|                        Link(
-      #|                          {
-      #|                            v: { text: Text(...), reference: Ref(Shortcut, ..., ...) },
-      #|                            meta: {
-      #|                              id: 0,
-      #|                              loc: {
-      #|                                file: "-",
-      #|                                first_ccode: -1,
-      #|                                last_ccode: -1,
-      #|                                first_line: ...,
-      #|                                last_line: ...,
-      #|                              },
-      #|                              extra: None,
-      #|                            },
-      #|                          },
-      #|                        ),
-      #|                        Text(
-      #|                          {
-      #|                            v: ".",
-      #|                            meta: {
-      #|                              id: 0,
-      #|                              loc: {
-      #|                                file: "-",
-      #|                                first_ccode: -1,
-      #|                                last_ccode: -1,
-      #|                                first_line: ...,
-      #|                                last_line: ...,
-      #|                              },
-      #|                              extra: None,
-      #|                            },
-      #|                          },
-      #|                        ),
-      #|                      ],
-      #|                    ),
-      #|                    meta: {
-      #|                      id: 0,
-      #|                      loc: {
-      #|                        file: "-",
-      #|                        first_ccode: -1,
-      #|                        last_ccode: -1,
-      #|                        first_line: LinePos(-1, -1),
-      #|                        last_line: LinePos(-1, -1),
-      #|                      },
-      #|                      extra: None,
-      #|                    },
-      #|                  },
-      #|                ),
-      #|                trailing_blanks: "",
-      #|              },
-      #|              meta: {
-      #|                id: 0,
-      #|                loc: {
-      #|                  file: "-",
-      #|                  first_ccode: -1,
-      #|                  last_ccode: -1,
-      #|                  first_line: LinePos(-1, -1),
-      #|                  last_line: LinePos(-1, -1),
-      #|                },
-      #|                extra: None,
-      #|              },
-      #|            },
-      #|          ),
-      #|          BlankLine(
-      #|            {
-      #|              v: "",
-      #|              meta: {
-      #|                id: 0,
-      #|                loc: {
-      #|                  file: "-",
-      #|                  first_ccode: -1,
-      #|                  last_ccode: -1,
-      #|                  first_line: LinePos(-1, -1),
-      #|                  last_line: LinePos(-1, -1),
-      #|                },
-      #|                extra: None,
-      #|              },
-      #|            },
-      #|          ),
-      #|          LinkRefDefinition(
-      #|            {
-      #|              v: {
-      #|                layout: {
-      #|                  indent: 0,
-      #|                  angled_dest: false,
-      #|                  before_dest: Seq(
-      #|                    [
-      #|                      {
-      #|                        v: " ",
-      #|                        meta: {
-      #|                          id: 0,
-      #|                          loc: {
-      #|                            file: "-",
-      #|                            first_ccode: -1,
-      #|                            last_ccode: -1,
-      #|                            first_line: LinePos(-1, -1),
-      #|                            last_line: LinePos(-1, -1),
-      #|                          },
-      #|                          extra: None,
-      #|                        },
-      #|                      },
-      #|                    ],
-      #|                  ),
-      #|                  after_dest: Seq([]),
-      #|                  title_open_delim: '"',
-      #|                  after_title: Seq([]),
-      #|                },
-      #|                label: Some(
-      #|                  {
-      #|                    meta: {
-      #|                      id: 0,
-      #|                      loc: {
-      #|                        file: "-",
-      #|                        first_ccode: -1,
-      #|                        last_ccode: -1,
-      #|                        first_line: LinePos(-1, -1),
-      #|                        last_line: LinePos(-1, -1),
-      #|                      },
-      #|                      extra: None,
-      #|                    },
-      #|                    key: "extism pdk",
-      #|                    text: Seq(
-      #|                      [
-      #|                        {
-      #|                          blanks: "",
-      #|                          node: {
-      #|                            v: "Extism PDK",
-      #|                            meta: {
-      #|                              id: 0,
-      #|                              loc: {
-      #|                                file: "-",
-      #|                                first_ccode: -1,
-      #|                                last_ccode: -1,
-      #|                                first_line: ...,
-      #|                                last_line: ...,
-      #|                              },
-      #|                              extra: None,
-      #|                            },
-      #|                          },
-      #|                        },
-      #|                      ],
-      #|                    ),
-      #|                  },
-      #|                ),
-      #|                defined_label: Some(
-      #|                  {
-      #|                    meta: {
-      #|                      id: 0,
-      #|                      loc: {
-      #|                        file: "-",
-      #|                        first_ccode: -1,
-      #|                        last_ccode: -1,
-      #|                        first_line: LinePos(-1, -1),
-      #|                        last_line: LinePos(-1, -1),
-      #|                      },
-      #|                      extra: None,
-      #|                    },
-      #|                    key: "extism pdk",
-      #|                    text: Seq(
-      #|                      [
-      #|                        {
-      #|                          blanks: "",
-      #|                          node: {
-      #|                            v: "Extism PDK",
-      #|                            meta: {
-      #|                              id: 0,
-      #|                              loc: {
-      #|                                file: "-",
-      #|                                first_ccode: -1,
-      #|                                last_ccode: -1,
-      #|                                first_line: ...,
-      #|                                last_line: ...,
-      #|                              },
-      #|                              extra: None,
-      #|                            },
-      #|                          },
-      #|                        },
-      #|                      ],
-      #|                    ),
-      #|                  },
-      #|                ),
-      #|                dest: Some(
-      #|                  {
-      #|                    v: "https://extism.org/docs/concepts/pdk",
-      #|                    meta: {
-      #|                      id: 0,
-      #|                      loc: {
-      #|                        file: "-",
-      #|                        first_ccode: -1,
-      #|                        last_ccode: -1,
-      #|                        first_line: LinePos(-1, -1),
-      #|                        last_line: LinePos(-1, -1),
-      #|                      },
-      #|                      extra: None,
-      #|                    },
-      #|                  },
-      #|                ),
-      #|                title: None,
-      #|              },
-      #|              meta: {
-      #|                id: 0,
-      #|                loc: {
-      #|                  file: "-",
-      #|                  first_ccode: -1,
-      #|                  last_ccode: -1,
-      #|                  first_line: LinePos(-1, -1),
-      #|                  last_line: LinePos(-1, -1),
-      #|                },
-      #|                extra: None,
-      #|              },
-      #|            },
-      #|          ),
-      #|          LinkRefDefinition(
-      #|            {
-      #|              v: {
-      #|                layout: {
-      #|                  indent: 0,
-      #|                  angled_dest: false,
-      #|                  before_dest: Seq(
-      #|                    [
-      #|                      {
-      #|                        v: " ",
-      #|                        meta: {
-      #|                          id: 0,
-      #|                          loc: {
-      #|                            file: "-",
-      #|                            first_ccode: -1,
-      #|                            last_ccode: -1,
-      #|                            first_line: LinePos(-1, -1),
-      #|                            last_line: LinePos(-1, -1),
-      #|                          },
-      #|                          extra: None,
-      #|                        },
-      #|                      },
-      #|                    ],
-      #|                  ),
-      #|                  after_dest: Seq([]),
-      #|                  title_open_delim: '"',
-      #|                  after_title: Seq([]),
-      #|                },
-      #|                label: Some(
-      #|                  {
-      #|                    meta: {
-      #|                      id: 0,
-      #|                      loc: {
-      #|                        file: "-",
-      #|                        first_ccode: -1,
-      #|                        last_ccode: -1,
-      #|                        first_line: LinePos(-1, -1),
-      #|                        last_line: LinePos(-1, -1),
-      #|                      },
-      #|                      extra: None,
-      #|                    },
-      #|                    key: "extism plug-ins",
-      #|                    text: Seq(
-      #|                      [
-      #|                        {
-      #|                          blanks: "",
-      #|                          node: {
-      #|                            v: "Extism Plug-ins",
-      #|                            meta: {
-      #|                              id: 0,
-      #|                              loc: {
-      #|                                file: "-",
-      #|                                first_ccode: -1,
-      #|                                last_ccode: -1,
-      #|                                first_line: ...,
-      #|                                last_line: ...,
-      #|                              },
-      #|                              extra: None,
-      #|                            },
-      #|                          },
-      #|                        },
-      #|                      ],
-      #|                    ),
-      #|                  },
-      #|                ),
-      #|                defined_label: Some(
-      #|                  {
-      #|                    meta: {
-      #|                      id: 0,
-      #|                      loc: {
-      #|                        file: "-",
-      #|                        first_ccode: -1,
-      #|                        last_ccode: -1,
-      #|                        first_line: LinePos(-1, -1),
-      #|                        last_line: LinePos(-1, -1),
-      #|                      },
-      #|                      extra: None,
-      #|                    },
-      #|                    key: "extism plug-ins",
-      #|                    text: Seq(
-      #|                      [
-      #|                        {
-      #|                          blanks: "",
-      #|                          node: {
-      #|                            v: "Extism Plug-ins",
-      #|                            meta: {
-      #|                              id: 0,
-      #|                              loc: {
-      #|                                file: "-",
-      #|                                first_ccode: -1,
-      #|                                last_ccode: -1,
-      #|                                first_line: ...,
-      #|                                last_line: ...,
-      #|                              },
-      #|                              extra: None,
-      #|                            },
-      #|                          },
-      #|                        },
-      #|                      ],
-      #|                    ),
-      #|                  },
-      #|                ),
-      #|                dest: Some(
-      #|                  {
-      #|                    v: "https://extism.org/docs/concepts/plug-in",
-      #|                    meta: {
-      #|                      id: 0,
-      #|                      loc: {
-      #|                        file: "-",
-      #|                        first_ccode: -1,
-      #|                        last_ccode: -1,
-      #|                        first_line: LinePos(-1, -1),
-      #|                        last_line: LinePos(-1, -1),
-      #|                      },
-      #|                      extra: None,
-      #|                    },
-      #|                  },
-      #|                ),
-      #|                title: None,
-      #|              },
-      #|              meta: {
-      #|                id: 0,
-      #|                loc: {
-      #|                  file: "-",
-      #|                  first_ccode: -1,
-      #|                  last_ccode: -1,
-      #|                  first_line: LinePos(-1, -1),
-      #|                  last_line: LinePos(-1, -1),
-      #|                },
-      #|                extra: None,
-      #|              },
-      #|            },
-      #|          ),
-      #|        ],
-      #|      ),
-      #|      meta: {
-      #|        id: 0,
-      #|        loc: {
-      #|          file: "-",
-      #|          first_ccode: -1,
-      #|          last_ccode: -1,
-      #|          first_line: LinePos(-1, -1),
-      #|          last_line: LinePos(-1, -1),
-      #|        },
-      #|        extra: None,
-      #|      },
-      #|    },
-      #|  ),
-      #|  defs: {
-      #|    "extism pdk": LinkDef(
-      #|      {
-      #|        v: {
-      #|          layout: {
-      #|            indent: 0,
-      #|            angled_dest: false,
-      #|            before_dest: Seq(
-      #|              [
-      #|                {
-      #|                  v: " ",
-      #|                  meta: {
-      #|                    id: 0,
-      #|                    loc: {
-      #|                      file: "-",
-      #|                      first_ccode: -1,
-      #|                      last_ccode: -1,
-      #|                      first_line: LinePos(-1, -1),
-      #|                      last_line: LinePos(-1, -1),
-      #|                    },
-      #|                    extra: None,
-      #|                  },
-      #|                },
-      #|              ],
-      #|            ),
-      #|            after_dest: Seq([]),
-      #|            title_open_delim: '"',
-      #|            after_title: Seq([]),
-      #|          },
-      #|          label: Some(
-      #|            {
-      #|              meta: {
-      #|                id: 0,
-      #|                loc: {
-      #|                  file: "-",
-      #|                  first_ccode: -1,
-      #|                  last_ccode: -1,
-      #|                  first_line: LinePos(-1, -1),
-      #|                  last_line: LinePos(-1, -1),
-      #|                },
-      #|                extra: None,
-      #|              },
-      #|              key: "extism pdk",
-      #|              text: Seq(
-      #|                [
-      #|                  {
-      #|                    blanks: "",
-      #|                    node: {
-      #|                      v: "Extism PDK",
-      #|                      meta: {
-      #|                        id: 0,
-      #|                        loc: {
-      #|                          file: "-",
-      #|                          first_ccode: -1,
-      #|                          last_ccode: -1,
-      #|                          first_line: LinePos(-1, -1),
-      #|                          last_line: LinePos(-1, -1),
-      #|                        },
-      #|                        extra: None,
-      #|                      },
-      #|                    },
-      #|                  },
-      #|                ],
-      #|              ),
-      #|            },
-      #|          ),
-      #|          defined_label: Some(
-      #|            {
-      #|              meta: {
-      #|                id: 0,
-      #|                loc: {
-      #|                  file: "-",
-      #|                  first_ccode: -1,
-      #|                  last_ccode: -1,
-      #|                  first_line: LinePos(-1, -1),
-      #|                  last_line: LinePos(-1, -1),
-      #|                },
-      #|                extra: None,
-      #|              },
-      #|              key: "extism pdk",
-      #|              text: Seq(
-      #|                [
-      #|                  {
-      #|                    blanks: "",
-      #|                    node: {
-      #|                      v: "Extism PDK",
-      #|                      meta: {
-      #|                        id: 0,
-      #|                        loc: {
-      #|                          file: "-",
-      #|                          first_ccode: -1,
-      #|                          last_ccode: -1,
-      #|                          first_line: LinePos(-1, -1),
-      #|                          last_line: LinePos(-1, -1),
-      #|                        },
-      #|                        extra: None,
-      #|                      },
-      #|                    },
-      #|                  },
-      #|                ],
-      #|              ),
-      #|            },
-      #|          ),
-      #|          dest: Some(
-      #|            {
-      #|              v: "https://extism.org/docs/concepts/pdk",
-      #|              meta: {
-      #|                id: 0,
-      #|                loc: {
-      #|                  file: "-",
-      #|                  first_ccode: -1,
-      #|                  last_ccode: -1,
-      #|                  first_line: LinePos(-1, -1),
-      #|                  last_line: LinePos(-1, -1),
-      #|                },
-      #|                extra: None,
-      #|              },
-      #|            },
-      #|          ),
-      #|          title: None,
-      #|        },
-      #|        meta: {
-      #|          id: 0,
-      #|          loc: {
-      #|            file: "-",
-      #|            first_ccode: -1,
-      #|            last_ccode: -1,
-      #|            first_line: LinePos(-1, -1),
-      #|            last_line: LinePos(-1, -1),
-      #|          },
-      #|          extra: None,
-      #|        },
-      #|      },
-      #|    ),
-      #|    "extism plug-ins": LinkDef(
-      #|      {
-      #|        v: {
-      #|          layout: {
-      #|            indent: 0,
-      #|            angled_dest: false,
-      #|            before_dest: Seq(
-      #|              [
-      #|                {
-      #|                  v: " ",
-      #|                  meta: {
-      #|                    id: 0,
-      #|                    loc: {
-      #|                      file: "-",
-      #|                      first_ccode: -1,
-      #|                      last_ccode: -1,
-      #|                      first_line: LinePos(-1, -1),
-      #|                      last_line: LinePos(-1, -1),
-      #|                    },
-      #|                    extra: None,
-      #|                  },
-      #|                },
-      #|              ],
-      #|            ),
-      #|            after_dest: Seq([]),
-      #|            title_open_delim: '"',
-      #|            after_title: Seq([]),
-      #|          },
-      #|          label: Some(
-      #|            {
-      #|              meta: {
-      #|                id: 0,
-      #|                loc: {
-      #|                  file: "-",
-      #|                  first_ccode: -1,
-      #|                  last_ccode: -1,
-      #|                  first_line: LinePos(-1, -1),
-      #|                  last_line: LinePos(-1, -1),
-      #|                },
-      #|                extra: None,
-      #|              },
-      #|              key: "extism plug-ins",
-      #|              text: Seq(
-      #|                [
-      #|                  {
-      #|                    blanks: "",
-      #|                    node: {
-      #|                      v: "Extism Plug-ins",
-      #|                      meta: {
-      #|                        id: 0,
-      #|                        loc: {
-      #|                          file: "-",
-      #|                          first_ccode: -1,
-      #|                          last_ccode: -1,
-      #|                          first_line: LinePos(-1, -1),
-      #|                          last_line: LinePos(-1, -1),
-      #|                        },
-      #|                        extra: None,
-      #|                      },
-      #|                    },
-      #|                  },
-      #|                ],
-      #|              ),
-      #|            },
-      #|          ),
-      #|          defined_label: Some(
-      #|            {
-      #|              meta: {
-      #|                id: 0,
-      #|                loc: {
-      #|                  file: "-",
-      #|                  first_ccode: -1,
-      #|                  last_ccode: -1,
-      #|                  first_line: LinePos(-1, -1),
-      #|                  last_line: LinePos(-1, -1),
-      #|                },
-      #|                extra: None,
-      #|              },
-      #|              key: "extism plug-ins",
-      #|              text: Seq(
-      #|                [
-      #|                  {
-      #|                    blanks: "",
-      #|                    node: {
-      #|                      v: "Extism Plug-ins",
-      #|                      meta: {
-      #|                        id: 0,
-      #|                        loc: {
-      #|                          file: "-",
-      #|                          first_ccode: -1,
-      #|                          last_ccode: -1,
-      #|                          first_line: LinePos(-1, -1),
-      #|                          last_line: LinePos(-1, -1),
-      #|                        },
-      #|                        extra: None,
-      #|                      },
-      #|                    },
-      #|                  },
-      #|                ],
-      #|              ),
-      #|            },
-      #|          ),
-      #|          dest: Some(
-      #|            {
-      #|              v: "https://extism.org/docs/concepts/plug-in",
-      #|              meta: {
-      #|                id: 0,
-      #|                loc: {
-      #|                  file: "-",
-      #|                  first_ccode: -1,
-      #|                  last_ccode: -1,
-      #|                  first_line: LinePos(-1, -1),
-      #|                  last_line: LinePos(-1, -1),
-      #|                },
-      #|                extra: None,
-      #|              },
-      #|            },
-      #|          ),
-      #|          title: None,
-      #|        },
-      #|        meta: {
-      #|          id: 0,
-      #|          loc: {
-      #|            file: "-",
-      #|            first_ccode: -1,
-      #|            last_ccode: -1,
-      #|            first_line: LinePos(-1, -1),
-      #|            last_line: LinePos(-1, -1),
-      #|          },
-      #|          extra: None,
-      #|        },
-      #|      },
-      #|    ),
-      #|  },
-      #|}
-    ),
+  let doc = Doc::from_string(source)
+  guard doc.block is Blocks(blocks) else { fail("expected multiple blocks") }
+  guard blocks.v.to_array()
+    is [
+      Paragraph(paragraph),
+      BlankLine(_),
+      LinkRefDefinition(_),
+      LinkRefDefinition(_),
+    ] else {
+    fail("expected a paragraph and two reference definitions")
+  }
+  guard paragraph.v.inline is Inlines(inlines) else {
+    fail("expected inline elements")
+  }
+  guard inlines.v.to_array()
+    is [Text(prefix), Link(first), Text(separator), Link(second), Text(suffix)] else {
+    fail("expected two shortcut reference links")
+  }
+  @test.assert_eq(
+    (prefix.v, separator.v, suffix.v),
+    ("This is an ", " that can be used to write ", "."),
   )
+  @test.assert_eq(doc.defs.length(), 2)
+  for
+    (link, text, key, destination) in [
+      (
+        first.v,
+        "Extism PDK",
+        "extism pdk",
+        "https://extism.org/docs/concepts/pdk",
+      ),
+      (
+        second.v,
+        "Extism Plug-ins",
+        "extism plug-ins",
+        "https://extism.org/docs/concepts/plug-in",
+      ),
+    ] {
+    guard link.text is Text(label) else { fail("expected link text") }
+    @test.assert_eq(label.v, text)
+    guard link.reference is Ref(Shortcut, reference, defined) else {
+      fail("expected a shortcut reference")
+    }
+    @test.assert_eq((reference.key, defined.key), (key, key))
+    guard link.reference_definition(doc.defs) is Some(LinkDef(definition)) else {
+      fail("expected a resolved reference")
+    }
+    @test.assert_eq(
+      definition.v.dest.map(fn(dest) { dest.v }),
+      Some(destination),
+    )
+  }
 }
 
 ///|
 test "should parse indented code block" {
-  let doc =
+  let source =
     #|The indented code block: 
     #|
     #|    a b c d 
@@ -1879,472 +266,69 @@ test "should parse indented code block" {
     #|
     #|    a
     #|       a b c
-  debug_inspect(
-    Doc::from_string(doc),
-    content=(
-      #|{
-      #|  nl: "\n",
-      #|  block: Blocks(
-      #|    {
-      #|      v: Seq(
-      #|        [
-      #|          Paragraph(
-      #|            {
-      #|              v: {
-      #|                leading_indent: 0,
-      #|                inline: Text(
-      #|                  {
-      #|                    v: "The indented code block:",
-      #|                    meta: {
-      #|                      id: 0,
-      #|                      loc: {
-      #|                        file: "-",
-      #|                        first_ccode: -1,
-      #|                        last_ccode: -1,
-      #|                        first_line: LinePos(-1, -1),
-      #|                        last_line: LinePos(-1, -1),
-      #|                      },
-      #|                      extra: None,
-      #|                    },
-      #|                  },
-      #|                ),
-      #|                trailing_blanks: "",
-      #|              },
-      #|              meta: {
-      #|                id: 0,
-      #|                loc: {
-      #|                  file: "-",
-      #|                  first_ccode: -1,
-      #|                  last_ccode: -1,
-      #|                  first_line: LinePos(-1, -1),
-      #|                  last_line: LinePos(-1, -1),
-      #|                },
-      #|                extra: None,
-      #|              },
-      #|            },
-      #|          ),
-      #|          BlankLine(
-      #|            {
-      #|              v: "",
-      #|              meta: {
-      #|                id: 0,
-      #|                loc: {
-      #|                  file: "-",
-      #|                  first_ccode: -1,
-      #|                  last_ccode: -1,
-      #|                  first_line: LinePos(-1, -1),
-      #|                  last_line: LinePos(-1, -1),
-      #|                },
-      #|                extra: None,
-      #|              },
-      #|            },
-      #|          ),
-      #|          CodeBlock(
-      #|            {
-      #|              v: {
-      #|                layout: Indented,
-      #|                info_string: None,
-      #|                code: Seq(
-      #|                  [
-      #|                    {
-      #|                      v: "a b c d ",
-      #|                      meta: {
-      #|                        id: 0,
-      #|                        loc: {
-      #|                          file: "-",
-      #|                          first_ccode: -1,
-      #|                          last_ccode: -1,
-      #|                          first_line: LinePos(-1, -1),
-      #|                          last_line: LinePos(-1, -1),
-      #|                        },
-      #|                        extra: None,
-      #|                      },
-      #|                    },
-      #|                    {
-      #|                      v: " a b c d",
-      #|                      meta: {
-      #|                        id: 0,
-      #|                        loc: {
-      #|                          file: "-",
-      #|                          first_ccode: -1,
-      #|                          last_ccode: -1,
-      #|                          first_line: LinePos(-1, -1),
-      #|                          last_line: LinePos(-1, -1),
-      #|                        },
-      #|                        extra: None,
-      #|                      },
-      #|                    },
-      #|                    {
-      #|                      v: " a b c d",
-      #|                      meta: {
-      #|                        id: 0,
-      #|                        loc: {
-      #|                          file: "-",
-      #|                          first_ccode: -1,
-      #|                          last_ccode: -1,
-      #|                          first_line: LinePos(-1, -1),
-      #|                          last_line: LinePos(-1, -1),
-      #|                        },
-      #|                        extra: None,
-      #|                      },
-      #|                    },
-      #|                    {
-      #|                      v: "  ",
-      #|                      meta: {
-      #|                        id: 0,
-      #|                        loc: {
-      #|                          file: "-",
-      #|                          first_ccode: -1,
-      #|                          last_ccode: -1,
-      #|                          first_line: LinePos(-1, -1),
-      #|                          last_line: LinePos(-1, -1),
-      #|                        },
-      #|                        extra: None,
-      #|                      },
-      #|                    },
-      #|                    {
-      #|                      v: "",
-      #|                      meta: {
-      #|                        id: 0,
-      #|                        loc: {
-      #|                          file: "-",
-      #|                          first_ccode: -1,
-      #|                          last_ccode: -1,
-      #|                          first_line: LinePos(-1, -1),
-      #|                          last_line: LinePos(-1, -1),
-      #|                        },
-      #|                        extra: None,
-      #|                      },
-      #|                    },
-      #|                    {
-      #|                      v: "a",
-      #|                      meta: {
-      #|                        id: 0,
-      #|                        loc: {
-      #|                          file: "-",
-      #|                          first_ccode: -1,
-      #|                          last_ccode: -1,
-      #|                          first_line: LinePos(-1, -1),
-      #|                          last_line: LinePos(-1, -1),
-      #|                        },
-      #|                        extra: None,
-      #|                      },
-      #|                    },
-      #|                    {
-      #|                      v: "   a b c",
-      #|                      meta: {
-      #|                        id: 0,
-      #|                        loc: {
-      #|                          file: "-",
-      #|                          first_ccode: -1,
-      #|                          last_ccode: -1,
-      #|                          first_line: LinePos(-1, -1),
-      #|                          last_line: LinePos(-1, -1),
-      #|                        },
-      #|                        extra: None,
-      #|                      },
-      #|                    },
-      #|                  ],
-      #|                ),
-      #|              },
-      #|              meta: {
-      #|                id: 0,
-      #|                loc: {
-      #|                  file: "-",
-      #|                  first_ccode: -1,
-      #|                  last_ccode: -1,
-      #|                  first_line: LinePos(-1, -1),
-      #|                  last_line: LinePos(-1, -1),
-      #|                },
-      #|                extra: None,
-      #|              },
-      #|            },
-      #|          ),
-      #|        ],
-      #|      ),
-      #|      meta: {
-      #|        id: 0,
-      #|        loc: {
-      #|          file: "-",
-      #|          first_ccode: -1,
-      #|          last_ccode: -1,
-      #|          first_line: LinePos(-1, -1),
-      #|          last_line: LinePos(-1, -1),
-      #|        },
-      #|        extra: None,
-      #|      },
-      #|    },
-      #|  ),
-      #|  defs: {},
-      #|}
-    ),
-  )
+  guard Doc::from_string(source).block is Blocks(blocks) else {
+    fail("expected multiple blocks")
+  }
+  guard blocks.v.to_array()
+    is [Paragraph(paragraph), BlankLine(_), CodeBlock(code)] else {
+    fail("expected a paragraph followed by indented code")
+  }
+  guard paragraph.v.inline is Text(text) else {
+    fail("expected paragraph text")
+  }
+  @test.assert_eq(text.v, "The indented code block:")
+  guard code.v.layout is Indented else { fail("expected indented code") }
+  @test.assert_eq(code.v.code.to_array().map(fn(line) { line.v }), [
+    "a b c d ", " a b c d", " a b c d", "  ", "", "a", "   a b c",
+  ])
 }
 
 ///|
 test "should parse quoted bullets" {
-  let doc =
+  let source =
     #|> Quoted bullets
     #|> * Is this important ? 
     #|* Well it's in the spec
     #|*
     #|Empty list item above
-  debug_inspect(
-    Doc::from_string(doc),
-    content=(
-      #|{
-      #|  nl: "\n",
-      #|  block: Blocks(
-      #|    {
-      #|      v: Seq(
-      #|        [
-      #|          BlockQuote(
-      #|            {
-      #|              v: {
-      #|                indent: 0,
-      #|                block: Blocks(
-      #|                  {
-      #|                    v: Seq(
-      #|                      [
-      #|                        Paragraph(
-      #|                          {
-      #|                            v: { leading_indent: 0, inline: Text(...), trailing_blanks: "" },
-      #|                            meta: {
-      #|                              id: 0,
-      #|                              loc: {
-      #|                                file: "-",
-      #|                                first_ccode: -1,
-      #|                                last_ccode: -1,
-      #|                                first_line: ...,
-      #|                                last_line: ...,
-      #|                              },
-      #|                              extra: None,
-      #|                            },
-      #|                          },
-      #|                        ),
-      #|                        List(
-      #|                          {
-      #|                            v: { ty: Unordered('*'), tight: true, items: Seq(...) },
-      #|                            meta: {
-      #|                              id: 0,
-      #|                              loc: {
-      #|                                file: "-",
-      #|                                first_ccode: -1,
-      #|                                last_ccode: -1,
-      #|                                first_line: ...,
-      #|                                last_line: ...,
-      #|                              },
-      #|                              extra: None,
-      #|                            },
-      #|                          },
-      #|                        ),
-      #|                      ],
-      #|                    ),
-      #|                    meta: {
-      #|                      id: 0,
-      #|                      loc: {
-      #|                        file: "-",
-      #|                        first_ccode: -1,
-      #|                        last_ccode: -1,
-      #|                        first_line: LinePos(-1, -1),
-      #|                        last_line: LinePos(-1, -1),
-      #|                      },
-      #|                      extra: None,
-      #|                    },
-      #|                  },
-      #|                ),
-      #|              },
-      #|              meta: {
-      #|                id: 0,
-      #|                loc: {
-      #|                  file: "-",
-      #|                  first_ccode: -1,
-      #|                  last_ccode: -1,
-      #|                  first_line: LinePos(-1, -1),
-      #|                  last_line: LinePos(-1, -1),
-      #|                },
-      #|                extra: None,
-      #|              },
-      #|            },
-      #|          ),
-      #|          List(
-      #|            {
-      #|              v: {
-      #|                ty: Unordered('*'),
-      #|                tight: true,
-      #|                items: Seq(
-      #|                  [
-      #|                    {
-      #|                      v: {
-      #|                        before_marker: 0,
-      #|                        marker: {
-      #|                          v: "*",
-      #|                          meta: {
-      #|                            id: 0,
-      #|                            loc: {
-      #|                              file: "-",
-      #|                              first_ccode: -1,
-      #|                              last_ccode: -1,
-      #|                              first_line: LinePos(-1, -1),
-      #|                              last_line: LinePos(-1, -1),
-      #|                            },
-      #|                            extra: None,
-      #|                          },
-      #|                        },
-      #|                        after_marker: 1,
-      #|                        block: Paragraph(
-      #|                          {
-      #|                            v: { leading_indent: 0, inline: Text(...), trailing_blanks: "" },
-      #|                            meta: {
-      #|                              id: 0,
-      #|                              loc: {
-      #|                                file: "-",
-      #|                                first_ccode: -1,
-      #|                                last_ccode: -1,
-      #|                                first_line: ...,
-      #|                                last_line: ...,
-      #|                              },
-      #|                              extra: None,
-      #|                            },
-      #|                          },
-      #|                        ),
-      #|                        ext_task_marker: None,
-      #|                      },
-      #|                      meta: {
-      #|                        id: 0,
-      #|                        loc: {
-      #|                          file: "-",
-      #|                          first_ccode: -1,
-      #|                          last_ccode: -1,
-      #|                          first_line: LinePos(-1, -1),
-      #|                          last_line: LinePos(-1, -1),
-      #|                        },
-      #|                        extra: None,
-      #|                      },
-      #|                    },
-      #|                    {
-      #|                      v: {
-      #|                        before_marker: 0,
-      #|                        marker: {
-      #|                          v: "*",
-      #|                          meta: {
-      #|                            id: 0,
-      #|                            loc: {
-      #|                              file: "-",
-      #|                              first_ccode: -1,
-      #|                              last_ccode: -1,
-      #|                              first_line: LinePos(-1, -1),
-      #|                              last_line: LinePos(-1, -1),
-      #|                            },
-      #|                            extra: None,
-      #|                          },
-      #|                        },
-      #|                        after_marker: 1,
-      #|                        block: BlankLine(
-      #|                          {
-      #|                            v: "",
-      #|                            meta: {
-      #|                              id: 0,
-      #|                              loc: {
-      #|                                file: "-",
-      #|                                first_ccode: -1,
-      #|                                last_ccode: -1,
-      #|                                first_line: ...,
-      #|                                last_line: ...,
-      #|                              },
-      #|                              extra: None,
-      #|                            },
-      #|                          },
-      #|                        ),
-      #|                        ext_task_marker: None,
-      #|                      },
-      #|                      meta: {
-      #|                        id: 0,
-      #|                        loc: {
-      #|                          file: "-",
-      #|                          first_ccode: -1,
-      #|                          last_ccode: -1,
-      #|                          first_line: LinePos(-1, -1),
-      #|                          last_line: LinePos(-1, -1),
-      #|                        },
-      #|                        extra: None,
-      #|                      },
-      #|                    },
-      #|                  ],
-      #|                ),
-      #|              },
-      #|              meta: {
-      #|                id: 0,
-      #|                loc: {
-      #|                  file: "-",
-      #|                  first_ccode: -1,
-      #|                  last_ccode: -1,
-      #|                  first_line: LinePos(-1, -1),
-      #|                  last_line: LinePos(-1, -1),
-      #|                },
-      #|                extra: None,
-      #|              },
-      #|            },
-      #|          ),
-      #|          Paragraph(
-      #|            {
-      #|              v: {
-      #|                leading_indent: 0,
-      #|                inline: Text(
-      #|                  {
-      #|                    v: "Empty list item above",
-      #|                    meta: {
-      #|                      id: 0,
-      #|                      loc: {
-      #|                        file: "-",
-      #|                        first_ccode: -1,
-      #|                        last_ccode: -1,
-      #|                        first_line: LinePos(-1, -1),
-      #|                        last_line: LinePos(-1, -1),
-      #|                      },
-      #|                      extra: None,
-      #|                    },
-      #|                  },
-      #|                ),
-      #|                trailing_blanks: "",
-      #|              },
-      #|              meta: {
-      #|                id: 0,
-      #|                loc: {
-      #|                  file: "-",
-      #|                  first_ccode: -1,
-      #|                  last_ccode: -1,
-      #|                  first_line: LinePos(-1, -1),
-      #|                  last_line: LinePos(-1, -1),
-      #|                },
-      #|                extra: None,
-      #|              },
-      #|            },
-      #|          ),
-      #|        ],
-      #|      ),
-      #|      meta: {
-      #|        id: 0,
-      #|        loc: {
-      #|          file: "-",
-      #|          first_ccode: -1,
-      #|          last_ccode: -1,
-      #|          first_line: LinePos(-1, -1),
-      #|          last_line: LinePos(-1, -1),
-      #|        },
-      #|        extra: None,
-      #|      },
-      #|    },
-      #|  ),
-      #|  defs: {},
-      #|}
-    ),
-  )
+  guard Doc::from_string(source).block
+    is Blocks({ v: Seq([BlockQuote(quote), List(list), Paragraph(after)]), .. }) else {
+    fail("expected separate quoted and unquoted lists")
+  }
+  guard quote.v.block
+    is Blocks({ v: Seq([Paragraph(paragraph), List(quoted)]), .. }) else {
+    fail("expected a paragraph and list inside the quote")
+  }
+  guard paragraph.v.inline is Text(text) else { fail("expected quoted text") }
+  @test.assert_eq(text.v, "Quoted bullets")
+  guard quoted.v.ty is Unordered('*') else { fail("expected quoted bullets") }
+  @test.assert_eq(quoted.v.tight, true)
+  guard quoted.v.items.to_array()
+    is [
+      { v: { block: Paragraph({ v: { inline: Text(text), .. }, .. }), .. }, .. },
+    ] else {
+    fail("expected a quoted list item")
+  }
+  @test.assert_eq(text.v, "Is this important ?")
+  guard list.v.ty is Unordered('*') else { fail("expected unquoted bullets") }
+  @test.assert_eq(list.v.tight, true)
+  guard list.v.items.to_array()
+    is [
+      { v: { block: Paragraph({ v: { inline: Text(text), .. }, .. }), .. }, .. },
+      { v: { block: BlankLine(_), .. }, .. },
+    ] else {
+    fail("expected one text item and one empty item outside the quote")
+  }
+  @test.assert_eq(text.v, "Well it's in the spec")
+  guard after.v.inline is Text(text) else {
+    fail("expected the following paragraph")
+  }
+  @test.assert_eq(text.v, "Empty list item above")
 }
 
 ///|
 test "should parse list item with multiple inlines" {
-  let doc =
+  let source =
     #|4.  What is the exact rule for determining when list items get
     #|    wrapped in `<p>` tags?  Can a list be partially "loose" and partially
     #|    "tight"?  What should we do with a list like this?
@@ -2368,231 +352,69 @@ test "should parse list item with multiple inlines" {
     #|
     #|    (There are some relevant comments by John Gruber
     #|    [here](https://web.archive.org/web/20170611172104/http://article.gmane.org/gmane.text.markdown.general/2554).)
-  debug_inspect(
-    Doc::from_string(doc),
-    content=(
-      #|{
-      #|  nl: "\n",
-      #|  block: List(
-      #|    {
-      #|      v: {
-      #|        ty: Ordered(4, '.'),
-      #|        tight: false,
-      #|        items: Seq(
-      #|          [
-      #|            {
-      #|              v: {
-      #|                before_marker: 0,
-      #|                marker: {
-      #|                  v: "4.",
-      #|                  meta: {
-      #|                    id: 0,
-      #|                    loc: {
-      #|                      file: "-",
-      #|                      first_ccode: -1,
-      #|                      last_ccode: -1,
-      #|                      first_line: LinePos(-1, -1),
-      #|                      last_line: LinePos(-1, -1),
-      #|                    },
-      #|                    extra: None,
-      #|                  },
-      #|                },
-      #|                after_marker: 2,
-      #|                block: Blocks(
-      #|                  {
-      #|                    v: Seq(
-      #|                      [
-      #|                        Paragraph(
-      #|                          {
-      #|                            v: { leading_indent: 0, inline: Inlines(...), trailing_blanks: "" },
-      #|                            meta: {
-      #|                              id: 0,
-      #|                              loc: {
-      #|                                file: "-",
-      #|                                first_ccode: -1,
-      #|                                last_ccode: -1,
-      #|                                first_line: ...,
-      #|                                last_line: ...,
-      #|                              },
-      #|                              extra: None,
-      #|                            },
-      #|                          },
-      #|                        ),
-      #|                        BlankLine(
-      #|                          {
-      #|                            v: "",
-      #|                            meta: {
-      #|                              id: 0,
-      #|                              loc: {
-      #|                                file: "-",
-      #|                                first_ccode: -1,
-      #|                                last_ccode: -1,
-      #|                                first_line: ...,
-      #|                                last_line: ...,
-      #|                              },
-      #|                              extra: None,
-      #|                            },
-      #|                          },
-      #|                        ),
-      #|                        CodeBlock(
-      #|                          {
-      #|                            v: { layout: Fenced(...), info_string: Some(...), code: Seq(...) },
-      #|                            meta: {
-      #|                              id: 0,
-      #|                              loc: {
-      #|                                file: "-",
-      #|                                first_ccode: -1,
-      #|                                last_ccode: -1,
-      #|                                first_line: ...,
-      #|                                last_line: ...,
-      #|                              },
-      #|                              extra: None,
-      #|                            },
-      #|                          },
-      #|                        ),
-      #|                        BlankLine(
-      #|                          {
-      #|                            v: "",
-      #|                            meta: {
-      #|                              id: 0,
-      #|                              loc: {
-      #|                                file: "-",
-      #|                                first_ccode: -1,
-      #|                                last_ccode: -1,
-      #|                                first_line: ...,
-      #|                                last_line: ...,
-      #|                              },
-      #|                              extra: None,
-      #|                            },
-      #|                          },
-      #|                        ),
-      #|                        Paragraph(
-      #|                          {
-      #|                            v: { leading_indent: 0, inline: Text(...), trailing_blanks: "" },
-      #|                            meta: {
-      #|                              id: 0,
-      #|                              loc: {
-      #|                                file: "-",
-      #|                                first_ccode: -1,
-      #|                                last_ccode: -1,
-      #|                                first_line: ...,
-      #|                                last_line: ...,
-      #|                              },
-      #|                              extra: None,
-      #|                            },
-      #|                          },
-      #|                        ),
-      #|                        BlankLine(
-      #|                          {
-      #|                            v: "",
-      #|                            meta: {
-      #|                              id: 0,
-      #|                              loc: {
-      #|                                file: "-",
-      #|                                first_ccode: -1,
-      #|                                last_ccode: -1,
-      #|                                first_line: ...,
-      #|                                last_line: ...,
-      #|                              },
-      #|                              extra: None,
-      #|                            },
-      #|                          },
-      #|                        ),
-      #|                        CodeBlock(
-      #|                          {
-      #|                            v: { layout: Fenced(...), info_string: Some(...), code: Seq(...) },
-      #|                            meta: {
-      #|                              id: 0,
-      #|                              loc: {
-      #|                                file: "-",
-      #|                                first_ccode: -1,
-      #|                                last_ccode: -1,
-      #|                                first_line: ...,
-      #|                                last_line: ...,
-      #|                              },
-      #|                              extra: None,
-      #|                            },
-      #|                          },
-      #|                        ),
-      #|                        BlankLine(
-      #|                          {
-      #|                            v: "",
-      #|                            meta: {
-      #|                              id: 0,
-      #|                              loc: {
-      #|                                file: "-",
-      #|                                first_ccode: -1,
-      #|                                last_ccode: -1,
-      #|                                first_line: ...,
-      #|                                last_line: ...,
-      #|                              },
-      #|                              extra: None,
-      #|                            },
-      #|                          },
-      #|                        ),
-      #|                        Paragraph(
-      #|                          {
-      #|                            v: { leading_indent: 0, inline: Inlines(...), trailing_blanks: "" },
-      #|                            meta: {
-      #|                              id: 0,
-      #|                              loc: {
-      #|                                file: "-",
-      #|                                first_ccode: -1,
-      #|                                last_ccode: -1,
-      #|                                first_line: ...,
-      #|                                last_line: ...,
-      #|                              },
-      #|                              extra: None,
-      #|                            },
-      #|                          },
-      #|                        ),
-      #|                      ],
-      #|                    ),
-      #|                    meta: {
-      #|                      id: 0,
-      #|                      loc: {
-      #|                        file: "-",
-      #|                        first_ccode: -1,
-      #|                        last_ccode: -1,
-      #|                        first_line: LinePos(-1, -1),
-      #|                        last_line: LinePos(-1, -1),
-      #|                      },
-      #|                      extra: None,
-      #|                    },
-      #|                  },
-      #|                ),
-      #|                ext_task_marker: None,
-      #|              },
-      #|              meta: {
-      #|                id: 0,
-      #|                loc: {
-      #|                  file: "-",
-      #|                  first_ccode: -1,
-      #|                  last_ccode: -1,
-      #|                  first_line: LinePos(-1, -1),
-      #|                  last_line: LinePos(-1, -1),
-      #|                },
-      #|                extra: None,
-      #|              },
-      #|            },
-      #|          ],
-      #|        ),
-      #|      },
-      #|      meta: {
-      #|        id: 0,
-      #|        loc: {
-      #|          file: "-",
-      #|          first_ccode: -1,
-      #|          last_ccode: -1,
-      #|          first_line: LinePos(-1, -1),
-      #|          last_line: LinePos(-1, -1),
-      #|        },
-      #|        extra: None,
-      #|      },
-      #|    },
-      #|  ),
-      #|  defs: {},
-      #|}
+  guard Doc::from_string(source).block is List(list) else {
+    fail("expected a list")
+  }
+  guard list.v.ty is Ordered(4, '.') else {
+    fail("expected an ordered list starting at four")
+  }
+  @test.assert_eq(list.v.tight, false)
+  guard list.v.items.to_array() is [item] else {
+    fail("expected a single list item")
+  }
+  @test.assert_eq((item.v.before_marker, item.v.after_marker), (0, 2))
+  guard item.v.block is Blocks(blocks) else {
+    fail("expected multiple blocks in the item")
+  }
+  guard blocks.v.to_array()
+    is [
+      Paragraph(first),
+      BlankLine(_),
+      CodeBlock(first_code),
+      BlankLine(_),
+      Paragraph(middle),
+      BlankLine(_),
+      CodeBlock(second_code),
+      BlankLine(_),
+      Paragraph(last),
+    ] else {
+    fail("expected paragraphs and fenced code inside the list item")
+  }
+  guard first.v.inline is Inlines(inlines) else {
+    fail("expected inline elements")
+  }
+  guard inlines.v.to_array()
+    is [Text(_), Break(_), Text(_), CodeSpan(code), Text(_), Break(_), Text(_)] else {
+    fail("expected an inline code span in the opening paragraph")
+  }
+  @test.assert_eq(code.v.code(), "<p>")
+  for code in [first_code.v, second_code.v] {
+    guard code.layout is Fenced(_) else { fail("expected fenced code") }
+    @test.assert_eq(code.info_string.map(fn(info) { info.v }), Some("markdown"))
+  }
+  @test.assert_eq(first_code.v.code.to_array().map(fn(line) { line.v }), [
+    "1. one", "", "2. two", "3. three",
+  ])
+  @test.assert_eq(second_code.v.code.to_array().map(fn(line) { line.v }), [
+    "1.  one", "    - a", "", "    - b", "2.  two",
+  ])
+  guard middle.v.inline is Text(text) else {
+    fail("expected the middle paragraph")
+  }
+  @test.assert_eq(text.v, "Or this?")
+  guard last.v.inline
+    is Inlines({ v: Seq([Text(_), Break(_), Link(link), Text(_)]), .. }) else {
+    fail("expected a link in the closing paragraph")
+  }
+  guard link.v.text is Text(text) else { fail("expected link text") }
+  @test.assert_eq(text.v, "here")
+  guard link.v.reference is Inline(definition) else {
+    fail("expected an inline link")
+  }
+  @test.assert_eq(
+    definition.v.dest.map(fn(dest) { dest.v }),
+    Some(
+      "https://web.archive.org/web/20170611172104/http://article.gmane.org/gmane.text.markdown.general/2554",
     ),
   )
 }
