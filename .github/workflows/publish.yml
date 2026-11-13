@@ -24,11 +24,10 @@ jobs:
           moon version --all
           moon update
 
-      # Add -C if your moon.mod.json or moon.pkg.json is not in the root directory
       - name: prepublish check
         run: |
           moon check
-          moon test
+          moon test -p moonbit-community/cmark/
 
       - name: publish
         env:
@@ -41,5 +40,5 @@ jobs:
             exit 1
           fi
           echo "$SECRET" > ~/.moon/credentials.json
-          moon publish
+          moon -C cmark publish
           rm ~/.moon/credentials.json

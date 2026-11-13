@@ -3,7 +3,7 @@ name = "moonbit-community/cmarkwrap"
 version = "0.1.0"
 
 import {
-  "moonbit-community/cmark@0.4.4",
+  "moonbit-community/cmark@0.4.14",
   "moonbitlang/x@0.5.5",
 }
 

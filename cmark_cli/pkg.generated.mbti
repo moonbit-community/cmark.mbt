@@ -1,0 +1,13 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "moonbit-community/cmark-cli"
+
+// Values
+
+// Errors
+
+// Types and methods
+type Options
+
+// Type aliases
+
+// Traits
