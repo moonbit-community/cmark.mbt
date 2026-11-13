@@ -67,9 +67,9 @@ jobs:
           moon test -p moonbit-community/cmark/ --target js --release
           moon test -p moonbit-community/cmark/ --target native
           moon test -p moonbit-community/cmark/ --target native --release
-          moon test cmark_cli --target native
-          moon test cmark_cli --target native --release
-          moon cram test cmark_cli/cram
+          moon test cmark-cli --target native
+          moon test cmark-cli --target native --release
+          moon cram test cmark-cli/cram
 
       - name: moon test on windows
         if: ${{ matrix.os.name == 'windows-latest' }}
@@ -92,9 +92,9 @@ jobs:
           Enter-VsDevShell -VsInstallPath $vsPath -SkipAutomaticLocation -DevCmdArguments "-arch=x64"
           moon test -p moonbit-community/cmark/ --target native
           moon test -p moonbit-community/cmark/ --target native --release
-          moon test cmark_cli --target native
-          moon test cmark_cli --target native --release
-          moon cram test cmark_cli/cram
+          moon test cmark-cli --target native
+          moon test cmark-cli --target native --release
+          moon cram test cmark-cli/cram
 
   coverage-check:
     runs-on: ubuntu-latest
