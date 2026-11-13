@@ -2010,143 +2010,36 @@ test "should parse links/images/refs" {
       #|)
     ),
   )
-  debug_inspect(
-    parse_only(
-      (
-        #|This is an ![inline image](
-        #|  /heyho    (The
-        #|    multiline title))
-      ),
-    ),
-    content=(
-      #|(
-      #|  (0, ""),
-      #|  Inlines(
-      #|    {
-      #|      v: Seq(
-      #|        [
-      #|          Text(
-      #|            {
-      #|              v: "This is an ",
-      #|              meta: {
-      #|                id: 0,
-      #|                loc: {
-      #|                  file: "-",
-      #|                  first_ccode: -1,
-      #|                  last_ccode: -1,
-      #|                  first_line: LinePos(-1, -1),
-      #|                  last_line: LinePos(-1, -1),
-      #|                },
-      #|                extra: None,
-      #|              },
-      #|            },
-      #|          ),
-      #|          Image(
-      #|            {
-      #|              v: {
-      #|                text: Text(
-      #|                  {
-      #|                    v: "inline image",
-      #|                    meta: {
-      #|                      id: 0,
-      #|                      loc: {
-      #|                        file: "-",
-      #|                        first_ccode: -1,
-      #|                        last_ccode: -1,
-      #|                        first_line: LinePos(-1, -1),
-      #|                        last_line: LinePos(-1, -1),
-      #|                      },
-      #|                      extra: None,
-      #|                    },
-      #|                  },
-      #|                ),
-      #|                reference: Inline(
-      #|                  {
-      #|                    v: {
-      #|                      layout: {
-      #|                        indent: 0,
-      #|                        angled_dest: false,
-      #|                        before_dest: Seq(
-      #|                          [
-      #|                            { v: "", meta: { id: 0, loc: ..., extra: None } },
-      #|                            { v: "  ", meta: { id: 0, loc: ..., extra: None } },
-      #|                          ],
-      #|                        ),
-      #|                        after_dest: Seq([{ v: "    ", meta: { id: 0, loc: ..., extra: None } }]),
-      #|                        title_open_delim: '(',
-      #|                        after_title: Seq([]),
-      #|                      },
-      #|                      label: None,
-      #|                      defined_label: None,
-      #|                      dest: Some(
-      #|                        {
-      #|                          v: "/heyho",
-      #|                          meta: {
-      #|                            id: 0,
-      #|                            loc: {
-      #|                              file: "-",
-      #|                              first_ccode: -1,
-      #|                              last_ccode: -1,
-      #|                              first_line: LinePos(-1, -1),
-      #|                              last_line: LinePos(-1, -1),
-      #|                            },
-      #|                            extra: None,
-      #|                          },
-      #|                        },
-      #|                      ),
-      #|                      title: Some(
-      #|                        Seq(
-      #|                          [
-      #|                            { blanks: "", node: { v: "The", meta: ... } },
-      #|                            { blanks: "", node: { v: "multiline title", meta: ... } },
-      #|                          ],
-      #|                        ),
-      #|                      ),
-      #|                    },
-      #|                    meta: {
-      #|                      id: 0,
-      #|                      loc: {
-      #|                        file: "-",
-      #|                        first_ccode: -1,
-      #|                        last_ccode: -1,
-      #|                        first_line: LinePos(-1, -1),
-      #|                        last_line: LinePos(-1, -1),
-      #|                      },
-      #|                      extra: None,
-      #|                    },
-      #|                  },
-      #|                ),
-      #|              },
-      #|              meta: {
-      #|                id: 0,
-      #|                loc: {
-      #|                  file: "-",
-      #|                  first_ccode: -1,
-      #|                  last_ccode: -1,
-      #|                  first_line: LinePos(-1, -1),
-      #|                  last_line: LinePos(-1, -1),
-      #|                },
-      #|                extra: None,
-      #|              },
-      #|            },
-      #|          ),
-      #|        ],
-      #|      ),
-      #|      meta: {
-      #|        id: 0,
-      #|        loc: {
-      #|          file: "-",
-      #|          first_ccode: -1,
-      #|          last_ccode: -1,
-      #|          first_line: LinePos(-1, -1),
-      #|          last_line: LinePos(-1, -1),
-      #|        },
-      #|        extra: None,
-      #|      },
-      #|    },
-      #|  ),
-      #|)
-    ),
+  let source =
+    #|This is an ![inline image](
+    #|  /heyho    (The
+    #|    multiline title))
+  let (layout, inline) = parse_only(source)
+  @test.assert_eq(layout, (0, ""))
+  guard inline is Inlines({ v: Seq([Text(prefix), Image(image)]), .. }) else {
+    fail("expected text followed by a multiline inline image")
+  }
+  @test.assert_eq(prefix.v, "This is an ")
+  guard image.v.text is Text(alt) else { fail("expected image alt text") }
+  @test.assert_eq(alt.v, "inline image")
+  guard image.v.reference is Inline(definition) else {
+    fail("expected an inline image destination")
+  }
+  @test.assert_eq(definition.v.dest.map(fn(dest) { dest.v }), Some("/heyho"))
+  guard definition.v.title is Some(title) else {
+    fail("expected a multiline title")
+  }
+  @test.assert_eq(title.to_array().map(fn(line) { line.node.v }), [
+    "The", "multiline title",
+  ])
+  @test.assert_eq(definition.v.layout.title_open_delim, '(')
+  @test.assert_eq(
+    definition.v.layout.before_dest.to_array().map(fn(line) { line.v }),
+    ["", "  "],
+  )
+  @test.assert_eq(
+    definition.v.layout.after_dest.to_array().map(fn(line) { line.v }),
+    ["    "],
   )
 }
 
@@ -2927,170 +2820,51 @@ test "should tokenize nested strikethroughs and emphases" {
 
 ///|
 test "should parse strikethroughs" {
-  debug_inspect(
-    parse_only(
-      strict=false,
-      (
-        #|Nesting the nest ~~*emph2* ~~stroke~~ *emph3 **emph4  ~~strikeagain~~***~~
-      ),
-    ),
-    content=(
-      #|(
-      #|  (0, ""),
-      #|  Inlines(
-      #|    {
-      #|      v: Seq(
-      #|        [
-      #|          Text(
-      #|            {
-      #|              v: "Nesting the nest ",
-      #|              meta: {
-      #|                id: 0,
-      #|                loc: {
-      #|                  file: "-",
-      #|                  first_ccode: -1,
-      #|                  last_ccode: -1,
-      #|                  first_line: LinePos(-1, -1),
-      #|                  last_line: LinePos(-1, -1),
-      #|                },
-      #|                extra: None,
-      #|              },
-      #|            },
-      #|          ),
-      #|          ExtStrikethrough(
-      #|            {
-      #|              v: InlineStrikethrough(
-      #|                Inlines(
-      #|                  {
-      #|                    v: Seq(
-      #|                      [
-      #|                        Emphasis(
-      #|                          {
-      #|                            v: { delim: '*', inline: Text(...) },
-      #|                            meta: {
-      #|                              id: 0,
-      #|                              loc: {
-      #|                                file: "-",
-      #|                                first_ccode: -1,
-      #|                                last_ccode: -1,
-      #|                                first_line: ...,
-      #|                                last_line: ...,
-      #|                              },
-      #|                              extra: None,
-      #|                            },
-      #|                          },
-      #|                        ),
-      #|                        Text(
-      #|                          {
-      #|                            v: " ",
-      #|                            meta: {
-      #|                              id: 0,
-      #|                              loc: {
-      #|                                file: "-",
-      #|                                first_ccode: -1,
-      #|                                last_ccode: -1,
-      #|                                first_line: ...,
-      #|                                last_line: ...,
-      #|                              },
-      #|                              extra: None,
-      #|                            },
-      #|                          },
-      #|                        ),
-      #|                        ExtStrikethrough(
-      #|                          {
-      #|                            v: InlineStrikethrough(Text(...)),
-      #|                            meta: {
-      #|                              id: 0,
-      #|                              loc: {
-      #|                                file: "-",
-      #|                                first_ccode: -1,
-      #|                                last_ccode: -1,
-      #|                                first_line: ...,
-      #|                                last_line: ...,
-      #|                              },
-      #|                              extra: None,
-      #|                            },
-      #|                          },
-      #|                        ),
-      #|                        Text(
-      #|                          {
-      #|                            v: " ",
-      #|                            meta: {
-      #|                              id: 0,
-      #|                              loc: {
-      #|                                file: "-",
-      #|                                first_ccode: -1,
-      #|                                last_ccode: -1,
-      #|                                first_line: ...,
-      #|                                last_line: ...,
-      #|                              },
-      #|                              extra: None,
-      #|                            },
-      #|                          },
-      #|                        ),
-      #|                        Emphasis(
-      #|                          {
-      #|                            v: { delim: '*', inline: Inlines(...) },
-      #|                            meta: {
-      #|                              id: 0,
-      #|                              loc: {
-      #|                                file: "-",
-      #|                                first_ccode: -1,
-      #|                                last_ccode: -1,
-      #|                                first_line: ...,
-      #|                                last_line: ...,
-      #|                              },
-      #|                              extra: None,
-      #|                            },
-      #|                          },
-      #|                        ),
-      #|                      ],
-      #|                    ),
-      #|                    meta: {
-      #|                      id: 0,
-      #|                      loc: {
-      #|                        file: "-",
-      #|                        first_ccode: -1,
-      #|                        last_ccode: -1,
-      #|                        first_line: LinePos(-1, -1),
-      #|                        last_line: LinePos(-1, -1),
-      #|                      },
-      #|                      extra: None,
-      #|                    },
-      #|                  },
-      #|                ),
-      #|              ),
-      #|              meta: {
-      #|                id: 0,
-      #|                loc: {
-      #|                  file: "-",
-      #|                  first_ccode: -1,
-      #|                  last_ccode: -1,
-      #|                  first_line: LinePos(-1, -1),
-      #|                  last_line: LinePos(-1, -1),
-      #|                },
-      #|                extra: None,
-      #|              },
-      #|            },
-      #|          ),
-      #|        ],
-      #|      ),
-      #|      meta: {
-      #|        id: 0,
-      #|        loc: {
-      #|          file: "-",
-      #|          first_ccode: -1,
-      #|          last_ccode: -1,
-      #|          first_line: LinePos(-1, -1),
-      #|          last_line: LinePos(-1, -1),
-      #|        },
-      #|        extra: None,
-      #|      },
-      #|    },
-      #|  ),
-      #|)
-    ),
-  )
+  let source =
+    #|Nesting the nest ~~*emph2* ~~stroke~~ *emph3 **emph4  ~~strikeagain~~***~~
+  let (layout, inline) = parse_only(source, strict=false)
+  @test.assert_eq(layout, (0, ""))
+  guard inline
+    is Inlines({ v: Seq([Text(prefix), ExtStrikethrough(outer)]), .. }) else {
+    fail("expected an outer strikethrough")
+  }
+  @test.assert_eq(prefix.v, "Nesting the nest ")
+  guard outer.v.0 is Inlines(inlines) else {
+    fail("expected nested inline elements")
+  }
+  guard inlines.v.to_array()
+    is [
+      Emphasis(first),
+      Text(first_space),
+      ExtStrikethrough(stroke),
+      Text(second_space),
+      Emphasis(last),
+    ] else {
+    fail(
+      "expected emphasis and strikethrough nested inside the outer strikethrough",
+    )
+  }
+  @test.assert_eq((first_space.v, second_space.v), (" ", " "))
+  guard first.v.inline is Text(text) else { fail("expected emphasis text") }
+  @test.assert_eq((first.v.delim, text.v), ('*', "emph2"))
+  guard stroke.v.0 is Text(text) else {
+    fail("expected nested strikethrough text")
+  }
+  @test.assert_eq(text.v, "stroke")
+  guard last.v.inline
+    is Inlines({ v: Seq([Text(text), StrongEmphasis(strong)]), .. }) else {
+    fail("expected strong emphasis nested inside emphasis")
+  }
+  @test.assert_eq((last.v.delim, text.v), ('*', "emph3 "))
+  guard strong.v.inline
+    is Inlines({ v: Seq([Text(text), ExtStrikethrough(inner)]), .. }) else {
+    fail("expected a strikethrough nested inside strong emphasis")
+  }
+  @test.assert_eq((strong.v.delim, text.v), ('*', "emph4  "))
+  guard inner.v.0 is Text(text) else {
+    fail("expected innermost strikethrough text")
+  }
+  @test.assert_eq(text.v, "strikeagain")
 }
 
 ///|
