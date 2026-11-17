@@ -11,7 +11,7 @@ fn command() -> @argparse.Command {
   Command(
     "cmark",
     about="Render CommonMark input as HTML.",
-    version="0.4.15",
+    version="0.4.16",
     flags=[
       FlagArg("safe", about="replace unsafe raw HTML and links with comments", conflicts_with=[
         "unsafe",
@@ -74,9 +74,9 @@ fn input_paths(matches : @argparse.Matches) -> Array[String] {
 ///|
 async fn read_input(path : String) -> String {
   if path == "-" {
-    @stdio.stdin.read_all().text()
+    @stdio.stdin.text.read_all()
   } else {
-    @fs.read_file(path).text()
+    @fs.read_text(path)
   }
 }
 
@@ -105,6 +105,6 @@ async fn main {
   let matches = command().parse()
   let options = options_from_matches(matches)
   for path in input_paths(matches) {
-    @stdio.stdout.write(render_input(read_input(path), options))
+    @stdio.stdout.text.write(render_input(read_input(path), options))
   }
 }

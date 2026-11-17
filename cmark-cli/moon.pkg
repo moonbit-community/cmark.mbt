@@ -2,11 +2,19 @@ import {
   "moonbit-community/cmark/cmark",
   "moonbit-community/cmark/cmark_html",
   "moonbitlang/core/argparse",
-  "moonbitlang/async",
-  "moonbitlang/async/fs",
-  "moonbitlang/async/stdio",
+  "moonbitlang/core/async",
+  "moonbitlang/core/async/fs",
+  "moonbitlang/core/async/stdio",
 }
 
 supported_targets = "+native"
 
 pkgtype(kind: "executable")
+
+options(
+  "allow-experimental-packages": [
+    "moonbitlang/core/async",
+    "moonbitlang/core/async/fs",
+    "moonbitlang/core/async/stdio",
+  ],
+)

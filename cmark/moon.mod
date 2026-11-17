@@ -1,6 +1,6 @@
 name = "moonbit-community/cmark"
 
-version = "0.4.15"
+version = "0.4.16"
 
 import {
   "moonbit-community/unicode@0.7.1",
