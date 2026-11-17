@@ -1,9 +1,9 @@
 name = "moonbit-community/cmark-cli"
 
-version = "0.4.14"
+version = "0.4.15"
 
 import {
-  "moonbit-community/cmark@0.4.14",
+  "moonbit-community/cmark@0.4.15",
   "moonbitlang/async@0.22.9",
 }
 
