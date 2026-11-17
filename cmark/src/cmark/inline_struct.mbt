@@ -708,7 +708,11 @@ fn Parser::try_math_span(
       Some(Newline({ newline, .. })) => {
         let span : Span = { start: line.first, span: { ..line, first: k, }, }
         spans.push(span)
-        k = self.first_non_blank_in_span(newline)
+        k = if count == 2 {
+          newline.first
+        } else {
+          self.first_non_blank_in_span(newline)
+        }
         line = newline
       }
       Some(_) => continue

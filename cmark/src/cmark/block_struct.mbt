@@ -202,6 +202,7 @@ priv struct HtmlBlockStruct {
 priv struct Paragraph {
   maybe_ref : Bool
   lines : Array[LineSpan]
+  inline_region : ParagraphInline?
 }
 
 ///|
@@ -364,8 +365,12 @@ fn Parser::paragraph(self : Parser, start~ : CharCodePos) -> BlockStruct {
     last~,
     start~,
   )
-  let lines = [self.curr_line_span(first=start, last~)]
-  Paragraph({ maybe_ref, lines, })
+  let line = self.curr_line_span(first=start, last~)
+  Paragraph({
+    maybe_ref,
+    lines: [line],
+    inline_region: self.paragraph_inline(line, None),
+  })
 }
 
 ///|
@@ -378,8 +383,15 @@ fn Parser::add_paragraph_line(
   let first = indent_start
   let last = self.curr_line_last_char
   let lines = par.lines
-  lines.push(self.curr_line_span(first~, last~))
-  bs.push(Paragraph({ ..par, lines, }))
+  let line = self.curr_line_span(first~, last~)
+  lines.push(line)
+  bs.push(
+    Paragraph({
+      ..par,
+      lines,
+      inline_region: self.paragraph_inline(line, par.inline_region),
+    }),
+  )
 }
 
 ///|
@@ -535,7 +547,7 @@ fn Parser::maybe_add_link_ref_definitions(
   while !lines.is_empty() {
     guard self.parse_link_ref_definition(lines) is Some(ld) else {
       //  Link defs can't interrupt a paragraph so we are good now.
-      prevs.push(Paragraph({ maybe_ref: false, lines, }))
+      prevs.push(Paragraph({ maybe_ref: false, lines, inline_region: None, }))
       break
     }
     prevs.push(LinkRefDef(ld))
@@ -994,6 +1006,10 @@ fn Parser::try_add_to_paragraph(
   bs : Array[BlockStruct],
 ) -> Unit {
   let indent_start = self.curr_char
+  if par.in_display_math() {
+    self.add_paragraph_line(indent_start~, par~, bs~)
+    return
+  }
   let indent = self.curr_indent()
   match self.match_line_type(no_setext=false, indent~) {
     // These can't interrupt paragraphs
@@ -1217,6 +1233,12 @@ fn Parser::try_add_to_block_quote(
 ) -> Unit {
   let indent_start = self.curr_char
   let indent = self.curr_indent()
+  if blocks_in_display_math(bq) &&
+    (self.only_blanks() || indent >= 4 || self.i[self.next_non_blank] != '>') {
+    let _ = self.try_lazy_continuation(indent_start~, bq)
+    bs.push(BlockQuote(indent_layout, bq))
+    return
+  }
   match self.match_line_type(no_setext=true, indent~) {
     BlockQuoteLine => {
       self.add_line(bq)
@@ -1249,6 +1271,11 @@ fn Parser::try_add_to_footnote(
 ) -> Unit {
   let indent_start = self.curr_char
   let indent = self.curr_indent()
+  if indent < fn_indent + 1 && blocks_in_display_math(blocks) {
+    let _ = self.try_lazy_continuation(indent_start~, blocks)
+    bs.push(ExtFootnote(fn_indent, label, blocks))
+    return
+  }
   if indent < fn_indent + 1 { // Position of ^
     match self.match_line_type(no_setext=true, indent~) {
       // These can't interrupt a paragraph: lazy continuation lines
@@ -1284,9 +1311,15 @@ fn Parser::try_add_to_list_item(
 ) -> Unit {
   let indent_start = self.curr_char
   let indent = self.curr_indent()
+  guard! list.items.last() is Some(item)
+  let in_math = blocks_in_display_math(item.blocks)
+  if indent < list.item_min_indent && in_math {
+    let _ = self.try_lazy_continuation(indent_start~, item.blocks)
+    bs.push(List({ ..list, last_blank: false, }))
+    return
+  }
   if indent >= list.item_min_indent {
-    let last_blank = self.only_blanks()
-    guard! list.items.last() is Some(item)
+    let last_blank = self.only_blanks() && !in_math
     return if list.last_blank &&
       !last_blank &&
       item.blocks.iter().all(BlockStruct::is_blank_line) {
@@ -1302,22 +1335,17 @@ fn Parser::try_add_to_list_item(
   }
   match self.match_line_type(no_setext=true, indent~) {
     BlankLine => {
-      let items = list.items
-      guard! items.last() is Some(item)
       self.add_line(item.blocks)
-      bs.push(List({ ..list, items, last_blank: true, }))
+      bs.push(List({ ..list, last_blank: true, }))
     }
     // These can't interrupt a paragraph: lazy continuation lines
-    IndentedCodeBlockLine | ParagraphLine | HtmlBlockLine(EndBlank7) as ltype => {
-      let items = list.items
-      guard! items.last() is Some(item)
+    IndentedCodeBlockLine | ParagraphLine | HtmlBlockLine(EndBlank7) as ltype =>
       if self.try_lazy_continuation(indent_start~, item.blocks) {
-        bs.push(List({ ..list, items, last_blank: false, }))
+        bs.push(List({ ..list, last_blank: false, }))
       } else {
         self.close_list(list, bs)
         self.add_open_blocks_with_line_class(indent_start~, indent~, bs, ltype)
       }
-    }
     ListMarkerLine(marker, marker_last) =>
       self.try_add_to_list(indent~, marker, marker_last, list, bs)
     lt => {
