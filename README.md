@@ -21,12 +21,11 @@ Supported CommonMark features include:
 
 ## Workspace
 
-The root workspace contains two parallel modules:
+The root workspace contains three modules:
 
 - [`cmark/`](cmark/): the `moonbit-community/cmark` library, without an async dependency.
 - [`cmark-cli/`](cmark-cli/): the native `moonbit-community/cmark-cli` renderer.
-
-[`cmarkwrap/`](cmarkwrap/) keeps a separate benchmark workspace using the local library.
+- [`cmarkwrap/`](cmarkwrap/): cross-backend benchmarks using the local library.
 
 ## Building
 

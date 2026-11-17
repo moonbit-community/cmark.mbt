@@ -1,0 +1,17 @@
+import {
+  "moonbit-community/cmark/cmark_html",
+  "moonbitlang/core/bench",
+  "moonbitlang/core/json",
+}
+
+pkgtype(kind: "executable")
+
+options(
+  "pre-build": [
+    {
+      "command": ":embed -i $input -o $output --name spec_md",
+      "input": "../cmark/src/data/test/spec.md",
+      "output": "spec.mbt",
+    },
+  ],
+)

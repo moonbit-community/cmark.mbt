@@ -1,2 +1,0 @@
-///|
-let ident = "cmarkWASM1"

@@ -4,15 +4,14 @@ version = "0.1.0"
 
 import {
   "moonbit-community/cmark@0.4.16",
-  "moonbitlang/x@0.5.5",
 }
 
 readme = "README.md"
 
-repository = ""
+repository = "https://github.com/moonbit-community/cmark.mbt"
 
-keywords = [ ]
+license = "Apache-2.0"
 
-description = ""
+description = "Cross-backend benchmarks for cmark"
 
-source = "src"
+source = "."

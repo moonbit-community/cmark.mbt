@@ -15,15 +15,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      # - uses: phi-ag/setup-binaryen@v1
-
-      # - name: Install wasm-tools
-      #   uses: taiki-e/install-action@v2
-      #   with:
-      #     tool: wasm-tools
-
       - name: Install MoonBit
-        # if: ${{ matrix.os.name != 'windows-latest' }}
         run: |
           curl -fsSL https://cli.moonbitlang.com/install/unix.sh | bash -s
           echo "$HOME/.moon/bin" >> $GITHUB_PATH
@@ -33,23 +25,24 @@ jobs:
           MOONC_INTERNAL_PARAMS: "allocator = tlsf-mbt |"
         run: |
           set -euo pipefail
-          cd cmarkwrap
           moon update
-          : > ../bench-output.txt
+          results=()
           for t in js wasm wasm-gc native; do
-            moon run --target "$t" --release src/main/ | tee -a ../bench-output.txt
+            output=$(moon run cmarkwrap --target "$t" --release --quiet)
+            while IFS= read -r result; do
+              results+=("$result")
+            done <<< "$output"
           done
+          (IFS=,; printf '[%s]\n' "${results[*]}") > bench-output.json
 
       - name: Store benchmark result
         uses: benchmark-action/github-action-benchmark@v1
         with:
           name: Benchmark.js Benchmark
-          tool: "benchmarkjs"
-          output-file-path: bench-output.txt
+          tool: customBiggerIsBetter
+          output-file-path: bench-output.json
           github-token: ${{ secrets.GITHUB_TOKEN }}
           auto-push: ${{ github.event_name == 'push' }}
           gh-pages-branch: bench-pages
-          # Show alert with commit comment on detecting possible performance regression
           alert-threshold: "200%"
           comment-on-alert: ${{ github.event_name == 'push' }}
-          # fail-on-alert: true
