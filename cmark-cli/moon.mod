@@ -1,9 +1,9 @@
 name = "moonbit-community/cmark-cli"
 
-version = "0.4.16"
+version = "0.4.17"
 
 import {
-  "moonbit-community/cmark@0.4.16",
+  "moonbit-community/cmark@0.4.17",
 }
 
 repository = "https://github.com/moonbit-community/cmark.mbt"

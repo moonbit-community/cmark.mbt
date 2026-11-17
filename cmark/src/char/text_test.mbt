@@ -60,7 +60,7 @@ test "utf_16_clean_unref vs utf_16_clean_unesc_unref" {
 
 ///|
 test "try_entity_hex invalid" {
-  let buf = StringBuilder(size_hint=0)
+  let buf = StringBuilder(capacity=0)
   inspect(
     @char.utf_16_clean_unesc_unref(buf, "&#xqq;", first=0, last=5),
     content="&#xqq;",
@@ -69,7 +69,7 @@ test "try_entity_hex invalid" {
 
 ///|
 test "try_entity_named empty" {
-  let buf = StringBuilder(size_hint=0)
+  let buf = StringBuilder(capacity=0)
   inspect(
     @char.utf_16_clean_unesc_unref(buf, "&;", first=0, last=1),
     content="&;",
@@ -78,13 +78,13 @@ test "try_entity_named empty" {
 
 ///|
 test "resolve empty" {
-  let buf = StringBuilder(size_hint=0)
+  let buf = StringBuilder(capacity=0)
   inspect(@char.utf_16_clean_unesc_unref(buf, "", first=1, last=0), content="")
 }
 
 ///|
 test "resolve escaped chars" {
-  let buf = StringBuilder(size_hint=0)
+  let buf = StringBuilder(capacity=0)
   inspect(
     @char.utf_16_clean_unesc_unref(buf, "\\", first=0, last=0),
     content="\\",
@@ -93,7 +93,7 @@ test "resolve escaped chars" {
 
 ///|
 test "try_entity_named with incomplete entity" {
-  let buf = StringBuilder(size_hint=0)
+  let buf = StringBuilder(capacity=0)
   let s = "&abc"
   inspect(
     @char.utf_16_clean_unesc_unref(buf, s, first=0, last=3),
@@ -103,7 +103,7 @@ test "try_entity_named with incomplete entity" {
 
 ///|
 test "handling null character and non-ascii chars" {
-  let buf = StringBuilder(size_hint=0)
+  let buf = StringBuilder(capacity=0)
   let s = "\u{0}\u{FF}"
   inspect(
     @char.utf_16_clean_unesc_unref(buf, s, first=0, last=1),
@@ -113,7 +113,7 @@ test "handling null character and non-ascii chars" {
 
 ///|
 test "handling escape with non-punctuation" {
-  let buf = StringBuilder(size_hint=0)
+  let buf = StringBuilder(capacity=0)
   let s = "\\a"
   inspect(
     @char.utf_16_clean_unesc_unref(buf, s, first=0, last=1),
@@ -363,7 +363,7 @@ test "decimal entity reference too long (2)" {
 
 ///|
 test "try_entity_hex invalid (2)" {
-  let buf = StringBuilder(size_hint=0)
+  let buf = StringBuilder(capacity=0)
   inspect(
     @char.utf_16_clean_unesc_unref(buf, "&#xqq;", first=0, last=5),
     content="&#xqq;",
@@ -372,7 +372,7 @@ test "try_entity_hex invalid (2)" {
 
 ///|
 test "try_entity_named empty (2)" {
-  let buf = StringBuilder(size_hint=0)
+  let buf = StringBuilder(capacity=0)
   inspect(
     @char.utf_16_clean_unesc_unref(buf, "&;", first=0, last=1),
     content="&;",
@@ -381,13 +381,13 @@ test "try_entity_named empty (2)" {
 
 ///|
 test "resolve empty (2)" {
-  let buf = StringBuilder(size_hint=0)
+  let buf = StringBuilder(capacity=0)
   inspect(@char.utf_16_clean_unesc_unref(buf, "", first=1, last=0), content="")
 }
 
 ///|
 test "resolve escaped chars (2)" {
-  let buf = StringBuilder(size_hint=0)
+  let buf = StringBuilder(capacity=0)
   inspect(
     @char.utf_16_clean_unesc_unref(buf, "\\", first=0, last=0),
     content="\\",
@@ -396,7 +396,7 @@ test "resolve escaped chars (2)" {
 
 ///|
 test "try_entity_named with incomplete entity (2)" {
-  let buf = StringBuilder(size_hint=0)
+  let buf = StringBuilder(capacity=0)
   let s = "&abc"
   inspect(
     @char.utf_16_clean_unesc_unref(buf, s, first=0, last=3),
@@ -406,7 +406,7 @@ test "try_entity_named with incomplete entity (2)" {
 
 ///|
 test "handling null character and non-ascii chars (2)" {
-  let buf = StringBuilder(size_hint=0)
+  let buf = StringBuilder(capacity=0)
   let s = "\u0000\u00FF"
   inspect(
     @char.utf_16_clean_unesc_unref(buf, s, first=0, last=1),
@@ -416,7 +416,7 @@ test "handling null character and non-ascii chars (2)" {
 
 ///|
 test "handling escape with non-punctuation (2)" {
-  let buf = StringBuilder(size_hint=0)
+  let buf = StringBuilder(capacity=0)
   let s = "\\a"
   inspect(
     @char.utf_16_clean_unesc_unref(buf, s, first=0, last=1),

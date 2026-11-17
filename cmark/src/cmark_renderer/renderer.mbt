@@ -104,7 +104,7 @@ pub fn Context::doc(self : Context, doc : Doc) -> Unit raise {
 
 ///|
 pub fn Renderer::doc_to_string(self : Renderer, doc : Doc) -> String raise {
-  let buf = StringBuilder(size_hint=1024)
+  let buf = StringBuilder(capacity=1024)
   self.buffer_add_doc(buf, doc)
   buf.to_string()
 }

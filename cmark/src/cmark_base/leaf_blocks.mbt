@@ -451,7 +451,7 @@ pub fn LineType::html_block_start(
       // view boundary at tag_last + 1 could land on an unpaired
       // surrogate and abort.
       let tag = {
-        let b = StringBuilder(size_hint=tag_last - tag_first + 1)
+        let b = StringBuilder(capacity=tag_last - tag_first + 1)
         for i in tag_first..<=tag_last {
           b.write_char(@char.to_ascii_lower(s[i].unsafe_to_char()))
         }

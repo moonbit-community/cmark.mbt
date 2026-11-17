@@ -50,7 +50,7 @@ fn Parser::new(
   {
     file,
     i,
-    buf: StringBuilder(size_hint=512),
+    buf: StringBuilder(capacity=512),
     no_locs: !locs,
     no_layouts: !layout,
     exts: !strict,

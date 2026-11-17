@@ -169,7 +169,7 @@ pub fn Inline::to_plain_text(
 ///|
 pub fn Inline::id(
   self : Inline,
-  buf~ : StringBuilder = StringBuilder(size_hint=256),
+  buf~ : StringBuilder = StringBuilder(capacity=256),
 ) -> String {
   let text = self.to_plain_text(break_on_soft=false)
   let s = text.0.map(fn(l) { l.0.join("") }).join("\n")
