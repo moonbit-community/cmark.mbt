@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1794903863470,
+  "lastUpdate": 1794904088091,
   "repoUrl": "https://github.com/moonbit-community/cmark.mbt",
   "entries": {
     "Benchmark.js Benchmark": [
@@ -16390,6 +16390,86 @@ window.BENCHMARK_DATA = {
             "name": "cmarkNative(spec * 200)",
             "value": 0.7,
             "range": "±4.68%",
+            "unit": "ops/sec",
+            "extra": "5 samples"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "kokicplus@gmail.com",
+            "name": "kokic",
+            "username": "kokic"
+          },
+          "committer": {
+            "email": "kokicplus@gmail.com",
+            "name": "kokic",
+            "username": "kokic"
+          },
+          "distinct": true,
+          "id": "57ba90c2475ae92c14f466d14da062b89b390854",
+          "message": "chore: bump cmark version to 0.4.15",
+          "timestamp": "2026-11-17T16:25:07+08:00",
+          "tree_id": "7eace5c9ef829f407f0f9407b384aa7b12c024ef",
+          "url": "https://github.com/moonbit-community/cmark.mbt/commit/57ba90c2475ae92c14f466d14da062b89b390854"
+        },
+        "date": 1794904087309,
+        "tool": "benchmarkjs",
+        "benches": [
+          {
+            "name": "cmarkJS(spec * 100)",
+            "value": 0.8,
+            "range": "±13.66%",
+            "unit": "ops/sec",
+            "extra": "5 samples"
+          },
+          {
+            "name": "cmarkJS(spec * 200)",
+            "value": 0.41,
+            "range": "±24.06%",
+            "unit": "ops/sec",
+            "extra": "5 samples"
+          },
+          {
+            "name": "cmarkWASM1(spec * 100)",
+            "value": 0.89,
+            "range": "±1.29%",
+            "unit": "ops/sec",
+            "extra": "5 samples"
+          },
+          {
+            "name": "cmarkWASM1(spec * 200)",
+            "value": 0.45,
+            "range": "±1.93%",
+            "unit": "ops/sec",
+            "extra": "5 samples"
+          },
+          {
+            "name": "cmarkWASM(spec * 100)",
+            "value": 1.15,
+            "range": "±3.69%",
+            "unit": "ops/sec",
+            "extra": "5 samples"
+          },
+          {
+            "name": "cmarkWASM(spec * 200)",
+            "value": 0.54,
+            "range": "±9.09%",
+            "unit": "ops/sec",
+            "extra": "5 samples"
+          },
+          {
+            "name": "cmarkNative(spec * 100)",
+            "value": 1.34,
+            "range": "±1.93%",
+            "unit": "ops/sec",
+            "extra": "5 samples"
+          },
+          {
+            "name": "cmarkNative(spec * 200)",
+            "value": 0.71,
+            "range": "±1.67%",
             "unit": "ops/sec",
             "extra": "5 samples"
           }
