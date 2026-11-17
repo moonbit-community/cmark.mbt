@@ -79,33 +79,53 @@ fn Parser::math_marks(self : Parser, line : LineSpan) -> Array[Int32] {
 }
 
 ///|
+priv struct MathContext {
+  text : Array[TextLoc]
+  display_math : Array[TextLoc]
+}
+
+///|
+fn MathContext::collect(self : MathContext, inline : Inline) -> Unit {
+  match inline {
+    Text({ meta, .. }) => self.text.push(meta.loc)
+    ExtMathSpan({ v: { display: true, .. }, meta, }) =>
+      self.display_math.push(meta.loc)
+    Image({ v, .. }) | Link({ v, .. }) => self.collect(v.text)
+    Emphasis({ v, .. }) | StrongEmphasis({ v, .. }) => self.collect(v.inline)
+    ExtStrikethrough({ v, .. }) => self.collect(v.0)
+    Inlines({ v, .. }) =>
+      for inline in v {
+        self.collect(inline)
+      }
+    Autolink(_) | Break(_) | CodeSpan(_) | RawHtml(_) | ExtMathSpan(_) => ()
+  }
+}
+
+///|
+fn MathContext::contains_text_marks(
+  self : MathContext,
+  start : CharCodePos,
+) -> Bool {
+  self.text
+  .iter()
+  .any(loc => loc.first_ccode <= start && start + 1 <= loc.last_ccode)
+}
+
+///|
 /// Use the real paragraph/inline grammar, including leading reference
 /// definitions. Text locations distinguish visible delimiters from dollars in
 /// code, HTML, link destinations, titles, and already-parsed math.
-fn Parser::math_context(
-  self : Parser,
-  lines : Array[LineSpan],
-) -> (Array[TextLoc], Array[TextLoc]) {
+fn Parser::math_context(self : Parser, lines : Array[LineSpan]) -> MathContext {
+  let context = { text: [], display_math: [], }
   let lines = lines.copy()
   while !lines.is_empty() && self.parse_link_ref_definition(lines) is Some(_) {
 
   }
-  guard !lines.is_empty() else { return ([], []) }
-  let (_, inline) = self.parse_inline(lines)
-  let folder : Folder[(Array[TextLoc], Array[TextLoc])] = Folder::new(inline=fn(
-    _,
-    context,
-    inline,
-  ) {
-    match inline {
-      Text({ meta, .. }) => context.0.push(meta.loc)
-      ExtMathSpan({ v: { display: true, .. }, meta, }) =>
-        context.1.push(meta.loc)
-      _ => ()
-    }
-    Default
-  })
-  try! folder.fold_inline(([], []), inline)
+  if !lines.is_empty() {
+    let (_, inline) = self.parse_inline(lines)
+    context.collect(inline)
+  }
+  context
 }
 
 ///|
@@ -123,13 +143,11 @@ fn Parser::extend_math_paragraph(
     locs=true,
     defs=self.defs.copy(),
   )
-  let (text, _) = context.math_context(lines)
+  let parsed = context.math_context(lines)
   let openers = []
   for line in lines {
     for start in self.math_marks(line) {
-      if text
-        .iter()
-        .any(loc => loc.first_ccode <= start && start + 1 <= loc.last_ccode) {
+      if parsed.contains_text_marks(start) {
         openers.push(start)
       }
     }
@@ -143,8 +161,8 @@ fn Parser::extend_math_paragraph(
   for ;; {
     candidate.push(next)
     if !reader.math_marks(next).is_empty() {
-      let (text, math) = context.math_context(candidate)
-      if math
+      let parsed = context.math_context(candidate)
+      if parsed.display_math
         .iter()
         .any(loc => {
           openers.contains(loc.first_ccode) && loc.last_line == next.pos
@@ -159,13 +177,7 @@ fn Parser::extend_math_paragraph(
         self.tab_consumed_cols = reader.tab_consumed_cols
         return true
       }
-      if !openers
-        .iter()
-        .any(start => {
-          text
-          .iter()
-          .any(loc => loc.first_ccode <= start && start + 1 <= loc.last_ccode)
-        }) {
+      if !openers.iter().any(start => parsed.contains_text_marks(start)) {
         return false
       }
     }
