@@ -118,6 +118,24 @@ test "display math continues inside Markdown containers" {
 }
 
 ///|
+test "list tightness distinguishes math blanks from item separators" {
+  for blank in ["", "  "] {
+    for (separator, tight) in [("\n", true), ("\n\n", false)] {
+      let source = "- $$\n  x\n" +
+        blank +
+        "\n  # TeX\n  $$" +
+        separator +
+        "- after"
+      guard @cmark.Doc::from_string(source, strict=false).block is List(list) &&
+        list.v.items.to_array() is [_, _] else {
+        fail("expected the math item and following item in the same list")
+      }
+      @test.assert_eq(list.v.tight, tight)
+    }
+  }
+}
+
+///|
 test "math does not extend outer Markdown containers" {
   for opening in ["> $$", "- $$", "[^note]: $$"] {
     let source = opening + "\nx\n\n# Outside\n\n$$"

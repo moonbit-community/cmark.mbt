@@ -1332,16 +1332,27 @@ fn Parser::try_add_to_list_item(
       self.add_open_blocks(bs)
     } else {
       self.accept_cols(count=list.item_min_indent)
+      let line_pos = self.curr_line_pos
       self.add_line(item.blocks)
-      bs.push(List({ ..list, last_blank: self.only_blanks(), }))
+      // Blankness belongs to this list level, before child prefixes are consumed.
+      // A math continuation that advances to its closing line is not a separator.
+      bs.push(
+        List({
+          ..list,
+          last_blank: last_blank && self.curr_line_pos == line_pos,
+        }),
+      )
     }
   }
   match self.match_line_type(no_setext=true, indent~) {
     BlankLine => {
       let items = list.items
       guard! items.last() is Some(item)
+      let line_pos = self.curr_line_pos
       self.add_line(item.blocks)
-      bs.push(List({ ..list, items, last_blank: self.only_blanks(), }))
+      bs.push(
+        List({ ..list, items, last_blank: self.curr_line_pos == line_pos, }),
+      )
     }
     // These can't interrupt a paragraph: lazy continuation lines
     IndentedCodeBlockLine | ParagraphLine | HtmlBlockLine(EndBlank7) as ltype => {
