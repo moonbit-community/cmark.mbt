@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1794904088091,
+  "lastUpdate": 1794905581560,
   "repoUrl": "https://github.com/moonbit-community/cmark.mbt",
   "entries": {
     "Benchmark.js Benchmark": [
@@ -16470,6 +16470,86 @@ window.BENCHMARK_DATA = {
             "name": "cmarkNative(spec * 200)",
             "value": 0.71,
             "range": "±1.67%",
+            "unit": "ops/sec",
+            "extra": "5 samples"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "feihaoxiang@idea.edu.cn",
+            "name": "Haoxiang Fei",
+            "username": "tonyfettes"
+          },
+          "committer": {
+            "email": "kokicplus@gmail.com",
+            "name": "kokic",
+            "username": "kokic"
+          },
+          "distinct": true,
+          "id": "19ff9f20274b36087a5b2fc7d94767b966aaa8ce",
+          "message": "refactor(deps): use moonbit-community/unicode for character properties\n\nReplace `moonbit-community/charclass` and `moonbit-community/casefold` with\n`moonbit-community/unicode@0.7.1`, which carries both the character property\ntables and Unicode case folding.\n\n- `is_whitespace` now calls `@unicode.is_white_space`.\n- `is_punctuation` now calls `@unicode.is_punctuation`, a dedicated\n  punctuation trie, instead of a general-category lookup.\n- The private `is_unicode_punctuation` (the CommonMark P-or-S definition) does\n  one `general_category(...).group()` lookup, replacing the previous\n  `is_punctuation || is_symbol` pair of lookups.\n- `casefold`/`casefold_char` become `case_fold(StringView)`. `Inline::id` folds\n  a character with `case_fold`, keeping an allocation-free path for ASCII.\n\nThe JS backend keeps its FFI into the engine's Unicode data, so the static\ntables are still not shipped to the browser.\n\nBehavior is unchanged apart from the Unicode version bump from 16 to 18: a\nhandful of newly assigned code points (5 punctuation, 246 symbols, 49 case\nfold pairs) now classify or fold differently. Whitespace is identical.\n\nCo-Authored-By: SeekMoon <seekmoon@moonbitlang.com>",
+          "timestamp": "2026-11-17T16:50:54+08:00",
+          "tree_id": "cf8fc347e9f67b73c2eefb266eea91fe98eef360",
+          "url": "https://github.com/moonbit-community/cmark.mbt/commit/19ff9f20274b36087a5b2fc7d94767b966aaa8ce"
+        },
+        "date": 1794905580749,
+        "tool": "benchmarkjs",
+        "benches": [
+          {
+            "name": "cmarkJS(spec * 100)",
+            "value": 0.72,
+            "range": "±9.93%",
+            "unit": "ops/sec",
+            "extra": "5 samples"
+          },
+          {
+            "name": "cmarkJS(spec * 200)",
+            "value": 0.34,
+            "range": "±24.93%",
+            "unit": "ops/sec",
+            "extra": "5 samples"
+          },
+          {
+            "name": "cmarkWASM1(spec * 100)",
+            "value": 0.69,
+            "range": "±2.39%",
+            "unit": "ops/sec",
+            "extra": "5 samples"
+          },
+          {
+            "name": "cmarkWASM1(spec * 200)",
+            "value": 0.35,
+            "range": "±4.98%",
+            "unit": "ops/sec",
+            "extra": "5 samples"
+          },
+          {
+            "name": "cmarkWASM(spec * 100)",
+            "value": 0.9,
+            "range": "±7.88%",
+            "unit": "ops/sec",
+            "extra": "5 samples"
+          },
+          {
+            "name": "cmarkWASM(spec * 200)",
+            "value": 0.46,
+            "range": "±8.53%",
+            "unit": "ops/sec",
+            "extra": "5 samples"
+          },
+          {
+            "name": "cmarkNative(spec * 100)",
+            "value": 1.12,
+            "range": "±1.95%",
+            "unit": "ops/sec",
+            "extra": "5 samples"
+          },
+          {
+            "name": "cmarkNative(spec * 200)",
+            "value": 0.56,
+            "range": "±6.59%",
             "unit": "ops/sec",
             "extra": "5 samples"
           }
