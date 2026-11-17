@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1794907310109,
+  "lastUpdate": 1794909884104,
   "repoUrl": "https://github.com/moonbit-community/cmark.mbt",
   "entries": {
     "Benchmark.js Benchmark": [
@@ -16632,6 +16632,78 @@ window.BENCHMARK_DATA = {
             "range": "±7.40%",
             "unit": "ops/sec",
             "extra": "5 samples"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "kokicplus@gmail.com",
+            "name": "kokic",
+            "username": "kokic"
+          },
+          "committer": {
+            "email": "kokicplus@gmail.com",
+            "name": "kokic",
+            "username": "kokic"
+          },
+          "distinct": true,
+          "id": "37630032fe53de6d8da39e811057b3074805848b",
+          "message": "feat: add cross-backend benchmarking for cmark with JSON output",
+          "timestamp": "2026-11-17T18:02:15+08:00",
+          "tree_id": "dc4b83b505aaa383cb85c93ba7df95f5e3ef1578",
+          "url": "https://github.com/moonbit-community/cmark.mbt/commit/37630032fe53de6d8da39e811057b3074805848b"
+        },
+        "date": 1794909883463,
+        "tool": "customBiggerIsBetter",
+        "benches": [
+          {
+            "name": "cmarkJS(spec * 100)",
+            "value": 0.6082127679721944,
+            "unit": "ops/sec",
+            "extra": "5 samples; std dev 7.618199960735184%"
+          },
+          {
+            "name": "cmarkJS(spec * 200)",
+            "value": 0.34654114688130366,
+            "unit": "ops/sec",
+            "extra": "5 samples; std dev 9.244842213308118%"
+          },
+          {
+            "name": "cmarkWASM1(spec * 100)",
+            "value": 0.729846812860871,
+            "unit": "ops/sec",
+            "extra": "5 samples; std dev 1.7635762943823716%"
+          },
+          {
+            "name": "cmarkWASM1(spec * 200)",
+            "value": 0.36297827427879953,
+            "unit": "ops/sec",
+            "extra": "5 samples; std dev 2.1324673267283725%"
+          },
+          {
+            "name": "cmarkWASM(spec * 100)",
+            "value": 0.8556384066631046,
+            "unit": "ops/sec",
+            "extra": "5 samples; std dev 5.27840351531582%"
+          },
+          {
+            "name": "cmarkWASM(spec * 200)",
+            "value": 0.40576338577025667,
+            "unit": "ops/sec",
+            "extra": "5 samples; std dev 4.174909075321969%"
+          },
+          {
+            "name": "cmarkNative(spec * 100)",
+            "value": 1.1045787814873538,
+            "unit": "ops/sec",
+            "extra": "5 samples; std dev 0.7602909730579647%"
+          },
+          {
+            "name": "cmarkNative(spec * 200)",
+            "value": 0.5553998660502377,
+            "unit": "ops/sec",
+            "extra": "5 samples; std dev 2.03136052005862%"
           }
         ]
       }
