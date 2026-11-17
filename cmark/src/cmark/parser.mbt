@@ -19,6 +19,8 @@ priv struct Parser {
   resolver : LabelResolverFn
   /// Current `CloserIndex`, for inline parsing.
   mut cidx : CloserIndex
+  /// Raw delimiter positions used to recognize math before block interruption.
+  mut block_cidx : CloserIndex?
   /// Current line, only used during block parsing.
   mut curr_line_pos : LinePos
   /// First char of line - 1 on empty lines.
@@ -57,6 +59,7 @@ fn Parser::new(
     defs,
     resolver,
     cidx: CloserIndex::new(),
+    block_cidx: None,
     curr_line_pos: LinePos(1, 0),
     curr_line_last_char: -1,
     curr_char: 0,
