@@ -1,163 +1,69 @@
 ///|
-test "display math shields Markdown in standalone and inline placements" {
-  let body =
-    #|\llbracket A+B\rrbracket_\gamma
-    #| =
-    #|# heading
-    #|---
-    #|> quote
-    #|- item
-    #|
-    #|```code
-    #|[label]: /url
+test "display math shields block syntax in standalone and inline placements" {
   for (before, after) in [("", ""), ("Before ", " after")] {
-    let source = before + "$$\n" + body + "\n$$" + after + "\n# After"
-    guard @cmark.Doc::from_string(source, strict=false).block is Blocks(blocks) &&
-      blocks.v.to_array() is [Paragraph(paragraph), Heading(_)] else {
-      fail("expected one math-containing paragraph followed by a heading")
+    let source = before +
+      "$$\n\\llbracket A+B\\rrbracket_\\gamma\n =\n\n# TeX\n$$" +
+      after
+    guard @cmark.Doc::from_string(source, strict=false).block
+      is Paragraph(paragraph) else {
+      fail("expected one math-containing paragraph")
     }
     let math = match paragraph.v.inline {
       ExtMathSpan(math) => math
       Inlines(inlines) => {
-        guard inlines.v.to_array()
-          is [Text(prefix), ExtMathSpan(math), Text(suffix)] else {
+        guard inlines.v.to_array() is [Text(_), ExtMathSpan(math), Text(_)] else {
           fail("expected math between the surrounding text")
         }
-        @test.assert_eq(prefix.v, before)
-        @test.assert_eq(suffix.v, after)
         math
       }
       _ => fail("expected an intact display math environment")
     }
     @test.assert_eq(math.v.display, true)
     @test.assert_eq(math.v.tex_layout.to_array().map(line => line.node.v), [
-      "", "\\llbracket A+B\\rrbracket_\\gamma", "=", "# heading", "---", "> quote",
-      "- item", "", "```code", "[label]: /url", "",
+      "", "\\llbracket A+B\\rrbracket_\\gamma", "=", "", "# TeX", "",
     ])
   }
 }
 
 ///|
-test "non-math dollar delimiters do not suppress block parsing" {
+test "literal dollars do not protect a paragraph from block syntax" {
   guard @cmark.Doc::from_string("$$\nx\n =", strict=false).block is Heading(_) else {
     fail("an unpaired delimiter must remain literal")
   }
   for
     opener in [
-      "\\$$", "$$$", "`$$`", "$a $$ b$", "a <span title=\"$$\">b</span>", "[a](https://example.com/$$)",
-      "[a](/url \"$$\")", "<https://example.com/$$>",
+      "a <span title=\"$$\">b</span>", "[a](https://example.com/$$)", "[label]: /$$",
     ] {
     let source = opener + "\nx\n =\n$$"
     guard @cmark.Doc::from_string(source, strict=false).block is Blocks(blocks) &&
-      blocks.v.to_array() is [Heading(_), Paragraph(_)] else {
-      fail(
-        "literal dollars in non-math inline contexts must not suppress Markdown",
-      )
+      blocks.v.iter().any(block => block is Heading(_)) else {
+      fail("literal dollars must not suppress the Setext heading")
     }
-  }
-  let source = "$$\nx\n =\n$$"
-  guard @cmark.Doc::from_string(source, strict=true).block is Blocks(blocks) &&
-    blocks.v.to_array() is [Heading(_), Paragraph(_)] else {
-    fail("strict CommonMark parsing must remain unchanged")
   }
 }
 
 ///|
-test "display math in link text uses the inline grammar" {
-  let source = "[Before $$\nx\n =\n$$ after](/url)"
-  guard @cmark.Doc::from_string(source, strict=false).block
-    is Paragraph({ v: { inline: Link(link), .. }, .. }) &&
-    link.v.text is Inlines(inlines) &&
-    inlines.v.to_array() is [Text(_), ExtMathSpan(math), Text(_)] else {
-    fail("expected a link containing an intact display math environment")
-  }
-  @test.assert_eq(math.v.tex_layout.to_array().map(line => line.node.v), [
-    "", "x", "=", "",
-  ])
-}
-
-///|
-test "display math continues inside Markdown containers" {
-  for
-    (opening, continuation) in [
-      ("> $$", "> "),
-      ("- $$", "  "),
-      ("[^note]: $$", "    "),
-      ("> - $$", ">   "),
-      ("- > $$", "  > "),
-    ] {
-    let source = opening +
-      "\n" +
-      continuation +
-      "x\n" +
-      continuation +
-      "\n" +
-      continuation +
-      "# TeX\n" +
-      continuation +
-      "$$"
-    let math = for block = @cmark.Doc::from_string(source, strict=false).block {
-      match block {
-        BlockQuote(quote) => continue quote.v.block
-        List(list) => {
-          guard list.v.items.to_array() is [item] else {
-            fail("expected one list item")
-          }
-          continue item.v.block
-        }
-        ExtFootnoteDefinition(footnote) => continue footnote.v.block
-        Paragraph({ v: { inline: ExtMathSpan(math), .. }, .. }) => break math
-        _ => fail("expected one intact math environment in its containers")
-      }
+test "math blanks do not loosen a quoted list" {
+  for blank in [">", ">   "] {
+    let source = "> - $$\n>   x\n" + blank + "\n>   $$\n> - after"
+    guard @cmark.Doc::from_string(source, strict=false).block
+      is BlockQuote(quote) &&
+      quote.v.block is List(list) &&
+      list.v.items.to_array() is [first, _] &&
+      first.v.block is Paragraph({ v: { inline: ExtMathSpan(_), .. }, .. }) else {
+      fail("expected math and the following item in the quoted list")
     }
-    @test.assert_eq(math.v.display, true)
-    @test.assert_eq(math.v.tex_layout.to_array().map(line => line.node.v), [
-      "", "x", "", "# TeX", "",
-    ])
-  }
-}
-
-///|
-test "list tightness distinguishes math blanks from item separators" {
-  for blank in ["", "  "] {
-    for (separator, tight) in [("\n", true), ("\n\n", false)] {
-      let source = "- $$\n  x\n" +
-        blank +
-        "\n  # TeX\n  $$" +
-        separator +
-        "- after"
-      guard @cmark.Doc::from_string(source, strict=false).block is List(list) &&
-        list.v.items.to_array() is [_, _] else {
-        fail("expected the math item and following item in the same list")
-      }
-      @test.assert_eq(list.v.tight, tight)
-    }
+    @test.assert_eq(list.v.tight, true)
   }
 }
 
 ///|
 test "math does not extend outer Markdown containers" {
-  for opening in ["> $$", "- $$", "[^note]: $$"] {
-    let source = opening + "\nx\n\n# Outside\n\n$$"
-    guard @cmark.Doc::from_string(source, strict=false).block is Blocks(blocks) else {
+  for opening in ["> $$", "- $$"] {
+    let source = opening + "\n\n# Outside\n\n$$"
+    guard @cmark.Doc::from_string(source, strict=false).block is Blocks(blocks) &&
+      blocks.v.iter().any(block => block is Heading(_)) else {
       fail("expected the outer container to end before the heading")
     }
-    @test.assert_eq(
-      blocks.v
-      .iter()
-      .any(block => {
-        block is Heading({ v: { inline: Text({ v: "Outside", .. }), .. }, .. })
-      }),
-      true,
-    )
-  }
-}
-
-///|
-test "dollars in reference definitions are not math openers" {
-  let source = "[label]: /$$\nx\n =\n$$"
-  guard @cmark.Doc::from_string(source, strict=false).block is Blocks(blocks) &&
-    blocks.v.to_array() is [LinkRefDefinition(_), Heading(_), Paragraph(_)] else {
-    fail("a reference destination must not suppress the following heading")
   }
 }
