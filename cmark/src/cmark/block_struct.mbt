@@ -202,7 +202,8 @@ priv struct HtmlBlockStruct {
 priv struct Paragraph {
   maybe_ref : Bool
   lines : Array[LineSpan]
-  inline_region : ParagraphInline?
+  /// Cheap prefilter only; inline parsing decides whether math actually opens.
+  may_have_math : Bool
 }
 
 ///|
@@ -369,7 +370,7 @@ fn Parser::paragraph(self : Parser, start~ : CharCodePos) -> BlockStruct {
   Paragraph({
     maybe_ref,
     lines: [line],
-    inline_region: self.paragraph_inline(line, None),
+    may_have_math: self.exts && self.line_may_have_math(line),
   })
 }
 
@@ -389,7 +390,8 @@ fn Parser::add_paragraph_line(
     Paragraph({
       ..par,
       lines,
-      inline_region: self.paragraph_inline(line, par.inline_region),
+      may_have_math: par.may_have_math ||
+      (self.exts && self.line_may_have_math(line)),
     }),
   )
 }
@@ -547,7 +549,7 @@ fn Parser::maybe_add_link_ref_definitions(
   while !lines.is_empty() {
     guard self.parse_link_ref_definition(lines) is Some(ld) else {
       //  Link defs can't interrupt a paragraph so we are good now.
-      prevs.push(Paragraph({ maybe_ref: false, lines, inline_region: None, }))
+      prevs.push(Paragraph({ maybe_ref: false, lines, may_have_math: false, }))
       break
     }
     prevs.push(LinkRefDef(ld))
@@ -1006,12 +1008,30 @@ fn Parser::try_add_to_paragraph(
   bs : Array[BlockStruct],
 ) -> Unit {
   let indent_start = self.curr_char
-  if par.in_display_math() {
-    self.add_paragraph_line(indent_start~, par~, bs~)
+  let indent = self.curr_indent()
+  let math_reader = if par.may_have_math {
+    Some({ ..self, math_containers: self.math_containers.copy(), })
+  } else {
+    None
+  }
+  let line_type = self.match_line_type(no_setext=false, indent~)
+  let interrupts = match line_type {
+    HtmlBlockLine(EndBlank7)
+    | IndentedCodeBlockLine
+    | ExtTableRow(_)
+    | ExtFootnoteLabel(_)
+    | ParagraphLine => false
+    ListMarkerLine(marker, marker_last) =>
+      self.list_marker_can_interrupt_paragraph(marker, marker_last)
+    _ => true
+  }
+  if interrupts &&
+    math_reader is Some(reader) &&
+    self.extend_math_paragraph(par.lines, reader) {
+    bs.push(Paragraph(par))
     return
   }
-  let indent = self.curr_indent()
-  match self.match_line_type(no_setext=false, indent~) {
+  match line_type {
     // These can't interrupt paragraphs
     HtmlBlockLine(EndBlank7)
     | IndentedCodeBlockLine
@@ -1019,7 +1039,7 @@ fn Parser::try_add_to_paragraph(
     | ExtFootnoteLabel(_)
     | ParagraphLine => self.add_paragraph_line(indent_start~, par~, bs~)
     ListMarkerLine(marker, marker_last) =>
-      if self.list_marker_can_interrupt_paragraph(marker, marker_last) {
+      if interrupts {
         self.close_paragraph(par, bs)
         self.list(indent~, marker, marker_last, bs)
       } else {
@@ -1233,12 +1253,6 @@ fn Parser::try_add_to_block_quote(
 ) -> Unit {
   let indent_start = self.curr_char
   let indent = self.curr_indent()
-  if blocks_in_display_math(bq) &&
-    (self.only_blanks() || indent >= 4 || self.i[self.next_non_blank] != '>') {
-    let _ = self.try_lazy_continuation(indent_start~, bq)
-    bs.push(BlockQuote(indent_layout, bq))
-    return
-  }
   match self.match_line_type(no_setext=true, indent~) {
     BlockQuoteLine => {
       self.add_line(bq)
@@ -1271,11 +1285,6 @@ fn Parser::try_add_to_footnote(
 ) -> Unit {
   let indent_start = self.curr_char
   let indent = self.curr_indent()
-  if indent < fn_indent + 1 && blocks_in_display_math(blocks) {
-    let _ = self.try_lazy_continuation(indent_start~, blocks)
-    bs.push(ExtFootnote(fn_indent, label, blocks))
-    return
-  }
   if indent < fn_indent + 1 { // Position of ^
     match self.match_line_type(no_setext=true, indent~) {
       // These can't interrupt a paragraph: lazy continuation lines
@@ -1311,15 +1320,9 @@ fn Parser::try_add_to_list_item(
 ) -> Unit {
   let indent_start = self.curr_char
   let indent = self.curr_indent()
-  guard! list.items.last() is Some(item)
-  let in_math = blocks_in_display_math(item.blocks)
-  if indent < list.item_min_indent && in_math {
-    let _ = self.try_lazy_continuation(indent_start~, item.blocks)
-    bs.push(List({ ..list, last_blank: false, }))
-    return
-  }
   if indent >= list.item_min_indent {
-    let last_blank = self.only_blanks() && !in_math
+    let last_blank = self.only_blanks()
+    guard! list.items.last() is Some(item)
     return if list.last_blank &&
       !last_blank &&
       item.blocks.iter().all(BlockStruct::is_blank_line) {
@@ -1330,22 +1333,27 @@ fn Parser::try_add_to_list_item(
     } else {
       self.accept_cols(count=list.item_min_indent)
       self.add_line(item.blocks)
-      bs.push(List({ ..list, last_blank, }))
+      bs.push(List({ ..list, last_blank: self.only_blanks(), }))
     }
   }
   match self.match_line_type(no_setext=true, indent~) {
     BlankLine => {
+      let items = list.items
+      guard! items.last() is Some(item)
       self.add_line(item.blocks)
-      bs.push(List({ ..list, last_blank: true, }))
+      bs.push(List({ ..list, items, last_blank: self.only_blanks(), }))
     }
     // These can't interrupt a paragraph: lazy continuation lines
-    IndentedCodeBlockLine | ParagraphLine | HtmlBlockLine(EndBlank7) as ltype =>
+    IndentedCodeBlockLine | ParagraphLine | HtmlBlockLine(EndBlank7) as ltype => {
+      let items = list.items
+      guard! items.last() is Some(item)
       if self.try_lazy_continuation(indent_start~, item.blocks) {
-        bs.push(List({ ..list, last_blank: false, }))
+        bs.push(List({ ..list, items, last_blank: false, }))
       } else {
         self.close_list(list, bs)
         self.add_open_blocks_with_line_class(indent_start~, indent~, bs, ltype)
       }
+    }
     ListMarkerLine(marker, marker_last) =>
       self.try_add_to_list(indent~, marker, marker_last, list, bs)
     lt => {
@@ -1468,6 +1476,10 @@ fn Parser::parse_block(self : Parser) -> (String, Node[Array[BlockStruct]]) {
   let bs = []
   let blocks = {
     while true {
+      if self.exts {
+        self.math_containers.clear()
+        let _ = collect_math_containers(bs, self.math_containers)
+      }
       self.add_line(bs)
       if !self.get_next_line() {
         self.end_doc(bs)
