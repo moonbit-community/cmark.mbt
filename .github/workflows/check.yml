@@ -9,6 +9,7 @@ on:
     - cron: "30 0 * * 1" # Every Monday at half past midnight UTC
 
 env:
+  MOON_SEPARATE_COMPILATION: "1"
   MOON_COVE_REPORT_ENABLED: "1"
   MOON_WASM_NEW_ALLOCATOR: "1"
 

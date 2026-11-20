@@ -3,6 +3,9 @@ name: publish-package
 on:
   workflow_dispatch:
 
+env:
+  MOON_SEPARATE_COMPILATION: "1"
+
 jobs:
   publish:
     # Use macos-latest or windows-latest if you want to publish to those platforms
