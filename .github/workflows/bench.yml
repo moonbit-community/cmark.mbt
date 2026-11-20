@@ -9,6 +9,9 @@ permissions:
   contents: write
   deployments: write
 
+env:
+  MOON_SEPARATE_COMPILATION: "1"
+
 jobs:
   benchmark:
     runs-on: ubuntu-latest
